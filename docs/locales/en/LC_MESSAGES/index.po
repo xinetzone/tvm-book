@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, xinetzone
+# This file is distributed under the same license as the sphinx-demo
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: sphinx-demo \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-13 15:54+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../index.md:1
+msgid "欢迎阅读 sphinx demo 文档"
+msgstr "Welcome to sphinx demo's documentation!"
+
+#: ../../index.md:3
+msgid "健康社区的文档。"
+msgstr "Documentation for Healthy Communities."
+
+#: ../../../README.md:1
+msgid "sphinx-demo"
+msgstr ""
+
+#: ../../../README.md:3
+msgid ""
+"[![GitHub issues](https://img.shields.io/github/issues/xinetzone/sphinx-"
+"demo)](https://github.com/xinetzone/sphinx-demo/issues) [![GitHub "
+"forks](https://img.shields.io/github/forks/xinetzone/sphinx-"
+"demo)](https://github.com/xinetzone/sphinx-demo/network) [![GitHub "
+"stars](https://img.shields.io/github/stars/xinetzone/sphinx-"
+"demo)](https://github.com/xinetzone/sphinx-demo/stargazers) [![GitHub "
+"license](https://img.shields.io/github/license/xinetzone/sphinx-"
+"demo)](https://github.com/xinetzone/sphinx-demo/blob/main/LICENSE) ![repo"
+" size](https://img.shields.io/github/repo-size/xinetzone/sphinx-demo.svg)"
+" [![contributors](https://img.shields.io/github/contributors/xinetzone"
+"/sphinx-demo.svg)](https://github.com/xinetzone/sphinx-"
+"demo/graphs/contributors) "
+"[![watcher](https://img.shields.io/github/watchers/xinetzone/sphinx-"
+"demo.svg)](https://github.com/xinetzone/sphinx-demo/watchers)"
+msgstr ""
+
+#: ../../../README.md:3
+msgid "GitHub issues"
+msgstr ""
+
+#: ../../../README.md:3
+msgid "GitHub forks"
+msgstr ""
+
+#: ../../../README.md:3
+msgid "GitHub stars"
+msgstr ""
+
+#: ../../../README.md:3
+msgid "GitHub license"
+msgstr ""
+
+#: ../../../README.md:3
+msgid "repo size"
+msgstr ""
+
+#: ../../../README.md:3
+msgid "contributors"
+msgstr ""
+
+#: ../../../README.md:3
+msgid "watcher"
+msgstr ""
+
+#: ../../../README.md:5
+msgid "请修改 `docs/about/` 目录以适配你的项目。"
+msgstr ""
+"Please modify the files in the `docs/about/` directory to match your "
+"project."
+
+#: ../../index.md:15
+msgid "索引与表格"
+msgstr ""
+
+#: ../../index.md:17
+msgid "{ref}`genindex`"
+msgstr ""
+
+#: ../../index.md:18
+msgid "{ref}`modindex`"
+msgstr ""
+
+#: ../../index.md:19
+msgid "{ref}`search`"
+msgstr ""

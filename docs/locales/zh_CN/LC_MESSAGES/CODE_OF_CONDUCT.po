@@ -1,0 +1,30 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, xinetzone
+# This file is distributed under the same license as the sphinx demo
+# package.
+# xinetzone <735613050@qq.com>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: sphinx demo \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-12 11:26+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: xinetzone <735613050@qq.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../CODE_OF_CONDUCT.md:1
+msgid "Covenant Code of Conduct"
+msgstr "行为准则"
+
+#: ../../CODE_OF_CONDUCT.md:3
+msgid ""
+"see [Daobook's Covenant Code of "
+"Conduct](https://daobook.github.io/.github/CODE_OF_CONDUCT.html)."
+msgstr ""
+"请阅读 [Daobook 行为准则](https://daobook.github.io/.github/CODE_OF_CONDUCT.html)。"

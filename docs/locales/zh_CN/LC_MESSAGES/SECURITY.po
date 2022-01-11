@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, xinetzone
+# This file is distributed under the same license as the sphinx demo
+# package.
+# xinetzone <735613050@qq.com>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: sphinx demo \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-12 10:49+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: xinetzone <735613050@qq.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../SECURITY.md:1
+msgid "Security Policy"
+msgstr "安全策略"
+
+#: ../../SECURITY.md:3
+msgid "Supported Versions"
+msgstr "所支持的版本"
+
+#: ../../SECURITY.md:5
+msgid ""
+"Use this section to tell people about which versions of your project are "
+"currently being supported with security updates."
+msgstr "使用这部分来告诉人们你的项目的哪些版本目前得到了安全更新的支持。"
+
+#: ../../SECURITY.md
+msgid "Version"
+msgstr "版本"
+
+#: ../../SECURITY.md
+msgid "Supported"
+msgstr "支持"
+
+#: ../../SECURITY.md
+msgid "5.1.x"
+msgstr ""
+
+#: ../../SECURITY.md
+msgid "✅"
+msgstr ""
+
+#: ../../SECURITY.md
+msgid "5.0.x"
+msgstr ""
+
+#: ../../SECURITY.md
+msgid "❌"
+msgstr ""
+
+#: ../../SECURITY.md
+msgid "4.0.x"
+msgstr ""
+
+#: ../../SECURITY.md
+msgid "< 4.0"
+msgstr ""
+
+#: ../../SECURITY.md:15
+msgid "Reporting a Vulnerability"
+msgstr "报告漏洞"
+
+#: ../../SECURITY.md:17
+msgid "Use this section to tell people how to report a vulnerability."
+msgstr "使用这一部分来告诉人们如何报告漏洞。"
+
+#: ../../SECURITY.md:19
+msgid ""
+"Tell them where to go, how often they can expect to get an update on a "
+"reported vulnerability, what to expect if the vulnerability is accepted "
+"or declined, etc."
+msgstr "告诉他们到哪里去，多长时间可以得到一个报告的漏洞的更新，如果漏洞被接受或被拒绝，该怎么做，等等。"
+

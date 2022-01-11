@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, xinetzone
+# This file is distributed under the same license as the sphinx-demo
+# package.
+# xinetzone <735613050@qq.com>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: sphinx-demo \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-12 18:19+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: xinetzone <735613050@qq.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/archives.html:3
+msgid "Archives"
+msgstr "归档"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/authors.html:2
+msgid "Authors"
+msgstr "作者"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/categories.html:3
+msgid "Categories"
+msgstr "分类"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/collection.html:47
+msgid "Read more ..."
+msgstr "阅读更多 ..."
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/languages.html:3
+msgid "Languages"
+msgstr "语言"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/locations.html:3
+msgid "Locations"
+msgstr "位置"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postcard2.html:5
+msgid "Update"
+msgstr "更新"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postcard2.html:12
+msgid "Author"
+msgstr "作者"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postcard2.html:24
+msgid "Location"
+msgstr "位置"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postcard2.html:35
+msgid "Language"
+msgstr "语言"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postcard2.html:46
+msgid "Category"
+msgstr "分类"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postcard2.html:57
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/tagcloud.html:2
+msgid "Tags"
+msgstr "标签"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postcard2.html:60
+msgid "Tag"
+msgstr "标签"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postnavy.html:5
+msgid "Previous"
+msgstr "上一页"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/postnavy.html:15
+msgid "Next"
+msgstr "下一页"
+
+#: C:/Users/xinzo/anaconda3/envs/py39/lib/site-packages/ablog/templates/recentposts.html:3
+msgid "Recent Posts"
+msgstr "最近帖子"
