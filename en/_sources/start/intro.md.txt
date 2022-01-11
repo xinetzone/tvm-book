@@ -1,0 +1,44 @@
+# 简介
+
+关于内核配置的详细说明见：[项目启动](https://xinetzone.github.io/sphinx-demo/start/index.html)。
+
+## Windows 安装 TVM
+
+前提条件：
+
+1. 安装好 VSCode、Anaconda3
+
+### 配置环境
+
+- 克隆源码库：
+
+    ```sh
+    git clone https://github.com.cnpmjs.org/daobook/tvm.git
+    cd tvm
+    ```
+
+- 设置 Git 子库（国内下载速度慢的一种解决方案）：
+
+    ```sh
+    # 移除原有
+    git rm -rf 3rdparty/dmlc-core 3rdparty/cutlass 3rdparty/libbacktrace 3rdparty/vta-hw 3rdparty/dlpack 3rdparty/rang
+    # 添加 git 子模块
+    git submodule add https://github.com.cnpmjs.org/agauniyal/rang.git 3rdparty/rang
+    git submodule add https://github.com.cnpmjs.org/dmlc/dlpack.git 3rdparty/dlpack
+    git submodule add https://github.com.cnpmjs.org/dmlc/dmlc-core.git 3rdparty/dmlc-core
+    git submodule add https://github.com.cnpmjs.org/tlc-pack/libbacktrace.git 3rdparty/libbacktrace
+    git submodule add https://github.com.cnpmjs.org/apache/incubator-tvm-vta.git 3rdparty/vta-hw
+    git submodule add https://github.com.cnpmjs.org/NVIDIA/cutlass  3rdparty/cutlass
+    ```
+
+- 使用 [`mamba`](https://github.com/mamba-org/mamba) 提升 `conda` 速度：
+
+    ```sh
+    conda install -c conda-forge mamba
+    ```
+
+- 创建 TVM 环境：
+
+    ```sh
+    mamba env create --file conda/build-environment.yaml
+    ```
