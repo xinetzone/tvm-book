@@ -303,13 +303,23 @@ commentsRunWhenDOMLoaded(addUtterances);
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#windows-tvm">
-   Windows 安装 TVM
+  <a class="reference internal nav-link" href="#tvm">
+   安装 TVM
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#id2">
      配置环境
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#windows10-tvm">
+     Windows10+ 安装 TVM
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ubuntu-tvm">
+     Ubuntu 从源码创建 TVM
     </a>
    </li>
   </ul>
@@ -335,13 +345,23 @@ commentsRunWhenDOMLoaded(addUtterances);
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#windows-tvm">
-   Windows 安装 TVM
+  <a class="reference internal nav-link" href="#tvm">
+   安装 TVM
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#id2">
      配置环境
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#windows10-tvm">
+     Windows10+ 安装 TVM
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ubuntu-tvm">
+     Ubuntu 从源码创建 TVM
     </a>
    </li>
   </ul>
@@ -357,8 +377,8 @@ commentsRunWhenDOMLoaded(addUtterances);
                  <div class="tex2jax_ignore mathjax_ignore section" id="id1">
 <h1>简介<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
 <p>关于内核配置的详细说明见：<a class="reference external" href="https://xinetzone.github.io/sphinx-demo/start/index.html">项目启动</a>。</p>
-<div class="section" id="windows-tvm">
-<h2>Windows 安装 TVM<a class="headerlink" href="#windows-tvm" title="永久链接至标题">¶</a></h2>
+<div class="section" id="tvm">
+<h2>安装 TVM<a class="headerlink" href="#tvm" title="永久链接至标题">¶</a></h2>
 <p>前提条件：</p>
 <ol class="simple">
 <li><p>安装好 VSCode、Anaconda3</p></li>
@@ -373,29 +393,75 @@ commentsRunWhenDOMLoaded(addUtterances);
 </div>
 </li>
 <li><p>设置 Git 子库（国内下载速度慢的一种解决方案）：</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># 移除原有</span>
-git rm -rf 3rdparty/dmlc-core 3rdparty/cutlass 3rdparty/libbacktrace 3rdparty/vta-hw 3rdparty/dlpack 3rdparty/rang
-<span class="c1"># 添加 git 子模块</span>
-git submodule add https://github.com.cnpmjs.org/agauniyal/rang.git 3rdparty/rang
-git submodule add https://github.com.cnpmjs.org/dmlc/dlpack.git 3rdparty/dlpack
-git submodule add https://github.com.cnpmjs.org/dmlc/dmlc-core.git 3rdparty/dmlc-core
-git submodule add https://github.com.cnpmjs.org/tlc-pack/libbacktrace.git 3rdparty/libbacktrace
-git submodule add https://github.com.cnpmjs.org/apache/incubator-tvm-vta.git 3rdparty/vta-hw
-git submodule add https://github.com.cnpmjs.org/NVIDIA/cutlass  3rdparty/cutlass
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git submodule init
+</pre></div>
+</div>
+<p>修改 .git/config 子模块的地址为：</p>
+<div class="highlight-config notranslate"><div class="highlight"><pre><span></span>[submodule &quot;3rdparty/cutlass&quot;]
+url = https://github.com.cnpmjs.org/NVIDIA/cutlass
+[submodule &quot;dlpack&quot;]
+    url = https://github.com.cnpmjs.org/dmlc/dlpack
+[submodule &quot;dmlc-core&quot;]
+    url = https://github.com.cnpmjs.org/dmlc/dmlc-core
+[submodule &quot;3rdparty/libbacktrace&quot;]
+    url = https://github.com.cnpmjs.org/tlc-pack/libbacktrace.git
+[submodule &quot;3rdparty/rang&quot;]
+    url = https://github.com.cnpmjs.org/agauniyal/rang
+[submodule &quot;3rdparty/vta-hw&quot;]
+    url = https://github.com.cnpmjs.org/apache/incubator-tvm-vta
 </pre></div>
 </div>
 </li>
+</ul>
+</div>
+<div class="section" id="windows10-tvm">
+<h3>Windows10+ 安装 TVM<a class="headerlink" href="#windows10-tvm" title="永久链接至标题">¶</a></h3>
+<ul>
 <li><p>使用 <a class="reference external" href="https://github.com/mamba-org/mamba"><code class="docutils literal notranslate"><span class="pre">mamba</span></code></a> 提升 <code class="docutils literal notranslate"><span class="pre">conda</span></code> 速度：</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda install -c conda-forge mamba
 </pre></div>
 </div>
 </li>
-<li><p>创建 TVM 环境：</p>
+<li><p>创建 TVM：</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mamba env create --file conda/build-environment.yaml
 </pre></div>
 </div>
 </li>
 </ul>
+</div>
+<div class="section" id="ubuntu-tvm">
+<h3>Ubuntu 从源码创建 TVM<a class="headerlink" href="#ubuntu-tvm" title="永久链接至标题">¶</a></h3>
+<ol>
+<li><p>准备最小的先决条件：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo apt-get update
+sudo apt-get install -y gcc libtinfo-dev zlib1g-dev build-essential cmake libedit-dev libxml2-dev
+</pre></div>
+</div>
+</li>
+<li><p>自己创建一个环境，然后安装并配置 LLVM：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda create -n tvmx <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8
+conda activate tvmx
+</pre></div>
+</div>
+<p>可以使用 <code class="docutils literal notranslate"><span class="pre">conda</span></code> 安装：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda install -c anaconda llvm
+</pre></div>
+</div>
+<p>或者 <code class="docutils literal notranslate"><span class="pre">apt</span></code> 安装：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo apt install llvm
+</pre></div>
+</div>
+</li>
+<li><p>构建目标库 <code class="docutils literal notranslate"><span class="pre">libtvm.so</span></code> 和 <code class="docutils literal notranslate"><span class="pre">libtvm_runtime.so</span></code>：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mkdir build
+cp cmake/config.cmake build
+<span class="nb">cd</span> build
+cmake ..
+make -j8
+</pre></div>
+</div>
+</li>
+</ol>
 </div>
 </div>
 </div>
