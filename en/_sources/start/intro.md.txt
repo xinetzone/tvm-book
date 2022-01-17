@@ -25,7 +25,7 @@
 
     修改 .git/config 子模块的地址为：
 
-    ```config
+    ```
     [submodule "3rdparty/cutlass"]
 	url = https://github.com.cnpmjs.org/NVIDIA/cutlass
     [submodule "dlpack"]
@@ -38,6 +38,12 @@
         url = https://github.com.cnpmjs.org/agauniyal/rang
     [submodule "3rdparty/vta-hw"]
         url = https://github.com.cnpmjs.org/apache/incubator-tvm-vta
+    ```
+
+    执行 `update` 即可：
+
+    ```sh
+    git submodule update
     ```
 
 ### Windows10+ 安装 TVM
@@ -91,3 +97,5 @@
     cmake ..
     make -j8
     ```
+
+更多关于安装和配置 TVM 的内容见：[从源码安装](install-from-source)
