@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <id>https://xinetzone.github.io/tvm-book</id>
   <title>Blog</title>
-  <updated>2022-01-17T10:09:56.589046+00:00</updated>
+  <updated>2022-01-20T08:56:59.214447+00:00</updated>
   <link href="https://xinetzone.github.io/tvm-book"/>
   <link href="https://xinetzone.github.io/tvm-book/en/posts/atom.xml" rel="self"/>
   <generator uri="https://ablog.readthedocs.org/" version="0.10.23">ABlog</generator>

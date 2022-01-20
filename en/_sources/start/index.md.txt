@@ -4,4 +4,5 @@
 :maxdepth: 3
 
 intro
+refs
 ```
