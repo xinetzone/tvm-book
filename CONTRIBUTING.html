@@ -77,12 +77,11 @@ commentsRunWhenDOMLoaded(addUtterances);
     <script src="_static/translations.js"></script>
     <script src="_static/sphinx-book-theme.9d8b4a8b9bb19db25eeaddc40d639ba2.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".cell"
-        const thebe_selector_input = ".cell_input div.highlight"
-        const thebe_selector_output = ".cell_output"
-    </script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".cell"
+const thebe_selector_input = ".cell_input div.highlight"
+const thebe_selector_output = ".cell_output"
+</script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
@@ -90,45 +89,13 @@ commentsRunWhenDOMLoaded(addUtterances);
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
     <link rel="next" title="安全策略" href="SECURITY.html" />
-    <link rel="prev" title="行为准则" href="CODE_OF_CONDUCT.html" /> 
+    <link rel="prev" title="行为准则" href="CODE_OF_CONDUCT.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="zh_CN">
     
 
     <!-- Google Analytics -->
-     
-<link
-  rel="alternate"
-  type="application/atom+xml"
-  href="posts/atom.xml"
-  title="Blog"
-/>
- 
-<style type="text/css">
-  ul.ablog-archive {
-    list-style: none;
-    overflow: auto;
-    margin-left: 0px;
-  }
-  ul.ablog-archive li {
-    float: left;
-    margin-right: 5px;
-    font-size: 80%;
-  }
-  ul.postlist a {
-    font-style: italic;
-  }
-  ul.postlist-style-disc {
-    list-style-type: disc;
-  }
-  ul.postlist-style-none {
-    list-style-type: none;
-  }
-  ul.postlist-style-circle {
-    list-style-type: circle;
-  }
-</style>
-
+    
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
@@ -178,6 +145,11 @@ commentsRunWhenDOMLoaded(addUtterances);
    <li class="toctree-l2">
     <a class="reference internal" href="start/intro.html">
      简介
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="start/config.html">
+     配置
     </a>
    </li>
    <li class="toctree-l2">
@@ -324,9 +296,10 @@ commentsRunWhenDOMLoaded(addUtterances);
             </div>
             
               <div>
-                 <div class="tex2jax_ignore mathjax_ignore section" id="contributing">
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="contributing">
 <h1>贡献<a class="headerlink" href="#contributing" title="永久链接至标题">¶</a></h1>
-<p>请阅读 <a class="reference external" href="https://daobook.github.io/.github/CONTRIBUTING.html">贡献</a>。</p>
+<p>see <a class="reference external" href="https://daobook.github.io/.github/CONTRIBUTING.html">Contributing</a>.</p>
 </div>
 
     <script type="text/x-thebe-config">
@@ -348,9 +321,6 @@ commentsRunWhenDOMLoaded(addUtterances);
     }
     </script>
     <script>kernelName = 'python3'</script>
-<div class="section">
-   
-</div>
 
               </div>
               
