@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>参考 &#8212; tvm-book 0.1 文档</title>
+    <title>TVM &#8212; tvm-book 0.1 文档</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet">
   <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -88,8 +88,8 @@ const thebe_selector_output = ".cell_output"
     <link rel="shortcut icon" href="../_static/page-logo.jfif"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="论文解读" href="../paper/index.html" />
-    <link rel="prev" title="配置" href="config.html" />
+    <link rel="next" title="关于" href="../about/index.html" />
+    <link rel="prev" title="论文解读" href="index.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="zh_CN">
     
@@ -132,45 +132,45 @@ const thebe_selector_output = ".cell_output"
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
         <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="index.html">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../start/index.html">
    启动项目
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="intro.html">
-     简介
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="config.html">
-     配置
-    </a>
-   </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     参考
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../paper/index.html">
-   论文解读
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../paper/tvm.html">
+    <a class="reference internal" href="../start/intro.html">
+     简介
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../start/config.html">
+     配置
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../start/refs.html">
+     参考
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   论文解读
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      TVM
     </a>
    </li>
@@ -253,7 +253,7 @@ const thebe_selector_output = ".cell_output"
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/start/refs.md.txt"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/paper/tvm.md.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="下载源文件" data-toggle="tooltip"
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
@@ -273,10 +273,10 @@ const thebe_selector_output = ".cell_output"
                 data-toggle="tooltip" data-placement="left" title="源库"><i
                     class="fab fa-github"></i>资料库</button></a>
         <a class="issues-button"
-            href="https://github.com/xinetzone/tvm-book/issues/new?title=Issue%20on%20page%20%2Fstart/refs.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/xinetzone/tvm-book/issues/new?title=Issue%20on%20page%20%2Fpaper/tvm.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="打开一个问题"><i class="fas fa-lightbulb"></i>公开的问题</button></a>
-        <a class="edit-button" href="https://github.com/xinetzone/tvm-book/edit/main/docs/start/refs.md"><button
+        <a class="edit-button" href="https://github.com/xinetzone/tvm-book/edit/main/docs/paper/tvm.md"><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="编辑这个页面"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
     </div>
@@ -296,6 +296,24 @@ const thebe_selector_output = ".cell_output"
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> 导航
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   简介
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   概述
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -303,30 +321,75 @@ const thebe_selector_output = ".cell_output"
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>参考</h1>
+                <h1>TVM</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
                         
+                        <div>
+                            <h2> 导航 </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   简介
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   概述
+  </a>
+ </li>
+</ul>
+
+                        </nav>
                     </div>
                 </div>
             </div>
             
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="id1">
-<h1>参考<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+  <div class="tex2jax_ignore mathjax_ignore section" id="tvm">
+<h1>TVM<a class="headerlink" href="#tvm" title="永久链接至标题">¶</a></h1>
+<p>论文：<a class="reference external" href="https://arxiv.org/abs/1802.04799">TVM: An Automated End-to-End Optimizing Compiler for Deep Learning</a></p>
+<p>TVM 目标：缩短前端框架（基于计算图）与后端硬件的差距。</p>
+<div class="section" id="id1">
+<h2>简介<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>当前 DL 框架（如 TensorFlow，MXNet，Caffe 和 Pytorch）依赖于计算图优化。计算图级优化与硬件后端特定的算子级存在极大的鸿沟。特定于硬件的算子往往受制于其供应商，可定制差。即使受支持的后端，同样存在：</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://zhuanlan.zhihu.com/p/141008345">面向下一代Web的深度学习编译：WebAssembly和WebGPU初探</a></p></li>
-<li><p><a class="reference external" href="https://zhuanlan.zhihu.com/p/360479566">PyTorch全新性能分析工具，可视化瓶颈，并集成到了VS Code</a></p></li>
-<li><p><a class="reference external" href="https://zhuanlan.zhihu.com/p/103426525">FFI Navigator: 跨语言调用跳转IDE插件</a></p></li>
-<li><p><a class="reference external" href="https://zhuanlan.zhihu.com/p/343218679">LSP-language-server-protocol规范学</a></p></li>
-<li><p><a class="reference external" href="https://docs.microsoft.com/zh-cn/visualstudio/extensibility/language-server-protocol?view=vs-2022">语言服务器协议</a></p></li>
+<li><p>预定义的算子库有限，用户不能灵活添加新的算子</p></li>
+<li><p>即使支持定义新算子，而硬件优化需要供应商再次调谐</p></li>
 </ul>
-<dl class="simple myst">
-<dt>FFI</dt><dd><p>全称 Foreign Function Interface。它用一种编程语言写的程序能调用另一种编程语言写的函数（routines）。</p>
-</dd>
-</dl>
+<p>对于不同的硬件后端，要同时启用图级和算子级的优化，TVM 采取了完全不同的端到端方法：<strong>定义一种编译器，它从现有框架中获取深度学习程序的高级规范，并为不同的硬件后端集生成低级优化代码</strong>。</p>
+<p>存在两大挑战：</p>
+<ul class="simple">
+<li><p>自适应特定的硬件特性和抽象</p></li>
+<li><p>自动调谐生成高效的代码</p></li>
+</ul>
+<p>TVM 通过三个关键模块来解决这些挑战：</p>
+<ol class="simple">
+<li><p>引入了 <strong>张量表达式语言</strong> （tensor expression language）来构建算子，并提供程序变换原语（program transformation primitives） 用于生成具有各种优化的程序的不同版本。该层延伸 Halide 的计算/调度分离概念也通过将目标硬件 intrinsics 从变换原语中分离出来，从而支持新的加速器及其相应的新 intrinsics。此外，引入了新的变换原语来解决 GPU 相关的挑战，并支持部署到专门的加速器。然后可以应用不同序列的程序变换，为给定的算子声明，形成丰富的有效程序空间。</p></li>
+<li><p>引入 <strong>自动程序优化框架</strong> 来寻找优化的张量算子。优化器由基于 ML 的成本模型指导，当从硬件后端收集更多数据时，该模型可以进行调整和改进。</p></li>
+<li><p>在自动代码生成器之上，引入了 <strong>图重写器</strong> （graph rewriter），它充分利用了高层级和算子层级的优化。</p></li>
+</ol>
+<p>通过结合这三个模块，TVM 可以从现有的深度学习框架中获取模型描述，联合高、低层次优化，并为后端（如 CPU、GPU 和基于 FPGA 的专用加速器）生成特定于硬件的优化代码。</p>
+<p>该论文的主要贡献：</p>
+<ul class="simple">
+<li><p>确定了在跨不同硬件后端为深度学习工作负载以提供性能可移植性方面的主要优化挑战。</p></li>
+<li><p>引入了新颖的调度原语，它利用了跨线程内存重用、新颖的硬件 intrinsics 和延迟隐藏。</p></li>
+<li><p>提出并实现了基于机器学习的优化系统，以自动探索和优化的张量算子。</p></li>
+<li><p>构建了一个端到端编译和优化堆栈，允许在高级框架（包括 TensorFlow、MXNet、PyTorch、Keras、CNTK）中指定的深度学习工作负载部署到不同的硬件后端（包括 CPU、服务器 GPU、嵌入式 GPU 和基于 FPGA 的加速器）。</p></li>
+</ul>
+<p>开源 TVM 在几家大公司内部量产使用。在服务器级 GPU，嵌入式 GPU，嵌入式 CPU 和定制的基于 FPGA 的通用加速器上，使用真实的工作负荷，对 TVM 进行了评估。实验结果表明，TVM 具有便携性跨后端的性能实现加速，在现有框架的基础上，由手工优化的库支持，从 1.2× 到 3.8× 不等。</p>
+</div>
+<div class="section" id="id2">
+<h2>概述<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<div class="figure align-left" id="id3">
+<img alt="../_images/tvm-into.png" src="../_images/tvm-into.png" />
+<p class="caption"><span class="caption-text">系统首先从现有框架中获取模型作为输入，并将其变换为计算图表示。然后，它执行高级数据流重写以生成优化的计算图。算子级优化模块必须为计算图中每个融合算子生成高效代码。算子是在声明式张量表达式语言中指定的；执行细节未指定。TVM 为给定硬件目标的算子标识了一组可能的代码优化。可能的优化空间很大，因此使用基于 ML 的成本模型来寻找优化的算子。最后，系统将生成的代码打包到可部署的模块中。</span><a class="headerlink" href="#id3" title="永久链接至图片">¶</a></p>
+</div>
+</div>
 </div>
 
     <script type="text/x-thebe-config">
@@ -342,7 +405,7 @@ const thebe_selector_output = ".cell_output"
         },
         kernelOptions: {
             kernelName: "python3",
-            path: "./start"
+            path: "./paper"
         },
         predefinedOutput: true
     }
@@ -354,17 +417,17 @@ const thebe_selector_output = ".cell_output"
             
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="config.html" title="上一页 页">
+    <a class='left-prev' id="prev-link" href="index.html" title="上一页 页">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">配置</p>
+            <p class="prev-next-title">论文解读</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="../paper/index.html" title="下一页 页">
+    <a class='right-next' id="next-link" href="../about/index.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">论文解读</p>
+        <p class="prev-next-title">关于</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
