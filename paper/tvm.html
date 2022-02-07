@@ -315,6 +315,30 @@ const thebe_selector_output = ".cell_output"
   <a class="reference internal nav-link" href="#id2">
    概述
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id3">
+     终端用户的例子
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   优化计算图
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id5">
+     算子融合
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     数据布局变换
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -345,6 +369,30 @@ const thebe_selector_output = ".cell_output"
   <a class="reference internal nav-link" href="#id2">
    概述
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id3">
+     终端用户的例子
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   优化计算图
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id5">
+     算子融合
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id6">
+     数据布局变换
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -390,9 +438,55 @@ const thebe_selector_output = ".cell_output"
 </div>
 <div class="section" id="id2">
 <h2>概述<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
-<div class="figure align-left" id="id3">
+<div class="figure align-left" id="id7">
 <img alt="../_images/tvm-into.png" src="../_images/tvm-into.png" />
-<p class="caption"><span class="caption-text">系统首先从现有框架中获取模型作为输入，并将其变换为计算图表示。然后，它执行高级数据流重写以生成优化的计算图。算子级优化模块必须为计算图中每个融合算子生成高效代码。算子是在声明式张量表达式语言中指定的；执行细节未指定。TVM 为给定硬件目标的算子标识了一组可能的代码优化。可能的优化空间很大，因此使用基于 ML 的成本模型来寻找优化的算子。最后，系统将生成的代码打包到可部署的模块中。</span><a class="headerlink" href="#id3" title="永久链接至图片">¶</a></p>
+<p class="caption"><span class="caption-text">系统首先从现有框架中获取模型作为输入，并将其变换为计算图表示。然后，它执行高级数据流重写以生成优化的计算图。算子级优化模块必须为计算图中每个融合算子生成高效代码。算子是在声明式张量表达式语言中指定的；执行细节未指定。TVM 为给定硬件目标的算子标识了一组可能的代码优化。可能的优化空间很大，因此使用基于 ML 的成本模型来寻找优化的算子。最后，系统将生成的代码打包到可部署的模块中。</span><a class="headerlink" href="#id7" title="永久链接至图片">¶</a></p>
+</div>
+<div class="section" id="id3">
+<h3>终端用户的例子<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>在几行代码中，用户可以从现有的深度学习框架中获取一个模型，并调用 TVM API 来获得可部署的模块：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span> <span class="k">as</span> <span class="nn">t</span>
+<span class="c1"># 使用 keras 框架作为例子，导入模型</span>
+<span class="n">graph</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_keras</span><span class="p">(</span><span class="n">keras_model</span><span class="p">)</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">graph</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">compiler</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>编译后的运行时模块包含三个组件：最终优化的计算图（<code class="docutils literal notranslate"><span class="pre">graph</span></code>）、生成的算子（<code class="docutils literal notranslate"><span class="pre">lib</span></code>）和模块参数（<code class="docutils literal notranslate"><span class="pre">params</span></code>）。这些组件可以用来将模型部署到目标后端：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">runtime</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_array</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>TVM 支持多种语言的部署后端，如 C++、Java 和 Python。本文的其余部分描述了 TVM 的体系结构，以及系统程序员如何扩展它以支持新的后端。</p>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>优化计算图<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p>计算图是在 DL 框架中表示程序的常用方法。</p>
+<div class="figure align-left" id="id8">
+<img alt="../_images/graph.png" src="../_images/graph.png" />
+<p class="caption"><span class="caption-text">两层卷积神经网络的计算图示例。图中的每个节点表示消耗一个或多个张量并产生一个或多个张量的算子。张量算子可以通过属性参数化来配置它们的行为（例如，填充或步长）。</span><a class="headerlink" href="#id8" title="永久链接至图片">¶</a></p>
+</div>
+<p>这种高级表示和低级的编译器中间表示（intermediate representation，简称 IR，如 LLVM）之间的主要区别是：中间数据项是大型多维张量。计算图提供了算子的全局视图，但它们避免指定每个算子必须如何实现。与 LLVM IR 一样，计算图可以转换为功能等价的计算图来应用优化。利用常见 DL 工作负载中的形状特异性，对固定的输入形状集进行优化。</p>
+<p>TVM 利用计算图表示来应用高级优化：节点表示张量或程序输入上的算子，而边表示算子之间的数据依赖关系。它实现了多种图级优化，包括：算子融合（operator fusion，将多个小算子融合在一起）、常数折叠（constant-folding，预先计算可以静态确定的 graph 部分，节省执行成本）、静态内存规划传递（static memory planning pass，它预先分配内存来保存每个中间张量）、数据布局转换（data layout
+transformations，将内部数据布局转换为后端友好的形式）。</p>
+<div class="section" id="id5">
+<h3>算子融合<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p>算子融合将多个算子合并成一个内核，而不将中间结果保存在内存中。特别是在 GPU 和专门的加速器中，这种优化可以大大减少执行时间。具体来说，可以识别出四类计算图算子：</p>
+<ol class="simple">
+<li><p>单射（injective，一对一映射，例如，add)，</p></li>
+<li><p>约简（例如，sum）</p></li>
+<li><p>复杂输出可融合（可以将元素映射融合到输出，例如，conv2d）</p></li>
+<li><p>不透明（不能融合，例如，sort）</p></li>
+</ol>
+<p>TVM 提供了通用规则来融合这些算子，如下所示。多个单射算子可以融合成另一个单射算子。约简算子可以与输入的单射算子融合（如融合 scale 和 sum）。像 conv2d 这样的算子是复杂输出可融合的，可以将基于元素的算子融合到其输出中。可以应用这些规则将计算图转换成融合的版本。</p>
+</div>
+<div class="section" id="id6">
+<h3>数据布局变换<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
 </div>
 </div>
 </div>
