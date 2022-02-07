@@ -6,6 +6,7 @@
 :hidden:
 
 start/index
+interpret/index
 paper/index
 about/index
 ```

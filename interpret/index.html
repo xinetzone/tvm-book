@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>简介 &#8212; tvm-book 0.1 文档</title>
+    <title>TVM 项目解读 &#8212; tvm-book 0.1 文档</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet">
   <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -88,8 +88,8 @@ const thebe_selector_output = ".cell_output"
     <link rel="shortcut icon" href="../_static/page-logo.jfif"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="配置" href="config.html" />
-    <link rel="prev" title="启动项目" href="index.html" />
+    <link rel="next" title="论文解读" href="../paper/index.html" />
+    <link rel="prev" title="参考" href="../start/refs.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="zh_CN">
     
@@ -132,35 +132,35 @@ const thebe_selector_output = ".cell_output"
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
         <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="index.html">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../start/index.html">
    启动项目
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="current">
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../start/intro.html">
      简介
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="config.html">
+    <a class="reference internal" href="../start/config.html">
      配置
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="refs.html">
+    <a class="reference internal" href="../start/refs.html">
      参考
     </a>
    </li>
   </ul>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../interpret/index.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    TVM 项目解读
   </a>
  </li>
@@ -258,7 +258,7 @@ const thebe_selector_output = ".cell_output"
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/start/intro.md.txt"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/interpret/index.md.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="下载源文件" data-toggle="tooltip"
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
@@ -278,10 +278,10 @@ const thebe_selector_output = ".cell_output"
                 data-toggle="tooltip" data-placement="left" title="源库"><i
                     class="fab fa-github"></i>资料库</button></a>
         <a class="issues-button"
-            href="https://github.com/xinetzone/tvm-book/issues/new?title=Issue%20on%20page%20%2Fstart/intro.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/xinetzone/tvm-book/issues/new?title=Issue%20on%20page%20%2Finterpret/index.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="打开一个问题"><i class="fas fa-lightbulb"></i>公开的问题</button></a>
-        <a class="edit-button" href="https://github.com/xinetzone/tvm-book/edit/main/docs/start/intro.md"><button
+        <a class="edit-button" href="https://github.com/xinetzone/tvm-book/edit/main/docs/interpret/index.md"><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="编辑这个页面"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
     </div>
@@ -308,7 +308,7 @@ const thebe_selector_output = ".cell_output"
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>简介</h1>
+                <h1>TVM 项目解读</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -319,14 +319,25 @@ const thebe_selector_output = ".cell_output"
             
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="id1">
-<h1>简介<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
-<p>Apache TVM 是用于 CPU、GPU 和机器学习加速器的开源机器学习编译器框架。它的目标是让机器学习工程师在任何硬件后端上优化和高效地运行计算。</p>
-<p>主要特性：</p>
+  <div class="tex2jax_ignore mathjax_ignore section" id="tvm">
+<h1>TVM 项目解读<a class="headerlink" href="#tvm" title="永久链接至标题">¶</a></h1>
+<p>本篇关注 TVM 资源库的根部的部分文件夹：</p>
 <ul class="simple">
-<li><p>将深度学习模型编译为最小可部署模块。</p></li>
-<li><p>提供基础设施，以自动生成和优化模型在更多的后端表现更好性能。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/src/</span></code>：用于算子编译和运行时部署的 C++ 代码。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/src/relay/</span></code>：Relay 实现。一种新深度学习框架的函数式 IR（中间表示）。它管理计算图的组件，计算图中的节点使用 <code class="docutils literal notranslate"><span class="pre">/src/</span></code> 其他实现的基础设施进行编译和执行。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/python</span></code>：Python 前端，包装 <code class="docutils literal notranslate"><span class="pre">/src/</span></code> 中实现的 C++ 函数和对象。为 C++ API 和 <code class="docutils literal notranslate"><span class="pre">/src/driver/</span></code> 代码提供 Python 绑定，用户可以用它来执行编译。与每个节点对应的算子在 <code class="docutils literal notranslate"><span class="pre">/src/relay/op</span></code> 中注册。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/src/topi</span></code>：计算标准神经网络算子的定义和后端调度。它们是用 C++ 或 Python 编码的算子实现。</p></li>
 </ul>
+<p>当用户通过 <code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.relay.build()</span></code> 调用计算图的编译时，对图中的每个节点都会发生以下一系列动作：</p>
+<ul class="simple">
+<li><p>通过查询算子注册表查找算子实现</p></li>
+<li><p>为算子生成计算（<code class="docutils literal notranslate"><span class="pre">compute</span></code>）表达式和调度</p></li>
+<li><p>将算子编译成目标代码（object code）</p></li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">提示</p>
+<p>TVM 中 Python 和 C++ 可以相互调用。</p>
+</div>
 </div>
 
     <script type="text/x-thebe-config">
@@ -342,7 +353,7 @@ const thebe_selector_output = ".cell_output"
         },
         kernelOptions: {
             kernelName: "python3",
-            path: "./start"
+            path: "./interpret"
         },
         predefinedOutput: true
     }
@@ -354,17 +365,17 @@ const thebe_selector_output = ".cell_output"
             
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="index.html" title="上一页 页">
+    <a class='left-prev' id="prev-link" href="../start/refs.html" title="上一页 页">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">启动项目</p>
+            <p class="prev-next-title">参考</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="config.html" title="下一页 页">
+    <a class='right-next' id="next-link" href="../paper/index.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">配置</p>
+        <p class="prev-next-title">论文解读</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
