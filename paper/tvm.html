@@ -36,9 +36,12 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/togglebutton.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -150,6 +153,11 @@ const thebe_selector_output = ".cell_output"
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../start/advance.html">
+     高级
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../start/config.html">
      配置
     </a>
@@ -169,6 +177,11 @@ const thebe_selector_output = ".cell_output"
  <li class="toctree-l1">
   <a class="reference internal" href="../interpret/index.html">
    TVM 项目解读
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../vta/index.html">
+   VTA 指南
   </a>
  </li>
  <li class="toctree-l1 current active has-children">
@@ -710,14 +723,14 @@ transformations，将内部数据布局转换为后端友好的形式）。</p>
 <p>为了解决这一挑战，我们构建了一个自动化的调度优化器，它有两个主要组件：一个调度浏览器，提出有前途的新配置，以及一个机器学习成本模型，预测给定配置的性能。</p>
 <div class="section" id="id14">
 <h3>调度空间规范<a class="headerlink" href="#id14" title="永久链接至标题">¶</a></h3>
-<p>构建了一个日程模板规范 API，让开发人员在调度空间中声明旋钮。模板规范允许在指定可能的调度时，根据需要结合开发人员的领域特定知识。还为每个硬件后端创建了一个通用的主模板，该模板根据使用张量表达式语言表示的计算描述自动提取可能的旋子。因此，优化器必须为我们实验中使用的现实世界 DL 工作负载搜索数十亿种可能的配置。</p>
+<p>构建了一个调度模板规范 API，让开发人员在调度空间中声明旋钮。模板规范允许在指定可能的调度时，根据需要结合开发人员的领域特定知识。还为每个硬件后端创建了一个通用的主模板，该模板根据使用张量表达式语言表示的计算描述自动提取可能的旋子。因此，优化器必须为我们实验中使用的现实世界 DL 工作负载搜索数十亿种可能的配置。</p>
 </div>
 <div class="section" id="ml">
 <h3>基本 ML 成本模型<a class="headerlink" href="#ml" title="永久链接至标题">¶</a></h3>
 <p>从大型配置空间中找到最佳调度的一种方法是通过黑盒优化，即自动调优。这种方法用于调优高性能计算库。然而，自动调优需要许多实验来确定一个好的配置。</p>
 <p>另一种方法是构建预定义的成本模型来指导搜索特定的硬件后端，而不是运行所有的可能性并测量它们的性能。</p>
 <p>理想情况下，完美的成本模型应该考虑影响性能的所有因素：内存访问模式、数据重用、管道依赖关系和线程模式等等。</p>
-<p>相反，我们采用统计方法来解决成本建模问题。在这种方法中，计划资源管理器提出了可以提高操作员性能的配置。</p>
+<p>相反，我们采用统计方法来解决成本建模问题。在这种方法中，计划资源管理器提出了可以提高算子性能的配置。</p>
 <p>对于每个调度配置，使用 ML 模型，该模型将降低的循环程序作为输入，并预测其在给定硬件后端上的运行时间。该模型使用在探索过程中收集的运行时测量数据进行训练，不需要用户输入详细的硬件信息。随着我们在优化过程中探索更多配置，我们会定期更新模型，这也会提高其他相关工作负载的准确性。</p>
 <p>通过这种方式，ML 模型的质量随着更多的实验试验而提高。基于 ML 的成本模型在自动调优和预定义的成本建模之间取得了平衡，并且可以从相关工作负载的历史性能数据中获益。</p>
 </div>

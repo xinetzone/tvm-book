@@ -36,9 +36,12 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/togglebutton.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -148,6 +151,11 @@ const thebe_selector_output = ".cell_output"
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="advance.html">
+     高级
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="config.html">
      配置
     </a>
@@ -167,6 +175,11 @@ const thebe_selector_output = ".cell_output"
  <li class="toctree-l1">
   <a class="reference internal" href="../interpret/index.html">
    TVM 项目解读
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../vta/index.html">
+   VTA 指南
   </a>
  </li>
  <li class="toctree-l1 has-children">
@@ -332,6 +345,13 @@ const thebe_selector_output = ".cell_output"
 <li class="toctree-l2"><a class="reference internal" href="intro.html#tvm">TVM 背景知识</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro.html#vta">VTA 背景知识</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro.html#id2">TVM 基本用法</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advance.html">高级</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advance.html#vta">针对 VTA 卷积计算的计算表达式和调度表达式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advance.html#id2">针对 VTA 卷积计算的指令序列</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advance.html#id3">量化专题</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advance.html#id4">压缩专题</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="config.html">配置</a><ul>

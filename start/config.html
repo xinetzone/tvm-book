@@ -36,9 +36,12 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/togglebutton.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
     <script async="async" kind="hypothesis" src="https://hypothes.is/embed.js"></script>
     <script kind="utterances">
 
@@ -89,7 +92,7 @@ const thebe_selector_output = ".cell_output"
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
     <link rel="next" title="领域专用语言" href="dsl.html" />
-    <link rel="prev" title="简介" href="intro.html" />
+    <link rel="prev" title="高级" href="advance.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="zh_CN">
     
@@ -147,6 +150,11 @@ const thebe_selector_output = ".cell_output"
      简介
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="advance.html">
+     高级
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      配置
@@ -167,6 +175,11 @@ const thebe_selector_output = ".cell_output"
  <li class="toctree-l1">
   <a class="reference internal" href="../interpret/index.html">
    TVM 项目解读
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../vta/index.html">
+   VTA 指南
   </a>
  </li>
  <li class="toctree-l1 has-children">
@@ -506,11 +519,11 @@ make -j8
             
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="intro.html" title="上一页 页">
+    <a class='left-prev' id="prev-link" href="advance.html" title="上一页 页">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">简介</p>
+            <p class="prev-next-title">高级</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="dsl.html" title="下一页 页">

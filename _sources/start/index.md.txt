@@ -4,6 +4,7 @@
 :maxdepth: 3
 
 intro
+advance
 config
 dsl
 refs
