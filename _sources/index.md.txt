@@ -6,6 +6,7 @@
 :hidden:
 
 start/index
+demo
 interpret/index
 vta/index
 paper/index

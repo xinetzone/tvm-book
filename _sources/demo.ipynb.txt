@@ -1,0 +1,41 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# TVM 操练场\n",
+    "\n",
+    "安装 TVM：\n",
+    "\n",
+    "```sh\n",
+    "!pip install tlcpack-nightly -f https://tlcpack.ai/wheels\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "interpreter": {
+   "hash": "c5da9a0f788eed7217a47307962fe48acfe4cb9e61df4f497bb59be4e46ad699"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.8.12 ('py38': conda)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.8.12"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
