@@ -10,6 +10,12 @@
     "\n",
     "```sh\n",
     "!pip install tlcpack-nightly -f https://tlcpack.ai/wheels\n",
+    "```\n",
+    "\n",
+    "其他库：\n",
+    "\n",
+    "```sh\n",
+    "!pip install pillow onnx pytest\n",
     "```"
    ]
   },
