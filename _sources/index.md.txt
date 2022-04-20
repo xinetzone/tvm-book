@@ -5,7 +5,6 @@
 :maxdepth: 3
 
 start/index
-demo
 interpret/index
 vta/index
 paper/index
