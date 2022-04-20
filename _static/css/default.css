@@ -1,0 +1,12 @@
+body {
+  background: #f9f6f1;
+  font-family: "IBM Plex Sans", serif;
+  line-height: 1.5;
+  font-size: 18px;
+}
+
+@media screen and (max-width: 880px) {
+  body {
+    background: #F2F2F2;
+  }
+}
