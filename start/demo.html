@@ -318,13 +318,70 @@ function checkPageExistsAndRedirect(event) {
                 
   <section class="tex2jax_ignore mathjax_ignore" id="tvm">
 <h1>TVM 操练场<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h1>
-<p>安装 TVM：</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>!pip install tlcpack-nightly -f https://tlcpack.ai/wheels
+<p>测试一些代码：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
+    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
+
+<span class="n">set_env</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>其他库：</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>!pip install pillow onnx pytest
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
 </pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span> <span class="c1"># Te代表张量表达式（tensor expression）</span>
+
+<span class="c1"># 保存到 d2ltvm</span>
+<span class="k">def</span> <span class="nf">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;TVM expression for vector add&quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.te.tensor.Tensor, tvm.te.tensor.Tensor)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tensor(shape=[100], op.name=a)
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 
@@ -369,7 +426,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-22, 12:42:10.<br>
+最后更新于 2022-04-22, 15:08:58.<br>
 </p>
     </div>
     

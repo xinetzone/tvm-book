@@ -47,7 +47,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
-    <link rel="next" title="Neural Network Inference" href="from_mxnet.html" />
+    <link rel="next" title="神经网络推理" href="from_mxnet.html" />
     <link rel="prev" title="安装" href="install.html" />
     <link rel="stylesheet" href="../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../_static/css/custom.css"/>
@@ -262,12 +262,12 @@ function checkPageExistsAndRedirect(event) {
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="from_mxnet.html">
-     Neural Network Inference
+     神经网络推理
     </a>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="remote.html">
-     Running on a Remote Machine
+     在远程计算机上运行
     </a>
    </li>
   </ul>
@@ -540,33 +540,28 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#creating-a-schedule">
-   Creating a Schedule
+  <a class="reference internal nav-link" href="#schedule">
+   创建 Schedule
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#compilation-and-execution">
-   Compilation and Execution
+  <a class="reference internal nav-link" href="#id3">
+   计算并执行
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#argument-constraints">
-   Argument Constraints
+  <a class="reference internal nav-link" href="#id4">
+   参数约束
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#saving-and-loading-a-module">
-   Saving and Loading a Module
+  <a class="reference internal nav-link" href="#id5">
+   保存和加载模块
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#discussions">
-   Discussions
+  <a class="reference internal nav-link" href="#id6">
+   小结
   </a>
  </li>
 </ul>
@@ -659,116 +654,207 @@ function checkPageExistsAndRedirect(event) {
 <p>为了加载 TVM 环境，需要：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">sys</span>
     <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">ROOT</span><span class="p">)</span>
+    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
     <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
 
-<span class="n">set_env</span><span class="p">()</span>
+<span class="n">set_env</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/pc/data/4tb/lxw/study/tvm-book
-Python: 3.10.4
-TVM 根目录： /media/pc/data/4tb/lxw/study/tvm
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
 </pre></div>
 </div>
 </div>
 </div>
-<p>现在开始在 TVM 中实现 <code class="docutils literal notranslate"><span class="pre">vector_add</span></code>。TVM 的实现有两点不同：</p>
+<p>现在开始在 TVM 中实现 <code class="xref py py-func docutils literal notranslate"><span class="pre">vector_add()</span></code>。TVM 的实现有两点不同：</p>
 <ol class="simple">
 <li><p>不需要编写完整的函数，只需要指定每个元素的输出，即 <code class="docutils literal notranslate"><span class="pre">c[i]</span></code>，被计算</p></li>
 <li><p>TVM 是符号的，通过指定形状来创建符号变量，并定义程序如何计算</p></li>
 </ol>
-<p>在下面的程序中，首先通过 <code class="docutils literal notranslate"><span class="pre">tvm.te.placeholder</span></code> 来指定两个输入的占位符 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 的形状 <code class="docutils literal notranslate"><span class="pre">(n,)</span></code>。<code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 都是 <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> 对象，可以稍后提供数据。给它们赋值名称，这样以后就可以打印易于阅读的程序。</p>
-<p>接下来，定义如何通过 <code class="docutils literal notranslate"><span class="pre">tvm.compute</span></code> 计算输出 <code class="docutils literal notranslate"><span class="pre">C</span></code>。它接受两个参数：输出形状和通过给定索引来计算每个元素的函数。由于输出是向量，它的元素按整数索引。在 <code class="docutils literal notranslate"><span class="pre">tvm.compute</span></code> 中定义的 lambda 函数接受单个参数 <code class="docutils literal notranslate"><span class="pre">i</span></code>，并返回 <code class="docutils literal notranslate"><span class="pre">c[i]</span></code>，它与 <code class="docutils literal notranslate"><span class="pre">vector_add</span></code> 中定义的 <code class="docutils literal notranslate"><span class="pre">c[i]</span> <span class="pre">=</span> <span class="pre">a[i]</span> <span class="pre">+</span> <span class="pre">b[i]</span></code> 相同。不同之处在于，不用编写 for 循环，它将在稍后由 TVM 填充。</p>
+<p>在下面的程序中，首先通过 <code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.te.placeholder()</span></code> 来指定两个输入的占位符 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 的形状 <code class="docutils literal notranslate"><span class="pre">(n,)</span></code>。<code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 都是 <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> 对象，可以稍后提供数据。给它们赋值名称，这样以后就可以打印易于阅读的程序。</p>
+<p>接下来，定义如何通过 <code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.compute()</span></code> 计算输出 <code class="docutils literal notranslate"><span class="pre">C</span></code>。它接受两个参数：输出形状和通过给定索引来计算每个元素的函数。由于输出是向量，它的元素按整数索引。在 <code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.compute()</span></code> 中定义的 lambda 函数接受单个参数 <code class="docutils literal notranslate"><span class="pre">i</span></code>，并返回 <code class="docutils literal notranslate"><span class="pre">c[i]</span></code>，它与 <code class="xref py py-func docutils literal notranslate"><span class="pre">vector_add()</span></code> 中定义的 <code class="docutils literal notranslate"><span class="pre">c[i]</span> <span class="pre">=</span> <span class="pre">a[i]</span> <span class="pre">+</span> <span class="pre">b[i]</span></code> 相同。不同之处在于，不用编写 for 循环，它将在稍后由 TVM 填充。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
-<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span> <span class="c1"># Te代表张量表达式（tensor expression）</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>  <span class="c1"># te 代表张量表达式（tensor expression）</span>
 
-<span class="c1"># 保存到 d2ltvm</span>
-<span class="k">def</span> <span class="nf">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">):</span> <span class="c1"># 保存到 d2ltvm</span>
     <span class="sd">&quot;&quot;&quot;TVM expression for vector add&quot;&quot;&quot;</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
     <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
     <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span>
 
+
 <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.te.tensor.Tensor, tvm.te.tensor.Tensor)
+</pre></div>
 </div>
-<p>We can see that <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code>, and <code class="docutils literal notranslate"><span class="pre">C</span></code> are all <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> objects, which can be viewed as a symbolic version of NumPy’s ndarray. We can access
-the variables’ attributes such as data type and shape. But those values don’t have concrete values right now.</p>
+</div>
+</div>
+<p>可以看到 <code class="docutils literal notranslate"><span class="pre">A</span></code>、<code class="docutils literal notranslate"><span class="pre">B</span></code> 和 <code class="docutils literal notranslate"><span class="pre">C</span></code> 都是 <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> 对象，它可以被视为 NumPy ndarray 的符号版本。可以访问变量的属性，比如数据类型和形状。但这些值目前还没有具体值。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((&#39;float32&#39;, [100]), (&#39;float32&#39;, [100]))
+</pre></div>
 </div>
-<p>The operation that generates the tensor object can be accessed by <code class="docutils literal notranslate"><span class="pre">A.op</span></code>.</p>
+</div>
+</div>
+<p>生成张量对象的算子可以被 <code class="docutils literal notranslate"><span class="pre">.op</span></code> 访问。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">op</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.te.tensor.PlaceholderOp, tvm.te.tensor.ComputeOp)
+</pre></div>
 </div>
-<p>We can see that the types of the operations for <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code> are different, but they share the same base class <code class="docutils literal notranslate"><span class="pre">Operation</span></code>, which represents an operation that generates a tensor object.</p>
+</div>
+</div>
+<p>可以看到 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">C</span></code> 的算子类型是不同的，但它们共享同一个基类 <code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code>，这个基类表示生成张量对象的算子。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.te.tensor.Operation, tvm.te.tensor.BaseComputeOp)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">issubclass</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">te</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">BaseComputeOp</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">te</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">Operation</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="creating-a-schedule">
-<h2>Creating a Schedule<a class="headerlink" href="#creating-a-schedule" title="永久链接至标题">#</a></h2>
-<p>To run the computation, we need to specify how to execute the program, for example, the order to access data and how to do multi-threading parallelization.
-Such an execution plan is called a <em>schedule</em>. Since <code class="docutils literal notranslate"><span class="pre">C</span></code> is the output tensor, let’s create a default schedule on its operator and print the pseudo codes.</p>
+<section id="schedule">
+<h2>创建 Schedule<a class="headerlink" href="#schedule" title="永久链接至标题">#</a></h2>
+<p>为了运行计算，需要指定如何执行程序，例如，访问数据的顺序以及如何进行多线程并行化。
+这样的执行计划被称为 <strong>调度</strong> （schedule）。<code class="docutils literal notranslate"><span class="pre">C</span></code> 是输出张量，可以在它的算子上创建默认调度，并打印伪代码。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+<span class="n">s</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>schedule(0x562d78299380)
 </pre></div>
 </div>
 </div>
 </div>
-<p>A schedule consists of several stages. Each stage corresponds to an operation to describe how it is scheduled. We can access a particular stage by either <code class="docutils literal notranslate"><span class="pre">s[C]</span></code> or <code class="docutils literal notranslate"><span class="pre">s[C.op]</span></code>.</p>
+<p>调度由几个阶段（Stage）组成。每个阶段对应于描述它是如何调度的算子。可以通过 <code class="docutils literal notranslate"><span class="pre">s[C]</span></code> 或 <code class="docutils literal notranslate"><span class="pre">s[C.op]</span></code> 进入特定的阶段。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.te.schedule.Schedule, tvm.te.schedule.Stage)
+</pre></div>
 </div>
-<p>Later on we will see how to change the execution plan to better utilize the hardware resources to improve its efficiency. Here let’s see the default execution plan by printing the C-like pseudo codes.</p>
+</div>
+</div>
+<p>稍后将看到如何更改执行计划，以便更好地利用硬件资源来提高其效率。下面通过打印 C-like 的伪代码来查看默认的执行计划。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#[version = &quot;0.0.5&quot;]
+@main = primfn(a_1: handle, b_1: handle, c_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {a: Buffer(a_2: Pointer(float32), float32, [100], []),
+             b: Buffer(b_2: Pointer(float32), float32, [100], []),
+             c: Buffer(c_2: Pointer(float32), float32, [100], [])}
+  buffer_map = {a_1: a, b_1: b, c_1: c}
+  preflattened_buffer_map = {a_1: a_3: Buffer(a_2, float32, [100], []), b_1: b_3: Buffer(b_2, float32, [100], []), c_1: c_3: Buffer(c_2, float32, [100], [])} {
+  for (i: int32, 0, 100) {
+    c[i] = (a[i] + b[i])
+  }
+}
+
+#[metadata]
+{
+  &quot;root&quot;: 1, 
+  &quot;nodes&quot;: [
+    {
+      &quot;type_key&quot;: &quot;&quot;
+    }, 
+    {
+      &quot;type_key&quot;: &quot;Map&quot;, 
+      &quot;keys&quot;: [
+        &quot;IntImm&quot;
+      ], 
+      &quot;data&quot;: [2]
+    }, 
+    {
+      &quot;type_key&quot;: &quot;Array&quot;, 
+      &quot;data&quot;: [3, 4]
+    }, 
+    {
+      &quot;type_key&quot;: &quot;IntImm&quot;, 
+      &quot;attrs&quot;: {
+        &quot;dtype&quot;: &quot;bool&quot;, 
+        &quot;span&quot;: &quot;0&quot;, 
+        &quot;value&quot;: &quot;1&quot;
+      }
+    }, 
+    {
+      &quot;type_key&quot;: &quot;IntImm&quot;, 
+      &quot;attrs&quot;: {
+        &quot;dtype&quot;: &quot;bool&quot;, 
+        &quot;span&quot;: &quot;0&quot;, 
+        &quot;value&quot;: &quot;1&quot;
+      }
+    }
+  ], 
+  &quot;b64ndarrays&quot;: [], 
+  &quot;attrs&quot;: {&quot;tvm_version&quot;: &quot;0.9.dev0&quot;}
+}
+</pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">lower</span></code> method accepts the schedule and input and output tensors. The <code class="docutils literal notranslate"><span class="pre">simple_mode=True</span></code> will print the program in a simple and compact way.
-Note that the program has added proper for-loops according to the output shape. Overall, it’s quite similar to the preview function <code class="docutils literal notranslate"><span class="pre">vector_add</span></code>.</p>
-<p>Now you see that TVM separates the computation and the schedule. The computation defines how the results are computed,
-which will not change no matter on what hardware platform you run the program.
-On the other hand, an efficient schedule are often hardware dependent, but changing a schedule will not impact the correctness.
-The idea of separating computation from schedule is inherited by TVM from Halide :cite:<code class="docutils literal notranslate"><span class="pre">Ragan-Kelley.Barnes.Adams.ea.2013</span></code>.</p>
+</div>
+</div>
+<p><a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/driver.html#tvm.lower" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.lower()</span></code></a> 方法接受 schedule、输入、输出张量。<code class="docutils literal notranslate"><span class="pre">simple_mode=True</span></code> 将以简单而紧凑的方式打印程序。注意，程序已经根据输出形状添加了适当的 for 循环。总的来说，它非常类似于前面的函数 <code class="docutils literal notranslate"><span class="pre">vector_add</span></code>。</p>
+<p>可以看到 TVM 将计算和调度分开。计算定义了如何计算结果，无论在什么硬件平台上运行程序，结果都不会改变。另一方面，有效的调度通常依赖于硬件，但是更改调度不会影响其正确性。TVM 从 Halide <span id="id2">[<a class="reference internal" href="../zreferences.html#id11" title="Jonathan Ragan-Kelley, Connelly Barnes, Andrew Adams, Sylvain Paris, Frédo Durand, and Saman Amarasinghe. Halide: a language and compiler for optimizing parallelism, locality, and recomputation in image processing pipelines. In Proceedings of the 34th ACM SIGPLAN Conference on Programming Language Design and Implementation, PLDI '13, 519–530. ACM, 2013.">Ragan-Kelley <em>et al.</em>, 2013</a>]</span> 那里继承了计算与进度分离的想法。</p>
 </section>
-<section id="compilation-and-execution">
-<h2>Compilation and Execution<a class="headerlink" href="#compilation-and-execution" title="永久链接至标题">#</a></h2>
-<p>Once both computation and schedule are defined, we can compile them into an executable module with <code class="docutils literal notranslate"><span class="pre">tvm.build</span></code>. It accepts the same argument as <code class="docutils literal notranslate"><span class="pre">tvm.lower</span></code>. In fact, it first calls <code class="docutils literal notranslate"><span class="pre">tvm.lower</span></code> to generate the program and then compiles to machine codes.</p>
+<section id="id3">
+<h2>计算并执行<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>一旦定义了计算和调度，就可以使用 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/driver.html#tvm.build" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.build()</span></code></a> 将它们编译成可执行模块。它接受与 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/driver.html#tvm.lower" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.lower()</span></code></a> 相同的参数。实际上，它首先调用了 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/driver.html#tvm.lower" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.lower()</span></code></a> 生成程序，然后编译成机器码。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">])</span>
@@ -776,8 +862,13 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tvm.driver.build_module.OperatorModule
+</pre></div>
 </div>
-<p>It returns an executable module object. Now we can feed data for <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code> to run it. The tensor data must be <code class="docutils literal notranslate"><span class="pre">tvm.ndarray.NDArray</span></code> object. The easiest way is to create NumPy ndarray objects first and then convert them into TVM ndarray by <code class="docutils literal notranslate"><span class="pre">tvm.nd.array</span></code>. We can convert them back to NumPy by the <code class="docutils literal notranslate"><span class="pre">asnumpy</span></code> method.</p>
+</div>
+</div>
+<p>它返回可执行模块对象。可以输入 <code class="docutils literal notranslate"><span class="pre">A</span></code>，<code class="docutils literal notranslate"><span class="pre">B</span></code> 和 <code class="docutils literal notranslate"><span class="pre">C</span></code> 的数据来运行它。张量数据必须是 <code class="xref py py-class docutils literal notranslate"><span class="pre">tvm.ndarray.NDArray</span></code> 对象。最简单的方法是首先创建 NumPy ndarray 对象，然后通过 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/ndarray.html#tvm.nd.array" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.nd.array()</span></code></a> 将它们转换为 TVM ndarray 对象。我们可以通过 <code class="docutils literal notranslate"><span class="pre">asnumpy</span></code> 方法将它们转换回 NumPy。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -786,8 +877,13 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.runtime.ndarray.NDArray, array([1., 1.]))
+</pre></div>
 </div>
-<p>Now let’s construct data and return them as TVM ndarrays.</p>
+</div>
+</div>
+<p>构造数据并将它们作为 TVM ndarray 返回：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_abc</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
@@ -795,7 +891,7 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </div>
 </div>
 </div>
-<p>Do the computation, and verify  the results.</p>
+<p>进行计算，并验证结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
@@ -805,17 +901,22 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </div>
 </div>
 </section>
-<section id="argument-constraints">
-<h2>Argument Constraints<a class="headerlink" href="#argument-constraints" title="永久链接至标题">#</a></h2>
-<p>Remember that we specified both inputs to be 100-length vectors when declaring <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p>
+<section id="id4">
+<h2>参数约束<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
+<p>记住，当声明 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 时，将两个输入都指定长度为 100 的向量。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>([100], [100], [100])
+</pre></div>
 </div>
-<p>TVM will check if the input shapes satisfy this specification.</p>
+</div>
+</div>
+<p>TVM 将检查输入形状是否满足此规格。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -826,16 +927,36 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
+  1: TVMFuncCall
+  0: tvm::runtime::PackedFuncObj::Extractor&lt;tvm::runtime::PackedFuncSubObj&lt;tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr&lt;tvm::runtime::Object&gt; const&amp;)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}&gt; &gt;::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)
+  File &quot;/media/pc/data/4tb/lxw/study/tvm/src/runtime/library_module.cc&quot;, line 80
+TVMError: 
+---------------------------------------------------------------
+An error occurred during the execution of TVM.
+For more information, please see: https://tvm.apache.org/docs/errors.html
+---------------------------------------------------------------
+
+  Check failed: ret == 0 (-1 vs. 0) : Assert fail: (100 == int32(arg.a.shape[0])), Argument arg.a.shape[0] has an unsatisfied constraint: (100 == int32(arg.a.shape[0]))
+</pre></div>
 </div>
-<p>The default data type in TVM is <code class="docutils literal notranslate"><span class="pre">float32</span></code>.</p>
+</div>
+</div>
+<p>TVM 默认数据类型为 <code class="docutils literal notranslate"><span class="pre">float32</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">dtype</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;float32&#39;, &#39;float32&#39;, &#39;float32&#39;)
+</pre></div>
 </div>
-<p>An error will appear if input with a different data type.</p>
+</div>
+</div>
+<p>如果输入的数据类型不同，则会出现错误。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -847,11 +968,26 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
+  1: TVMFuncCall
+  0: tvm::runtime::PackedFuncObj::Extractor&lt;tvm::runtime::PackedFuncSubObj&lt;tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr&lt;tvm::runtime::Object&gt; const&amp;)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}&gt; &gt;::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)
+  File &quot;/media/pc/data/4tb/lxw/study/tvm/src/runtime/library_module.cc&quot;, line 80
+TVMError: 
+---------------------------------------------------------------
+An error occurred during the execution of TVM.
+For more information, please see: https://tvm.apache.org/docs/errors.html
+---------------------------------------------------------------
+
+  Check failed: ret == 0 (-1 vs. 0) : Assert fail: (((tir.tvm_struct_get(arg.a, 0, 5) == (uint8)2) &amp;&amp; (tir.tvm_struct_get(arg.a, 0, 6) == (uint8)32)) &amp;&amp; (tir.tvm_struct_get(arg.a, 0, 7) == (uint16)1)), arg.a.dtype is expected to be float32
+</pre></div>
+</div>
+</div>
 </div>
 </section>
-<section id="saving-and-loading-a-module">
-<h2>Saving and Loading a Module<a class="headerlink" href="#saving-and-loading-a-module" title="永久链接至标题">#</a></h2>
-<p>A compiled a module can be saved into disk,</p>
+<section id="id5">
+<h2>保存和加载模块<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
+<p>编译好的模块可以保存到磁盘中：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;vector-add.tar&#39;</span>
@@ -860,7 +996,7 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </div>
 </div>
 </div>
-<p>and then loaded back later.</p>
+<p>然后再加载回来。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loaded_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
@@ -868,7 +1004,7 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </div>
 </div>
 </div>
-<p>Verify the results.</p>
+<p>验证结果：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">get_abc</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
@@ -879,18 +1015,15 @@ The idea of separating computation from schedule is inherited by TVM from Halide
 </div>
 </div>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
-<p>Implementing an operator using TVM has three steps:</p>
+<section id="id6">
+<h2>小结<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
+<p>使用 TVM 实现算子有三个步骤：</p>
 <ol class="simple">
-<li><p>Declare the computation by specifying input and output shapes and how each output element is computed.</p></li>
-<li><p>Create a schedule to (hopefully) fully utilize the machine resources.</p></li>
-<li><p>Compile to the hardware target.</p></li>
+<li><p>通过指定输入和输出形状以及如何计算每个输出元素来声明计算。</p></li>
+<li><p>创建调度，（希望）充分利用机器资源。</p></li>
+<li><p>编译到硬件目标。</p></li>
 </ol>
-<p>In addition, we can save the compiled module into disk so we can load it back later.</p>
-</section>
-<section id="discussions">
-<h2><a class="reference external" href="https://discuss.tvm.ai/t/getting-started-vector-addition/4707">Discussions</a><a class="headerlink" href="#discussions" title="永久链接至标题">#</a></h2>
+<p>此外，可以将编译后的模块保存到磁盘中，以便稍后再将其加载回来。</p>
 </section>
 </section>
 
@@ -910,7 +1043,7 @@ The idea of separating computation from schedule is inherited by TVM from Halide
     <a class='right-next' id="next-link" href="from_mxnet.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">Neural Network Inference</p>
+        <p class="prev-next-title">神经网络推理</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -935,7 +1068,7 @@ The idea of separating computation from schedule is inherited by TVM from Halide
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-22, 12:42:10.<br>
+最后更新于 2022-04-22, 15:08:58.<br>
 </p>
     </div>
     

@@ -127,30 +127,27 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 4,
    "metadata": {},
    "outputs": [
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "/media/pc/data/4tb/lxw/study/tvm-book\n",
-      "Python: 3.10.4\n",
-      "TVM 根目录： /media/pc/data/4tb/lxw/study/tvm\n"
+      "Python: 3.10.4\n"
      ]
     }
    ],
    "source": [
-    "def set_env(current_path='.'):\n",
+    "def set_env(num, current_path='.'):\n",
     "    import sys\n",
     "    from pathlib import Path\n",
     "\n",
-    "    ROOT = Path(current_path).resolve().parents[2]\n",
-    "    print(ROOT)\n",
+    "    ROOT = Path(current_path).resolve().parents[num]\n",
     "    sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境\n",
     "    from tvm_book.contrib.tvm import set_env # 设置 TVM 环境\n",
     "\n",
-    "set_env()"
+    "set_env(2)"
    ]
   },
   {
@@ -159,21 +156,19 @@
     "origin_pos": 6
    },
    "source": [
-    "\n",
-    "\n",
-    "现在开始在 TVM 中实现 `vector_add`。TVM 的实现有两点不同：\n",
+    "现在开始在 TVM 中实现 {func}`vector_add`。TVM 的实现有两点不同：\n",
     "\n",
     "1. 不需要编写完整的函数，只需要指定每个元素的输出，即 `c[i]`，被计算\n",
     "2. TVM 是符号的，通过指定形状来创建符号变量，并定义程序如何计算\n",
     "\n",
-    "在下面的程序中，首先通过 `tvm.te.placeholder` 来指定两个输入的占位符 `A` 和 `B` 的形状 `(n,)`。`A` 和 `B` 都是 `Tensor` 对象，可以稍后提供数据。给它们赋值名称，这样以后就可以打印易于阅读的程序。\n",
+    "在下面的程序中，首先通过 {func}`tvm.te.placeholder` 来指定两个输入的占位符 `A` 和 `B` 的形状 `(n,)`。`A` 和 `B` 都是 `Tensor` 对象，可以稍后提供数据。给它们赋值名称，这样以后就可以打印易于阅读的程序。\n",
     "\n",
-    "接下来，定义如何通过 `tvm.compute` 计算输出 `C`。它接受两个参数：输出形状和通过给定索引来计算每个元素的函数。由于输出是向量，它的元素按整数索引。在 `tvm.compute` 中定义的 lambda 函数接受单个参数 `i`，并返回 `c[i]`，它与 `vector_add` 中定义的 `c[i] = a[i] + b[i]` 相同。不同之处在于，不用编写 for 循环，它将在稍后由 TVM 填充。"
+    "接下来，定义如何通过 {func}`tvm.compute` 计算输出 `C`。它接受两个参数：输出形状和通过给定索引来计算每个元素的函数。由于输出是向量，它的元素按整数索引。在 {func}`tvm.compute` 中定义的 lambda 函数接受单个参数 `i`，并返回 `c[i]`，它与 {func}`vector_add` 中定义的 `c[i] = a[i] + b[i]` 相同。不同之处在于，不用编写 for 循环，它将在稍后由 TVM 填充。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 12,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -185,18 +180,30 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(tvm.te.tensor.Tensor, tvm.te.tensor.Tensor)"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "import tvm\n",
-    "from tvm import te # Te代表张量表达式（tensor expression）\n",
+    "from tvm import te  # te 代表张量表达式（tensor expression）\n",
     "\n",
-    "# 保存到 d2ltvm\n",
-    "def vector_add(n):\n",
+    "\n",
+    "def vector_add(n): # 保存到 d2ltvm\n",
     "    \"\"\"TVM expression for vector add\"\"\"\n",
     "    A = te.placeholder((n,), name='a')\n",
     "    B = te.placeholder((n,), name='b')\n",
     "    C = te.compute(A.shape, lambda i: A[i] + B[i], name='c')\n",
     "    return A, B, C\n",
+    "\n",
     "\n",
     "A, B, C = vector_add(n)\n",
     "type(A), type(C)"
@@ -204,17 +211,33 @@
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 8
-   },
+   "metadata": {},
    "source": [
-    "We can see that `A`, `B`, and `C` are all `Tensor` objects, which can be viewed as a symbolic version of NumPy's ndarray. We can access\n",
-    "the variables' attributes such as data type and shape. But those values don't have concrete values right now.\n"
+    "可以看到 `A`、`B` 和 `C` 都是 {class}`~tvm.te.tensor.Tensor` 对象，它可以被视为 NumPy ndarray 的符号版本。可以访问变量的属性，比如数据类型和形状。但这些值目前还没有具体值。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(('float32', [100]), ('float32', [100]))"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "(A.dtype, A.shape), (C.dtype, C.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "metadata": {
     "attributes": {
      "classes": [],
@@ -226,23 +249,13 @@
      "tvm"
     ]
    },
-   "outputs": [],
    "source": [
-    "(A.dtype, A.shape), (C.dtype, C.shape)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 10
-   },
-   "source": [
-    "The operation that generates the tensor object can be accessed by `A.op`.\n"
+    "生成张量对象的算子可以被 `.op` 访问。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 11,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -254,23 +267,32 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(tvm.te.tensor.PlaceholderOp, tvm.te.tensor.ComputeOp)"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "type(A.op), type(C.op)"
    ]
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 12
-   },
+   "metadata": {},
    "source": [
-    "We can see that the types of the operations for `A` and `C` are different, but they share the same base class `Operation`, which represents an operation that generates a tensor object.\n"
+    "可以看到 `A` 和 `C` 的算子类型是不同的，但它们共享同一个基类 {class}`~tvm.te.tensor.Operation`，这个基类表示生成张量对象的算子。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 14,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -282,9 +304,40 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(tvm.te.tensor.Operation, tvm.te.tensor.BaseComputeOp)"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
-    "A.op.__class__.__bases__[0]"
+    "A.op.__class__.__bases__[0], C.op.__class__.__bases__[0]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "issubclass(tvm.te.tensor.BaseComputeOp, tvm.te.tensor.Operation)"
    ]
   },
   {
@@ -293,15 +346,15 @@
     "origin_pos": 14
    },
    "source": [
-    "## Creating a Schedule\n",
+    "## 创建 Schedule\n",
     "\n",
-    "To run the computation, we need to specify how to execute the program, for example, the order to access data and how to do multi-threading parallelization.\n",
-    "Such an execution plan is called a *schedule*. Since `C` is the output tensor, let's create a default schedule on its operator and print the pseudo codes.\n"
+    "为了运行计算，需要指定如何执行程序，例如，访问数据的顺序以及如何进行多线程并行化。\n",
+    "这样的执行计划被称为 **调度** （schedule）。`C` 是输出张量，可以在它的算子上创建默认调度，并打印伪代码。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 16,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -313,30 +366,51 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "schedule(0x562d78299380)"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
-    "s = te.create_schedule(C.op)"
+    "s = te.create_schedule(C.op)\n",
+    "s"
    ]
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 16
-   },
+   "metadata": {},
    "source": [
-    "A schedule consists of several stages. Each stage corresponds to an operation to describe how it is scheduled. We can access a particular stage by either `s[C]` or `s[C.op]`.\n"
+    "调度由几个阶段（Stage）组成。每个阶段对应于描述它是如何调度的算子。可以通过 `s[C]` 或 `s[C.op]` 进入特定的阶段。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 17,
    "metadata": {
     "origin_pos": 17,
     "tab": [
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(tvm.te.schedule.Schedule, tvm.te.schedule.Stage)"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "type(s), type(s[C])"
    ]
@@ -347,45 +421,100 @@
     "origin_pos": 18
    },
    "source": [
-    "Later on we will see how to change the execution plan to better utilize the hardware resources to improve its efficiency. Here let's see the default execution plan by printing the C-like pseudo codes.\n"
+    "稍后将看到如何更改执行计划，以便更好地利用硬件资源来提高其效率。下面通过打印 C-like 的伪代码来查看默认的执行计划。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 18,
    "metadata": {
     "origin_pos": 19,
     "tab": [
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "#[version = \"0.0.5\"]\n",
+       "@main = primfn(a_1: handle, b_1: handle, c_1: handle) -> ()\n",
+       "  attr = {\"from_legacy_te_schedule\": True, \"global_symbol\": \"main\", \"tir.noalias\": True}\n",
+       "  buffers = {a: Buffer(a_2: Pointer(float32), float32, [100], []),\n",
+       "             b: Buffer(b_2: Pointer(float32), float32, [100], []),\n",
+       "             c: Buffer(c_2: Pointer(float32), float32, [100], [])}\n",
+       "  buffer_map = {a_1: a, b_1: b, c_1: c}\n",
+       "  preflattened_buffer_map = {a_1: a_3: Buffer(a_2, float32, [100], []), b_1: b_3: Buffer(b_2, float32, [100], []), c_1: c_3: Buffer(c_2, float32, [100], [])} {\n",
+       "  for (i: int32, 0, 100) {\n",
+       "    c[i] = (a[i] + b[i])\n",
+       "  }\n",
+       "}\n",
+       "\n",
+       "#[metadata]\n",
+       "{\n",
+       "  \"root\": 1, \n",
+       "  \"nodes\": [\n",
+       "    {\n",
+       "      \"type_key\": \"\"\n",
+       "    }, \n",
+       "    {\n",
+       "      \"type_key\": \"Map\", \n",
+       "      \"keys\": [\n",
+       "        \"IntImm\"\n",
+       "      ], \n",
+       "      \"data\": [2]\n",
+       "    }, \n",
+       "    {\n",
+       "      \"type_key\": \"Array\", \n",
+       "      \"data\": [3, 4]\n",
+       "    }, \n",
+       "    {\n",
+       "      \"type_key\": \"IntImm\", \n",
+       "      \"attrs\": {\n",
+       "        \"dtype\": \"bool\", \n",
+       "        \"span\": \"0\", \n",
+       "        \"value\": \"1\"\n",
+       "      }\n",
+       "    }, \n",
+       "    {\n",
+       "      \"type_key\": \"IntImm\", \n",
+       "      \"attrs\": {\n",
+       "        \"dtype\": \"bool\", \n",
+       "        \"span\": \"0\", \n",
+       "        \"value\": \"1\"\n",
+       "      }\n",
+       "    }\n",
+       "  ], \n",
+       "  \"b64ndarrays\": [], \n",
+       "  \"attrs\": {\"tvm_version\": \"0.9.dev0\"}\n",
+       "}"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "tvm.lower(s, [A, B, C], simple_mode=True)"
    ]
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 20
-   },
+   "metadata": {},
    "source": [
-    "The `lower` method accepts the schedule and input and output tensors. The `simple_mode=True` will print the program in a simple and compact way.\n",
-    "Note that the program has added proper for-loops according to the output shape. Overall, it's quite similar to the preview function `vector_add`.\n",
+    "{func}`tvm.lower` 方法接受 schedule、输入、输出张量。`simple_mode=True` 将以简单而紧凑的方式打印程序。注意，程序已经根据输出形状添加了适当的 for 循环。总的来说，它非常类似于前面的函数 `vector_add`。\n",
     "\n",
-    "Now you see that TVM separates the computation and the schedule. The computation defines how the results are computed,\n",
-    "which will not change no matter on what hardware platform you run the program.\n",
-    "On the other hand, an efficient schedule are often hardware dependent, but changing a schedule will not impact the correctness.\n",
-    "The idea of separating computation from schedule is inherited by TVM from Halide :cite:`Ragan-Kelley.Barnes.Adams.ea.2013`.\n",
+    "可以看到 TVM 将计算和调度分开。计算定义了如何计算结果，无论在什么硬件平台上运行程序，结果都不会改变。另一方面，有效的调度通常依赖于硬件，但是更改调度不会影响其正确性。TVM 从 Halide {cite:p}`Ragan-Kelley.Barnes.Adams.ea.2013` 那里继承了计算与进度分离的想法。\n",
     "\n",
-    "## Compilation and Execution\n",
+    "## 计算并执行\n",
     "\n",
-    "Once both computation and schedule are defined, we can compile them into an executable module with `tvm.build`. It accepts the same argument as `tvm.lower`. In fact, it first calls `tvm.lower` to generate the program and then compiles to machine codes.\n"
+    "一旦定义了计算和调度，就可以使用 {func}`tvm.build` 将它们编译成可执行模块。它接受与 {func}`tvm.lower` 相同的参数。实际上，它首先调用了 {func}`tvm.lower` 生成程序，然后编译成机器码。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 19,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -397,7 +526,18 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "tvm.driver.build_module.OperatorModule"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "mod = tvm.build(s, [A, B, C])\n",
     "type(mod)"
@@ -405,16 +545,14 @@
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 22
-   },
+   "metadata": {},
    "source": [
-    "It returns an executable module object. Now we can feed data for `A`, `B` and `C` to run it. The tensor data must be `tvm.ndarray.NDArray` object. The easiest way is to create NumPy ndarray objects first and then convert them into TVM ndarray by `tvm.nd.array`. We can convert them back to NumPy by the `asnumpy` method.\n"
+    "它返回可执行模块对象。可以输入 `A`，`B` 和 `C` 的数据来运行它。张量数据必须是 {class}`tvm.ndarray.NDArray` 对象。最简单的方法是首先创建 NumPy ndarray 对象，然后通过 {func}`tvm.nd.array` 将它们转换为 TVM ndarray 对象。我们可以通过 `asnumpy` 方法将它们转换回 NumPy。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 20,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -426,7 +564,18 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(tvm.runtime.ndarray.NDArray, array([1., 1.]))"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "x = np.ones(2)\n",
     "y = tvm.nd.array(x)\n",
@@ -439,12 +588,12 @@
     "origin_pos": 24
    },
    "source": [
-    "Now let's construct data and return them as TVM ndarrays.\n"
+    "构造数据并将它们作为 TVM ndarray 返回："
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 21,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -467,12 +616,12 @@
     "origin_pos": 26
    },
    "source": [
-    "Do the computation, and verify  the results.\n"
+    "进行计算，并验证结果。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 22,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -496,14 +645,14 @@
     "origin_pos": 28
    },
    "source": [
-    "## Argument Constraints\n",
+    "## 参数约束\n",
     "\n",
-    "Remember that we specified both inputs to be 100-length vectors when declaring `A` and `B`.\n"
+    "记住，当声明 `A` 和 `B` 时，将两个输入都指定长度为 100 的向量。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 23,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -515,7 +664,18 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "([100], [100], [100])"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "A.shape, B.shape, C.shape"
    ]
@@ -526,12 +686,12 @@
     "origin_pos": 30
    },
    "source": [
-    "TVM will check if the input shapes satisfy this specification.\n"
+    "TVM 将检查输入形状是否满足此规格。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 24,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -543,7 +703,25 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Traceback (most recent call last):\n",
+      "  1: TVMFuncCall\n",
+      "  0: tvm::runtime::PackedFuncObj::Extractor<tvm::runtime::PackedFuncSubObj<tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr<tvm::runtime::Object> const&)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}> >::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)\n",
+      "  File \"/media/pc/data/4tb/lxw/study/tvm/src/runtime/library_module.cc\", line 80\n",
+      "TVMError: \n",
+      "---------------------------------------------------------------\n",
+      "An error occurred during the execution of TVM.\n",
+      "For more information, please see: https://tvm.apache.org/docs/errors.html\n",
+      "---------------------------------------------------------------\n",
+      "\n",
+      "  Check failed: ret == 0 (-1 vs. 0) : Assert fail: (100 == int32(arg.a.shape[0])), Argument arg.a.shape[0] has an unsatisfied constraint: (100 == int32(arg.a.shape[0]))\n"
+     ]
+    }
+   ],
    "source": [
     "try:\n",
     "    a, b, c = get_abc(200, tvm.nd.array)\n",
@@ -558,12 +736,12 @@
     "origin_pos": 32
    },
    "source": [
-    "The default data type in TVM is `float32`.\n"
+    "TVM 默认数据类型为 `float32`。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 25,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -575,7 +753,18 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "('float32', 'float32', 'float32')"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "A.dtype, B.dtype, C.dtype"
    ]
@@ -586,12 +775,12 @@
     "origin_pos": 34
    },
    "source": [
-    "An error will appear if input with a different data type.\n"
+    "如果输入的数据类型不同，则会出现错误。\n"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 26,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -603,7 +792,25 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Traceback (most recent call last):\n",
+      "  1: TVMFuncCall\n",
+      "  0: tvm::runtime::PackedFuncObj::Extractor<tvm::runtime::PackedFuncSubObj<tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr<tvm::runtime::Object> const&)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}> >::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)\n",
+      "  File \"/media/pc/data/4tb/lxw/study/tvm/src/runtime/library_module.cc\", line 80\n",
+      "TVMError: \n",
+      "---------------------------------------------------------------\n",
+      "An error occurred during the execution of TVM.\n",
+      "For more information, please see: https://tvm.apache.org/docs/errors.html\n",
+      "---------------------------------------------------------------\n",
+      "\n",
+      "  Check failed: ret == 0 (-1 vs. 0) : Assert fail: (((tir.tvm_struct_get(arg.a, 0, 5) == (uint8)2) && (tir.tvm_struct_get(arg.a, 0, 6) == (uint8)32)) && (tir.tvm_struct_get(arg.a, 0, 7) == (uint16)1)), arg.a.dtype is expected to be float32\n"
+     ]
+    }
+   ],
    "source": [
     "try:\n",
     "    a, b, c = get_abc(100, tvm.nd.array)\n",
@@ -619,14 +826,14 @@
     "origin_pos": 36
    },
    "source": [
-    "## Saving and Loading a Module\n",
+    "## 保存和加载模块\n",
     "\n",
-    "A compiled a module can be saved into disk,\n"
+    "编译好的模块可以保存到磁盘中："
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 28,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -650,12 +857,12 @@
     "origin_pos": 38
    },
    "source": [
-    "and then loaded back later.\n"
+    "然后再加载回来。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 29,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -678,12 +885,12 @@
     "origin_pos": 40
    },
    "source": [
-    "Verify the results.\n"
+    "验证结果："
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 30,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -708,18 +915,15 @@
     "origin_pos": 42
    },
    "source": [
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "Implementing an operator using TVM has three steps:\n",
+    "使用 TVM 实现算子有三个步骤：\n",
     "\n",
-    "1. Declare the computation by specifying input and output shapes and how each output element is computed.\n",
-    "2. Create a schedule to (hopefully) fully utilize the machine resources.\n",
-    "3. Compile to the hardware target.\n",
+    "1. 通过指定输入和输出形状以及如何计算每个输出元素来声明计算。\n",
+    "2. 创建调度，（希望）充分利用机器资源。\n",
+    "3. 编译到硬件目标。\n",
     "\n",
-    "In addition, we can save the compiled module into disk so we can load it back later.\n",
-    "\n",
-    "\n",
-    "## [Discussions](https://discuss.tvm.ai/t/getting-started-vector-addition/4707)\n"
+    "此外，可以将编译后的模块保存到磁盘中，以便稍后再将其加载回来。"
    ]
   }
  ],

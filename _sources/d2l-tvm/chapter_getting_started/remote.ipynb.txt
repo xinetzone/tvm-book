@@ -6,10 +6,10 @@
     "origin_pos": 0
    },
    "source": [
-    "# Running on a Remote Machine\n",
-    ":label:`ch_remote`\n",
+    "(ch_remote)=\n",
+    "# 在远程计算机上运行\n",
     "\n",
-    "In this book, we will run and optimize programs on various hardware platforms. One way is to log into the machine with the desired hardware, install required packages and then run the workloads there. It, however, makes maintaining the source codes and data difficult, especially when the targeting hardware is with minimal power. In this section, we will describe another solution: running a daemon on the remote machine and then sending the compiled module and input data to it only for execution.\n"
+    "在本书中，将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。"
    ]
   },
   {
@@ -26,9 +26,27 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Python: 3.10.4\n"
+     ]
+    }
+   ],
    "source": [
-    "import d2ltvm\n",
+    "def set_env(num, current_path='.'):\n",
+    "    import sys\n",
+    "    from pathlib import Path\n",
+    "\n",
+    "    ROOT = Path(current_path).resolve().parents[num]\n",
+    "    sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境\n",
+    "    from tvm_book.contrib.tvm import set_env # 设置 TVM 环境\n",
+    "\n",
+    "set_env(2)\n",
+    "\n",
+    "from tvm_book.contrib import d2ltvm\n",
     "import numpy as np\n",
     "import mxnet as mx\n",
     "import tvm\n",
@@ -38,29 +56,38 @@
   },
   {
    "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "注意，我们从 TVM 导入了 `rpc` 模块。[RPC](https://en.wikipedia.org/wiki/Remote_procedure_call)，即远程过程调用（remote procedure call），允许在远程位置上执行程序。\n",
+    "\n",
+    "## 设置远程计算机\n",
+    "\n",
+    "首先需要在远程机器上安装 TVM `runtime` 模块。安装设置几乎与 TVM 相同（请参阅 {ref}`ch_install`），但只需要构建运行时，即 `make runtime`，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 `CUDA` 或 `OpenCL`。\n",
+    "\n",
+    "一旦安装了运行时，就可以通过在远程机器上运行以下命令来启动 daemon。\n",
+    "\n",
+    "```bash\n",
+    "python -m tvm.exec.rpc_server --host 0.0.0.0 --port=9090\n",
+    "```\n",
+    "\n",
+    "它将启动 RPC 服务器，该服务器绑定本地 9090 端口进行侦听。应该看到以下输出，表明服务器已经启动。\n",
+    "\n",
+    "```bash\n",
+    "INFO:RPCServer:bind to 0.0.0.0:9090\n",
+    "```\n",
+    "\n",
+    "此外，需要在远程机器上检查两件事情。\n",
+    "\n",
+    "- 一个是远程机器的 IP。在 Linux 或 macOS 上，你可以通过 `ifconfig  | grep inet` 获取它。如果有防火墙，也要记得打开 9090 端口。\n",
+    "- 另一个是目标架构。这对于 GPU 来说很简单，我们稍后会讨论它。对于 CPU，最简单的方法是在远程机器上安装 LLVM，然后检查 `llvm-config --host-target`。我们所使用的远程机器的返回值是 `x86_64-pc-linux-gnu`。"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "metadata": {
     "origin_pos": 2
    },
    "source": [
-    "Note that we imported the `rpc` module from TVM. [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call), namely remote procedure call, enables executing a program on a remote place.\n",
-    "\n",
-    "## Setup the Remote Machine\n",
-    "\n",
-    "We first need to install TVM `runtime` module on the remote machine. The installation setup is almost identical to TVM (refer to :numref:`ch_install`), except that we only need to build the runtime, i.e. `make runtime`, instead of the whole TVM library. The runtime size is often less than 1MB, which makes it suitable for device with memory constraints. You also need to enable the proper backend, e.g. `CUDA` or `OpenCL`, if necessary.\n",
-    "\n",
-    "Once the runtime is installed, we can start the daemon by running the following command on the remote machine.\n",
-    "\n",
-    "`python -m tvm.exec.rpc_server --host 0.0.0.0 --port=9090`\n",
-    "\n",
-    "It will start an RPC server which binds the local 9090 port to listen. You should see the following output indicating the server has already started.\n",
-    "\n",
-    "`INFO:RPCServer:bind to 0.0.0.0:9090`\n",
-    "\n",
-    "In addition, you need to check two things on the remote machine.\n",
-    "\n",
-    "One is the remote machine's IP. On Linux or macOS, you can get it by `ifconfig  | grep inet`. Also remember to open the 9090 port if there is a firewall.\n",
-    "\n",
-    "The other one is the target architecture. It's straightforward for GPUs, we will cover it later. For CPUs, the easiest way is installing LLVM on the remote machine and then checking `llvm-config --host-target`. The return of the remote machine we are using is `x86_64-pc-linux-gnu`.\n",
     "\n",
     "This target triplet has the general format `<arch><sub>-<vendor>-<sys>-<abi>`, where\n",
     "\n",
@@ -80,7 +107,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -113,7 +140,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -144,7 +171,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -172,7 +199,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -201,7 +228,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -230,7 +257,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -258,7 +285,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": null,
    "metadata": {
     "origin_pos": 15,
     "tab": [
@@ -283,7 +310,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -314,7 +341,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -326,15 +353,7 @@
      "tvm"
     ]
    },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Cannot find config for target=llvm -target=x86_64-pc-linux-gnu, workload=('dense_nopack.x86', ('TENSOR', (1, 512), 'float32'), ('TENSOR', (1000, 512), 'float32'), None, 'float32'). A fallback configuration is used, which may bring great performance regression.\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "mod_fname = 'resnet18.tar'\n",
     "model = mx.gluon.model_zoo.vision.resnet18_v2(pretrained=True)\n",
@@ -355,7 +374,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -385,7 +404,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
+   "execution_count": null,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -397,18 +416,7 @@
      "tvm"
     ]
    },
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "('tiger cat', 'Egyptian cat')"
-      ]
-     },
-     "execution_count": 12,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+   "outputs": [],
    "source": [
     "remote_rt.set_input(**params)\n",
     "remote_rt.run(data=tvm.nd.array(x))\n",
@@ -434,8 +442,25 @@
   }
  ],
  "metadata": {
+  "interpreter": {
+   "hash": "f0a0fcc4cb7375f8ee907b3c51d5b9d65107fda1aab037a85df7b0c09b870b98"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('tvm-mxnet': conda)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,

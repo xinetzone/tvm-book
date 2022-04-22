@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Running on a Remote Machine &#8212; tvm-book 0.0.1 文档</title>
+    <title>在远程计算机上运行 &#8212; tvm-book 0.0.1 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -48,7 +48,7 @@
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
     <link rel="next" title="Expressions for Operators" href="../chapter_expressions/index.html" />
-    <link rel="prev" title="Neural Network Inference" href="from_mxnet.html" />
+    <link rel="prev" title="神经网络推理" href="from_mxnet.html" />
     <link rel="stylesheet" href="../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../_static/css/custom.css"/>
 
@@ -262,12 +262,12 @@ function checkPageExistsAndRedirect(event) {
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="from_mxnet.html">
-     Neural Network Inference
+     神经网络推理
     </a>
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Running on a Remote Machine
+     在远程计算机上运行
     </a>
    </li>
   </ul>
@@ -530,8 +530,8 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#setup-the-remote-machine">
-   Setup the Remote Machine
+  <a class="reference internal nav-link" href="#id2">
+   设置远程计算机
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -587,13 +587,22 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="running-on-a-remote-machine">
-<h1>Running on a Remote Machine<a class="headerlink" href="#running-on-a-remote-machine" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_remote</span></code></p>
-<p>In this book, we will run and optimize programs on various hardware platforms. One way is to log into the machine with the desired hardware, install required packages and then run the workloads there. It, however, makes maintaining the source codes and data difficult, especially when the targeting hardware is with minimal power. In this section, we will describe another solution: running a daemon on the remote machine and then sending the compiled module and input data to it only for execution.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="ch-remote">
+<span id="id1"></span><h1>在远程计算机上运行<a class="headerlink" href="#ch-remote" title="永久链接至标题">#</a></h1>
+<p>在本书中，将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">d2ltvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
+    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
+
+<span class="n">set_env</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
@@ -602,18 +611,29 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
+</pre></div>
 </div>
-<p>Note that we imported the <code class="docutils literal notranslate"><span class="pre">rpc</span></code> module from TVM. <a class="reference external" href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a>, namely remote procedure call, enables executing a program on a remote place.</p>
-<section id="setup-the-remote-machine">
-<h2>Setup the Remote Machine<a class="headerlink" href="#setup-the-remote-machine" title="永久链接至标题">#</a></h2>
-<p>We first need to install TVM <code class="docutils literal notranslate"><span class="pre">runtime</span></code> module on the remote machine. The installation setup is almost identical to TVM (refer to :numref:<code class="docutils literal notranslate"><span class="pre">ch_install</span></code>), except that we only need to build the runtime, i.e. <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">runtime</span></code>, instead of the whole TVM library. The runtime size is often less than 1MB, which makes it suitable for device with memory constraints. You also need to enable the proper backend, e.g. <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> or <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code>, if necessary.</p>
-<p>Once the runtime is installed, we can start the daemon by running the following command on the remote machine.</p>
-<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">tvm.exec.rpc_server</span> <span class="pre">--host</span> <span class="pre">0.0.0.0</span> <span class="pre">--port=9090</span></code></p>
-<p>It will start an RPC server which binds the local 9090 port to listen. You should see the following output indicating the server has already started.</p>
-<p><code class="docutils literal notranslate"><span class="pre">INFO:RPCServer:bind</span> <span class="pre">to</span> <span class="pre">0.0.0.0:9090</span></code></p>
-<p>In addition, you need to check two things on the remote machine.</p>
-<p>One is the remote machine’s IP. On Linux or macOS, you can get it by <code class="docutils literal notranslate"><span class="pre">ifconfig</span>&#160; <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">inet</span></code>. Also remember to open the 9090 port if there is a firewall.</p>
-<p>The other one is the target architecture. It’s straightforward for GPUs, we will cover it later. For CPUs, the easiest way is installing LLVM on the remote machine and then checking <code class="docutils literal notranslate"><span class="pre">llvm-config</span> <span class="pre">--host-target</span></code>. The return of the remote machine we are using is <code class="docutils literal notranslate"><span class="pre">x86_64-pc-linux-gnu</span></code>.</p>
+</div>
+</div>
+<p>注意，我们从 TVM 导入了 <code class="docutils literal notranslate"><span class="pre">rpc</span></code> 模块。<a class="reference external" href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a>，即远程过程调用（remote procedure call），允许在远程位置上执行程序。</p>
+<section id="id2">
+<h2>设置远程计算机<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>首先需要在远程机器上安装 TVM <code class="docutils literal notranslate"><span class="pre">runtime</span></code> 模块。安装设置几乎与 TVM 相同（请参阅 <a class="reference internal" href="install.html#ch-install"><span class="std std-ref">安装</span></a>），但只需要构建运行时，即 <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">runtime</span></code>，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> 或 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code>。</p>
+<p>一旦安装了运行时，就可以通过在远程机器上运行以下命令来启动 daemon。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m tvm.exec.rpc_server --host <span class="m">0</span>.0.0.0 --port<span class="o">=</span><span class="m">9090</span>
+</pre></div>
+</div>
+<p>它将启动 RPC 服务器，该服务器绑定本地 9090 端口进行侦听。应该看到以下输出，表明服务器已经启动。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>INFO:RPCServer:bind to <span class="m">0</span>.0.0.0:9090
+</pre></div>
+</div>
+<p>此外，需要在远程机器上检查两件事情。</p>
+<ul class="simple">
+<li><p>一个是远程机器的 IP。在 Linux 或 macOS 上，你可以通过 <code class="docutils literal notranslate"><span class="pre">ifconfig</span>&#160; <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">inet</span></code> 获取它。如果有防火墙，也要记得打开 9090 端口。</p></li>
+<li><p>另一个是目标架构。这对于 GPU 来说很简单，我们稍后会讨论它。对于 CPU，最简单的方法是在远程机器上安装 LLVM，然后检查 <code class="docutils literal notranslate"><span class="pre">llvm-config</span> <span class="pre">--host-target</span></code>。我们所使用的远程机器的返回值是 <code class="docutils literal notranslate"><span class="pre">x86_64-pc-linux-gnu</span></code>。</p></li>
+</ul>
 <p>This target triplet has the general format <code class="docutils literal notranslate"><span class="pre">&lt;arch&gt;&lt;sub&gt;-&lt;vendor&gt;-&lt;sys&gt;-&lt;abi&gt;</span></code>, where</p>
 <ul class="simple">
 <li><p>arch: x86, x86_64, arm, thumb, mips, etc.</p></li>
@@ -629,7 +649,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Let’s run the vector addition defined :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add</span></code> on the remote machine. Note that we specified the remote machine target through the <code class="docutils literal notranslate"><span class="pre">-target</span></code> argument for LLVM.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -target=x86_64-pc-linux-gnu&#39;</span>
 
 <span class="n">args</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
@@ -642,7 +662,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Then we save the compiled module to disk, which will be uploaded to the remote machine later.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;vector-add.tar&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;vector-add.tar&#39;</span>
 <span class="n">mod</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -654,7 +674,7 @@ function checkPageExistsAndRedirect(event) {
 <p>We first connect to the remote machine with the IP we checked before.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;172.31.0.149&#39;</span><span class="p">,</span> <span class="mi">9090</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;172.31.0.149&#39;</span><span class="p">,</span> <span class="mi">9090</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -662,7 +682,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Next, we send the compiled library to the machine and load it into the memory of the remote machine.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
 <span class="n">remote_mod</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -671,7 +691,7 @@ function checkPageExistsAndRedirect(event) {
 <p>When creating the data, we specify the device context as CPU on the remote machine. The data will be created on the local machine as before, but will be sent to the remote machine later. Note that we used NumPy to create the data, but there is no need to have the remote machine also installed NumPy.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
 <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -680,7 +700,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Since both data and library are ready on the remote machine, let’s execute the program on it as well.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">remote_mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote_mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -688,7 +708,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Finally, the <code class="docutils literal notranslate"><span class="pre">.asnumpy()</span></code> method will send the data back to the local machine and convert to a NumPy array. So we can verify the results as before.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">+</span><span class="n">b</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">())</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">+</span><span class="n">b</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -699,7 +719,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Let’s run the ResNet-18 used in :numref:<code class="docutils literal notranslate"><span class="pre">ch_from_mxnet</span></code> on the remote machine. As before, we load a sample image and Imagenet 1K labels.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;../data/cat.jpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;../data/cat.jpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">image_preprocessing</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../data/imagenet1k_labels.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
@@ -710,7 +730,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Then we convert, compile and save the module. Note that we just need to save the shared library which contains the machine code of the compiled operators to the disk.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;resnet18.tar&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;resnet18.tar&#39;</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">gluon</span><span class="o">.</span><span class="n">model_zoo</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">resnet18_v2</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">relay_mod</span><span class="p">,</span> <span class="n">relay_params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_mxnet</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">})</span>
 <span class="k">with</span> <span class="n">relay</span><span class="o">.</span><span class="n">build_config</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
@@ -719,16 +739,11 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cannot find config for target=llvm -target=x86_64-pc-linux-gnu, workload=(&#39;dense_nopack.x86&#39;, (&#39;TENSOR&#39;, (1, 512), &#39;float32&#39;), (&#39;TENSOR&#39;, (1000, 512), &#39;float32&#39;), None, &#39;float32&#39;). A fallback configuration is used, which may bring great performance regression.
-</pre></div>
-</div>
-</div>
 </div>
 <p>Next, we upload the saved library to the remote machine and load it into memory. Then we can create a runtime using the model definition, the remote library and the remote context.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
 <span class="n">remote_mod</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
 <span class="n">remote_rt</span> <span class="o">=</span>  <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_runtime</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">remote_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
 </pre></div>
@@ -738,17 +753,12 @@ function checkPageExistsAndRedirect(event) {
 <p>The inference is identical to :numref:<code class="docutils literal notranslate"><span class="pre">ch_from_mxnet</span></code>, where both parameters and input are on the local machine. The runtime will upload them into the remote machine properly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">remote_rt</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote_rt</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
 <span class="n">remote_rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="n">scores</span> <span class="o">=</span> <span class="n">remote_rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">scores</span><span class="o">.</span><span class="n">shape</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">scores</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">labels</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">labels</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;tiger cat&#39;, &#39;Egyptian cat&#39;)
 </pre></div>
 </div>
 </div>
@@ -776,7 +786,7 @@ function checkPageExistsAndRedirect(event) {
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">Neural Network Inference</p>
+            <p class="prev-next-title">神经网络推理</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="../chapter_expressions/index.html" title="下一页 页">
@@ -807,7 +817,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-22, 12:42:10.<br>
+最后更新于 2022-04-22, 15:08:58.<br>
 </p>
     </div>
     

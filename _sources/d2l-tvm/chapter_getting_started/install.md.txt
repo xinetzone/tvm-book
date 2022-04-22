@@ -81,11 +81,14 @@ pip install .[doc]
 如若不想将 `tvm_book` 安装到全局环境，可以在本次运行代码前添加如下函数用于设置 Python 临时环境：
 
 ```python
-def set_env(current_path):
+def set_env(num, current_path='.'):
+    '''
+    num 表示相对于 current_path 的父级根目录级别
+    '''
     import sys
     from pathlib import Path
 
-    ROOT = Path(current_path).resolve().parents[2]
+    ROOT = Path(current_path).resolve().parents[num]
     sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境
     from tvm_book.contrib.tvm import set_env # 设置 TVM 环境
 ```
