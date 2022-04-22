@@ -1,0 +1,6 @@
+``mxnet``
+===================
+
+.. autosummary::
+
+    tvm_book.contrib.mxnet

@@ -1,0 +1,443 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Running on a Remote Machine\n",
+    ":label:`ch_remote`\n",
+    "\n",
+    "In this book, we will run and optimize programs on various hardware platforms. One way is to log into the machine with the desired hardware, install required packages and then run the workloads there. It, however, makes maintaining the source codes and data difficult, especially when the targeting hardware is with minimal power. In this section, we will describe another solution: running a daemon on the remote machine and then sending the compiled module and input data to it only for execution.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import d2ltvm\n",
+    "import numpy as np\n",
+    "import mxnet as mx\n",
+    "import tvm\n",
+    "from tvm import te, rpc, relay\n",
+    "from PIL import Image"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "Note that we imported the `rpc` module from TVM. [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call), namely remote procedure call, enables executing a program on a remote place.\n",
+    "\n",
+    "## Setup the Remote Machine\n",
+    "\n",
+    "We first need to install TVM `runtime` module on the remote machine. The installation setup is almost identical to TVM (refer to :numref:`ch_install`), except that we only need to build the runtime, i.e. `make runtime`, instead of the whole TVM library. The runtime size is often less than 1MB, which makes it suitable for device with memory constraints. You also need to enable the proper backend, e.g. `CUDA` or `OpenCL`, if necessary.\n",
+    "\n",
+    "Once the runtime is installed, we can start the daemon by running the following command on the remote machine.\n",
+    "\n",
+    "`python -m tvm.exec.rpc_server --host 0.0.0.0 --port=9090`\n",
+    "\n",
+    "It will start an RPC server which binds the local 9090 port to listen. You should see the following output indicating the server has already started.\n",
+    "\n",
+    "`INFO:RPCServer:bind to 0.0.0.0:9090`\n",
+    "\n",
+    "In addition, you need to check two things on the remote machine.\n",
+    "\n",
+    "One is the remote machine's IP. On Linux or macOS, you can get it by `ifconfig  | grep inet`. Also remember to open the 9090 port if there is a firewall.\n",
+    "\n",
+    "The other one is the target architecture. It's straightforward for GPUs, we will cover it later. For CPUs, the easiest way is installing LLVM on the remote machine and then checking `llvm-config --host-target`. The return of the remote machine we are using is `x86_64-pc-linux-gnu`.\n",
+    "\n",
+    "This target triplet has the general format `<arch><sub>-<vendor>-<sys>-<abi>`, where\n",
+    "\n",
+    "- arch: x86, x86_64, arm, thumb, mips, etc.\n",
+    "- sub: for ARM, there are v5, v6m, v7a, v7m, v8, etc.\n",
+    "- vendor: pc, apple, nvidia, ibm, etc.\n",
+    "- sys: linux, win32, darwin, cuda, none, unknown, etc.\n",
+    "- abi: eabi, gnu, android, macho, elf, etc.\n",
+    "\n",
+    "For example, it's `x86_64-apple-darwin17.7.0` for the MacbookPro I'm using, and `armv6k-unknown-linux-gnueabihf` for the Raspberry Pi 4B.\n",
+    "\n",
+    "\n",
+    "## Compile the Program for the Remote Machine\n",
+    "\n",
+    "Let's run the vector addition defined :numref:`ch_vector_add` on the remote machine. Note that we specified the remote machine target through the `-target` argument for LLVM.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "2"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "n = 100\n",
+    "target = 'llvm -target=x86_64-pc-linux-gnu'\n",
+    "\n",
+    "args = d2ltvm.vector_add(n)\n",
+    "s = te.create_schedule(args[-1].op)\n",
+    "mod = tvm.build(s, args, target)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "Then we save the compiled module to disk, which will be uploaded to the remote machine later.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "3"
+    },
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "mod_fname = 'vector-add.tar'\n",
+    "mod.export_library(mod_fname)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "## Evaluate on the Remote Machine\n",
+    "\n",
+    "We first connect to the remote machine with the IP we checked before.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "4"
+    },
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "remote = rpc.connect('172.31.0.149', 9090)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "Next, we send the compiled library to the machine and load it into the memory of the remote machine.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "5"
+    },
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "remote.upload(mod_fname)\n",
+    "remote_mod = remote.load_module(mod_fname)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "When creating the data, we specify the device context as CPU on the remote machine. The data will be created on the local machine as before, but will be sent to the remote machine later. Note that we used NumPy to create the data, but there is no need to have the remote machine also installed NumPy.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "19"
+    },
+    "origin_pos": 11,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "ctx = remote.cpu()\n",
+    "a, b, c = d2ltvm.get_abc(n, lambda x: tvm.nd.array(x, ctx=ctx))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 12
+   },
+   "source": [
+    "Since both data and library are ready on the remote machine, let's execute the program on it as well.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "26"
+    },
+    "origin_pos": 13,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "remote_mod(a, b, c)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 14
+   },
+   "source": [
+    "Finally, the `.asnumpy()` method will send the data back to the local machine and convert to a NumPy array. So we can verify the results as before.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "origin_pos": 15,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "np.testing.assert_equal(a.asnumpy()+b.asnumpy(), c.asnumpy())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 16
+   },
+   "source": [
+    "## Running Neural Network Inference\n",
+    "\n",
+    "Let's run the ResNet-18 used in :numref:`ch_from_mxnet` on the remote machine. As before, we load a sample image and Imagenet 1K labels.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "9"
+    },
+    "origin_pos": 17,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "image = Image.open('../data/cat.jpg').resize((224, 224))\n",
+    "x = d2ltvm.image_preprocessing(image)\n",
+    "with open('../data/imagenet1k_labels.txt') as f:\n",
+    "    labels = eval(f.read())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 18
+   },
+   "source": [
+    "Then we convert, compile and save the module. Note that we just need to save the shared library which contains the machine code of the compiled operators to the disk.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "10"
+    },
+    "origin_pos": 19,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Cannot find config for target=llvm -target=x86_64-pc-linux-gnu, workload=('dense_nopack.x86', ('TENSOR', (1, 512), 'float32'), ('TENSOR', (1000, 512), 'float32'), None, 'float32'). A fallback configuration is used, which may bring great performance regression.\n"
+     ]
+    }
+   ],
+   "source": [
+    "mod_fname = 'resnet18.tar'\n",
+    "model = mx.gluon.model_zoo.vision.resnet18_v2(pretrained=True)\n",
+    "relay_mod, relay_params = relay.frontend.from_mxnet(model, {'data': x.shape})\n",
+    "with relay.build_config(opt_level=3):\n",
+    "    graph, mod, params = relay.build(relay_mod, target, params=relay_params)\n",
+    "mod.export_library(mod_fname)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 20
+   },
+   "source": [
+    "Next, we upload the saved library to the remote machine and load it into memory. Then we can create a runtime using the model definition, the remote library and the remote context.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "14"
+    },
+    "origin_pos": 21,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "remote.upload(mod_fname)\n",
+    "remote_mod = remote.load_module(mod_fname)\n",
+    "remote_rt =  tvm.contrib.graph_runtime.create(graph, remote_mod, ctx)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 22
+   },
+   "source": [
+    "The inference is identical to :numref:`ch_from_mxnet`, where both parameters and input are on the local machine. The runtime will upload them into the remote machine properly.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "15"
+    },
+    "origin_pos": 23,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "('tiger cat', 'Egyptian cat')"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "remote_rt.set_input(**params)\n",
+    "remote_rt.run(data=tvm.nd.array(x))\n",
+    "scores = remote_rt.get_output(0).asnumpy()[0]\n",
+    "scores.shape\n",
+    "a = np.argsort(scores)[-1:-5:-1]\n",
+    "labels[a[0]], labels[a[1]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 24
+   },
+   "source": [
+    "## Summary\n",
+    "\n",
+    "- We can install a TVM runtime on a remote machine to start an RPC server to accept workloads to run.\n",
+    "- A program can be compiled locally with specifying the remote machine's architecture target (called cross-compilation), and then run on the remote machine via RPC.\n",
+    "\n",
+    "## [Discussions](https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709)\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

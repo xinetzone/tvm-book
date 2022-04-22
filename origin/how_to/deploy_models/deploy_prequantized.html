@@ -1,0 +1,1626 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>使用 TVM 部署框架预量化模型 &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="next" title="Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)" href="deploy_prequantized_tflite.html" />
+    <link rel="prev" title="Compile PyTorch Object Detection Models" href="deploy_object_detection_pytorch.html" />
+    <link rel="stylesheet" href="../../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../d2l-tvm/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables origin/how_to/deploy_models/deploy_prequantized and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "origin/how_to/deploy_models/deploy_prequantized.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "origin/how_to/deploy_models/deploy_prequantized.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../tutorial/index.html">
+   用户指南
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/introduction.html">
+     TVM 和模型优化的概述
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tvmc_command_line_driver.html">
+     用 TVMC 编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tvmc_python.html">
+     开始使用 TVMC Python：TVM 的高级 API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/autotvm_relay_x86.html">
+     用 Python 接口编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tensor_expr_get_started.html">
+     使用张量表达式处理算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/autotvm_matmul_x86.html">
+     用调度模板和 AutoTVM 优化算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/auto_scheduler_matmul_x86.html">
+     使用自动调度优化运算
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tensor_ir_blitz_course.html">
+     TensorIR 的突击课程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/cross_compilation_and_rpc.html">
+     交叉编译和RPC
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/relay_quick_start.html">
+     编译深度学习模型的快速入门教程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/intro_topi.html">
+     TOPI 简介
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../index.html">
+   How To 指南
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../compile_models/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_pytorch.html">
+       编译 PyTorch 模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_tensorflow.html">
+       Compile Tensorflow Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_mxnet.html">
+       Compile MXNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_onnx.html">
+       Compile ONNX Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_keras.html">
+       Compile Keras Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_tflite.html">
+       Compile TFLite Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_coreml.html">
+       Compile CoreML Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_darknet.html">
+       Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_caffe2.html">
+       Compile Caffe2 Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_paddle.html">
+       Compile PaddlePaddle Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="index.html">
+     部署深度学习模型
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="deploy_model_on_android.html">
+       Deploy the Pretrained Model on Android
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="deploy_model_on_rasp.html">
+       Deploy the Pretrained Model on Raspberry Pi
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="deploy_object_detection_pytorch.html">
+       Compile PyTorch Object Detection Models
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       使用 TVM 部署框架预量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="deploy_prequantized_tflite.html">
+       Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="deploy_quantized.html">
+       在 CUDA 上部署已量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="deploy_sparse.html">
+       Deploy a Hugging Face Pruned Model on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="deploy_ssd_gluoncv.html">
+       Deploy Single Shot Multibox Detector(SSD) model
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_relay/index.html">
+     Work With Relay
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_relay/build_gcn.html">
+       Building a Graph Convolutional Network
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_relay/using_external_lib.html">
+       Using External Libraries in Relay
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_schedules/index.html">
+     Work With Tensor Expression and Schedules
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/schedule_primitives.html">
+       Schedule Primitives in TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/reduction.html">
+       Reduction
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/intrin_math.html">
+       Intrinsics and Math Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/scan.html">
+       Scan and Recurrent Kernel
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/extern_op.html">
+       External Tensor Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tensorize.html">
+       Use Tensorize to Leverage Hardware Intrinsics
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tuple_inputs.html">
+       Compute and Reduce with Tuple Inputs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tedd.html">
+       Use Tensor Expression Debug Display (TEDD) for Visualization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../optimize_operators/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_gemm.html">
+       How to optimize GEMM on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_conv_cuda.html">
+       How to optimize convolution on GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_conv_tensorcore.html">
+       How to optimize convolution using TensorCores
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../tune_with_autotvm/index.html">
+     Auto-Tune with Templates and AutoTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_conv2d_cuda.html">
+       Tuning High Performance Convolution on NVIDIA GPUs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_cuda.html">
+       Auto-tuning a Convolutional Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_x86.html">
+       Auto-tuning a Convolutional Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_arm.html">
+       Auto-tuning a Convolutional Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_mobile_gpu.html">
+       Auto-tuning a Convolutional Network for Mobile GPU
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../tune_with_autoscheduler/index.html">
+     Use AutoScheduler for Template-Free Scheduling
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
+       Auto-scheduling a Convolution Layer for GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_x86.html">
+       Auto-scheduling a Neural Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_cuda.html">
+       Auto-scheduling a Neural Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_arm.html">
+       Auto-scheduling a Neural Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_mali.html">
+       Auto-scheduling a Neural Network for mali GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_sparse_x86.html">
+       Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_microtvm/index.html">
+     Work With microTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_autotune.html">
+       Autotuning with micro TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_ethosu.html">
+       Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_reference_vm.html">
+       microTVM Reference Virtual Machines
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_tflite.html">
+       microTVM with TFLite Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../extend_tvm/index.html">
+     Extend TVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/low_level_custom_pass.html">
+       Writing a Customized Pass
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/use_pass_infra.html">
+       How to Use TVM Pass Infra
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/use_pass_instrument.html">
+       How to Use TVM Pass Instrument
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/bring_your_own_datatypes.html">
+       Bring Your Own Datatypes to TVM
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../topic/vta/tutorials/index.html">
+   VTA 教程
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+  <label for="toctree-checkbox-12">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../topic/vta/tutorials/vta_get_started.html">
+     Get Started with VTA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../topic/vta/tutorials/matrix_multiply.html">
+     Simple Matrix Multiply
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/frontend/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/frontend/deploy_classification.html">
+       在 VTA 上从 MxNet 部署预先训练的视觉模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/frontend/deploy_detection.html">
+       Deploy Pretrained Vision Detection Model from Darknet on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/optimize/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/optimize/convolution_opt.html">
+       2D Convolution Optimization
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/optimize/matrix_multiply_opt.html">
+       Matrix Multiply Blocking
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/autotvm/index.html">
+     Auto tuning
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/autotvm/tune_alu_vta.html">
+       Auto-tuning a ALU fused op on VTA
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/autotvm/tune_relay_vta.html">
+       Auto-tuning a convolutional network on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../vta/index.html">
+   VTA 指南
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../test.html">
+   草稿
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pytorch">
+   部署已量化的 PyTorch 模型
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#torchvision-mobilenet-v2">
+   从 torchvision 加载量化准备，预训练的 Mobilenet v2 模型
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pytorch-mobilenet-v2">
+   量化，跟踪和运行 PyTorch Mobilenet v2 模型
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pytorch-mobilenet-v2-relay-qnn">
+   使用 PyTorch 前端将量化的 Mobilenet v2 转换为 Relay-QNN
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#relay">
+   编译和运行 Relay 模块
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   计算输出标签
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   性能度量
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#deploy-a-quantized-mxnet-model">
+   Deploy a quantized MXNet Model
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#deploy-a-quantized-tflite-model">
+   Deploy a quantized TFLite Model
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/how_to/deploy_models/deploy_prequantized.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="tvm">
+<h1>使用 TVM 部署框架预量化模型<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h1>
+<p><strong>原作者</strong>: <a class="reference external" href="https://github.com/masahi">Masahiro Masuda</a></p>
+<p>这是关于将深度学习框架量化的模型加载到 TVM 的教程。预量化模型导入是 TVM 中量化支持的一种。TVM 中量化的更多细节可以在<a class="reference external" href="https://discuss.tvm.apache.org/t/quantization-story/3920">这里</a>找到。</p>
+<p>这里，将演示如何加载和运行由 PyTorch、MXNet 和 TFLite 量化的模型。一旦加载，就可以在任何 TVM 支持的硬件上运行已编译的、量化的模型。</p>
+<p>首先，一些必备的载入：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torchvision.models.quantization</span> <span class="kn">import</span> <span class="n">mobilenet</span> <span class="k">as</span> <span class="n">qmobilenet</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>加载 TVM 库：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="p">)])</span>
+<span class="kn">from</span> <span class="nn">utils.tvm</span> <span class="kn">import</span> <span class="n">set_env</span>
+
+
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+<span class="kn">from</span> <span class="nn">tvm.contrib.download</span> <span class="kn">import</span> <span class="n">download_testdata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
+TVM 根目录： /media/pc/data/4tb/lxw/study/tvm
+</pre></div>
+</div>
+</div>
+</div>
+<p>运行演示程序的辅助函数：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_transform</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+
+    <span class="n">normalize</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="n">normalize</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_real_image</span><span class="p">(</span><span class="n">im_height</span><span class="p">,</span> <span class="n">im_width</span><span class="p">):</span>
+    <span class="n">img_url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/dmlc/mxnet.js/blob/main/data/cat.png?raw=true&quot;</span>
+    <span class="n">img_path</span> <span class="o">=</span> <span class="n">download_testdata</span><span class="p">(</span><span class="n">img_url</span><span class="p">,</span> <span class="s2">&quot;cat.png&quot;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">im_height</span><span class="p">,</span> <span class="n">im_width</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">get_imagenet_input</span><span class="p">():</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">get_real_image</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+    <span class="n">preprocess</span> <span class="o">=</span> <span class="n">get_transform</span><span class="p">()</span>
+    <span class="n">pt_tensor</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">pt_tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_synset</span><span class="p">():</span>
+    <span class="n">synset_url</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;https://gist.githubusercontent.com/zhreshold/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;4d0b62f3d01426887599d4f7ede23ee5/raw/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;596b27d23537e5a1b5751d2b0481ef172f58b539/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;imagenet1000_clsid_to_human.txt&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">synset_name</span> <span class="o">=</span> <span class="s2">&quot;imagenet1000_clsid_to_human.txt&quot;</span>
+    <span class="n">synset_path</span> <span class="o">=</span> <span class="n">download_testdata</span><span class="p">(</span><span class="n">synset_url</span><span class="p">,</span> <span class="n">synset_name</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">synset_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">run_tvm_model</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;llvm&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">lib</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="n">runtime</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_executor</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+
+    <span class="n">runtime</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">inp</span><span class="p">)</span>
+    <span class="n">runtime</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">runtime</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">runtime</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>从标签到类名的映射，以验证下面模型的输出是合理的：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">synset</span> <span class="o">=</span> <span class="n">get_synset</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>大家最喜欢的猫的图像演示：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inp</span> <span class="o">=</span> <span class="n">get_imagenet_input</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="pytorch">
+<h2>部署已量化的 PyTorch 模型<a class="headerlink" href="#pytorch" title="永久链接至标题">#</a></h2>
+<p>首先，演示如何使用 PyTorch 前端加载由 PyTorch 量化的深度学习模型。</p>
+<p>请参阅 <a class="reference external" href="https://pytorch.org/tutorials/advanced/static_quantization_tutorial.html">PyTorch 静态量化教程</a>，了解它们的量化工作流程。</p>
+<p>使用 <code class="xref py py-func docutils literal notranslate"><span class="pre">quantize_model()</span></code> 函数来量化 PyTorch 模型。简而言之，此函数采取浮点模型，并将其转换为 uint8。模型是逐通道量化的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">quantize_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fuse_model</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">qconfig</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">get_default_qconfig</span><span class="p">(</span><span class="s2">&quot;fbgemm&quot;</span><span class="p">)</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Dummy calibration</span>
+    <span class="n">model</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="torchvision-mobilenet-v2">
+<h2>从 torchvision 加载量化准备，预训练的 Mobilenet v2 模型<a class="headerlink" href="#torchvision-mobilenet-v2" title="永久链接至标题">#</a></h2>
+<p>选择 mobilenet v2 是因为此模型是用量化感知训练训练的。其他模型需要完整的后训练校准。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qmodel</span> <span class="o">=</span> <span class="n">qmobilenet</span><span class="o">.</span><span class="n">mobilenet_v2</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pytorch-mobilenet-v2">
+<h2>量化，跟踪和运行 PyTorch Mobilenet v2 模型<a class="headerlink" href="#pytorch-mobilenet-v2" title="永久链接至标题">#</a></h2>
+<p>详细信息超出了本教程的范围。请参考 PyTorch 网站上的教程来学习 quantization 和 jit。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pt_inp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+<span class="n">quantize_model</span><span class="p">(</span><span class="n">qmodel</span><span class="p">,</span> <span class="n">pt_inp</span><span class="p">)</span>
+<span class="n">script_module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">qmodel</span><span class="p">,</span> <span class="n">pt_inp</span><span class="p">)</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">pt_result</span> <span class="o">=</span> <span class="n">script_module</span><span class="p">(</span><span class="n">pt_inp</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/pc/data/4tb/lxw/anaconda3/envs/tvm-base/lib/python3.10/site-packages/torch/ao/quantization/observer.py:177: UserWarning: Please use quant_min and quant_max to specify the range for observers.                     reduce_range will be deprecated in a future release of PyTorch.
+  warnings.warn(
+/media/pc/data/4tb/lxw/anaconda3/envs/tvm-base/lib/python3.10/site-packages/torch/ao/quantization/observer.py:1124: UserWarning: must run observer before calling calculate_qparams.                                    Returning default scale and zero point 
+  warnings.warn(
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pytorch-mobilenet-v2-relay-qnn">
+<h2>使用 PyTorch 前端将量化的 Mobilenet v2 转换为 Relay-QNN<a class="headerlink" href="#pytorch-mobilenet-v2-relay-qnn" title="永久链接至标题">#</a></h2>
+<p>PyTorch 前端支持将量化的 PyTorch 模型转换为具有量化感知算子（quantization-aware operator）的等效 Relay 模块。称这种表示 Relay QNN dialect。</p>
+<p>可以从前端打印输出，以查看量化模型是如何表示的。</p>
+<p>将看到针对量化的运算符，如 <code class="docutils literal notranslate"><span class="pre">qnn.quantize</span></code>、<code class="docutils literal notranslate"><span class="pre">qnn.dequantize</span></code>、<code class="docutils literal notranslate"><span class="pre">qnn.requantize</span></code> 和 <code class="docutils literal notranslate"><span class="pre">qnn.conv2d</span></code> 等等。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_name</span> <span class="o">=</span> <span class="s2">&quot;input&quot;</span>  <span class="c1"># the input name can be be arbitrary for PyTorch frontend.</span>
+<span class="n">input_shapes</span> <span class="o">=</span> <span class="p">[(</span><span class="n">input_name</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))]</span>
+<span class="n">mod</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_pytorch</span><span class="p">(</span><span class="n">script_module</span><span class="p">,</span> <span class="n">input_shapes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mod</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">])</span> <span class="c1"># comment in to see the QNN IR dump</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fn (%input: Tensor[(1, 3, 224, 224), float32], %features.0.0_weight: Tensor[(32, 3, 3, 3), float32], %features.0.0_bias: Tensor[(32), float32], %features.1.conv.0.0_weight: Tensor[(32, 1, 3, 3), float32], %features.1.conv.0.0_bias: Tensor[(32), float32], %features.1.conv.1_weight: Tensor[(16, 32, 1, 1), float32], %features.1.conv.1_bias: Tensor[(16), float32], %features.2.conv.0.0_weight: Tensor[(96, 16, 1, 1), float32], %features.2.conv.0.0_bias: Tensor[(96), float32], %features.2.conv.1.0_weight: Tensor[(96, 1, 3, 3), float32], %features.2.conv.1.0_bias: Tensor[(96), float32], %features.2.conv.2_weight: Tensor[(24, 96, 1, 1), float32], %features.2.conv.2_bias: Tensor[(24), float32], %features.3.conv.0.0_weight: Tensor[(144, 24, 1, 1), float32], %features.3.conv.0.0_bias: Tensor[(144), float32], %features.3.conv.1.0_weight: Tensor[(144, 1, 3, 3), float32], %features.3.conv.1.0_bias: Tensor[(144), float32], %features.3.conv.2_weight: Tensor[(24, 144, 1, 1), float32], %features.3.conv.2_bias: Tensor[(24), float32], %features.4.conv.0.0_weight: Tensor[(144, 24, 1, 1), float32], %features.4.conv.0.0_bias: Tensor[(144), float32], %features.4.conv.1.0_weight: Tensor[(144, 1, 3, 3), float32], %features.4.conv.1.0_bias: Tensor[(144), float32], %features.4.conv.2_weight: Tensor[(32, 144, 1, 1), float32], %features.4.conv.2_bias: Tensor[(32), float32], %features.5.conv.0.0_weight: Tensor[(192, 32, 1, 1), float32], %features.5.conv.0.0_bias: Tensor[(192), float32], %features.5.conv.1.0_weight: Tensor[(192, 1, 3, 3), float32], %features.5.conv.1.0_bias: Tensor[(192), float32], %features.5.conv.2_weight: Tensor[(32, 192, 1, 1), float32], %features.5.conv.2_bias: Tensor[(32), float32], %features.6.conv.0.0_weight: Tensor[(192, 32, 1, 1), float32], %features.6.conv.0.0_bias: Tensor[(192), float32], %features.6.conv.1.0_weight: Tensor[(192, 1, 3, 3), float32], %features.6.conv.1.0_bias: Tensor[(192), float32], %features.6.conv.2_weight: Tensor[(32, 192, 1, 1), float32], %features.6.conv.2_bias: Tensor[(32), float32], %features.7.conv.0.0_weight: Tensor[(192, 32, 1, 1), float32], %features.7.conv.0.0_bias: Tensor[(192), float32], %features.7.conv.1.0_weight: Tensor[(192, 1, 3, 3), float32], %features.7.conv.1.0_bias: Tensor[(192), float32], %features.7.conv.2_weight: Tensor[(64, 192, 1, 1), float32], %features.7.conv.2_bias: Tensor[(64), float32], %features.8.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.8.conv.0.0_bias: Tensor[(384), float32], %features.8.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.8.conv.1.0_bias: Tensor[(384), float32], %features.8.conv.2_weight: Tensor[(64, 384, 1, 1), float32], %features.8.conv.2_bias: Tensor[(64), float32], %features.9.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.9.conv.0.0_bias: Tensor[(384), float32], %features.9.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.9.conv.1.0_bias: Tensor[(384), float32], %features.9.conv.2_weight: Tensor[(64, 384, 1, 1), float32], %features.9.conv.2_bias: Tensor[(64), float32], %features.10.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.10.conv.0.0_bias: Tensor[(384), float32], %features.10.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.10.conv.1.0_bias: Tensor[(384), float32], %features.10.conv.2_weight: Tensor[(64, 384, 1, 1), float32], %features.10.conv.2_bias: Tensor[(64), float32], %features.11.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.11.conv.0.0_bias: Tensor[(384), float32], %features.11.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.11.conv.1.0_bias: Tensor[(384), float32], %features.11.conv.2_weight: Tensor[(96, 384, 1, 1), float32], %features.11.conv.2_bias: Tensor[(96), float32], %features.12.conv.0.0_weight: Tensor[(576, 96, 1, 1), float32], %features.12.conv.0.0_bias: Tensor[(576), float32], %features.12.conv.1.0_weight: Tensor[(576, 1, 3, 3), float32], %features.12.conv.1.0_bias: Tensor[(576), float32], %features.12.conv.2_weight: Tensor[(96, 576, 1, 1), float32], %features.12.conv.2_bias: Tensor[(96), float32], %features.13.conv.0.0_weight: Tensor[(576, 96, 1, 1), float32], %features.13.conv.0.0_bias: Tensor[(576), float32], %features.13.conv.1.0_weight: Tensor[(576, 1, 3, 3), float32], %features.13.conv.1.0_bias: Tensor[(576), float32], %features.13.conv.2_weight: Tensor[(96, 576, 1, 1), float32], %features.13.conv.2_bias: Tensor[(96), float32], %features.14.conv.0.0_weight: Tensor[(576, 96, 1, 1), float32], %features.14.conv.0.0_bias: Tensor[(576), float32], %features.14.conv.1.0_weight: Tensor[(576, 1, 3, 3), float32], %features.14.conv.1.0_bias: Tensor[(576), float32], %features.14.conv.2_weight: Tensor[(160, 576, 1, 1), float32], %features.14.conv.2_bias: Tensor[(160), float32], %features.15.conv.0.0_weight: Tensor[(960, 160, 1, 1), float32], %features.15.conv.0.0_bias: Tensor[(960), float32], %features.15.conv.1.0_weight: Tensor[(960, 1, 3, 3), float32], %features.15.conv.1.0_bias: Tensor[(960), float32], %features.15.conv.2_weight: Tensor[(160, 960, 1, 1), float32], %features.15.conv.2_bias: Tensor[(160), float32], %features.16.conv.0.0_weight: Tensor[(960, 160, 1, 1), float32], %features.16.conv.0.0_bias: Tensor[(960), float32], %features.16.conv.1.0_weight: Tensor[(960, 1, 3, 3), float32], %features.16.conv.1.0_bias: Tensor[(960), float32], %features.16.conv.2_weight: Tensor[(160, 960, 1, 1), float32], %features.16.conv.2_bias: Tensor[(160), float32], %features.17.conv.0.0_weight: Tensor[(960, 160, 1, 1), float32], %features.17.conv.0.0_bias: Tensor[(960), float32], %features.17.conv.1.0_weight: Tensor[(960, 1, 3, 3), float32], %features.17.conv.1.0_bias: Tensor[(960), float32], %features.17.conv.2_weight: Tensor[(320, 960, 1, 1), float32], %features.17.conv.2_bias: Tensor[(320), float32], %features.18.0_weight: Tensor[(1280, 320, 1, 1), float32], %features.18.0_bias: Tensor[(1280), float32], %classifier.1._packed_params_weight: Tensor[(1000, 1280), float32], %classifier.1._packed_params_bias: Tensor[(1000), float32]) {
+  %0 = qnn.quantize(%input, 0.0359743f, 54, out_dtype=&quot;uint8&quot;, axis=1);
+  %1 = nn.pad(%0, 54f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %2 = qnn.quantize(%features.0.0_weight, meta[relay.Constant][0], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %3 = qnn.conv2d(%1, %2, 54, 0, 0.0359743f, meta[relay.Constant][0], strides=[2, 2], padding=[0, 0, 0, 0], channels=32, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %4 = qnn.quantize(%features.0.0_bias, meta[relay.Constant][1], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %5 = nn.bias_add(%3, %4);
+  %6 = qnn.requantize(%5, meta[relay.Constant][2], 0, 0.0132992f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %7 = clip(%6, a_min=0f, a_max=255f);
+  %8 = cast(%7, dtype=&quot;uint8&quot;);
+  %9 = nn.pad(%8, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %10 = qnn.quantize(%features.1.conv.0.0_weight, meta[relay.Constant][3], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %11 = qnn.conv2d(%9, %10, 0, 0, 0.0132992f, meta[relay.Constant][3], padding=[0, 0, 0, 0], groups=32, channels=32, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %12 = qnn.quantize(%features.1.conv.0.0_bias, meta[relay.Constant][4], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %13 = nn.bias_add(%11, %12);
+  %14 = qnn.requantize(%13, meta[relay.Constant][5], 0, 0.0710117f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %15 = clip(%14, a_min=0f, a_max=255f);
+  %16 = cast(%15, dtype=&quot;uint8&quot;);
+  %17 = qnn.quantize(%features.1.conv.1_weight, meta[relay.Constant][6], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %18 = qnn.conv2d(%16, %17, 0, 0, 0.0710117f, meta[relay.Constant][6], padding=[0, 0, 0, 0], channels=16, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %19 = qnn.quantize(%features.1.conv.1_bias, meta[relay.Constant][7], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %20 = nn.bias_add(%18, %19);
+  %21 = qnn.requantize(%20, meta[relay.Constant][8], 0, 0.0674597f, 58, axis=1, out_dtype=&quot;int32&quot;);
+  %22 = clip(%21, a_min=0f, a_max=255f);
+  %23 = cast(%22, dtype=&quot;uint8&quot;);
+  %24 = qnn.quantize(%features.2.conv.0.0_weight, meta[relay.Constant][9], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %25 = qnn.conv2d(%23, %24, 58, 0, 0.0674597f, meta[relay.Constant][9], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %26 = qnn.quantize(%features.2.conv.0.0_bias, meta[relay.Constant][10], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %27 = nn.bias_add(%25, %26);
+  %28 = qnn.requantize(%27, meta[relay.Constant][11], 0, 0.0274019f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %29 = clip(%28, a_min=0f, a_max=255f);
+  %30 = cast(%29, dtype=&quot;uint8&quot;);
+  %31 = nn.pad(%30, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %32 = qnn.quantize(%features.2.conv.1.0_weight, meta[relay.Constant][12], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %33 = qnn.conv2d(%31, %32, 0, 0, 0.0274019f, meta[relay.Constant][12], strides=[2, 2], padding=[0, 0, 0, 0], groups=96, channels=96, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %34 = qnn.quantize(%features.2.conv.1.0_bias, meta[relay.Constant][13], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %35 = nn.bias_add(%33, %34);
+  %36 = qnn.requantize(%35, meta[relay.Constant][14], 0, 0.018431f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %37 = clip(%36, a_min=0f, a_max=255f);
+  %38 = cast(%37, dtype=&quot;uint8&quot;);
+  %39 = qnn.quantize(%features.2.conv.2_weight, meta[relay.Constant][15], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %40 = qnn.conv2d(%38, %39, 0, 0, 0.018431f, meta[relay.Constant][15], padding=[0, 0, 0, 0], channels=24, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %41 = qnn.quantize(%features.2.conv.2_bias, meta[relay.Constant][16], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %42 = nn.bias_add(%40, %41);
+  %43 = qnn.requantize(%42, meta[relay.Constant][17], 0, 0.044329f, 59, axis=1, out_dtype=&quot;int32&quot;);
+  %44 = clip(%43, a_min=0f, a_max=255f);
+  %45 = cast(%44, dtype=&quot;uint8&quot;);
+  %46 = qnn.quantize(%features.3.conv.0.0_weight, meta[relay.Constant][18], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %47 = qnn.conv2d(%45, %46, 59, 0, 0.044329f, meta[relay.Constant][18], padding=[0, 0, 0, 0], channels=144, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %48 = qnn.quantize(%features.3.conv.0.0_bias, meta[relay.Constant][19], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %49 = nn.bias_add(%47, %48);
+  %50 = qnn.requantize(%49, meta[relay.Constant][20], 0, 0.00914225f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %51 = clip(%50, a_min=0f, a_max=255f);
+  %52 = cast(%51, dtype=&quot;uint8&quot;);
+  %53 = nn.pad(%52, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %54 = qnn.quantize(%features.3.conv.1.0_weight, meta[relay.Constant][21], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %55 = qnn.conv2d(%53, %54, 0, 0, 0.00914225f, meta[relay.Constant][21], padding=[0, 0, 0, 0], groups=144, channels=144, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %56 = qnn.quantize(%features.3.conv.1.0_bias, meta[relay.Constant][22], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %57 = nn.bias_add(%55, %56);
+  %58 = qnn.requantize(%57, meta[relay.Constant][23], 0, 0.0202167f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %59 = clip(%58, a_min=0f, a_max=255f);
+  %60 = cast(%59, dtype=&quot;uint8&quot;);
+  %61 = qnn.quantize(%features.3.conv.2_weight, meta[relay.Constant][24], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %62 = qnn.conv2d(%60, %61, 0, 0, 0.0202167f, meta[relay.Constant][24], padding=[0, 0, 0, 0], channels=24, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %63 = qnn.quantize(%features.3.conv.2_bias, meta[relay.Constant][25], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %64 = nn.bias_add(%62, %63);
+  %65 = qnn.requantize(%64, meta[relay.Constant][26], 0, 0.0576775f, 58, axis=1, out_dtype=&quot;int32&quot;);
+  %66 = clip(%65, a_min=0f, a_max=255f);
+  %67 = cast(%66, dtype=&quot;uint8&quot;);
+  %68 = qnn.add(%45, %67, 0.044329f, 59, 0.0576775f, 58, 0.0764764f, 61);
+  %69 = qnn.quantize(%features.4.conv.0.0_weight, meta[relay.Constant][27], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %70 = qnn.conv2d(%68, %69, 61, 0, 0.0764764f, meta[relay.Constant][27], padding=[0, 0, 0, 0], channels=144, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %71 = qnn.quantize(%features.4.conv.0.0_bias, meta[relay.Constant][28], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %72 = nn.bias_add(%70, %71);
+  %73 = qnn.requantize(%72, meta[relay.Constant][29], 0, 0.0126277f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %74 = clip(%73, a_min=0f, a_max=255f);
+  %75 = cast(%74, dtype=&quot;uint8&quot;);
+  %76 = nn.pad(%75, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %77 = qnn.quantize(%features.4.conv.1.0_weight, meta[relay.Constant][30], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %78 = qnn.conv2d(%76, %77, 0, 0, 0.0126277f, meta[relay.Constant][30], strides=[2, 2], padding=[0, 0, 0, 0], groups=144, channels=144, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %79 = qnn.quantize(%features.4.conv.1.0_bias, meta[relay.Constant][31], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %80 = nn.bias_add(%78, %79);
+  %81 = qnn.requantize(%80, meta[relay.Constant][32], 0, 0.0223427f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %82 = clip(%81, a_min=0f, a_max=255f);
+  %83 = cast(%82, dtype=&quot;uint8&quot;);
+  %84 = qnn.quantize(%features.4.conv.2_weight, meta[relay.Constant][33], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %85 = qnn.conv2d(%83, %84, 0, 0, 0.0223427f, meta[relay.Constant][33], padding=[0, 0, 0, 0], channels=32, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %86 = qnn.quantize(%features.4.conv.2_bias, meta[relay.Constant][34], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %87 = nn.bias_add(%85, %86);
+  %88 = qnn.requantize(%87, meta[relay.Constant][35], 0, 0.0386601f, 72, axis=1, out_dtype=&quot;int32&quot;);
+  %89 = clip(%88, a_min=0f, a_max=255f);
+  %90 = cast(%89, dtype=&quot;uint8&quot;);
+  %91 = qnn.quantize(%features.5.conv.0.0_weight, meta[relay.Constant][36], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %92 = qnn.conv2d(%90, %91, 72, 0, 0.0386601f, meta[relay.Constant][36], padding=[0, 0, 0, 0], channels=192, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %93 = qnn.quantize(%features.5.conv.0.0_bias, meta[relay.Constant][37], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %94 = nn.bias_add(%92, %93);
+  %95 = qnn.requantize(%94, meta[relay.Constant][38], 0, 0.00836057f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %96 = clip(%95, a_min=0f, a_max=255f);
+  %97 = cast(%96, dtype=&quot;uint8&quot;);
+  %98 = nn.pad(%97, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %99 = qnn.quantize(%features.5.conv.1.0_weight, meta[relay.Constant][39], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %100 = qnn.conv2d(%98, %99, 0, 0, 0.00836057f, meta[relay.Constant][39], padding=[0, 0, 0, 0], groups=192, channels=192, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %101 = qnn.quantize(%features.5.conv.1.0_bias, meta[relay.Constant][40], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %102 = nn.bias_add(%100, %101);
+  %103 = qnn.requantize(%102, meta[relay.Constant][41], 0, 0.0112039f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %104 = clip(%103, a_min=0f, a_max=255f);
+  %105 = cast(%104, dtype=&quot;uint8&quot;);
+  %106 = qnn.quantize(%features.5.conv.2_weight, meta[relay.Constant][42], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %107 = qnn.conv2d(%105, %106, 0, 0, 0.0112039f, meta[relay.Constant][42], padding=[0, 0, 0, 0], channels=32, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %108 = qnn.quantize(%features.5.conv.2_bias, meta[relay.Constant][43], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %109 = nn.bias_add(%107, %108);
+  %110 = qnn.requantize(%109, meta[relay.Constant][44], 0, 0.0291111f, 69, axis=1, out_dtype=&quot;int32&quot;);
+  %111 = clip(%110, a_min=0f, a_max=255f);
+  %112 = cast(%111, dtype=&quot;uint8&quot;);
+  %113 = qnn.add(%90, %112, 0.0386601f, 72, 0.0291111f, 69, 0.049797f, 74);
+  %114 = qnn.quantize(%features.6.conv.0.0_weight, meta[relay.Constant][45], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %115 = qnn.conv2d(%113, %114, 74, 0, 0.049797f, meta[relay.Constant][45], padding=[0, 0, 0, 0], channels=192, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %116 = qnn.quantize(%features.6.conv.0.0_bias, meta[relay.Constant][46], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %117 = nn.bias_add(%115, %116);
+  %118 = qnn.requantize(%117, meta[relay.Constant][47], 0, 0.0105545f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %119 = clip(%118, a_min=0f, a_max=255f);
+  %120 = cast(%119, dtype=&quot;uint8&quot;);
+  %121 = nn.pad(%120, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %122 = qnn.quantize(%features.6.conv.1.0_weight, meta[relay.Constant][48], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %123 = qnn.conv2d(%121, %122, 0, 0, 0.0105545f, meta[relay.Constant][48], padding=[0, 0, 0, 0], groups=192, channels=192, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %124 = qnn.quantize(%features.6.conv.1.0_bias, meta[relay.Constant][49], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %125 = nn.bias_add(%123, %124);
+  %126 = qnn.requantize(%125, meta[relay.Constant][50], 0, 0.0122615f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %127 = clip(%126, a_min=0f, a_max=255f);
+  %128 = cast(%127, dtype=&quot;uint8&quot;);
+  %129 = qnn.quantize(%features.6.conv.2_weight, meta[relay.Constant][51], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %130 = qnn.conv2d(%128, %129, 0, 0, 0.0122615f, meta[relay.Constant][51], padding=[0, 0, 0, 0], channels=32, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %131 = qnn.quantize(%features.6.conv.2_bias, meta[relay.Constant][52], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %132 = nn.bias_add(%130, %131);
+  %133 = qnn.requantize(%132, meta[relay.Constant][53], 0, 0.0446687f, 62, axis=1, out_dtype=&quot;int32&quot;);
+  %134 = clip(%133, a_min=0f, a_max=255f);
+  %135 = cast(%134, dtype=&quot;uint8&quot;);
+  %136 = qnn.add(%113, %135, 0.049797f, 74, 0.0446687f, 62, 0.0765793f, 66);
+  %137 = qnn.quantize(%features.7.conv.0.0_weight, meta[relay.Constant][54], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %138 = qnn.conv2d(%136, %137, 66, 0, 0.0765793f, meta[relay.Constant][54], padding=[0, 0, 0, 0], channels=192, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %139 = qnn.quantize(%features.7.conv.0.0_bias, meta[relay.Constant][55], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %140 = nn.bias_add(%138, %139);
+  %141 = qnn.requantize(%140, meta[relay.Constant][56], 0, 0.0156126f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %142 = clip(%141, a_min=0f, a_max=255f);
+  %143 = cast(%142, dtype=&quot;uint8&quot;);
+  %144 = nn.pad(%143, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %145 = qnn.quantize(%features.7.conv.1.0_weight, meta[relay.Constant][57], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %146 = qnn.conv2d(%144, %145, 0, 0, 0.0156126f, meta[relay.Constant][57], strides=[2, 2], padding=[0, 0, 0, 0], groups=192, channels=192, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %147 = qnn.quantize(%features.7.conv.1.0_bias, meta[relay.Constant][58], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %148 = nn.bias_add(%146, %147);
+  %149 = qnn.requantize(%148, meta[relay.Constant][59], 0, 0.0258851f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %150 = clip(%149, a_min=0f, a_max=255f);
+  %151 = cast(%150, dtype=&quot;uint8&quot;);
+  %152 = qnn.quantize(%features.7.conv.2_weight, meta[relay.Constant][60], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %153 = qnn.conv2d(%151, %152, 0, 0, 0.0258851f, meta[relay.Constant][60], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %154 = qnn.quantize(%features.7.conv.2_bias, meta[relay.Constant][61], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %155 = nn.bias_add(%153, %154);
+  %156 = qnn.requantize(%155, meta[relay.Constant][62], 0, 0.0366653f, 68, axis=1, out_dtype=&quot;int32&quot;);
+  %157 = clip(%156, a_min=0f, a_max=255f);
+  %158 = cast(%157, dtype=&quot;uint8&quot;);
+  %159 = qnn.quantize(%features.8.conv.0.0_weight, meta[relay.Constant][63], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %160 = qnn.conv2d(%158, %159, 68, 0, 0.0366653f, meta[relay.Constant][63], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %161 = qnn.quantize(%features.8.conv.0.0_bias, meta[relay.Constant][64], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %162 = nn.bias_add(%160, %161);
+  %163 = qnn.requantize(%162, meta[relay.Constant][65], 0, 0.00672913f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %164 = clip(%163, a_min=0f, a_max=255f);
+  %165 = cast(%164, dtype=&quot;uint8&quot;);
+  %166 = nn.pad(%165, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %167 = qnn.quantize(%features.8.conv.1.0_weight, meta[relay.Constant][66], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %168 = qnn.conv2d(%166, %167, 0, 0, 0.00672913f, meta[relay.Constant][66], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %169 = qnn.quantize(%features.8.conv.1.0_bias, meta[relay.Constant][67], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %170 = nn.bias_add(%168, %169);
+  %171 = qnn.requantize(%170, meta[relay.Constant][68], 0, 0.0121738f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %172 = clip(%171, a_min=0f, a_max=255f);
+  %173 = cast(%172, dtype=&quot;uint8&quot;);
+  %174 = qnn.quantize(%features.8.conv.2_weight, meta[relay.Constant][69], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %175 = qnn.conv2d(%173, %174, 0, 0, 0.0121738f, meta[relay.Constant][69], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %176 = qnn.quantize(%features.8.conv.2_bias, meta[relay.Constant][70], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %177 = nn.bias_add(%175, %176);
+  %178 = qnn.requantize(%177, meta[relay.Constant][71], 0, 0.025833f, 69, axis=1, out_dtype=&quot;int32&quot;);
+  %179 = clip(%178, a_min=0f, a_max=255f);
+  %180 = cast(%179, dtype=&quot;uint8&quot;);
+  %181 = qnn.add(%158, %180, 0.0366653f, 68, 0.025833f, 69, 0.0461001f, 70);
+  %182 = qnn.quantize(%features.9.conv.0.0_weight, meta[relay.Constant][72], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %183 = qnn.conv2d(%181, %182, 70, 0, 0.0461001f, meta[relay.Constant][72], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %184 = qnn.quantize(%features.9.conv.0.0_bias, meta[relay.Constant][73], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %185 = nn.bias_add(%183, %184);
+  %186 = qnn.requantize(%185, meta[relay.Constant][74], 0, 0.00661229f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %187 = clip(%186, a_min=0f, a_max=255f);
+  %188 = cast(%187, dtype=&quot;uint8&quot;);
+  %189 = nn.pad(%188, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %190 = qnn.quantize(%features.9.conv.1.0_weight, meta[relay.Constant][75], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %191 = qnn.conv2d(%189, %190, 0, 0, 0.00661229f, meta[relay.Constant][75], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %192 = qnn.quantize(%features.9.conv.1.0_bias, meta[relay.Constant][76], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %193 = nn.bias_add(%191, %192);
+  %194 = qnn.requantize(%193, meta[relay.Constant][77], 0, 0.0111176f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %195 = clip(%194, a_min=0f, a_max=255f);
+  %196 = cast(%195, dtype=&quot;uint8&quot;);
+  %197 = qnn.quantize(%features.9.conv.2_weight, meta[relay.Constant][78], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %198 = qnn.conv2d(%196, %197, 0, 0, 0.0111176f, meta[relay.Constant][78], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %199 = qnn.quantize(%features.9.conv.2_bias, meta[relay.Constant][79], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %200 = nn.bias_add(%198, %199);
+  %201 = qnn.requantize(%200, meta[relay.Constant][80], 0, 0.0231473f, 68, axis=1, out_dtype=&quot;int32&quot;);
+  %202 = clip(%201, a_min=0f, a_max=255f);
+  %203 = cast(%202, dtype=&quot;uint8&quot;);
+  %204 = qnn.add(%181, %203, 0.0461001f, 70, 0.0231473f, 68, 0.0460796f, 67);
+  %205 = qnn.quantize(%features.10.conv.0.0_weight, meta[relay.Constant][81], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %206 = qnn.conv2d(%204, %205, 67, 0, 0.0460796f, meta[relay.Constant][81], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %207 = qnn.quantize(%features.10.conv.0.0_bias, meta[relay.Constant][82], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %208 = nn.bias_add(%206, %207);
+  %209 = qnn.requantize(%208, meta[relay.Constant][83], 0, 0.00706947f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %210 = clip(%209, a_min=0f, a_max=255f);
+  %211 = cast(%210, dtype=&quot;uint8&quot;);
+  %212 = nn.pad(%211, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %213 = qnn.quantize(%features.10.conv.1.0_weight, meta[relay.Constant][84], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %214 = qnn.conv2d(%212, %213, 0, 0, 0.00706947f, meta[relay.Constant][84], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %215 = qnn.quantize(%features.10.conv.1.0_bias, meta[relay.Constant][85], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %216 = nn.bias_add(%214, %215);
+  %217 = qnn.requantize(%216, meta[relay.Constant][86], 0, 0.0126431f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %218 = clip(%217, a_min=0f, a_max=255f);
+  %219 = cast(%218, dtype=&quot;uint8&quot;);
+  %220 = qnn.quantize(%features.10.conv.2_weight, meta[relay.Constant][87], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %221 = qnn.conv2d(%219, %220, 0, 0, 0.0126431f, meta[relay.Constant][87], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %222 = qnn.quantize(%features.10.conv.2_bias, meta[relay.Constant][88], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %223 = nn.bias_add(%221, %222);
+  %224 = qnn.requantize(%223, meta[relay.Constant][89], 0, 0.0226677f, 66, axis=1, out_dtype=&quot;int32&quot;);
+  %225 = clip(%224, a_min=0f, a_max=255f);
+  %226 = cast(%225, dtype=&quot;uint8&quot;);
+  %227 = qnn.add(%204, %226, 0.0460796f, 67, 0.0226677f, 66, 0.0497065f, 66);
+  %228 = qnn.quantize(%features.11.conv.0.0_weight, meta[relay.Constant][90], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %229 = qnn.conv2d(%227, %228, 66, 0, 0.0497065f, meta[relay.Constant][90], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %230 = qnn.quantize(%features.11.conv.0.0_bias, meta[relay.Constant][91], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %231 = nn.bias_add(%229, %230);
+  %232 = qnn.requantize(%231, meta[relay.Constant][92], 0, 0.00856039f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %233 = clip(%232, a_min=0f, a_max=255f);
+  %234 = cast(%233, dtype=&quot;uint8&quot;);
+  %235 = nn.pad(%234, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %236 = qnn.quantize(%features.11.conv.1.0_weight, meta[relay.Constant][93], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %237 = qnn.conv2d(%235, %236, 0, 0, 0.00856039f, meta[relay.Constant][93], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %238 = qnn.quantize(%features.11.conv.1.0_bias, meta[relay.Constant][94], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %239 = nn.bias_add(%237, %238);
+  %240 = qnn.requantize(%239, meta[relay.Constant][95], 0, 0.0180649f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %241 = clip(%240, a_min=0f, a_max=255f);
+  %242 = cast(%241, dtype=&quot;uint8&quot;);
+  %243 = qnn.quantize(%features.11.conv.2_weight, meta[relay.Constant][96], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %244 = qnn.conv2d(%242, %243, 0, 0, 0.0180649f, meta[relay.Constant][96], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %245 = qnn.quantize(%features.11.conv.2_bias, meta[relay.Constant][97], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %246 = nn.bias_add(%244, %245);
+  %247 = qnn.requantize(%246, meta[relay.Constant][98], 0, 0.0334507f, 65, axis=1, out_dtype=&quot;int32&quot;);
+  %248 = clip(%247, a_min=0f, a_max=255f);
+  %249 = cast(%248, dtype=&quot;uint8&quot;);
+  %250 = qnn.quantize(%features.12.conv.0.0_weight, meta[relay.Constant][99], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %251 = qnn.conv2d(%249, %250, 65, 0, 0.0334507f, meta[relay.Constant][99], padding=[0, 0, 0, 0], channels=576, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %252 = qnn.quantize(%features.12.conv.0.0_bias, meta[relay.Constant][100], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %253 = nn.bias_add(%251, %252);
+  %254 = qnn.requantize(%253, meta[relay.Constant][101], 0, 0.0100234f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %255 = clip(%254, a_min=0f, a_max=255f);
+  %256 = cast(%255, dtype=&quot;uint8&quot;);
+  %257 = nn.pad(%256, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %258 = qnn.quantize(%features.12.conv.1.0_weight, meta[relay.Constant][102], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %259 = qnn.conv2d(%257, %258, 0, 0, 0.0100234f, meta[relay.Constant][102], padding=[0, 0, 0, 0], groups=576, channels=576, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %260 = qnn.quantize(%features.12.conv.1.0_bias, meta[relay.Constant][103], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %261 = nn.bias_add(%259, %260);
+  %262 = qnn.requantize(%261, meta[relay.Constant][104], 0, 0.0209109f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %263 = clip(%262, a_min=0f, a_max=255f);
+  %264 = cast(%263, dtype=&quot;uint8&quot;);
+  %265 = qnn.quantize(%features.12.conv.2_weight, meta[relay.Constant][105], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %266 = qnn.conv2d(%264, %265, 0, 0, 0.0209109f, meta[relay.Constant][105], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %267 = qnn.quantize(%features.12.conv.2_bias, meta[relay.Constant][106], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %268 = nn.bias_add(%266, %267);
+  %269 = qnn.requantize(%268, meta[relay.Constant][107], 0, 0.0344069f, 71, axis=1, out_dtype=&quot;int32&quot;);
+  %270 = clip(%269, a_min=0f, a_max=255f);
+  %271 = cast(%270, dtype=&quot;uint8&quot;);
+  %272 = qnn.add(%249, %271, 0.0334507f, 65, 0.0344069f, 71, 0.0492622f, 68);
+  %273 = qnn.quantize(%features.13.conv.0.0_weight, meta[relay.Constant][108], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %274 = qnn.conv2d(%272, %273, 68, 0, 0.0492622f, meta[relay.Constant][108], padding=[0, 0, 0, 0], channels=576, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %275 = qnn.quantize(%features.13.conv.0.0_bias, meta[relay.Constant][109], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %276 = nn.bias_add(%274, %275);
+  %277 = qnn.requantize(%276, meta[relay.Constant][110], 0, 0.00855432f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %278 = clip(%277, a_min=0f, a_max=255f);
+  %279 = cast(%278, dtype=&quot;uint8&quot;);
+  %280 = nn.pad(%279, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %281 = qnn.quantize(%features.13.conv.1.0_weight, meta[relay.Constant][111], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %282 = qnn.conv2d(%280, %281, 0, 0, 0.00855432f, meta[relay.Constant][111], padding=[0, 0, 0, 0], groups=576, channels=576, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %283 = qnn.quantize(%features.13.conv.1.0_bias, meta[relay.Constant][112], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %284 = nn.bias_add(%282, %283);
+  %285 = qnn.requantize(%284, meta[relay.Constant][113], 0, 0.018431f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %286 = clip(%285, a_min=0f, a_max=255f);
+  %287 = cast(%286, dtype=&quot;uint8&quot;);
+  %288 = qnn.quantize(%features.13.conv.2_weight, meta[relay.Constant][114], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %289 = qnn.conv2d(%287, %288, 0, 0, 0.018431f, meta[relay.Constant][114], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %290 = qnn.quantize(%features.13.conv.2_bias, meta[relay.Constant][115], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %291 = nn.bias_add(%289, %290);
+  %292 = qnn.requantize(%291, meta[relay.Constant][116], 0, 0.0394398f, 66, axis=1, out_dtype=&quot;int32&quot;);
+  %293 = clip(%292, a_min=0f, a_max=255f);
+  %294 = cast(%293, dtype=&quot;uint8&quot;);
+  %295 = qnn.add(%272, %294, 0.0492622f, 68, 0.0394398f, 66, 0.0541895f, 63);
+  %296 = qnn.quantize(%features.14.conv.0.0_weight, meta[relay.Constant][117], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %297 = qnn.conv2d(%295, %296, 63, 0, 0.0541895f, meta[relay.Constant][117], padding=[0, 0, 0, 0], channels=576, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %298 = qnn.quantize(%features.14.conv.0.0_bias, meta[relay.Constant][118], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %299 = nn.bias_add(%297, %298);
+  %300 = qnn.requantize(%299, meta[relay.Constant][119], 0, 0.0102233f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %301 = clip(%300, a_min=0f, a_max=255f);
+  %302 = cast(%301, dtype=&quot;uint8&quot;);
+  %303 = nn.pad(%302, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %304 = qnn.quantize(%features.14.conv.1.0_weight, meta[relay.Constant][120], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %305 = qnn.conv2d(%303, %304, 0, 0, 0.0102233f, meta[relay.Constant][120], strides=[2, 2], padding=[0, 0, 0, 0], groups=576, channels=576, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %306 = qnn.quantize(%features.14.conv.1.0_bias, meta[relay.Constant][121], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %307 = nn.bias_add(%305, %306);
+  %308 = qnn.requantize(%307, meta[relay.Constant][122], 0, 0.0202212f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %309 = clip(%308, a_min=0f, a_max=255f);
+  %310 = cast(%309, dtype=&quot;uint8&quot;);
+  %311 = qnn.quantize(%features.14.conv.2_weight, meta[relay.Constant][123], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %312 = qnn.conv2d(%310, %311, 0, 0, 0.0202212f, meta[relay.Constant][123], padding=[0, 0, 0, 0], channels=160, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %313 = qnn.quantize(%features.14.conv.2_bias, meta[relay.Constant][124], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %314 = nn.bias_add(%312, %313);
+  %315 = qnn.requantize(%314, meta[relay.Constant][125], 0, 0.0259642f, 60, axis=1, out_dtype=&quot;int32&quot;);
+  %316 = clip(%315, a_min=0f, a_max=255f);
+  %317 = cast(%316, dtype=&quot;uint8&quot;);
+  %318 = qnn.quantize(%features.15.conv.0.0_weight, meta[relay.Constant][126], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %319 = qnn.conv2d(%317, %318, 60, 0, 0.0259642f, meta[relay.Constant][126], padding=[0, 0, 0, 0], channels=960, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %320 = qnn.quantize(%features.15.conv.0.0_bias, meta[relay.Constant][127], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %321 = nn.bias_add(%319, %320);
+  %322 = qnn.requantize(%321, meta[relay.Constant][128], 0, 0.00756458f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %323 = clip(%322, a_min=0f, a_max=255f);
+  %324 = cast(%323, dtype=&quot;uint8&quot;);
+  %325 = nn.pad(%324, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %326 = qnn.quantize(%features.15.conv.1.0_weight, meta[relay.Constant][129], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %327 = qnn.conv2d(%325, %326, 0, 0, 0.00756458f, meta[relay.Constant][129], padding=[0, 0, 0, 0], groups=960, channels=960, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %328 = qnn.quantize(%features.15.conv.1.0_bias, meta[relay.Constant][130], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %329 = nn.bias_add(%327, %328);
+  %330 = qnn.requantize(%329, meta[relay.Constant][131], 0, 0.0160764f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %331 = clip(%330, a_min=0f, a_max=255f);
+  %332 = cast(%331, dtype=&quot;uint8&quot;);
+  %333 = qnn.quantize(%features.15.conv.2_weight, meta[relay.Constant][132], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %334 = qnn.conv2d(%332, %333, 0, 0, 0.0160764f, meta[relay.Constant][132], padding=[0, 0, 0, 0], channels=160, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %335 = qnn.quantize(%features.15.conv.2_bias, meta[relay.Constant][133], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %336 = nn.bias_add(%334, %335);
+  %337 = qnn.requantize(%336, meta[relay.Constant][134], 0, 0.0181289f, 54, axis=1, out_dtype=&quot;int32&quot;);
+  %338 = clip(%337, a_min=0f, a_max=255f);
+  %339 = cast(%338, dtype=&quot;uint8&quot;);
+  %340 = qnn.add(%317, %339, 0.0259642f, 60, 0.0181289f, 54, 0.0289816f, 63);
+  %341 = qnn.quantize(%features.16.conv.0.0_weight, meta[relay.Constant][135], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %342 = qnn.conv2d(%340, %341, 63, 0, 0.0289816f, meta[relay.Constant][135], padding=[0, 0, 0, 0], channels=960, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %343 = qnn.quantize(%features.16.conv.0.0_bias, meta[relay.Constant][136], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %344 = nn.bias_add(%342, %343);
+  %345 = qnn.requantize(%344, meta[relay.Constant][137], 0, 0.0071422f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %346 = clip(%345, a_min=0f, a_max=255f);
+  %347 = cast(%346, dtype=&quot;uint8&quot;);
+  %348 = nn.pad(%347, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %349 = qnn.quantize(%features.16.conv.1.0_weight, meta[relay.Constant][138], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %350 = qnn.conv2d(%348, %349, 0, 0, 0.0071422f, meta[relay.Constant][138], padding=[0, 0, 0, 0], groups=960, channels=960, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %351 = qnn.quantize(%features.16.conv.1.0_bias, meta[relay.Constant][139], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %352 = nn.bias_add(%350, %351);
+  %353 = qnn.requantize(%352, meta[relay.Constant][140], 0, 0.012938f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %354 = clip(%353, a_min=0f, a_max=255f);
+  %355 = cast(%354, dtype=&quot;uint8&quot;);
+  %356 = qnn.quantize(%features.16.conv.2_weight, meta[relay.Constant][141], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %357 = qnn.conv2d(%355, %356, 0, 0, 0.012938f, meta[relay.Constant][141], padding=[0, 0, 0, 0], channels=160, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %358 = qnn.quantize(%features.16.conv.2_bias, meta[relay.Constant][142], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %359 = nn.bias_add(%357, %358);
+  %360 = qnn.requantize(%359, meta[relay.Constant][143], 0, 0.0474633f, 64, axis=1, out_dtype=&quot;int32&quot;);
+  %361 = clip(%360, a_min=0f, a_max=255f);
+  %362 = cast(%361, dtype=&quot;uint8&quot;);
+  %363 = qnn.add(%340, %362, 0.0289816f, 63, 0.0474633f, 64, 0.0527368f, 71);
+  %364 = qnn.quantize(%features.17.conv.0.0_weight, meta[relay.Constant][144], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %365 = qnn.conv2d(%363, %364, 71, 0, 0.0527368f, meta[relay.Constant][144], padding=[0, 0, 0, 0], channels=960, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %366 = qnn.quantize(%features.17.conv.0.0_bias, meta[relay.Constant][145], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %367 = nn.bias_add(%365, %366);
+  %368 = qnn.requantize(%367, meta[relay.Constant][146], 0, 0.00500424f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %369 = clip(%368, a_min=0f, a_max=255f);
+  %370 = cast(%369, dtype=&quot;uint8&quot;);
+  %371 = nn.pad(%370, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);
+  %372 = qnn.quantize(%features.17.conv.1.0_weight, meta[relay.Constant][147], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %373 = qnn.conv2d(%371, %372, 0, 0, 0.00500424f, meta[relay.Constant][147], padding=[0, 0, 0, 0], groups=960, channels=960, kernel_size=[3, 3], out_dtype=&quot;int32&quot;);
+  %374 = qnn.quantize(%features.17.conv.1.0_bias, meta[relay.Constant][148], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %375 = nn.bias_add(%373, %374);
+  %376 = qnn.requantize(%375, meta[relay.Constant][149], 0, 0.00623393f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %377 = clip(%376, a_min=0f, a_max=255f);
+  %378 = cast(%377, dtype=&quot;uint8&quot;);
+  %379 = qnn.quantize(%features.17.conv.2_weight, meta[relay.Constant][150], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %380 = qnn.conv2d(%378, %379, 0, 0, 0.00623393f, meta[relay.Constant][150], padding=[0, 0, 0, 0], channels=320, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %381 = qnn.quantize(%features.17.conv.2_bias, meta[relay.Constant][151], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %382 = nn.bias_add(%380, %381);
+  %383 = qnn.requantize(%382, meta[relay.Constant][152], 0, 0.0126421f, 74, axis=1, out_dtype=&quot;int32&quot;);
+  %384 = clip(%383, a_min=0f, a_max=255f);
+  %385 = cast(%384, dtype=&quot;uint8&quot;);
+  %386 = qnn.quantize(%features.18.0_weight, meta[relay.Constant][153], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %387 = qnn.conv2d(%385, %386, 74, 0, 0.0126421f, meta[relay.Constant][153], padding=[0, 0, 0, 0], channels=1280, kernel_size=[1, 1], out_dtype=&quot;int32&quot;);
+  %388 = qnn.quantize(%features.18.0_bias, meta[relay.Constant][154], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %389 = nn.bias_add(%387, %388);
+  %390 = qnn.requantize(%389, meta[relay.Constant][155], 0, 0.0430538f, 0, axis=1, out_dtype=&quot;int32&quot;);
+  %391 = clip(%390, a_min=0f, a_max=255f);
+  %392 = cast(%391, dtype=&quot;uint8&quot;);
+  %393 = cast(%392, dtype=&quot;int32&quot;);
+  %394 = nn.adaptive_avg_pool2d(%393, output_size=[1, 1]);
+  %395 = cast(%394, dtype=&quot;uint8&quot;);
+  %396 = reshape(%395, newshape=[0, -1, 1, 1]);
+  %397 = squeeze(%396, axis=[2, 3]);
+  %398 = qnn.quantize(%classifier.1._packed_params_weight, meta[relay.Constant][156], 0, out_dtype=&quot;int8&quot;, axis=0);
+  %399 = qnn.dense(%397, %398, 0, 0, 0.0430538f, meta[relay.Constant][156], units=1000, out_dtype=&quot;int32&quot;);
+  %400 = qnn.quantize(%classifier.1._packed_params_bias, meta[relay.Constant][157], 0, out_dtype=&quot;int32&quot;, axis=0);
+  %401 = nn.bias_add(%399, %400);
+  %402 = qnn.requantize(%401, meta[relay.Constant][158], 0, 0.104443f, 46, axis=1, out_dtype=&quot;int32&quot;);
+  %403 = clip(%402, a_min=0f, a_max=255f);
+  %404 = cast(%403, dtype=&quot;uint8&quot;);
+  qnn.dequantize(%404, 0.104443f, 46)
+}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="relay">
+<h2>编译和运行 Relay 模块<a class="headerlink" href="#relay" title="永久链接至标题">#</a></h2>
+<p>一旦获得了量化的 Relay 模块，其余的工作流程就像运行浮点模型一样。请参考其他教程了解更多细节。</p>
+<p>在编译之前，量化特定的算子被 lower 到标准 Relay 算子序列。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;llvm&quot;</span>
+<span class="n">tvm_result</span><span class="p">,</span> <span class="n">rt_mod</span> <span class="o">=</span> <span class="n">run_tvm_model</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h2>计算输出标签<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
+<p>应该看到打印出相同的标签。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pt_top3_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">pt_result</span><span class="p">[</span><span class="mi">0</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">tvm_top3_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">tvm_result</span><span class="p">[</span><span class="mi">0</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch top3 labels:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">synset</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">pt_top3_labels</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TVM top3 labels:&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">synset</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">tvm_top3_labels</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PyTorch top3 labels: [&#39;tiger cat&#39;, &#39;Egyptian cat&#39;, &#39;tabby, tabby cat&#39;]
+TVM top3 labels: [&#39;tiger cat&#39;, &#39;Egyptian cat&#39;, &#39;tabby, tabby cat&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>然而，由于数值上的差异，通常原始浮点输出不会是相同的。这里，打印从 mobilenet v2 的 1000 个输出中有多少个浮点输出值是相同的。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> in 1000 raw floating outputs identical.&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tvm_result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">pt_result</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>147 in 1000 raw floating outputs identical.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2>性能度量<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>在此，举例说明如何度量 TVM 编译模型的性能。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_repeat</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># should be bigger to make the measurement more accurate</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">cpu</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">rt_mod</span><span class="o">.</span><span class="n">benchmark</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">n_repeat</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Execution time summary:
+ mean (ms)   median (ms)    max (ms)     min (ms)     std (ms)  
+  11.0926      11.1429      11.8076       9.7922       0.3016   
+               
+</pre></div>
+</div>
+</div>
+</div>
+<div class="alert alert-info admonition note">
+<p class="admonition-title">备注</p>
+<ul class="simple">
+<li><p>由于度量是在 C++ 中完成的，所以没有 Python 的开销</p></li>
+<li><p>它包括几个 warm up 运行</p></li>
+<li><p>同样的方法可以用于远程设备（android 等）的配置。</p></li>
+</ul>
+</div>
+<div class="alert alert-info admonition warning">
+<p class="admonition-title">警告</p>
+<p>除非硬件对快速 8 bit 指令有特殊支持，否则量化模型不会比 FP32 模型更快。如果没有快速的 8 bit 指令，可 TVM 以在 16 bit 进行量化卷积，即使模型本身是 8 bit。</p>
+<p>对于 x86，最好的性能可以在带有 AVX512 指令集的 CPU 上实现。在这种情况下，TVM 为给定的目标使用最快的可用 8 bit 指令。这包括对 VNNI 8 bit 点积指令（CascadeLake 或更新版本）的支持。</p>
+<p>此外，以下对 CPU 性能的一般建议同样适用：</p>
+<ul class="simple">
+<li><p>将环境变量 <code class="docutils literal notranslate"><span class="pre">TVM_NUM_THREADS</span></code> 设置为物理核数</p></li>
+<li><p>为您的硬件选择最佳的目标，例如 <code class="docutils literal notranslate"><span class="pre">&quot;llvm</span> <span class="pre">-mcpu=skylake-avx512&quot;</span> </code> 或 <code class="docutils literal notranslate"><span class="pre">&quot;llvm</span> <span class="pre">-mcpu=cascadelake&quot;</span></code> （将来会有更多带有 AVX512 的 CPU）</p></li>
+</ul>
+</div>
+</section>
+<section id="deploy-a-quantized-mxnet-model">
+<h2>Deploy a quantized MXNet Model<a class="headerlink" href="#deploy-a-quantized-mxnet-model" title="永久链接至标题">#</a></h2>
+<p>TODO</p>
+</section>
+<section id="deploy-a-quantized-tflite-model">
+<h2>Deploy a quantized TFLite Model<a class="headerlink" href="#deploy-a-quantized-tflite-model" title="永久链接至标题">#</a></h2>
+<p>TODO</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="deploy_object_detection_pytorch.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">Compile PyTorch Object Detection Models</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="deploy_prequantized_tflite.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

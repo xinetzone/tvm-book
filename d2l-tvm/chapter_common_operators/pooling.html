@@ -1,0 +1,846 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Pooling &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="Batch Normalization" href="batch_norm.html" />
+    <link rel="prev" title="Depthwise Convolution" href="depthwise_conv.html" />
+    <link rel="stylesheet" href="../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../origin/index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables d2l-tvm/chapter_common_operators/pooling and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "d2l-tvm/chapter_common_operators/pooling.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "d2l-tvm/chapter_common_operators/pooling.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_getting_started/index.html">
+   入门
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/install.html">
+     安装
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/vector_add.html">
+     向量加法
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/from_mxnet.html">
+     Neural Network Inference
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/remote.html">
+     Running on a Remote Machine
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_expressions/index.html">
+   Expressions for Operators
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/data_types.html">
+     Data Types
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/shapes.html">
+     Shapes
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/index_shape_expressions.html">
+     Index and Shape Expressions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/reductions.html">
+     Reduction Operations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/if_then_else.html">
+     Conditional Expression:
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       if-then-else
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/all_any.html">
+     Truth Value Testing:
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       all
+      </span>
+     </code>
+     and
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       any
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   常见的算子
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="broadcast_add.html">
+     Broadcast Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="matmul.html">
+     Matrix Multiplication
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="conv.html">
+     Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="depthwise_conv.html">
+     Depthwise Convolution
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Pooling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="batch_norm.html">
+     Batch Normalization
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_cpu_schedules/index.html">
+   Operator Optimizations on CPUs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/arch.html">
+     CPU Architecture
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/call_overhead.html">
+     Function Call Overhead
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/vector_add.html">
+     Vector Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/broadcast_add.html">
+     Broadcast Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/matmul.html">
+     Matrix Multiplication
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/block_matmul.html">
+     Improve Cache Efficiency by Blocking
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/conv.html">
+     Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/packed_conv.html">
+     Packed Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/depthwise_conv.html">
+     Depthwise Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/pooling.html">
+     Pooling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_cpu_schedules/batch_norm.html">
+     Batch Normalization
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_gpu_schedules/index.html">
+   Operator Optimizations on GPUs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/arch.html">
+     GPU Architecture
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/vector_add.html">
+     Vector Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/broadcast_add.html">
+     Broadcast Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/matmul.html">
+     Matrix Multiplication
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/conv.html">
+     Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/depthwise_conv.html">
+     Depthwise Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/pooling.html">
+     Pooling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/batch_norm.html">
+     Batch Norm
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../chapter_neural_networks/index.html">
+   Neural Networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../chapter_deployment/index.html">
+   部署
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../zreferences.html">
+   参考文献
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#compute-definition">
+   Compute definition
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mxnet-baseline">
+   MXNet Baseline
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/d2l-tvm/chapter_common_operators/pooling.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="pooling">
+<h1>Pooling<a class="headerlink" href="#pooling" title="永久链接至标题">#</a></h1>
+<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_pooling</span></code></p>
+<p>This section talks about how to use TVM to do pooling. Pooling is a common operator in CNN, please refer to chapter <a class="reference external" href="https://d2l.ai/chapter_convolutional-neural-networks/pooling.html">6.5</a> in D2L if you are not familiar with this operator. Here we will skip the why, only focus on how.</p>
+<p>There are two types of pooling, <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> which returns the maximal value of a pool, and <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> which returns the average value of a pool. For simplicity, we work on 2D pooling in this section. Like conv2d, the pooling operator moves the pooling kernel across the feature map with some stride. Sometimes padding is needed to match the required output size. Pooling has significantly less computation than conv2d as it only needs to get the maximal or average value. It is a memory-bound operator.</p>
+<p>:numref:<code class="docutils literal notranslate"><span class="pre">fig_pooling</span></code> illustrate how 2D <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> and <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> work, with the following setting: kernel size <code class="docutils literal notranslate"><span class="pre">[3,</span> <span class="pre">3]</span></code>, stride <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">1]</span></code>, and padding <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">1]</span></code>.</p>
+<p><img alt="2D max and average poolings. The blue shape indicates a particular pooling step. Note that besides the algorithm, the padding values are also different." src="../../_images/pooling.svg" />
+:label:<code class="docutils literal notranslate"><span class="pre">fig_pooling</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
+<span class="kn">import</span> <span class="nn">d2ltvm</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="compute-definition">
+<h2>Compute definition<a class="headerlink" href="#compute-definition" title="永久链接至标题">#</a></h2>
+<p>The computation manner of <code class="docutils literal notranslate"><span class="pre">pooling</span></code> is similar to <code class="docutils literal notranslate"><span class="pre">conv</span></code>, so you will find the pooling definition code below takes similar arguments as <code class="docutils literal notranslate"><span class="pre">conv</span></code> defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code>. The output size of pooling can be calculated by reusing the <code class="docutils literal notranslate"><span class="pre">conv_out_size</span></code> method, too.</p>
+<p>We include two types of <code class="docutils literal notranslate"><span class="pre">pooling</span></code> in the same method using different <code class="docutils literal notranslate"><span class="pre">te.compute</span></code>. In the <code class="docutils literal notranslate"><span class="pre">pool_type</span></code> is specified otherwise, the method will throw an error.
+We use <code class="docutils literal notranslate"><span class="pre">te.max</span></code> to perform <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> and <code class="docutils literal notranslate"><span class="pre">te.sum</span></code> and element-wise division to perform <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code>. In addition, please also note that the padding values of <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> is the <code class="docutils literal notranslate"><span class="pre">te.min_value</span></code> while <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> being 0.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">pool</span><span class="p">(</span><span class="n">pool_type</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">nh</span><span class="p">,</span> <span class="n">nw</span><span class="p">,</span> <span class="n">kh</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">ph</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sh</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sw</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;2D pooling</span>
+<span class="sd">    </span>
+<span class="sd">    pool_type: pooling type, &#39;max&#39; or &#39;avg&#39;</span>
+<span class="sd">    c : channels</span>
+<span class="sd">    nh, nw : input width and height</span>
+<span class="sd">    kh, kw : kernel width and height</span>
+<span class="sd">    ph, pw : height and width padding sizes, default 0</span>
+<span class="sd">    sh, sw : height and width strides, default 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># reduction axes</span>
+    <span class="n">rkh</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">kh</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;rkh&#39;</span><span class="p">)</span>
+    <span class="n">rkw</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">kw</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;rkw&#39;</span><span class="p">)</span>
+    <span class="c1"># output height and weights</span>
+    <span class="n">oh</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">conv_out_size</span><span class="p">(</span><span class="n">nh</span><span class="p">,</span> <span class="n">kh</span><span class="p">,</span> <span class="n">ph</span><span class="p">,</span> <span class="n">sh</span><span class="p">)</span>
+    <span class="n">ow</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">conv_out_size</span><span class="p">(</span><span class="n">nw</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">pw</span><span class="p">,</span> <span class="n">sw</span><span class="p">)</span>
+    <span class="c1"># pad X and then compute Y</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">nh</span><span class="p">,</span> <span class="n">nw</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    
+    
+    <span class="k">if</span> <span class="n">pool_type</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+        <span class="n">PaddedX</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">padding</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ph</span><span class="p">,</span> <span class="n">pw</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">te</span><span class="o">.</span><span class="n">min_value</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span> \
+            <span class="k">if</span> <span class="n">ph</span> <span class="o">*</span> <span class="n">pw</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">X</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">oh</span><span class="p">,</span> <span class="n">ow</span><span class="p">),</span> \
+                            <span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> \
+                            <span class="n">te</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">PaddedX</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">h</span><span class="o">*</span><span class="n">sh</span><span class="o">+</span><span class="n">rkh</span><span class="p">,</span> <span class="n">w</span><span class="o">*</span><span class="n">sw</span><span class="o">+</span><span class="n">rkw</span><span class="p">],</span> \
+                                <span class="n">axis</span><span class="o">=</span><span class="p">[</span><span class="n">rkh</span><span class="p">,</span> <span class="n">rkw</span><span class="p">]),</span> \
+                            <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;pool_max&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PoolMax&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">pool_type</span> <span class="o">==</span> <span class="s1">&#39;avg&#39;</span><span class="p">:</span>
+        <span class="n">PaddedX</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">padding</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ph</span><span class="p">,</span> <span class="n">pw</span><span class="p">)</span> <span class="k">if</span> <span class="n">ph</span> <span class="o">*</span> <span class="n">pw</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">X</span>
+        <span class="n">tsum</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">oh</span><span class="p">,</span> <span class="n">ow</span><span class="p">),</span> \
+                            <span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> \
+                            <span class="n">te</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">PaddedX</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">h</span><span class="o">*</span><span class="n">sh</span><span class="o">+</span><span class="n">rkh</span><span class="p">,</span> <span class="n">w</span><span class="o">*</span><span class="n">sw</span><span class="o">+</span><span class="n">rkw</span><span class="p">],</span> \
+                                <span class="n">axis</span><span class="o">=</span><span class="p">[</span><span class="n">rkh</span><span class="p">,</span> <span class="n">rkw</span><span class="p">]),</span> \
+                            <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;pool_avg1&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PoolSum&#39;</span><span class="p">)</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">oh</span><span class="p">,</span> <span class="n">ow</span><span class="p">),</span> \
+                            <span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> \
+                            <span class="n">tsum</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">kh</span><span class="o">*</span><span class="n">kw</span><span class="p">),</span> \
+                            <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;pool_avg2&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PoolAvg&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pool type should be &#39;avg&#39; or &#39;max&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">PaddedX</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We then compile the <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> using some toy data sizes. The compute logic is simple as shown in the IR. Again, the <code class="docutils literal notranslate"><span class="pre">get_conv_data</span></code> method in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code> can be reused to initialize the data. Note that we don’t need weights in this case.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">PaddedX</span> <span class="o">=</span> <span class="n">pool</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="n">sch</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">sch</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">sch</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out_max</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_conv_data</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<span class="n">mod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">out_max</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>// attr [PaddedX] storage_scope = &quot;global&quot;
+allocate PaddedX[float32 * 784]
+produce PaddedX {
+  for (i0, 0, 4) {
+    for (i1, 0, 14) {
+      for (i2, 0, 14) {
+        PaddedX[(((i0*196) + (i1*14)) + i2)] = tvm_if_then_else(((((i1 &lt; 1) || (13 &lt;= i1)) || (i2 &lt; 1)) || (13 &lt;= i2)), -3.40282e+38f, X[((((i0*144) + (i1*12)) + i2) - 13)])
+      }
+    }
+  }
+}
+produce PoolMax {
+  for (c, 0, 4) {
+    for (h, 0, 12) {
+      for (w, 0, 12) {
+        PoolMax[(((c*144) + (h*12)) + w)] = -3.40282e+38f
+        for (rkh, 0, 3) {
+          for (rkw, 0, 3) {
+            PoolMax[(((c*144) + (h*12)) + w)] = max(PoolMax[(((c*144) + (h*12)) + w)], PaddedX[(((((c*196) + (h*14)) + (rkh*14)) + w) + rkw)])
+          }
+        }
+      }
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we compile the <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> using the same toy data sizes. The compute logic is also simple. Check out the computation as well as the padding value difference from the <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">PaddedX</span> <span class="o">=</span> <span class="n">pool</span><span class="p">(</span><span class="s1">&#39;avg&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="n">sch</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">sch</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">sch</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out_avg</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_conv_data</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<span class="n">mod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">out_avg</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>// attr [PaddedX] storage_scope = &quot;global&quot;
+allocate PaddedX[float32 * 784]
+// attr [PoolSum] storage_scope = &quot;global&quot;
+allocate PoolSum[float32 * 576]
+produce PaddedX {
+  for (i0, 0, 4) {
+    for (i1, 0, 14) {
+      for (i2, 0, 14) {
+        PaddedX[(((i0*196) + (i1*14)) + i2)] = tvm_if_then_else(((((i1 &lt; 1) || (13 &lt;= i1)) || (i2 &lt; 1)) || (13 &lt;= i2)), 0f, X[((((i0*144) + (i1*12)) + i2) - 13)])
+      }
+    }
+  }
+}
+produce PoolSum {
+  for (c, 0, 4) {
+    for (h, 0, 12) {
+      for (w, 0, 12) {
+        PoolSum[(((c*144) + (h*12)) + w)] = 0f
+        for (rkh, 0, 3) {
+          for (rkw, 0, 3) {
+            PoolSum[(((c*144) + (h*12)) + w)] = (PoolSum[(((c*144) + (h*12)) + w)] + PaddedX[(((((c*196) + (h*14)) + (rkh*14)) + w) + rkw)])
+          }
+        }
+      }
+    }
+  }
+}
+produce PoolAvg {
+  for (c, 0, 4) {
+    for (h, 0, 12) {
+      for (w, 0, 12) {
+        PoolAvg[(((c*144) + (h*12)) + w)] = (PoolSum[(((c*144) + (h*12)) + w)]*0.111111f)
+      }
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="mxnet-baseline">
+<h2>MXNet Baseline<a class="headerlink" href="#mxnet-baseline" title="永久链接至标题">#</a></h2>
+<p>We use the pooling functions of MXNet as the baseline to check the correctness of our compiled functions. MXNet computes pooling similarly as what we have done. The only difference is that its input data is in 4D, including batch as the outmost dimension.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
+
+<span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">get_pool_data_mxnet</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mx</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)()</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_conv_data</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span>
+                                      <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">mx</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">out</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">out</span>
+
+<span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">pool_mxnet</span><span class="p">(</span><span class="n">pool_type</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="n">mx</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">Pooling</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">k</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">s</span><span class="p">),</span>
+                      <span class="n">pad</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">p</span><span class="p">),</span> <span class="n">pool_type</span><span class="o">=</span><span class="n">pool_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+<span class="n">data</span><span class="p">,</span> <span class="n">out_max_mx</span> <span class="o">=</span> <span class="n">get_pool_data_mxnet</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="n">pool_mxnet</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">out_max_mx</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">out_avg_mx</span> <span class="o">=</span> <span class="n">get_pool_data_mxnet</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="n">pool_mxnet</span><span class="p">(</span><span class="s1">&#39;avg&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">out_avg_mx</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, we check if our results are close enough to the results produced by MXNet.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">out_max_mx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">out_max</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">out_avg_mx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">out_avg</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<ul class="simple">
+<li><p>2D pooling handles the data in the similar way as 2D convolution, but the computation itself is much lighter.</p></li>
+<li><p>We can define <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> and <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> easily using TVM expressions.</p></li>
+</ul>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="depthwise_conv.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">Depthwise Convolution</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="batch_norm.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">Batch Normalization</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

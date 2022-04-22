@@ -25,6 +25,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -45,7 +48,7 @@
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
     <link rel="next" title="TVM" href="tvm.html" />
-    <link rel="prev" title="VTA 指南" href="../vta/index.html" />
+    <link rel="prev" title="项目解读" href="../interpret/index.html" />
     <link rel="stylesheet" href="../_static/css/default.css"/>
     <link rel="stylesheet" href="../_static/css/custom.css"/>
 
@@ -80,26 +83,32 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../d2l-tvm/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../start/index.html">
   快速上手
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../interpret/index.html">
-  项目解读
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../vta/index.html">
-  VTA 指南
+ <a class="reference internal nav-link" href="../origin/index.html">
+  TVM 官方教程
  </a>
 </li>
 
 <li class="toctree-l1 current active nav-item">
- <a class="current reference internal nav-link" href="#">
-  论文解读
+ <a class="reference internal nav-link" href="../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api/index.html">
+  API 参考
  </a>
 </li>
 
@@ -230,11 +239,28 @@ function checkPageExistsAndRedirect(event) {
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    <ul class="nav bd-sidenav">
+    <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="tvm.html">
-   TVM
+  <a class="reference internal" href="../interpret/index.html">
+   项目解读
   </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="current reference internal" href="#">
+   论文解读
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tvm.html">
+     TVM
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -294,11 +320,11 @@ function checkPageExistsAndRedirect(event) {
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="../vta/index.html" title="上一页 页">
+    <a class='left-prev' id="prev-link" href="../interpret/index.html" title="上一页 页">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">VTA 指南</p>
+            <p class="prev-next-title">项目解读</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="tvm.html" title="下一页 页">
@@ -329,7 +355,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-20, 13:37:05.<br>
+最后更新于 2022-04-22, 12:42:10.<br>
 </p>
     </div>
     

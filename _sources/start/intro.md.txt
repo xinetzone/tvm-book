@@ -1,25 +1,40 @@
-# 简介
+# TVM 简介
 
-Apache TVM 是用于 CPU、GPU 和机器学习加速器的开源机器学习编译器框架。它的目标是让机器学习工程师在任何硬件后端上优化和高效地运行计算。
+`TVM`
+:   Apache TVM 是一个用于  CPU、GPU 和机器学习加速器（accelerator）的开放源码机器学习编译器框架。它旨在使机器学习工程师在任何硬件后端优化和高效运行计算。
 
-主要特性：
+Apache TVM 项目的愿景是为机器学习、编译器和系统架构领域的专家和从业者提供多样化的社区，构建可访问的、可扩展的、自动化的开源框架，为任何硬件平台优化当前和新兴的机器学习模型。TVM 提供以下主要功能：
 
 - 将深度学习模型编译为最小可部署模块。
-- 提供基础设施，以自动生成和优化模型在更多的后端表现更好性能。
+- 基础设施（Infrastructure），以自动生成和优化具有更好性能的更多后端模型。
 
-## TVM 背景知识
+````{panels}
+:container: container pb-4
+:column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
+:card: + bg-info
+:body: bg-info
+:header: bg-success
+:footer: bg-secondary
 
-1. What（是什么）
-2. Why（为什么）
-3. Way（干什么）
+性能
+^^^
+编译和最小化运行时（runtime）
+---
 
-## VTA 背景知识
-
-1. What（是什么）
-2. 了解指令序列
-
-## TVM 基本用法
-
-针对 VTA 的编译过程
-
+Run Everywhere
+^^^
+CPUs, GPUs, browsers, microcontrollers, FPGAs and more.
++++
+Automatically generate and optimize tensor operators on more backends.
+---
+Flexibility
+^^^
+Need support for block sparsity, quantization (1,2,4,8 bit integers, posit), random forests/classical ML, memory planning, MISRA-C compatibility, Python prototyping or all of the above?
++++
+TVM’s flexible design enables all of these things and more.
+---
+Ease of Use
+^^^
+Compilation of deep learning models in Keras, MXNet, PyTorch, Tensorflow, CoreML, DarkNet and more. Start using TVM with Python today, build out production stacks using C++, Rust, or Java the next day.
+````
 

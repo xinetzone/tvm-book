@@ -1,0 +1,244 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Shapes\n",
+    ":label:`ch_shapes`\n",
+    "\n",
+    "The vector addition module defined in :numref:`ch_vector_add` only accepts vectors with 100-length. It's too restrictive for real scenarios where inputs can have arbitrary shapes. In this section, we will show how to relax this constraint to deal with general cases.\n",
+    "\n",
+    "## Variable Shapes\n",
+    "\n",
+    "Remember that we create symbolic placeholders for tensors `A` and `B` so we can feed with data later. We can do the same thing for the shape as well. In particular, the following code block uses `te.var` to create a symbolic variable for an `int32` scalar, whose value can be specified later.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(tvm.tir.expr.Var, 'int32')"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import d2ltvm\n",
+    "import numpy as np\n",
+    "import tvm\n",
+    "from tvm import te\n",
+    "\n",
+    "n = te.var(name='n')\n",
+    "type(n), n.dtype"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "Now we can use `(n,)` to create a placeholder for an arbitrary length vector.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "3"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "produce c {\n",
+       "  for (i, 0, n) {\n",
+       "    c[(i*stride)] = (a[(i*stride)] + b[(i*stride)])\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "A = te.placeholder((n,), name='a')\n",
+    "B = te.placeholder((n,), name='b')\n",
+    "C = te.compute(A.shape, lambda i: A[i] + B[i], name='c')\n",
+    "s = te.create_schedule(C.op)\n",
+    "tvm.lower(s, [A, B, C], simple_mode=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "Compared to the generated pseudo codes in :numref:`ch_vector_add`, we can see the upper bound value of the for loop is changed from 100 to `n`.\n",
+    "\n",
+    "Now we define a similar test function as before to verify that the compiled module is able to correctly execute on input vectors with different lengths.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "4"
+    },
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "c.shape: (5,)\n",
+      "c.shape: (1000,)\n"
+     ]
+    }
+   ],
+   "source": [
+    "def test_mod(mod, n):\n",
+    "    a, b, c = d2ltvm.get_abc(n, tvm.nd.array)\n",
+    "    mod(a, b, c)\n",
+    "    print('c.shape:', c.shape)\n",
+    "    np.testing.assert_equal(c.asnumpy(), a.asnumpy() + b.asnumpy())\n",
+    "\n",
+    "mod = tvm.build(s, [A, B, C])\n",
+    "test_mod(mod, 5)\n",
+    "test_mod(mod, 1000)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "But note that we still place the constraint that `A`, `B`, and `C` must be in the same shape. So an error will occur if it is not satisfied.\n",
+    "\n",
+    "## Multi-dimensional Shapes\n",
+    "\n",
+    "You may already notice that a shape is presented as a tuple. A single element tuple means a 1-D tensor, or a vector. We can extend it to multi-dimensional tensors by adding variables to the shape tuple.\n",
+    "\n",
+    "The following method builds a module for multi-dimensional tensor addition, the number of dimensions is specified by `ndim`. For a 2-D tensor, we can access its element by `A[i,j]`, similarly `A[i,j,k]` for 3-D tensors. Note that we use `*i` to handle the general multi-dimensional case in the following code.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "5"
+    },
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "def tvm_vector_add(ndim):\n",
+    "    A = te.placeholder([te.var() for _ in range(ndim)])\n",
+    "    B = te.placeholder(A.shape)\n",
+    "    C = te.compute(A.shape, lambda *i: A[i] + B[i])\n",
+    "    s = te.create_schedule(C.op)\n",
+    "    return tvm.build(s, [A, B, C])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "Verify that it works beyond vectors.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "c.shape: (2, 2)\n",
+      "c.shape: (2, 3, 4, 5)\n"
+     ]
+    }
+   ],
+   "source": [
+    "mod = tvm_vector_add(2)\n",
+    "test_mod(mod, (2, 2))\n",
+    "\n",
+    "mod = tvm_vector_add(4)\n",
+    "test_mod(mod, (2, 3, 4, 5))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "## Summary\n",
+    "\n",
+    "- We can use `te.var()` to specify the dimension(s) of a shape when we don't know the concrete data shape before execution.\n",
+    "- The shape of an $n$-dimensional tensor is presented as an $n$-length tuple.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

@@ -1,0 +1,228 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Broadcast Add\n",
+    ":label:`ch_bcast_add`\n",
+    "\n",
+    "A broadcast operator process two tensors in different shapes. Normally, one of the operands has a particular dimension to be 1, which will be broadcast along the corresponding dimension of the other operator to perform the given calculation. Common scalar calculations can all be broadcast, such as elementary arithmetic and logical operations. :numref:`fig_bcast_add` illustrates one broadcast add case between two 2-dimensional tensors. Broadcast operators are commonly seen in deep learning workloads, e.g. [batch normalization](http://d2l.ai/chapter_convolutional-modern/batch-norm.html).\n",
+    "\n",
+    "![One case of broadcast add between two 2-dimensional tensors](../img/bcast_add.svg)\n",
+    ":label:`fig_bcast_add`\n",
+    "\n",
+    "In this section we will demonstrate how to perform a broadcast add between two 2-dimensional tensors. The following code defines the computation.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import tvm\n",
+    "from tvm import te\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def broadcast_add(shape1, shape2):\n",
+    "    \"\"\"Broadcast add between two 2-dimensional tensors\n",
+    "\n",
+    "    shape1, shape2 : the shapes of the input tensors\n",
+    "    \"\"\"\n",
+    "    assert len(shape1) == 2 and len(shape2) == 2, \\\n",
+    "        \"broadcast tensors should both be 2-dimension\"\n",
+    "    for i in range(len(shape1)):\n",
+    "        assert shape1[i] == shape2[i] or shape1[i] == 1 or shape2[i] == 1, \\\n",
+    "            \"tensor shapes do not fit for broadcasting\"\n",
+    "    A = te.placeholder(shape1, name='A')\n",
+    "    B = te.placeholder(shape2, name='B')\n",
+    "    m = shape1[0] if shape2[0] == 1 else shape2[0]\n",
+    "    n = shape1[1] if shape2[1] == 1 else shape2[1]\n",
+    "    f = lambda x, y: A[0 if shape1[0]==1 else x, 0 if shape1[1]==1 else y] + \\\n",
+    "        B[0 if shape2[0]==1 else x, 0 if shape2[1]==1 else y]\n",
+    "    C = te.compute((m, n), f, name='C')\n",
+    "    return A, B, C"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "Then we use it to perform the broadcast add illustrated in :numref:`fig_bcast_add`.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "2"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "// attr [C] storage_scope = \"global\"\n",
+      "allocate C[float32 * 12]\n",
+      "produce C {\n",
+      "  for (x, 0, 3) {\n",
+      "    for (y, 0, 4) {\n",
+      "      C[((x*4) + y)] = (A[x] + B[((x*4) + y)])\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "m = 3\n",
+    "n = 4\n",
+    "shape1 = (m, 1)\n",
+    "shape2 = (m, n)\n",
+    "A, B, C = broadcast_add(shape1, shape2)\n",
+    "s = te.create_schedule(C.op)\n",
+    "print(tvm.lower(s, [A, B], simple_mode=True))\n",
+    "mod = tvm.build(s, [A, B, C])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "The printed pseudocode clearly depicts the process of a broadcast add. We verify the results as follows.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "3"
+    },
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def get_bcast_data(shape1, shape2, constructor=None):\n",
+    "    \"\"\"Return random tensors a, b \n",
+    "    and empty tensor c to store broadcast results between a and b\n",
+    "\n",
+    "    shape1, shape2: shapes of input tensors\n",
+    "    constructor : user-defined tensor constructor\n",
+    "    \"\"\"\n",
+    "    np.random.seed(0)\n",
+    "    a = np.random.normal(size=shape1).astype(\"float32\")\n",
+    "    b = np.random.normal(size=shape2).astype(\"float32\")\n",
+    "    out_shape = (shape1[0] if shape2[0] == 1 else shape2[0], \n",
+    "                 shape1[1] if shape2[1] == 1 else shape2[1])\n",
+    "    c = np.empty(out_shape, dtype='float32')\n",
+    "    if constructor:\n",
+    "        a, b, c = [constructor(x) for x in (a, b, c)]\n",
+    "    return a, b, c\n",
+    "a, b, c = get_bcast_data(shape1, shape2, tvm.nd.array)\n",
+    "mod(a, b, c)\n",
+    "np.testing.assert_allclose(np.add(a.asnumpy(), b.asnumpy()), c.asnumpy(), atol=1e-5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "Note that broadcast is allowed to perform along multiple dimensions.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "4"
+    },
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(3, 1) (1, 4) (3, 4)\n"
+     ]
+    }
+   ],
+   "source": [
+    "shape1 = (m, 1)\n",
+    "shape2 = (1, n)\n",
+    "A, B, C = broadcast_add(shape1, shape2)\n",
+    "s = te.create_schedule(C.op)\n",
+    "mod = tvm.build(s, [A, B, C])\n",
+    "a, b, c = get_bcast_data(shape1, shape2, tvm.nd.array)\n",
+    "mod(a, b, c)\n",
+    "np.testing.assert_allclose(np.add(a.asnumpy(), b.asnumpy()), c.asnumpy(), atol=1e-5)\n",
+    "print(a.shape, b.shape, c.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "Lastly, it is easy to note that when the shapes of two input tensors are indentical, the broadcast add reduces to an element-wise add.\n",
+    "\n",
+    "## Summary\n",
+    "- We can define a broadcast operator in TVM.\n",
+    "- Broadcast be can performed along multiple dimensions.\n",
+    "\n",
+    "EE Exercise\n",
+    "- Generalize `broadcast_add` defined above to more dimensions and more operators.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

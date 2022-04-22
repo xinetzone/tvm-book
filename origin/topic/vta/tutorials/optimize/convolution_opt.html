@@ -1,0 +1,1357 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>2D Convolution Optimization &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../../_static/togglebutton.js"></script>
+    <script src="../../../../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../../../search.html" />
+    <link rel="next" title="Matrix Multiply Blocking" href="matrix_multiply_opt.html" />
+    <link rel="prev" title="Optimize Tensor Operators" href="index.html" />
+    <link rel="stylesheet" href="../../../../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../../../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../../../index.html">
+  <img src="../../../../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../d2l-tvm/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../../../index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables origin/topic/vta/tutorials/optimize/convolution_opt and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "origin/topic/vta/tutorials/optimize/convolution_opt.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "origin/topic/vta/tutorials/optimize/convolution_opt.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../../tutorial/index.html">
+   用户指南
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/introduction.html">
+     TVM 和模型优化的概述
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/tvmc_command_line_driver.html">
+     用 TVMC 编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/tvmc_python.html">
+     开始使用 TVMC Python：TVM 的高级 API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/autotvm_relay_x86.html">
+     用 Python 接口编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/tensor_expr_get_started.html">
+     使用张量表达式处理算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/autotvm_matmul_x86.html">
+     用调度模板和 AutoTVM 优化算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/auto_scheduler_matmul_x86.html">
+     使用自动调度优化运算
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/tensor_ir_blitz_course.html">
+     TensorIR 的突击课程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/cross_compilation_and_rpc.html">
+     交叉编译和RPC
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/relay_quick_start.html">
+     编译深度学习模型的快速入门教程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../tutorial/intro_topi.html">
+     TOPI 简介
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../../how_to/index.html">
+   How To 指南
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/compile_models/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_pytorch.html">
+       编译 PyTorch 模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_tensorflow.html">
+       Compile Tensorflow Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_mxnet.html">
+       Compile MXNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_onnx.html">
+       Compile ONNX Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_keras.html">
+       Compile Keras Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_tflite.html">
+       Compile TFLite Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_coreml.html">
+       Compile CoreML Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_darknet.html">
+       Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_caffe2.html">
+       Compile Caffe2 Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/compile_models/from_paddle.html">
+       Compile PaddlePaddle Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/deploy_models/index.html">
+     部署深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_model_on_android.html">
+       Deploy the Pretrained Model on Android
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_model_on_rasp.html">
+       Deploy the Pretrained Model on Raspberry Pi
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_object_detection_pytorch.html">
+       Compile PyTorch Object Detection Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_prequantized.html">
+       使用 TVM 部署框架预量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_prequantized_tflite.html">
+       Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_quantized.html">
+       在 CUDA 上部署已量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_sparse.html">
+       Deploy a Hugging Face Pruned Model on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_ssd_gluoncv.html">
+       Deploy Single Shot Multibox Detector(SSD) model
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/work_with_relay/index.html">
+     Work With Relay
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_relay/build_gcn.html">
+       Building a Graph Convolutional Network
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_relay/using_external_lib.html">
+       Using External Libraries in Relay
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/work_with_schedules/index.html">
+     Work With Tensor Expression and Schedules
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/schedule_primitives.html">
+       Schedule Primitives in TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/reduction.html">
+       Reduction
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/intrin_math.html">
+       Intrinsics and Math Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/scan.html">
+       Scan and Recurrent Kernel
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/extern_op.html">
+       External Tensor Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/tensorize.html">
+       Use Tensorize to Leverage Hardware Intrinsics
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/tuple_inputs.html">
+       Compute and Reduce with Tuple Inputs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/tedd.html">
+       Use Tensor Expression Debug Display (TEDD) for Visualization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/optimize_operators/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/optimize_operators/opt_gemm.html">
+       How to optimize GEMM on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/optimize_operators/opt_conv_cuda.html">
+       How to optimize convolution on GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/optimize_operators/opt_conv_tensorcore.html">
+       How to optimize convolution using TensorCores
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/tune_with_autotvm/index.html">
+     Auto-Tune with Templates and AutoTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_conv2d_cuda.html">
+       Tuning High Performance Convolution on NVIDIA GPUs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_cuda.html">
+       Auto-tuning a Convolutional Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_x86.html">
+       Auto-tuning a Convolutional Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_arm.html">
+       Auto-tuning a Convolutional Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_mobile_gpu.html">
+       Auto-tuning a Convolutional Network for Mobile GPU
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/index.html">
+     Use AutoScheduler for Template-Free Scheduling
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
+       Auto-scheduling a Convolution Layer for GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_x86.html">
+       Auto-scheduling a Neural Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_cuda.html">
+       Auto-scheduling a Neural Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_arm.html">
+       Auto-scheduling a Neural Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_mali.html">
+       Auto-scheduling a Neural Network for mali GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_sparse_x86.html">
+       Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/work_with_microtvm/index.html">
+     Work With microTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_autotune.html">
+       Autotuning with micro TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_ethosu.html">
+       Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_reference_vm.html">
+       microTVM Reference Virtual Machines
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_tflite.html">
+       microTVM with TFLite Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../../../how_to/extend_tvm/index.html">
+     Extend TVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/extend_tvm/low_level_custom_pass.html">
+       Writing a Customized Pass
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/extend_tvm/use_pass_infra.html">
+       How to Use TVM Pass Infra
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/extend_tvm/use_pass_instrument.html">
+       How to Use TVM Pass Instrument
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../how_to/extend_tvm/bring_your_own_datatypes.html">
+       Bring Your Own Datatypes to TVM
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../index.html">
+   VTA 教程
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+  <label for="toctree-checkbox-12">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../vta_get_started.html">
+     Get Started with VTA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../matrix_multiply.html">
+     Simple Matrix Multiply
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../frontend/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../frontend/deploy_classification.html">
+       在 VTA 上从 MxNet 部署预先训练的视觉模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../frontend/deploy_detection.html">
+       Deploy Pretrained Vision Detection Model from Darknet on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="index.html">
+     Optimize Tensor Operators
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       2D Convolution Optimization
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="matrix_multiply_opt.html">
+       Matrix Multiply Blocking
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../autotvm/index.html">
+     Auto tuning
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../autotvm/tune_alu_vta.html">
+       Auto-tuning a ALU fused op on VTA
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../autotvm/tune_relay_vta.html">
+       Auto-tuning a convolutional network on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../../vta/index.html">
+   VTA 指南
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../../test.html">
+   草稿
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#rpc-setup">
+   RPC Setup
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#computation-declaration">
+   Computation Declaration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#scheduling-the-computation">
+   Scheduling the Computation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#blocking-the-computation">
+     Blocking the Computation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#virtual-threading">
+     Virtual Threading
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#lowering-copies-to-dma-transfers">
+     Lowering Copies to DMA Transfers
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#lowering-computation-to-vta-compute-intrinsics">
+     Lowering Computation to VTA Compute Intrinsics
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tvm-compilation-and-verification">
+   TVM Compilation and Verification
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/topic/vta/tutorials/optimize/convolution_opt.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">备注</p>
+<p>Click <span class="xref std std-ref">here</span>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="d-convolution-optimization">
+<span id="sphx-glr-topic-vta-tutorials-optimize-convolution-opt-py"></span><h1>2D Convolution Optimization<a class="headerlink" href="#d-convolution-optimization" title="永久链接至标题">#</a></h1>
+<p><strong>Author</strong>: <a class="reference external" href="https://homes.cs.washington.edu/~moreau/">Thierry Moreau</a></p>
+<p>This tutorial provides an overview on how to use TVM to map a 2D convolution
+workload efficiently on the VTA design.
+We recommend covering the <a class="reference internal" href="matrix_multiply_opt.html#vta-mat-mult-opt"><span class="std std-ref">Matrix Multiply Blocking</span></a> tutorial first.</p>
+<p>2D convolution is dominant in most computer vision deep neural networks.
+In this tutorial, we will demonstrate TVM schedule optimizations to map
+2D convolution operators in NCHW layout onto VTA.
+We also introduce the notion of latency hiding, which allows us to
+maximize VTA’s compute and memory resource utilization.</p>
+<section id="rpc-setup">
+<h2>RPC Setup<a class="headerlink" href="#rpc-setup" title="永久链接至标题">#</a></h2>
+<p>We start by programming the Pynq’s FPGA and building its RPC runtime.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">import</span> <span class="nn">tvm.testing</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
+<span class="kn">import</span> <span class="nn">vta</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">rpc</span>
+<span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">vta.testing</span> <span class="kn">import</span> <span class="n">simulator</span>
+
+<span class="c1"># Load VTA parameters from the 3rdparty/vta-hw/config/vta_config.json file</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">vta</span><span class="o">.</span><span class="n">get_env</span><span class="p">()</span>
+
+<span class="c1"># We read the Pynq RPC host IP address and port number from the OS environment</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_HOST&quot;</span><span class="p">,</span> <span class="s2">&quot;192.168.2.99&quot;</span><span class="p">)</span>
+<span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;9091&quot;</span><span class="p">))</span>
+
+<span class="c1"># We configure both the bitstream and the runtime system on the Pynq</span>
+<span class="c1"># to match the VTA configuration specified by the vta_config.json file.</span>
+<span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="o">==</span> <span class="s2">&quot;pynq&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Make sure that TVM was compiled with RPC=1</span>
+    <span class="k">assert</span> <span class="n">tvm</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">enabled</span><span class="p">(</span><span class="s2">&quot;rpc&quot;</span><span class="p">)</span>
+    <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+
+    <span class="c1"># Reconfigure the JIT runtime</span>
+    <span class="n">vta</span><span class="o">.</span><span class="n">reconfig_runtime</span><span class="p">(</span><span class="n">remote</span><span class="p">)</span>
+
+    <span class="c1"># Program the FPGA with a pre-compiled VTA bitstream.</span>
+    <span class="c1"># You can program the FPGA with your own custom bitstream</span>
+    <span class="c1"># by passing the path to the bitstream file instead of None.</span>
+    <span class="n">vta</span><span class="o">.</span><span class="n">program_fpga</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">bitstream</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># In simulation mode, host the RPC server locally.</span>
+<span class="k">elif</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">]:</span>
+    <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">LocalSession</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="computation-declaration">
+<h2>Computation Declaration<a class="headerlink" href="#computation-declaration" title="永久链接至标题">#</a></h2>
+<p>As a first step, we need to describe our 2D convolution computation
+in NCHW format.</p>
+<p>We define the 2D convolution shape by the batch size,
+spatial dimensions, input channels, output channels, kernel dimensions,
+kernel dimensions, padding dimensions, and stride dimensions.</p>
+<p>We pick the shape of the 9th convolutional layer of the ResNet-18
+architecture as our convolution workload parameters.</p>
+<p>We’ve added extra operators to the 2D convolution that apply
+shifting and clipping to the output in order to mimic a fixed-point
+convolution followed by a rectified linear activation.
+We describe the TVM dataflow graph of the 2D convolution layer below:</p>
+<img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/conv2d_dataflow.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/conv2d_dataflow.png" />
+<p>This computation is intentionally too large to fit onto VTA’s on-chip
+buffers all at once. Therefore in the scheduling phase we’ll
+rely on computation blocking strategies to break the computation down into
+manageable chunks.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><em>Spatial padding</em></p>
+<p>Note that we’ll need to import the TOPI library to apply spatial padding
+on the input feature map tensor.
+Spatial padding facilitates blocking in the context of 2D convolutions
+due to the fact that the same (x, y) spatial location of the input
+feature map of any given layer is read more than once if the convolution
+kernel window size is greater than one.
+On CPUs, and GPUs, one way to increase efficiency of memory accesses
+when parallelizing work is spatial packing, which requires data re-layout.
+VTA load DMA engine can insert padding automatically so that the original
+input feature map does not have to be re-packed in memory.</p>
+<p>We show the effect of VTA’s on the fly spatial padding when data is being
+loaded from DRAM into VTA’s SRAM, following a 2D strided and padded memory
+read.</p>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/padding.png"><img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/padding.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/padding.png" style="width: 480px;" /></a>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">topi</span>
+
+<span class="c1"># 2D convolution layer dimensions taken from ResNet-18 architecture</span>
+<span class="c1"># (9th convolutional layer)</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">height</span> <span class="o">=</span> <span class="mi">14</span>
+<span class="n">width</span> <span class="o">=</span> <span class="mi">14</span>
+<span class="n">in_channels</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">out_channels</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">kernel_h</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">kernel_w</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">pad_h</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">pad_w</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">stride_h</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">stride_w</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="n">batch_size</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="n">in_channels</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="n">out_channels</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="c1"># Input feature map: (N, IC, H, W, n, ic)</span>
+<span class="n">data_shape</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">batch_size</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span>
+    <span class="n">in_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span>
+    <span class="n">height</span><span class="p">,</span>
+    <span class="n">width</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># Kernel: (OC, IC, H, W, oc, ic)</span>
+<span class="n">kernel_shape</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">out_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+    <span class="n">in_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span>
+    <span class="n">kernel_h</span><span class="p">,</span>
+    <span class="n">kernel_w</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># Derive output feature map dimensions</span>
+<span class="n">fout_height</span> <span class="o">=</span> <span class="p">(</span><span class="n">height</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pad_h</span> <span class="o">-</span> <span class="n">kernel_h</span><span class="p">)</span> <span class="o">//</span> <span class="n">stride_h</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">fout_width</span> <span class="o">=</span> <span class="p">(</span><span class="n">width</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pad_w</span> <span class="o">-</span> <span class="n">kernel_w</span><span class="p">)</span> <span class="o">//</span> <span class="n">stride_w</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="c1"># Output feature map: (N, OC, H, W, n, oc)</span>
+<span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">batch_size</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span>
+    <span class="n">out_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+    <span class="n">fout_height</span><span class="p">,</span>
+    <span class="n">fout_width</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Convolution reduction axes</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">kernel_h</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dy&quot;</span><span class="p">)</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">kernel_w</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dx&quot;</span><span class="p">)</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ic&quot;</span><span class="p">)</span>
+<span class="n">ic_tns</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ic_tns&quot;</span><span class="p">)</span>
+
+<span class="c1"># Input placeholder tensors</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">data_shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">)</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">kernel_shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;kernel&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">wgt_dtype</span><span class="p">)</span>
+
+<span class="c1"># Copy buffers:</span>
+<span class="c1">#   Apply spatial padding to input feature map</span>
+<span class="n">data_buf</span> <span class="o">=</span> <span class="n">topi</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pad_h</span><span class="p">,</span> <span class="n">pad_w</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data_buf&quot;</span><span class="p">)</span>
+<span class="n">kernel_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">kernel_shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">kernel</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;kernel_buf&quot;</span><span class="p">)</span>
+
+<span class="c1"># Declare 2D convolution</span>
+<span class="n">res_conv</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">output_shape</span><span class="p">,</span>
+    <span class="k">lambda</span> <span class="n">bo</span><span class="p">,</span> <span class="n">co</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">bi</span><span class="p">,</span> <span class="n">ci</span><span class="p">:</span> <span class="n">te</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">data_buf</span><span class="p">[</span><span class="n">bo</span><span class="p">,</span> <span class="n">ic</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">stride_h</span> <span class="o">+</span> <span class="n">dy</span><span class="p">,</span> <span class="n">j</span> <span class="o">*</span> <span class="n">stride_w</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">bi</span><span class="p">,</span> <span class="n">ic_tns</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span>
+        <span class="o">*</span> <span class="n">kernel_buf</span><span class="p">[</span><span class="n">co</span><span class="p">,</span> <span class="n">ic</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">ci</span><span class="p">,</span> <span class="n">ic_tns</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="p">[</span><span class="n">ic</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">ic_tns</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;res_conv&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Add shift stage for fix-point normalization</span>
+<span class="n">res_shr</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">output_shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">res_conv</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;res_shr&quot;</span><span class="p">)</span>
+
+<span class="c1"># Apply clipping between (0, input max value)</span>
+<span class="n">inp_max</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">INP_WIDTH</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">res_max</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">output_shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">te</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">res_shr</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;res_max&quot;</span><span class="p">)</span>
+<span class="n">res_min</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">output_shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">te</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">res_max</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="n">inp_max</span><span class="p">),</span> <span class="s2">&quot;res_min&quot;</span><span class="p">)</span>
+
+<span class="c1"># Result Tensor</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">output_shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">res_min</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;res&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="scheduling-the-computation">
+<h2>Scheduling the Computation<a class="headerlink" href="#scheduling-the-computation" title="永久链接至标题">#</a></h2>
+<p>We’ll look at a set of schedule transformations necessary to map the
+2D convolution onto VTA in an efficient fashion.
+Those include:</p>
+<ul class="simple">
+<li><p>Computation blocking</p></li>
+<li><p>Virtual threading to increase compute utilization</p></li>
+<li><p>Lowering to VTA hardware intrinsics</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create TVM schedule</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+<span class="c1"># Let&#39;s look at the default TVM schedule</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<section id="blocking-the-computation">
+<h3>Blocking the Computation<a class="headerlink" href="#blocking-the-computation" title="永久链接至标题">#</a></h3>
+<p>The 2D convolution is by default too large for activations or kernel weights
+to fit on VTA’s on-chip buffers all at once.
+We apply blocking along input channels, output channels, and along
+the height spatial dimensions.
+We don’t apply blocking along the width spatial dimension since it’s
+the innermost dimension in the NCHW layout (and consequently to increase
+locality, it’s best not to block along the innermost dimension).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s define tiling sizes</span>
+<span class="n">b_block</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span>
+<span class="n">oc_block</span> <span class="o">=</span> <span class="mi">128</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span>
+<span class="n">ic_block</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span>
+<span class="n">h_block</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">w_block</span> <span class="o">=</span> <span class="mi">14</span>
+
+<span class="c1"># Tile the output tensor along the spatial and output channel dimensions</span>
+<span class="c1"># (since by default we are doing single batch inference, the split along</span>
+<span class="c1">#  the batch dimension has no effect)</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">oc</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">b_tns</span><span class="p">,</span> <span class="n">oc_tns</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
+<span class="n">b_out</span><span class="p">,</span> <span class="n">b_inn</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">b_block</span><span class="p">)</span>
+<span class="n">oc_out</span><span class="p">,</span> <span class="n">oc_inn</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">oc</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">oc_block</span><span class="p">)</span>
+<span class="n">y_out</span><span class="p">,</span> <span class="n">y_inn</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">h_block</span><span class="p">)</span>
+<span class="n">x_out</span><span class="p">,</span> <span class="n">x_inn</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">w_block</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">b_out</span><span class="p">,</span> <span class="n">oc_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">x_out</span><span class="p">,</span> <span class="n">b_inn</span><span class="p">,</span> <span class="n">oc_inn</span><span class="p">,</span> <span class="n">y_inn</span><span class="p">,</span> <span class="n">x_inn</span><span class="p">,</span> <span class="n">b_tns</span><span class="p">,</span> <span class="n">oc_tns</span><span class="p">)</span>
+
+<span class="c1"># Move intermediate computation into each output compute tile</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">compute_at</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">],</span> <span class="n">x_out</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_shr</span><span class="p">]</span><span class="o">.</span><span class="n">compute_at</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">],</span> <span class="n">x_out</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_max</span><span class="p">]</span><span class="o">.</span><span class="n">compute_at</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">],</span> <span class="n">x_out</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_min</span><span class="p">]</span><span class="o">.</span><span class="n">compute_at</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">],</span> <span class="n">x_out</span><span class="p">)</span>
+
+<span class="c1"># Apply additional loop split along reduction axis (input channel)</span>
+<span class="n">b_inn</span><span class="p">,</span> <span class="n">oc_inn</span><span class="p">,</span> <span class="n">y_inn</span><span class="p">,</span> <span class="n">x_inn</span><span class="p">,</span> <span class="n">b_tns</span><span class="p">,</span> <span class="n">oc_tns</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
+<span class="n">ic_out</span><span class="p">,</span> <span class="n">ic_inn</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">ic_block</span><span class="p">)</span>
+
+<span class="c1"># Reorder axes.</span>
+<span class="c1"># 1) Group the VTA tensor axes in the inner most position: b_tns, oc_tns, ic_tns</span>
+<span class="c1">#    to allow TVM to tensorize.</span>
+<span class="c1"># 2) We move the ic_out axis all the way out of the convolution loop to block</span>
+<span class="c1">#    along the reduction axis.</span>
+<span class="c1"># 3) Now we re-order the block axes: b_inn, oc_inn, y_inn, x_inn, ic_inn, dy, dx.</span>
+<span class="c1">#    VTA runtime/hardware requires us to write to a different output feature map</span>
+<span class="c1">#    location for every VTA tensor operation.</span>
+<span class="c1">#    This restriction requires us to order one of oc_inn, y_inn or x_inn right</span>
+<span class="c1">#    before b_tns, since they all affect output feature map indexing.</span>
+<span class="c1">#    Therefore, we choose to bring x_inn inside as shown below.</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">ic_out</span><span class="p">,</span> <span class="n">b_inn</span><span class="p">,</span> <span class="n">oc_inn</span><span class="p">,</span> <span class="n">y_inn</span><span class="p">,</span> <span class="n">ic_inn</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">x_inn</span><span class="p">,</span> <span class="n">b_tns</span><span class="p">,</span> <span class="n">oc_tns</span><span class="p">,</span> <span class="n">ic_tns</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="virtual-threading">
+<h3>Virtual Threading<a class="headerlink" href="#virtual-threading" title="永久链接至标题">#</a></h3>
+<p>Virtual threading is a mechanism that increases task-level pipeline
+parallelism in the VTA hardware design.
+Put it another way, it increases compute resource utilization by hiding
+memory access latency.</p>
+<p>In the implementation below, virtual threading distributes work across two
+threads split along the output channel axis.
+We show how work is split when computing the 2D convolution in the figure
+below.</p>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/virtual_threading.png"><img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/virtual_threading.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/virtual_threading.png" style="width: 480px;" /></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># VTA only supports 2 virtual threads</span>
+<span class="n">v_threads</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># Perform virtual thread split along output channel outer axis</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">oc_out</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">v_threads</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">b_out</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">te</span><span class="o">.</span><span class="n">thread_axis</span><span class="p">(</span><span class="s2">&quot;cthread&quot;</span><span class="p">))</span>
+
+<span class="c1"># Let&#39;s look at the current TVM schedule after blocking and virtual threading</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="lowering-copies-to-dma-transfers">
+<h3>Lowering Copies to DMA Transfers<a class="headerlink" href="#lowering-copies-to-dma-transfers" title="永久链接至标题">#</a></h3>
+<p>Next we set the buffer scopes to the corresponding on-chip VTA SRAM buffers.
+We move the load loops into the 2D convolution computation loop to stage
+memory loads such that they fit in the on-chip SRAM buffers.
+Finally we annotate the load/store loop outer axes with the DMA copy pragma
+to perform bulk memory transfers on VTA.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set scope of SRAM buffers</span>
+<span class="n">s</span><span class="p">[</span><span class="n">data_buf</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_scope</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">kernel_buf</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">wgt_scope</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_scope</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_shr</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_scope</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_min</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_scope</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_max</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_scope</span><span class="p">)</span>
+
+<span class="c1"># Block data and kernel cache reads</span>
+<span class="n">s</span><span class="p">[</span><span class="n">data_buf</span><span class="p">]</span><span class="o">.</span><span class="n">compute_at</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">],</span> <span class="n">ic_out</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">kernel_buf</span><span class="p">]</span><span class="o">.</span><span class="n">compute_at</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">],</span> <span class="n">ic_out</span><span class="p">)</span>
+
+<span class="c1"># Use DMA copy pragma on DRAM-&gt;SRAM operations</span>
+<span class="n">s</span><span class="p">[</span><span class="n">data_buf</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">data_buf</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">kernel_buf</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">kernel_buf</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
+
+<span class="c1"># Use DMA copy pragma on SRAM-&gt;DRAM operation in each result block</span>
+<span class="c1"># (this implies that these copies should be performed along b_inn,</span>
+<span class="c1"># or result axis 4)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="lowering-computation-to-vta-compute-intrinsics">
+<h3>Lowering Computation to VTA Compute Intrinsics<a class="headerlink" href="#lowering-computation-to-vta-compute-intrinsics" title="永久链接至标题">#</a></h3>
+<p>The last phase is to lower the computation loops down to VTA hardware
+intrinsics by mapping the 2D convolution to tensor intrinsics,
+and mapping the shift, and clipping computation to the vector ALU.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply tensorization over the batch tensor tile axis</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">tensorize</span><span class="p">(</span><span class="n">b_tns</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">gemm</span><span class="p">)</span>
+
+<span class="c1"># Add an ALU pragma over the shift and clipping operations</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_shr</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res_shr</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">alu</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_min</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res_min</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">alu</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="n">res_max</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res_max</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">alu</span><span class="p">)</span>
+
+<span class="c1"># Let&#39;s look at the final lowered TVM schedule after lowering memory</span>
+<span class="c1"># loads/stores down to DMA copy intrinsics, and the computation down to</span>
+<span class="c1"># VTA compute intrinsics.</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vta</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="tvm-compilation-and-verification">
+<h2>TVM Compilation and Verification<a class="headerlink" href="#tvm-compilation-and-verification" title="永久链接至标题">#</a></h2>
+<p>After specifying the schedule, we can compile it into a TVM function.
+We save the module so we can send it over RPC.
+We run the function and verify it against a numpy implementation to
+ensure correctness.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># This library facilitates 2D convolution testing</span>
+<span class="kn">from</span> <span class="nn">tvm.topi.testing</span> <span class="kn">import</span> <span class="n">conv2d_nchw_python</span>
+
+<span class="c1"># Compile the TVM module</span>
+<span class="n">my_conv</span> <span class="o">=</span> <span class="n">vta</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+    <span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Target</span><span class="p">(</span><span class="s2">&quot;ext_dev&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">target_host</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_conv&quot;</span>
+<span class="p">)</span>
+<span class="n">temp</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">tempdir</span><span class="p">()</span>
+<span class="n">my_conv</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;conv2d.o&quot;</span><span class="p">))</span>
+<span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;conv2d.o&quot;</span><span class="p">))</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="s2">&quot;conv2d.o&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get the remote device context</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">ext_dev</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Initialize the data and kernel arrays randomly in the int range</span>
+<span class="c1"># of (-128, 128] in NCHW layout</span>
+<span class="n">data_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">dtype</span>
+<span class="p">)</span>
+<span class="n">kernel_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+    <span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">kernel_h</span><span class="p">,</span> <span class="n">kernel_w</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+<span class="c1"># Apply packing to the data and kernel arrays from a 2D NCHW</span>
+<span class="c1"># to a 4D NCHWnc packed layout</span>
+<span class="n">data_packed</span> <span class="o">=</span> <span class="n">data_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+    <span class="n">batch_size</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span>
+<span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">kernel_packed</span> <span class="o">=</span> <span class="n">kernel_np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+    <span class="n">out_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+    <span class="n">in_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">,</span>
+    <span class="n">kernel_h</span><span class="p">,</span>
+    <span class="n">kernel_w</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="c1"># Format the input/output arrays with tvm.nd.array to the DLPack standard</span>
+<span class="n">data_nd</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_packed</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+<span class="n">kernel_nd</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel_packed</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+<span class="n">res_nd</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">output_shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">ctx</span><span class="p">)</span>
+
+<span class="c1"># Clear stats</span>
+<span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">]:</span>
+    <span class="n">simulator</span><span class="o">.</span><span class="n">clear_stats</span><span class="p">()</span>
+
+<span class="c1"># Invoke the module to perform the computation</span>
+<span class="n">f</span><span class="p">(</span><span class="n">data_nd</span><span class="p">,</span> <span class="n">kernel_nd</span><span class="p">,</span> <span class="n">res_nd</span><span class="p">)</span>
+
+<span class="c1"># Verify against numpy implementation</span>
+<span class="n">res_ref</span> <span class="o">=</span> <span class="n">conv2d_nchw_python</span><span class="p">(</span>
+    <span class="n">data_np</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">),</span>
+    <span class="n">kernel_np</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">stride_h</span><span class="p">,</span> <span class="n">stride_w</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">pad_h</span><span class="p">,</span> <span class="n">pad_w</span><span class="p">),</span>
+<span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span>
+<span class="n">res_ref</span> <span class="o">=</span> <span class="n">res_ref</span> <span class="o">&gt;&gt;</span> <span class="n">env</span><span class="o">.</span><span class="n">INP_WIDTH</span>
+<span class="n">res_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">res_ref</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">inp_max</span><span class="p">)</span>
+<span class="n">res_ref</span> <span class="o">=</span> <span class="n">res_ref</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<span class="n">res_ref</span> <span class="o">=</span> <span class="n">res_ref</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+    <span class="p">(</span>
+        <span class="n">batch_size</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span>
+        <span class="n">out_channels</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span>
+        <span class="n">fout_height</span><span class="p">,</span>
+        <span class="n">fout_width</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">tvm</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">res_ref</span><span class="p">,</span> <span class="n">res_nd</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+<span class="c1"># Print stats</span>
+<span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">]:</span>
+    <span class="n">sim_stats</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">stats</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Execution statistics:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sim_stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:&lt;16}</span><span class="s2">: </span><span class="si">{:&gt;16}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successful 2D convolution test!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<p>This tutorial demonstrates how TVM scheduling primitives can be used to
+lower 2D convolution onto hardware accelerator intrinsics, making
+use of hardware specific optimizations, such as latency hiding with
+virtual threading.</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="index.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">Optimize Tensor Operators</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="matrix_multiply_opt.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">Matrix Multiply Blocking</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

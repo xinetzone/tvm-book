@@ -1,0 +1,190 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Conditional Expression: `if-then-else`\n",
+    ":label:`ch_if_then_else`\n",
+    "\n",
+    "The `if-then-else` statement is supported through `te.if_then_else`. In this section, \n",
+    "we will introduce this expression using computing the lower triangle of an matrix as the example.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import tvm\n",
+    "from tvm import te\n",
+    "import numpy as np\n",
+    "import d2ltvm"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "In NumPy, we can easily use `np.tril` to obtain the lower triangle.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "2"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[ 0.,  0.,  0.,  0.],\n",
+       "       [ 4.,  5.,  0.,  0.],\n",
+       "       [ 8.,  9., 10.,  0.]], dtype=float32)"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a = np.arange(12, dtype='float32').reshape((3, 4))\n",
+    "np.tril(a)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "Now let's implement it in TVM with `if_then_else`. It accepts three arguments, the first one is the condition, if true returning the second argument, otherwise returning the third one.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "3"
+    },
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "n, m = te.var('n'), te.var('m')\n",
+    "A = te.placeholder((n, m))\n",
+    "B = te.compute(A.shape, lambda i, j: te.if_then_else(i >= j, A[i,j], 0.0))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "Verify the results.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "4"
+    },
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "produce compute {\n",
+      "  for (i, 0, n) {\n",
+      "    for (j, 0, m) {\n",
+      "      compute[((i*stride) + (j*stride))] = tvm_if_then_else((j <= i), placeholder[((i*stride) + (j*stride))], 0f)\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<tvm.nd.NDArray shape=(3, 4), cpu(0)>\n",
+       "array([[ 0.,  0.,  0.,  0.],\n",
+       "       [ 4.,  5.,  0.,  0.],\n",
+       "       [ 8.,  9., 10.,  0.]], dtype=float32)"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "b = tvm.nd.array(np.empty_like(a))\n",
+    "s = te.create_schedule(B.op)\n",
+    "print(tvm.lower(s, [A, B], simple_mode=True))\n",
+    "mod = tvm.build(s, [A, B])\n",
+    "mod(tvm.nd.array(a), b)\n",
+    "b"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "## Summary\n",
+    "\n",
+    "- We can use `tvm.if_then_else` for the if-then-else statement.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

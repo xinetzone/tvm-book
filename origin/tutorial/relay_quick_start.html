@@ -1,0 +1,1162 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>编译深度学习模型的快速入门教程 &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="TOPI 简介" href="intro_topi.html" />
+    <link rel="prev" title="交叉编译和RPC" href="cross_compilation_and_rpc.html" />
+    <link rel="stylesheet" href="../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../d2l-tvm/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables origin/tutorial/relay_quick_start and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "origin/tutorial/relay_quick_start.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "origin/tutorial/relay_quick_start.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   用户指南
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="introduction.html">
+     TVM 和模型优化的概述
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tvmc_command_line_driver.html">
+     用 TVMC 编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tvmc_python.html">
+     开始使用 TVMC Python：TVM 的高级 API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="autotvm_relay_x86.html">
+     用 Python 接口编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tensor_expr_get_started.html">
+     使用张量表达式处理算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="autotvm_matmul_x86.html">
+     用调度模板和 AutoTVM 优化算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="auto_scheduler_matmul_x86.html">
+     使用自动调度优化运算
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tensor_ir_blitz_course.html">
+     TensorIR 的突击课程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="cross_compilation_and_rpc.html">
+     交叉编译和RPC
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     编译深度学习模型的快速入门教程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="intro_topi.html">
+     TOPI 简介
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../how_to/index.html">
+   How To 指南
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/compile_models/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_pytorch.html">
+       编译 PyTorch 模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_tensorflow.html">
+       Compile Tensorflow Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_mxnet.html">
+       Compile MXNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_onnx.html">
+       Compile ONNX Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_keras.html">
+       Compile Keras Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_tflite.html">
+       Compile TFLite Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_coreml.html">
+       Compile CoreML Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_darknet.html">
+       Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_caffe2.html">
+       Compile Caffe2 Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_paddle.html">
+       Compile PaddlePaddle Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/deploy_models/index.html">
+     部署深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_model_on_android.html">
+       Deploy the Pretrained Model on Android
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_model_on_rasp.html">
+       Deploy the Pretrained Model on Raspberry Pi
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_object_detection_pytorch.html">
+       Compile PyTorch Object Detection Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_prequantized.html">
+       使用 TVM 部署框架预量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_prequantized_tflite.html">
+       Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_quantized.html">
+       在 CUDA 上部署已量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_sparse.html">
+       Deploy a Hugging Face Pruned Model on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_ssd_gluoncv.html">
+       Deploy Single Shot Multibox Detector(SSD) model
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/work_with_relay/index.html">
+     Work With Relay
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_relay/build_gcn.html">
+       Building a Graph Convolutional Network
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_relay/using_external_lib.html">
+       Using External Libraries in Relay
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/work_with_schedules/index.html">
+     Work With Tensor Expression and Schedules
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/schedule_primitives.html">
+       Schedule Primitives in TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/reduction.html">
+       Reduction
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/intrin_math.html">
+       Intrinsics and Math Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/scan.html">
+       Scan and Recurrent Kernel
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/extern_op.html">
+       External Tensor Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/tensorize.html">
+       Use Tensorize to Leverage Hardware Intrinsics
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/tuple_inputs.html">
+       Compute and Reduce with Tuple Inputs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/tedd.html">
+       Use Tensor Expression Debug Display (TEDD) for Visualization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/optimize_operators/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/optimize_operators/opt_gemm.html">
+       How to optimize GEMM on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/optimize_operators/opt_conv_cuda.html">
+       How to optimize convolution on GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/optimize_operators/opt_conv_tensorcore.html">
+       How to optimize convolution using TensorCores
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/tune_with_autotvm/index.html">
+     Auto-Tune with Templates and AutoTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_conv2d_cuda.html">
+       Tuning High Performance Convolution on NVIDIA GPUs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_cuda.html">
+       Auto-tuning a Convolutional Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_x86.html">
+       Auto-tuning a Convolutional Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_arm.html">
+       Auto-tuning a Convolutional Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_mobile_gpu.html">
+       Auto-tuning a Convolutional Network for Mobile GPU
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/tune_with_autoscheduler/index.html">
+     Use AutoScheduler for Template-Free Scheduling
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
+       Auto-scheduling a Convolution Layer for GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_x86.html">
+       Auto-scheduling a Neural Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_cuda.html">
+       Auto-scheduling a Neural Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_arm.html">
+       Auto-scheduling a Neural Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_mali.html">
+       Auto-scheduling a Neural Network for mali GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_sparse_x86.html">
+       Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/work_with_microtvm/index.html">
+     Work With microTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_autotune.html">
+       Autotuning with micro TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_ethosu.html">
+       Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_reference_vm.html">
+       microTVM Reference Virtual Machines
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_tflite.html">
+       microTVM with TFLite Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/extend_tvm/index.html">
+     Extend TVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/low_level_custom_pass.html">
+       Writing a Customized Pass
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/use_pass_infra.html">
+       How to Use TVM Pass Infra
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/use_pass_instrument.html">
+       How to Use TVM Pass Instrument
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/bring_your_own_datatypes.html">
+       Bring Your Own Datatypes to TVM
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../topic/vta/tutorials/index.html">
+   VTA 教程
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+  <label for="toctree-checkbox-12">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../topic/vta/tutorials/vta_get_started.html">
+     Get Started with VTA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../topic/vta/tutorials/matrix_multiply.html">
+     Simple Matrix Multiply
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../topic/vta/tutorials/frontend/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/frontend/deploy_classification.html">
+       在 VTA 上从 MxNet 部署预先训练的视觉模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/frontend/deploy_detection.html">
+       Deploy Pretrained Vision Detection Model from Darknet on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../topic/vta/tutorials/optimize/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/optimize/convolution_opt.html">
+       2D Convolution Optimization
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/optimize/matrix_multiply_opt.html">
+       Matrix Multiply Blocking
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../topic/vta/tutorials/autotvm/index.html">
+     Auto tuning
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/autotvm/tune_alu_vta.html">
+       Auto-tuning a ALU fused op on VTA
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/autotvm/tune_relay_vta.html">
+       Auto-tuning a convolutional network on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../vta/index.html">
+   VTA 指南
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../test.html">
+   草稿
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tvm">
+   支持的 TVM 硬件后端概述
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#relay">
+   在 Relay 中定义神经网络
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   编译
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   运行生成库
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   保存和加载已编译的模块
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/tutorial/relay_quick_start.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-relay-quick-start">
+<span id="id1"></span><h1>编译深度学习模型的快速入门教程<a class="headerlink" href="#tutorial-relay-quick-start" title="永久链接至标题">#</a></h1>
+<p><strong>作者</strong>: <a class="reference external" href="https://github.com/kevinthesun">Yao Wang</a>, <a class="reference external" href="https://github.com/SiNZeRo">Truman Tian</a></p>
+<p>这个例子展示了如何用 Relay python 前端构建一个神经网络，并通过 TVM 为 Nvidia GPU 生成运行时库。注意，你需要在启用 cuda 和 llvm 的情况下构建 TVM。</p>
+<section id="tvm">
+<h2>支持的 TVM 硬件后端概述<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h2>
+<p>下图显示了 TVM 目前支持的硬件后端：</p>
+<p><img alt="" src="../../_images/tvm_support_list.png" /></p>
+<p>在本教程中，我们将选择 cuda 和 llvm 作为目标后端。首先，让我们导入 Relay 和 TVM。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">env</span> <span class="kn">import</span> <span class="n">tvm</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+<span class="kn">from</span> <span class="nn">tvm.relay</span> <span class="kn">import</span> <span class="n">testing</span>
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
+<span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">graph_executor</span>
+<span class="kn">import</span> <span class="nn">tvm.testing</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="relay">
+<h2>在 Relay 中定义神经网络<a class="headerlink" href="#relay" title="永久链接至标题">#</a></h2>
+<p>首先，让我们用 relay 的 python 前端定义一个神经网络。为了简单起见，我们将使用 Relay 中预先定义的 resnet-18 网络。参数用 Xavier 初始化器进行初始化。Relay 也支持其他模型格式，如 MXNet、CoreML、ONNX 和 Tensorflow。</p>
+<p>在本教程中，假设我们将在我们的设备上进行推理，并且批量大小被设置为 1。输入图像是大小为 224*224 的 RGB 彩色图像。我们可以调用 <code class="xref py py-meth docutils literal notranslate"><span class="pre">tvm.relay.expr.TupleWrapper.astext()</span></code> 来显示网络结构。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">num_class</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">image_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+<span class="n">data_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,)</span> <span class="o">+</span> <span class="n">image_shape</span>
+<span class="n">out_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_class</span><span class="p">)</span>
+
+<span class="n">mod</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">resnet</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span>
+    <span class="n">num_layers</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">image_shape</span><span class="o">=</span><span class="n">image_shape</span>
+<span class="p">)</span>
+
+<span class="c1"># set show_meta_data=True if you want to show meta data</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">astext</span><span class="p">(</span><span class="n">show_meta_data</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#[version = &quot;0.0.5&quot;]
+def @main(%data: Tensor[(1, 3, 224, 224), float32], %bn_data_gamma: Tensor[(3), float32], %bn_data_beta: Tensor[(3), float32], %bn_data_moving_mean: Tensor[(3), float32], %bn_data_moving_var: Tensor[(3), float32], %conv0_weight: Tensor[(64, 3, 7, 7), float32], %bn0_gamma: Tensor[(64), float32], %bn0_beta: Tensor[(64), float32], %bn0_moving_mean: Tensor[(64), float32], %bn0_moving_var: Tensor[(64), float32], %stage1_unit1_bn1_gamma: Tensor[(64), float32], %stage1_unit1_bn1_beta: Tensor[(64), float32], %stage1_unit1_bn1_moving_mean: Tensor[(64), float32], %stage1_unit1_bn1_moving_var: Tensor[(64), float32], %stage1_unit1_conv1_weight: Tensor[(64, 64, 3, 3), float32], %stage1_unit1_bn2_gamma: Tensor[(64), float32], %stage1_unit1_bn2_beta: Tensor[(64), float32], %stage1_unit1_bn2_moving_mean: Tensor[(64), float32], %stage1_unit1_bn2_moving_var: Tensor[(64), float32], %stage1_unit1_conv2_weight: Tensor[(64, 64, 3, 3), float32], %stage1_unit1_sc_weight: Tensor[(64, 64, 1, 1), float32], %stage1_unit2_bn1_gamma: Tensor[(64), float32], %stage1_unit2_bn1_beta: Tensor[(64), float32], %stage1_unit2_bn1_moving_mean: Tensor[(64), float32], %stage1_unit2_bn1_moving_var: Tensor[(64), float32], %stage1_unit2_conv1_weight: Tensor[(64, 64, 3, 3), float32], %stage1_unit2_bn2_gamma: Tensor[(64), float32], %stage1_unit2_bn2_beta: Tensor[(64), float32], %stage1_unit2_bn2_moving_mean: Tensor[(64), float32], %stage1_unit2_bn2_moving_var: Tensor[(64), float32], %stage1_unit2_conv2_weight: Tensor[(64, 64, 3, 3), float32], %stage2_unit1_bn1_gamma: Tensor[(64), float32], %stage2_unit1_bn1_beta: Tensor[(64), float32], %stage2_unit1_bn1_moving_mean: Tensor[(64), float32], %stage2_unit1_bn1_moving_var: Tensor[(64), float32], %stage2_unit1_conv1_weight: Tensor[(128, 64, 3, 3), float32], %stage2_unit1_bn2_gamma: Tensor[(128), float32], %stage2_unit1_bn2_beta: Tensor[(128), float32], %stage2_unit1_bn2_moving_mean: Tensor[(128), float32], %stage2_unit1_bn2_moving_var: Tensor[(128), float32], %stage2_unit1_conv2_weight: Tensor[(128, 128, 3, 3), float32], %stage2_unit1_sc_weight: Tensor[(128, 64, 1, 1), float32], %stage2_unit2_bn1_gamma: Tensor[(128), float32], %stage2_unit2_bn1_beta: Tensor[(128), float32], %stage2_unit2_bn1_moving_mean: Tensor[(128), float32], %stage2_unit2_bn1_moving_var: Tensor[(128), float32], %stage2_unit2_conv1_weight: Tensor[(128, 128, 3, 3), float32], %stage2_unit2_bn2_gamma: Tensor[(128), float32], %stage2_unit2_bn2_beta: Tensor[(128), float32], %stage2_unit2_bn2_moving_mean: Tensor[(128), float32], %stage2_unit2_bn2_moving_var: Tensor[(128), float32], %stage2_unit2_conv2_weight: Tensor[(128, 128, 3, 3), float32], %stage3_unit1_bn1_gamma: Tensor[(128), float32], %stage3_unit1_bn1_beta: Tensor[(128), float32], %stage3_unit1_bn1_moving_mean: Tensor[(128), float32], %stage3_unit1_bn1_moving_var: Tensor[(128), float32], %stage3_unit1_conv1_weight: Tensor[(256, 128, 3, 3), float32], %stage3_unit1_bn2_gamma: Tensor[(256), float32], %stage3_unit1_bn2_beta: Tensor[(256), float32], %stage3_unit1_bn2_moving_mean: Tensor[(256), float32], %stage3_unit1_bn2_moving_var: Tensor[(256), float32], %stage3_unit1_conv2_weight: Tensor[(256, 256, 3, 3), float32], %stage3_unit1_sc_weight: Tensor[(256, 128, 1, 1), float32], %stage3_unit2_bn1_gamma: Tensor[(256), float32], %stage3_unit2_bn1_beta: Tensor[(256), float32], %stage3_unit2_bn1_moving_mean: Tensor[(256), float32], %stage3_unit2_bn1_moving_var: Tensor[(256), float32], %stage3_unit2_conv1_weight: Tensor[(256, 256, 3, 3), float32], %stage3_unit2_bn2_gamma: Tensor[(256), float32], %stage3_unit2_bn2_beta: Tensor[(256), float32], %stage3_unit2_bn2_moving_mean: Tensor[(256), float32], %stage3_unit2_bn2_moving_var: Tensor[(256), float32], %stage3_unit2_conv2_weight: Tensor[(256, 256, 3, 3), float32], %stage4_unit1_bn1_gamma: Tensor[(256), float32], %stage4_unit1_bn1_beta: Tensor[(256), float32], %stage4_unit1_bn1_moving_mean: Tensor[(256), float32], %stage4_unit1_bn1_moving_var: Tensor[(256), float32], %stage4_unit1_conv1_weight: Tensor[(512, 256, 3, 3), float32], %stage4_unit1_bn2_gamma: Tensor[(512), float32], %stage4_unit1_bn2_beta: Tensor[(512), float32], %stage4_unit1_bn2_moving_mean: Tensor[(512), float32], %stage4_unit1_bn2_moving_var: Tensor[(512), float32], %stage4_unit1_conv2_weight: Tensor[(512, 512, 3, 3), float32], %stage4_unit1_sc_weight: Tensor[(512, 256, 1, 1), float32], %stage4_unit2_bn1_gamma: Tensor[(512), float32], %stage4_unit2_bn1_beta: Tensor[(512), float32], %stage4_unit2_bn1_moving_mean: Tensor[(512), float32], %stage4_unit2_bn1_moving_var: Tensor[(512), float32], %stage4_unit2_conv1_weight: Tensor[(512, 512, 3, 3), float32], %stage4_unit2_bn2_gamma: Tensor[(512), float32], %stage4_unit2_bn2_beta: Tensor[(512), float32], %stage4_unit2_bn2_moving_mean: Tensor[(512), float32], %stage4_unit2_bn2_moving_var: Tensor[(512), float32], %stage4_unit2_conv2_weight: Tensor[(512, 512, 3, 3), float32], %bn1_gamma: Tensor[(512), float32], %bn1_beta: Tensor[(512), float32], %bn1_moving_mean: Tensor[(512), float32], %bn1_moving_var: Tensor[(512), float32], %fc1_weight: Tensor[(1000, 512), float32], %fc1_bias: Tensor[(1000), float32]) -&gt; Tensor[(1, 1000), float32] {
+  %0 = nn.batch_norm(%data, %bn_data_gamma, %bn_data_beta, %bn_data_moving_mean, %bn_data_moving_var, epsilon=2e-05f, scale=False) /* ty=(Tensor[(1, 3, 224, 224), float32], Tensor[(3), float32], Tensor[(3), float32]) */;
+  %1 = %0.0;
+  %2 = nn.conv2d(%1, %conv0_weight, strides=[2, 2], padding=[3, 3, 3, 3], channels=64, kernel_size=[7, 7]) /* ty=Tensor[(1, 64, 112, 112), float32] */;
+  %3 = nn.batch_norm(%2, %bn0_gamma, %bn0_beta, %bn0_moving_mean, %bn0_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 64, 112, 112), float32], Tensor[(64), float32], Tensor[(64), float32]) */;
+  %4 = %3.0;
+  %5 = nn.relu(%4) /* ty=Tensor[(1, 64, 112, 112), float32] */;
+  %6 = nn.max_pool2d(%5, pool_size=[3, 3], strides=[2, 2], padding=[1, 1, 1, 1]) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %7 = nn.batch_norm(%6, %stage1_unit1_bn1_gamma, %stage1_unit1_bn1_beta, %stage1_unit1_bn1_moving_mean, %stage1_unit1_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;
+  %8 = %7.0;
+  %9 = nn.relu(%8) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %10 = nn.conv2d(%9, %stage1_unit1_conv1_weight, padding=[1, 1, 1, 1], channels=64, kernel_size=[3, 3]) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %11 = nn.batch_norm(%10, %stage1_unit1_bn2_gamma, %stage1_unit1_bn2_beta, %stage1_unit1_bn2_moving_mean, %stage1_unit1_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;
+  %12 = %11.0;
+  %13 = nn.relu(%12) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %14 = nn.conv2d(%13, %stage1_unit1_conv2_weight, padding=[1, 1, 1, 1], channels=64, kernel_size=[3, 3]) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %15 = nn.conv2d(%9, %stage1_unit1_sc_weight, padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1]) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %16 = add(%14, %15) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %17 = nn.batch_norm(%16, %stage1_unit2_bn1_gamma, %stage1_unit2_bn1_beta, %stage1_unit2_bn1_moving_mean, %stage1_unit2_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;
+  %18 = %17.0;
+  %19 = nn.relu(%18) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %20 = nn.conv2d(%19, %stage1_unit2_conv1_weight, padding=[1, 1, 1, 1], channels=64, kernel_size=[3, 3]) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %21 = nn.batch_norm(%20, %stage1_unit2_bn2_gamma, %stage1_unit2_bn2_beta, %stage1_unit2_bn2_moving_mean, %stage1_unit2_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;
+  %22 = %21.0;
+  %23 = nn.relu(%22) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %24 = nn.conv2d(%23, %stage1_unit2_conv2_weight, padding=[1, 1, 1, 1], channels=64, kernel_size=[3, 3]) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %25 = add(%24, %16) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %26 = nn.batch_norm(%25, %stage2_unit1_bn1_gamma, %stage2_unit1_bn1_beta, %stage2_unit1_bn1_moving_mean, %stage2_unit1_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;
+  %27 = %26.0;
+  %28 = nn.relu(%27) /* ty=Tensor[(1, 64, 56, 56), float32] */;
+  %29 = nn.conv2d(%28, %stage2_unit1_conv1_weight, strides=[2, 2], padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %30 = nn.batch_norm(%29, %stage2_unit1_bn2_gamma, %stage2_unit1_bn2_beta, %stage2_unit1_bn2_moving_mean, %stage2_unit1_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;
+  %31 = %30.0;
+  %32 = nn.relu(%31) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %33 = nn.conv2d(%32, %stage2_unit1_conv2_weight, padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %34 = nn.conv2d(%28, %stage2_unit1_sc_weight, strides=[2, 2], padding=[0, 0, 0, 0], channels=128, kernel_size=[1, 1]) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %35 = add(%33, %34) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %36 = nn.batch_norm(%35, %stage2_unit2_bn1_gamma, %stage2_unit2_bn1_beta, %stage2_unit2_bn1_moving_mean, %stage2_unit2_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;
+  %37 = %36.0;
+  %38 = nn.relu(%37) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %39 = nn.conv2d(%38, %stage2_unit2_conv1_weight, padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %40 = nn.batch_norm(%39, %stage2_unit2_bn2_gamma, %stage2_unit2_bn2_beta, %stage2_unit2_bn2_moving_mean, %stage2_unit2_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;
+  %41 = %40.0;
+  %42 = nn.relu(%41) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %43 = nn.conv2d(%42, %stage2_unit2_conv2_weight, padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %44 = add(%43, %35) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %45 = nn.batch_norm(%44, %stage3_unit1_bn1_gamma, %stage3_unit1_bn1_beta, %stage3_unit1_bn1_moving_mean, %stage3_unit1_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;
+  %46 = %45.0;
+  %47 = nn.relu(%46) /* ty=Tensor[(1, 128, 28, 28), float32] */;
+  %48 = nn.conv2d(%47, %stage3_unit1_conv1_weight, strides=[2, 2], padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %49 = nn.batch_norm(%48, %stage3_unit1_bn2_gamma, %stage3_unit1_bn2_beta, %stage3_unit1_bn2_moving_mean, %stage3_unit1_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;
+  %50 = %49.0;
+  %51 = nn.relu(%50) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %52 = nn.conv2d(%51, %stage3_unit1_conv2_weight, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %53 = nn.conv2d(%47, %stage3_unit1_sc_weight, strides=[2, 2], padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %54 = add(%52, %53) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %55 = nn.batch_norm(%54, %stage3_unit2_bn1_gamma, %stage3_unit2_bn1_beta, %stage3_unit2_bn1_moving_mean, %stage3_unit2_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;
+  %56 = %55.0;
+  %57 = nn.relu(%56) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %58 = nn.conv2d(%57, %stage3_unit2_conv1_weight, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %59 = nn.batch_norm(%58, %stage3_unit2_bn2_gamma, %stage3_unit2_bn2_beta, %stage3_unit2_bn2_moving_mean, %stage3_unit2_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;
+  %60 = %59.0;
+  %61 = nn.relu(%60) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %62 = nn.conv2d(%61, %stage3_unit2_conv2_weight, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %63 = add(%62, %54) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %64 = nn.batch_norm(%63, %stage4_unit1_bn1_gamma, %stage4_unit1_bn1_beta, %stage4_unit1_bn1_moving_mean, %stage4_unit1_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;
+  %65 = %64.0;
+  %66 = nn.relu(%65) /* ty=Tensor[(1, 256, 14, 14), float32] */;
+  %67 = nn.conv2d(%66, %stage4_unit1_conv1_weight, strides=[2, 2], padding=[1, 1, 1, 1], channels=512, kernel_size=[3, 3]) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %68 = nn.batch_norm(%67, %stage4_unit1_bn2_gamma, %stage4_unit1_bn2_beta, %stage4_unit1_bn2_moving_mean, %stage4_unit1_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;
+  %69 = %68.0;
+  %70 = nn.relu(%69) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %71 = nn.conv2d(%70, %stage4_unit1_conv2_weight, padding=[1, 1, 1, 1], channels=512, kernel_size=[3, 3]) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %72 = nn.conv2d(%66, %stage4_unit1_sc_weight, strides=[2, 2], padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %73 = add(%71, %72) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %74 = nn.batch_norm(%73, %stage4_unit2_bn1_gamma, %stage4_unit2_bn1_beta, %stage4_unit2_bn1_moving_mean, %stage4_unit2_bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;
+  %75 = %74.0;
+  %76 = nn.relu(%75) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %77 = nn.conv2d(%76, %stage4_unit2_conv1_weight, padding=[1, 1, 1, 1], channels=512, kernel_size=[3, 3]) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %78 = nn.batch_norm(%77, %stage4_unit2_bn2_gamma, %stage4_unit2_bn2_beta, %stage4_unit2_bn2_moving_mean, %stage4_unit2_bn2_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;
+  %79 = %78.0;
+  %80 = nn.relu(%79) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %81 = nn.conv2d(%80, %stage4_unit2_conv2_weight, padding=[1, 1, 1, 1], channels=512, kernel_size=[3, 3]) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %82 = add(%81, %73) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %83 = nn.batch_norm(%82, %bn1_gamma, %bn1_beta, %bn1_moving_mean, %bn1_moving_var, epsilon=2e-05f) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;
+  %84 = %83.0;
+  %85 = nn.relu(%84) /* ty=Tensor[(1, 512, 7, 7), float32] */;
+  %86 = nn.global_avg_pool2d(%85) /* ty=Tensor[(1, 512, 1, 1), float32] */;
+  %87 = nn.batch_flatten(%86) /* ty=Tensor[(1, 512), float32] */;
+  %88 = nn.dense(%87, %fc1_weight, units=1000) /* ty=Tensor[(1, 1000), float32] */;
+  %89 = nn.bias_add(%88, %fc1_bias, axis=-1) /* ty=Tensor[(1, 1000), float32] */;
+  nn.softmax(%89) /* ty=Tensor[(1, 1000), float32] */
+}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2>编译<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>下一步是使用 Relay/TVM 管道对模型进行编译。用户可以指定编译的优化级别。目前这个值可以是 0 到 3。优化 passes 包括运算符融合（operator fusion）、预计算（pre-computation）、布局转换（layout transformation）等。</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">relay.build()</span></code> 返回三个部分：json 格式的执行图，TVM 模块库中专门为这个图在目标硬件上编译的函数，以及模型的参数 blobs。在编译过程中，Relay 做了图层面的优化，而 TVM 做了张量层面的优化，从而产生了一个优化的运行模块为模型服务。</p>
+<p>我们将首先为 Nvidia GPU 进行编译。在幕后， <code class="xref py py-func docutils literal notranslate"><span class="pre">relay.build()</span></code> 首先做了一些图层面的优化，例如修剪（pruning）、融合（fusing）等，然后将运算符（即优化后的图的节点）注册到 TVM 实现中，生成 <code class="docutils literal notranslate"><span class="pre">tvm.module</span></code>。为了生成模块库，TVM 将首先把高层 IR 转移到指定目标后端的低层内在 IR 中，在这个例子中是 CUDA。然后机器代码将被生成为模块库。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">opt_level</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="n">opt_level</span><span class="p">):</span>
+    <span class="n">lib</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/pc/data/4tb/lxw/study/tvm/python/tvm/target/target.py:288: UserWarning: Try specifying cuda arch by adding &#39;arch=sm_xx&#39; to your target.
+  warnings.warn(&quot;Try specifying cuda arch by adding &#39;arch=sm_xx&#39; to your target.&quot;)
+One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>运行生成库<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>现在我们可以创建图执行器并在 Nvidia GPU 上运行该模块。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create random input</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">data_shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="c1"># create module</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">graph_executor</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">dev</span><span class="p">))</span>
+<span class="c1"># set input and parameters</span>
+<span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="c1"># run</span>
+<span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="c1"># get output</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">out_shape</span><span class="p">))</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="c1"># Print first 10 elements of output</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00089283 0.00103331 0.0009094  0.00102275 0.00108751 0.00106737
+ 0.00106262 0.00095838 0.00110792 0.00113151]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2>保存和加载已编译的模块<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
+<p>我们也可以将 graph、lib 和参数保存到文件中，并在部署环境中加载它们。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># save the graph, lib and params into separate files</span>
+<span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">temp</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">tempdir</span><span class="p">()</span>
+<span class="n">path_lib</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;deploy_lib.tar&quot;</span><span class="p">)</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">path_lib</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">listdir</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;deploy_lib.tar&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load the module back.</span>
+<span class="n">loaded_lib</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">path_lib</span><span class="p">)</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="n">module</span> <span class="o">=</span> <span class="n">graph_executor</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">loaded_lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">dev</span><span class="p">))</span>
+<span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">input_data</span><span class="p">)</span>
+<span class="n">out_deploy</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="c1"># Print first 10 elements of output</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">out_deploy</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># check whether the output from deployed module is consistent with original one</span>
+<span class="n">tvm</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">out_deploy</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00089283 0.00103331 0.0009094  0.00102275 0.00108751 0.00106737
+ 0.00106262 0.00095838 0.00110792 0.00113151]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="cross_compilation_and_rpc.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">交叉编译和RPC</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="intro_topi.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">TOPI 简介</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

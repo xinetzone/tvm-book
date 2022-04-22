@@ -1,0 +1,503 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# CPU Architecture\n",
+    ":label:`ch_cpu_arch`\n",
+    "\n",
+    "\n",
+    "In this section, we will do a brief introduction to the system components that are important for the performance of deep learning and scientific computing on CPUs. For a more comprehensive survey, we recommend [this classic textbook](https://www.amazon.com/Computer-Architecture-Quantitative-John-Hennessy/dp/012383872X). We assume the readers knowing the basic system concepts such as clock rate (frequency), CPU cycle, and cache.\n",
+    "\n",
+    "## Arithmetic Units\n",
+    "\n",
+    "A typical general-purpose CPU has hardware units to perform arithmetics on integers (called [ALU](https://en.wikipedia.org/wiki/Arithmetic_logic_unit)) and floating-points (called [FPU](https://en.wikipedia.org/wiki/Floating-point_unit)). The performance of various data types depends on the hardware. Let's first check the CPU model we are using.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "model name\t: Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The following code runs on Linux\n",
+    "!cat /proc/cpuinfo | grep \"model name\" | head -1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "Now check the performance of a matrix multiplication of different data types.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "6"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2.54 ms ± 5.01 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "4.69 ms ± 37.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1.12 s ± 601 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2.27 s ± 2.26 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "def benchmark(dtype):\n",
+    "    x = np.random.normal(size=(1000, 1000)).astype(dtype)\n",
+    "    %timeit np.dot(x, x)\n",
+    "\n",
+    "benchmark('float32')\n",
+    "benchmark('float64')\n",
+    "benchmark('int32')\n",
+    "benchmark('int64')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "As can be seen, 32-bit floating-point (float32) is 2x faster than 64-bit floating-point (float64). The integer performance is way more slower and there is no much difference between 32-bit integer (int32) and 64-int integer. We will get back to the understand more about these numbers later.\n",
+    "\n",
+    "Some operators, however, could be significantly slower than the multiplication and addition `a += b * c` used in matrix multiplication. For example, CPU may need hundreds of cycles to computing transcendental functions such as `exp`. You can see that even 1000 times fewer operations is needed for `np.exp(x)` than `np.dot(x, x)`, the former one takes longer time.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "14"
+    },
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "816 µs ± 308 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)\n"
+     ]
+    }
+   ],
+   "source": [
+    "x = np.random.normal(size=(1000, 1000)).astype('float32')\n",
+    "%timeit np.exp(x)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "## Parallel Execution\n",
+    "\n",
+    "The CPU frequency increased rapidly until the beginning of the 21st century. In 2003, Intel released a [Pentium 4](https://en.wikipedia.org/wiki/Pentium_4) CPU with up to 3.8 GHz clock rate. If we check our CPU clock rate,\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU MHz:               2499.998\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The following code runs on Linux\n",
+    "!lscpu | grep MHz"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "we can see that it has a lower clock rate compared to the product in 2003, but it might be 100x faster than the Pentium 4 CPU. One secret source is that new CPU models explore a lot more in the territory of parallel execution. Next we briefly discuss two typical parallelizations.\n",
+    "\n",
+    "![Single core vs. single core with SIMD vs. multi-core with SIMD.](../img/cpu_parallel_arch.svg)\n",
+    ":label:`fig_cpu_parallel_arch`\n",
+    "\n",
+    "### SIMD\n",
+    "\n",
+    "Single instruction, multiple data ([SIMD](https://en.wikipedia.org/wiki/SIMD)), refers to processing multiple elements with the same instruction simultaneously. :numref:`fig_cpu_parallel_arch` illustrates this architecture. In a normal CPU core, there is an instruction fetching and decoding unit. It runs an instruction on the processing unit (PU), e.g. ALU or FPU, to process one element, e.g. float32, each time. With SIMD, we have multiple PUs instead of one. In each time, the fetch-and-decode unit submit the same instruction to every PU to execute simultaneously. If there are $n$ PUs, then we can process $n$ element each time.\n",
+    "\n",
+    "Popular SIMD instruction sets include Intel's [SSE](https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions) and [AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions), ARM's [Neon](https://en.wikipedia.org/wiki/ARM_architecture#Advanced_SIMD_(NEON)) and AMD's [3DNow!](https://en.wikipedia.org/wiki/3DNow!). Let's check which sets our CPU supports.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "flags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx avx512f rdseed adx smap clflushopt clwb avx512cd xsaveopt xsavec xgetbv1 ida arat pku\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The following code runs on Linux\n",
+    "!cat /proc/cpuinfo | grep \"flags\" | head -1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "As can be seen, the most powerful SIMD instruction set supported is AVX-512, which\n",
+    "extends AVX to support executing SIMD on 512-bit width data, e.g. it is able to perform 16 float32 operations or 8\n",
+    "float64 operations each time.\n",
+    "\n",
+    "### Multi-cores\n",
+    "\n",
+    "SIMD improves the performance of a single core, another way is adding multiple\n",
+    "cores to a single CPU processor. :numref:`fig_cpu_parallel_arch` shows two CPU\n",
+    "cores, each of which has 2 PUs. \n",
+    "\n",
+    "It looks like that our CPU has 16 cores.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "origin_pos": 11,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "16\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The following code runs on Linux\n",
+    "!cat /proc/cpuinfo | grep \"model name\" | wc -l"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 12
+   },
+   "source": [
+    "But note that modern Intel CPUs normally has \n",
+    "[hyper-threading](https://en.wikipedia.org/wiki/Hyper-threading) which runs 2 hardware\n",
+    "threads per core. By hyper-threading, each core is presented\n",
+    "as 2 logical cores to the operating system. So even the system shows there are 16\n",
+    "cores, physically our CPU only has 8 cores.\n",
+    "\n",
+    "Having two threads sharing the resource of the same core may increase the total throughput but at the expense of increasing the overall latency.\n",
+    "In addition the effect of hyper-threading is very much dependent on the application.\n",
+    "Therefore, it is not generally recommended to leverage hyper-threading in the deep learning workloads.\n",
+    "Later on in the book, you'll see that we only launch 8 threads even if our CPU presents 16 cores.\n",
+    "\n",
+    "### Performance\n",
+    "\n",
+    "We often use floating point operations per second ([FLOPS](https://en.wikipedia.org/wiki/FLOPS)) to measure the performance of a hardware platform or an executable program.\n",
+    "The theoretical peak performance of a single CPU can be computed by\n",
+    "\n",
+    "`#physical_cores * #cycles_per_second * #instructions_per_cycle * #operations_per_instruction`\n",
+    "\n",
+    "where `#instructions_per_cycle` is also called the SIMD width.\n",
+    "\n",
+    "For the CPU we are using, it has 8 physical cores, the max clock rate (i.e. `#cycles_per_second`) is $2.5\\times 10^9$, the AVX-512 computes 16 float32 instructions per cycle, the [FMA](https://en.wikipedia.org/wiki/FMA_instruction_set) instruction set in AVX-512 compute `a += b * c` each time, which contains 2 operations. Therefore, the GFLOPS (gigaFLOPS) for single precision (float32) is\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "origin_pos": 13,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "640.0"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "2.5 * 8 * 16 * 2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 14
+   },
+   "source": [
+    "You can modify the above code based on your system information to calculate your CPU peak performance.\n",
+    "\n",
+    "Matrix multiplication (*matmul*) is a good benchmark workload for the peak performance, which has $2\\times n^3$ operations in total if all matrices are in shape $[n, n]$. After executing a *matmul*, we can get its (G)FLOPS by dividing its total operations using the averaged executing time. As can be seen, the measured GFLOPS is close to the peak performance (~90% of peak).\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "origin_pos": 15,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "774.949674567942"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x = np.random.normal(size=(1000, 1000)).astype('float32')\n",
+    "res = %timeit -o -q np.dot(x, x)\n",
+    "2 * 1000**3 / res.average / 1e9"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 16
+   },
+   "source": [
+    "## Memory Subsystem\n",
+    "\n",
+    "Another component which significantly impacts the performance is the memory subsystem. The memory size is one of the key specifications of a system. The machine we are using has 240 GB memory.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "origin_pos": 17,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "MemTotal:       65157056 kB\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The following code runs on Linux\n",
+    "!cat /proc/meminfo | grep MemTotal"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 18
+   },
+   "source": [
+    "The memory bandwidth, on the other hand, is less noticed but equally important. We can use the\n",
+    "[mbw](http://manpages.ubuntu.com/manpages/xenial/man1/mbw.1.html) tool to test\n",
+    "the bandwidth.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "origin_pos": 19,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "AVG\tMethod: MEMCPY\tElapsed: 0.04812\tMiB: 256.00000\tCopy: 5320.310 MiB/s\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The following code runs on Linux\n",
+    "!mbw 256 | grep AVG | grep MEMCPY"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 20
+   },
+   "source": [
+    "Note that our CPU can execute $640\\times 10^9$ operations on float32 numbers per second. This\n",
+    "requires the bandwidth to be at least $640\\times 4=2560$ GB/s, which is significantly\n",
+    "larger than the measured bandwidth. CPU uses caches to fill\n",
+    "in this big bandwidth gap. Let's check the caches our CPU has.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "origin_pos": 21,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "L1d cache:             32K\r\n",
+      "L1i cache:             32K\r\n",
+      "L2 cache:              1024K\r\n",
+      "L3 cache:              36608K\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The following code runs on Linux\n",
+    "!lscpu | grep cache"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 22
+   },
+   "source": [
+    "As can be seen, there are three levels of caches: L1, L2 and L3 (or LLC, Last Level Cache). The L1 cache has 32KB for instructions and 32KB for data. The L2 cache is 32x larger. The L3 cache is way more larger, but it is still thousands times smaller than the main memory. The benefits of caches are significantly improved access latency and bandwidth. Typically on modern CPUs,\n",
+    "the latency to access L1 cache is less than 1 ns, the L2 cache's latency is around 7 ns, and the L3 cache is slower, with a latency about 20 ns, while still faster than the main memory's 100 ns latency.\n",
+    "\n",
+    "\n",
+    "![The layout of main memory and caches.](../img/cpu_memory.svg)\n",
+    ":label:`fig_cpu_memory`\n",
+    "\n",
+    "A brief memory subsystem layout is illustrated in :numref:`fig_cpu_memory`.\n",
+    "L1 and L2 caches are exclusive to each CPU core, and L3 cache is shared across the cores of the same CPU processor\n",
+    "To processing on some data, a CPU will first check if the data exist at L1 cache, if not check L2 cache, if not check L3 cache, if not go to the main memory to retrieve the data and bring it all the way through L3 cache, L2 cache, and L1 cache, finally to the CPU registers.\n",
+    "This looks very expensive but luckily in practice, the programs have the [data locality patterns](https://en.wikipedia.org/wiki/Locality_of_reference) which will accelerate the data retrieving procedure. There are two types of locality: temporal locality and spatial locality.\n",
+    "Temporal locality means that the data we just used usually would be used in the near future so that they may be still in cache. Spatial locality means that the adjacent data of the ones we just used are likely to be used in the near future. As the system always brings a block of values to the cache each time (see the concept of [cache lines](https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES)), those adjacent data may be still in cache when referenced to.\n",
+    "Leveraging the advantage brought by data locality is one of the most important performance optimization principles we will describe in detail later.\n",
+    "\n",
+    "## Summary\n",
+    "\n",
+    "- CPUs have dedicated units to handle computations on various data types. A CPU's peak performance is determined by the clock rate, the number of cores, and the instruction sets.\n",
+    "- CPUs use multi-level caches to bridge the gap between CPU computational power and main memory bandwidth.\n",
+    "- An efficient program should be effectively parallelized and access data with good temporal and spatial localities.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

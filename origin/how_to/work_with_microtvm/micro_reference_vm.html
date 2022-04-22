@@ -1,0 +1,1055 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>microTVM Reference Virtual Machines &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="next" title="microTVM with TFLite Models" href="micro_tflite.html" />
+    <link rel="prev" title="Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU" href="micro_ethosu.html" />
+    <link rel="stylesheet" href="../../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../d2l-tvm/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables origin/how_to/work_with_microtvm/micro_reference_vm and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "origin/how_to/work_with_microtvm/micro_reference_vm.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "origin/how_to/work_with_microtvm/micro_reference_vm.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../tutorial/index.html">
+   用户指南
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/introduction.html">
+     TVM 和模型优化的概述
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tvmc_command_line_driver.html">
+     用 TVMC 编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tvmc_python.html">
+     开始使用 TVMC Python：TVM 的高级 API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/autotvm_relay_x86.html">
+     用 Python 接口编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tensor_expr_get_started.html">
+     使用张量表达式处理算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/autotvm_matmul_x86.html">
+     用调度模板和 AutoTVM 优化算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/auto_scheduler_matmul_x86.html">
+     使用自动调度优化运算
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tensor_ir_blitz_course.html">
+     TensorIR 的突击课程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/cross_compilation_and_rpc.html">
+     交叉编译和RPC
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/relay_quick_start.html">
+     编译深度学习模型的快速入门教程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/intro_topi.html">
+     TOPI 简介
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../index.html">
+   How To 指南
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../compile_models/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_pytorch.html">
+       编译 PyTorch 模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_tensorflow.html">
+       Compile Tensorflow Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_mxnet.html">
+       Compile MXNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_onnx.html">
+       Compile ONNX Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_keras.html">
+       Compile Keras Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_tflite.html">
+       Compile TFLite Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_coreml.html">
+       Compile CoreML Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_darknet.html">
+       Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_caffe2.html">
+       Compile Caffe2 Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_paddle.html">
+       Compile PaddlePaddle Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../deploy_models/index.html">
+     部署深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_model_on_android.html">
+       Deploy the Pretrained Model on Android
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_model_on_rasp.html">
+       Deploy the Pretrained Model on Raspberry Pi
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_object_detection_pytorch.html">
+       Compile PyTorch Object Detection Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_prequantized.html">
+       使用 TVM 部署框架预量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_prequantized_tflite.html">
+       Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_quantized.html">
+       在 CUDA 上部署已量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_sparse.html">
+       Deploy a Hugging Face Pruned Model on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_ssd_gluoncv.html">
+       Deploy Single Shot Multibox Detector(SSD) model
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_relay/index.html">
+     Work With Relay
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_relay/build_gcn.html">
+       Building a Graph Convolutional Network
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_relay/using_external_lib.html">
+       Using External Libraries in Relay
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_schedules/index.html">
+     Work With Tensor Expression and Schedules
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/schedule_primitives.html">
+       Schedule Primitives in TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/reduction.html">
+       Reduction
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/intrin_math.html">
+       Intrinsics and Math Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/scan.html">
+       Scan and Recurrent Kernel
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/extern_op.html">
+       External Tensor Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tensorize.html">
+       Use Tensorize to Leverage Hardware Intrinsics
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tuple_inputs.html">
+       Compute and Reduce with Tuple Inputs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tedd.html">
+       Use Tensor Expression Debug Display (TEDD) for Visualization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../optimize_operators/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_gemm.html">
+       How to optimize GEMM on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_conv_cuda.html">
+       How to optimize convolution on GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_conv_tensorcore.html">
+       How to optimize convolution using TensorCores
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../tune_with_autotvm/index.html">
+     Auto-Tune with Templates and AutoTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_conv2d_cuda.html">
+       Tuning High Performance Convolution on NVIDIA GPUs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_cuda.html">
+       Auto-tuning a Convolutional Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_x86.html">
+       Auto-tuning a Convolutional Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_arm.html">
+       Auto-tuning a Convolutional Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_mobile_gpu.html">
+       Auto-tuning a Convolutional Network for Mobile GPU
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../tune_with_autoscheduler/index.html">
+     Use AutoScheduler for Template-Free Scheduling
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
+       Auto-scheduling a Convolution Layer for GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_x86.html">
+       Auto-scheduling a Neural Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_cuda.html">
+       Auto-scheduling a Neural Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_arm.html">
+       Auto-scheduling a Neural Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_mali.html">
+       Auto-scheduling a Neural Network for mali GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_sparse_x86.html">
+       Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="index.html">
+     Work With microTVM
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="micro_autotune.html">
+       Autotuning with micro TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="micro_ethosu.html">
+       Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       microTVM Reference Virtual Machines
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="micro_tflite.html">
+       microTVM with TFLite Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../extend_tvm/index.html">
+     Extend TVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/low_level_custom_pass.html">
+       Writing a Customized Pass
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/use_pass_infra.html">
+       How to Use TVM Pass Infra
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/use_pass_instrument.html">
+       How to Use TVM Pass Instrument
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../extend_tvm/bring_your_own_datatypes.html">
+       Bring Your Own Datatypes to TVM
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../topic/vta/tutorials/index.html">
+   VTA 教程
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+  <label for="toctree-checkbox-12">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../topic/vta/tutorials/vta_get_started.html">
+     Get Started with VTA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../topic/vta/tutorials/matrix_multiply.html">
+     Simple Matrix Multiply
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/frontend/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/frontend/deploy_classification.html">
+       在 VTA 上从 MxNet 部署预先训练的视觉模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/frontend/deploy_detection.html">
+       Deploy Pretrained Vision Detection Model from Darknet on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/optimize/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/optimize/convolution_opt.html">
+       2D Convolution Optimization
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/optimize/matrix_multiply_opt.html">
+       Matrix Multiply Blocking
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/autotvm/index.html">
+     Auto tuning
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/autotvm/tune_alu_vta.html">
+       Auto-tuning a ALU fused op on VTA
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/autotvm/tune_relay_vta.html">
+       Auto-tuning a convolutional network on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../vta/index.html">
+   VTA 指南
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../test.html">
+   草稿
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-it-works">
+   How it works
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#setting-up-the-vm">
+   Setting up the VM
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#installing-prerequisites">
+     Installing prerequisites
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#first-boot">
+     First boot
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#connect-hardware-to-the-vm">
+     Connect Hardware to the VM
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#rebuilding-tvm-inside-the-reference-vm">
+     Rebuilding TVM inside the Reference VM
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#logging-in-to-the-vm">
+     Logging in to the VM
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#running-tests">
+   Running tests
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/how_to/work_with_microtvm/micro_reference_vm.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">备注</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-how-to-work-with-microtvm-micro-reference-vm-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="microtvm-reference-virtual-machines">
+<span id="tutorial-micro-reference-vm"></span><span id="sphx-glr-how-to-work-with-microtvm-micro-reference-vm-py"></span><h1>microTVM Reference Virtual Machines<a class="headerlink" href="#microtvm-reference-virtual-machines" title="永久链接至标题">#</a></h1>
+<p><strong>Author</strong>: <a class="reference external" href="mailto:areusch&#37;&#52;&#48;octoml&#46;ai">Andrew Reusch</a></p>
+<p>This tutorial explains how to launch microTVM Reference Virtual Machines. You can use these to
+develop on real physical hardware without needing to individually install the microTVM
+dependencies. These are also particularly useful when trying to reproduce behavior with
+microTVM, such as when filing bug reports.</p>
+<p>microTVM is the effort to allow TVM to build and execute models on bare-metal microcontrollers.
+microTVM aims to be compatible with a wide variety of SoCs and runtime environments (i.e. bare metal,
+RTOS, etc). However, some stable software environment is needed to allow developers to share and
+reproduce bugs and results. The microTVM Reference Virtual Machines are intended to provide that
+environment.</p>
+<section id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="永久链接至标题">#</a></h2>
+<p>No Virtual Machines are stored in the TVM repository–instead, the files stored in
+<code class="docutils literal notranslate"><span class="pre">apps/microtvm/reference-vm</span></code> describe how to build VMs to the <a class="reference external" href="https://vagrantup.com">Vagrant</a> VM builder tool.</p>
+<p>The Reference VMs are split into two parts:</p>
+<ol class="arabic simple">
+<li><p>A Vagrant Base Box, which contains all of the stable dependencies for that platform. Build
+scripts are stored in <code class="docutils literal notranslate"><span class="pre">apps/microtvm/reference-vm/&lt;platform&gt;/base-box</span></code>. TVM committers run
+these when a platform’s “stable” dependencies change, and the generated base boxes are stored in
+<a class="reference external" href="https://app.vagrantup.com/tlcpack">Vagrant Cloud</a>.</p></li>
+<li><p>A per-workspace VM, which users normally build using the Base Box as a starting point. Build
+scripts are stored in <code class="docutils literal notranslate"><span class="pre">apps/microtvm/reference-vm/&lt;platform&gt;</span></code> (everything except <code class="docutils literal notranslate"><span class="pre">base-box</span></code>).</p></li>
+</ol>
+</section>
+<section id="setting-up-the-vm">
+<h2>Setting up the VM<a class="headerlink" href="#setting-up-the-vm" title="永久链接至标题">#</a></h2>
+<section id="installing-prerequisites">
+<h3>Installing prerequisites<a class="headerlink" href="#installing-prerequisites" title="永久链接至标题">#</a></h3>
+<p>A minimal set of prerequisites are needed:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://vagrantup.com">Vagrant</a></p></li>
+<li><p>A supported Virtual Machine hypervisor (<strong>VirtualBox</strong>, <strong>Parallels</strong>, or <strong>VMWare Fusion/Workstation</strong>).
+<a class="reference external" href="https://www.virtualbox.org">VirtualBox</a> is a suggested free hypervisor, but please note
+that the <a class="reference external" href="https://www.virtualbox.org/wiki/Downloads#VirtualBox6.1.16OracleVMVirtualBoxExtensionPack">VirtualBox Extension Pack</a> is required for proper USB forwarding. If using VirtualBox,
+also consider installing the <a class="reference external" href="https://github.com/dotless-de/vagrant-vbguest">vbguest</a> plugin.</p></li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p>If required for your hypervisor, the
+<a class="reference external" href="https://github.com/hashicorp/vagrant/wiki/Available-Vagrant-Plugins#providers">Vagrant provider plugin</a> (or see <a class="reference external" href="https://www.vagrantup.com/vmware">here</a> for VMWare).</p></li>
+</ol>
+</section>
+<section id="first-boot">
+<h3>First boot<a class="headerlink" href="#first-boot" title="永久链接至标题">#</a></h3>
+<p>The first time you use a reference VM, you need to create the box locally and then provision it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Replace zephyr with the name of a different platform, if you are not using Zephyr.</span>
+~/.../tvm $ <span class="nb">cd</span> apps/microtvm/reference-vm/zephyr
+<span class="c1"># Replace &lt;provider_name&gt; with the name of the hypervisor you wish to use (i.e. virtualbox, parallels, vmware_desktop).</span>
+~/.../tvm/apps/microtvm/reference-vm/zephyr $ vagrant up --provider<span class="o">=</span>&lt;provider_name&gt;
+</pre></div>
+</div>
+<p>This command will take a couple of minutes to run and will require 4 to 5GB of storage on your
+machine. It does the following:</p>
+<ol class="arabic simple">
+<li><p>Downloads the <a class="reference external" href="https://app.vagrantup.com/tlcpack/boxes/microtvm">microTVM base box</a> and clones it to form a new VM specific to this TVM directory.</p></li>
+<li><p>Mounts your TVM directory (and, if using <code class="docutils literal notranslate"><span class="pre">git-subtree</span></code>, the original <code class="docutils literal notranslate"><span class="pre">.git</span></code> repo) into the
+VM.</p></li>
+<li><p>Builds TVM and installs a Python virtualenv with the dependencies corresponding with your TVM
+build.</p></li>
+</ol>
+</section>
+<section id="connect-hardware-to-the-vm">
+<h3>Connect Hardware to the VM<a class="headerlink" href="#connect-hardware-to-the-vm" title="永久链接至标题">#</a></h3>
+<p>Next, you need to configure USB passthrough to attach your physical development board to the virtual
+machine (rather than directly to your laptop’s host OS).</p>
+<p>It’s suggested you setup a device filter, rather than doing a one-time forward, because often the
+device may reboot during the programming process and you may, at that time, need to enable
+forwarding again. It may not be obvious to the end user when this occurs. Instructions to do that:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://www.virtualbox.org/manual/ch03.html#usb-support">VirtualBox</a></p></li>
+<li><p><a class="reference external" href="https://kb.parallels.com/122993">Parallels</a></p></li>
+<li><p><a class="reference external" href="https://docs.vmware.com/en/VMware-Workstation-Pro/15.0/com.vmware.ws.using.doc/GUID-E003456F-EB94-4B53-9082-293D9617CB5A.html">VMWare Workstation</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="rebuilding-tvm-inside-the-reference-vm">
+<h3>Rebuilding TVM inside the Reference VM<a class="headerlink" href="#rebuilding-tvm-inside-the-reference-vm" title="永久链接至标题">#</a></h3>
+<p>After the first boot, you’ll need to ensure you keep the build, in <code class="docutils literal notranslate"><span class="pre">$TVM_HOME/build-microtvm-zephyr</span></code>,
+up-to-date when you modify the C++ runtime or checkout a different revision. You can either
+re-provision the machine (<code class="docutils literal notranslate"><span class="pre">vagrant</span> <span class="pre">provision</span></code> in the same directory you ran <code class="docutils literal notranslate"><span class="pre">vagrant</span> <span class="pre">up</span></code> before)
+or manually rebuild TVM yourself.</p>
+<p>Remember: the TVM <code class="docutils literal notranslate"><span class="pre">.so</span></code> built inside the VM is different from the one you may use on your host
+machine. This is why it’s built inside the special directory <code class="docutils literal notranslate"><span class="pre">build-microtvm-zephyr</span></code>.</p>
+</section>
+<section id="logging-in-to-the-vm">
+<h3>Logging in to the VM<a class="headerlink" href="#logging-in-to-the-vm" title="永久链接至标题">#</a></h3>
+<p>The VM should be available to your host only with the hostname <code class="docutils literal notranslate"><span class="pre">microtvm</span></code>. You can SSH to the VM
+as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ vagrant ssh
+</pre></div>
+</div>
+<p>Then <code class="docutils literal notranslate"><span class="pre">cd</span></code> to the same path used on your host machine for TVM. For example, on Mac:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> /Users/yourusername/path/to/tvm
+</pre></div>
+</div>
+</section>
+</section>
+<section id="running-tests">
+<h2>Running tests<a class="headerlink" href="#running-tests" title="永久链接至标题">#</a></h2>
+<p>Once the VM has been provisioned, tests can executed using <code class="docutils literal notranslate"><span class="pre">poetry</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> apps/microtvm/reference-vm/zephyr
+$ poetry run python3 ../../../../tests/micro/qemu/test_zephyr.py --zephyr-board<span class="o">=</span>stm32f746g_disco
+</pre></div>
+</div>
+<p>If you do not have physical hardware attached, but wish to run the tests using the
+local QEMU emulator running within the VM, run the following commands instead:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> /Users/yourusername/path/to/tvm
+$ <span class="nb">cd</span> apps/microtvm/reference-vm/zephyr/
+$ poetry run pytest ../../../../tests/micro/qemu/test_zephyr.py --zephyr-board<span class="o">=</span>qemu_x86
+</pre></div>
+</div>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-how-to-work-with-microtvm-micro-reference-vm-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">micro_reference_vm.py</span></code></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">micro_reference_vm.ipynb</span></code></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="micro_ethosu.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="micro_tflite.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">microTVM with TFLite Models</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

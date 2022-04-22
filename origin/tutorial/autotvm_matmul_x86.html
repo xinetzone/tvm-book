@@ -1,0 +1,1246 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>用调度模板和 AutoTVM 优化算子 &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="使用自动调度优化运算" href="auto_scheduler_matmul_x86.html" />
+    <link rel="prev" title="使用张量表达式处理算子" href="tensor_expr_get_started.html" />
+    <link rel="stylesheet" href="../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../d2l-tvm/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables origin/tutorial/autotvm_matmul_x86 and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "origin/tutorial/autotvm_matmul_x86.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "origin/tutorial/autotvm_matmul_x86.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   用户指南
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="introduction.html">
+     TVM 和模型优化的概述
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tvmc_command_line_driver.html">
+     用 TVMC 编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tvmc_python.html">
+     开始使用 TVMC Python：TVM 的高级 API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="autotvm_relay_x86.html">
+     用 Python 接口编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tensor_expr_get_started.html">
+     使用张量表达式处理算子
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     用调度模板和 AutoTVM 优化算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="auto_scheduler_matmul_x86.html">
+     使用自动调度优化运算
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tensor_ir_blitz_course.html">
+     TensorIR 的突击课程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="cross_compilation_and_rpc.html">
+     交叉编译和RPC
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="relay_quick_start.html">
+     编译深度学习模型的快速入门教程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="intro_topi.html">
+     TOPI 简介
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../how_to/index.html">
+   How To 指南
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/compile_models/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_pytorch.html">
+       编译 PyTorch 模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_tensorflow.html">
+       Compile Tensorflow Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_mxnet.html">
+       Compile MXNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_onnx.html">
+       Compile ONNX Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_keras.html">
+       Compile Keras Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_tflite.html">
+       Compile TFLite Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_coreml.html">
+       Compile CoreML Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_darknet.html">
+       Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_caffe2.html">
+       Compile Caffe2 Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/compile_models/from_paddle.html">
+       Compile PaddlePaddle Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/deploy_models/index.html">
+     部署深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_model_on_android.html">
+       Deploy the Pretrained Model on Android
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_model_on_rasp.html">
+       Deploy the Pretrained Model on Raspberry Pi
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_object_detection_pytorch.html">
+       Compile PyTorch Object Detection Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_prequantized.html">
+       使用 TVM 部署框架预量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_prequantized_tflite.html">
+       Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_quantized.html">
+       在 CUDA 上部署已量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_sparse.html">
+       Deploy a Hugging Face Pruned Model on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/deploy_models/deploy_ssd_gluoncv.html">
+       Deploy Single Shot Multibox Detector(SSD) model
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/work_with_relay/index.html">
+     Work With Relay
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_relay/build_gcn.html">
+       Building a Graph Convolutional Network
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_relay/using_external_lib.html">
+       Using External Libraries in Relay
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/work_with_schedules/index.html">
+     Work With Tensor Expression and Schedules
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/schedule_primitives.html">
+       Schedule Primitives in TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/reduction.html">
+       Reduction
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/intrin_math.html">
+       Intrinsics and Math Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/scan.html">
+       Scan and Recurrent Kernel
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/extern_op.html">
+       External Tensor Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/tensorize.html">
+       Use Tensorize to Leverage Hardware Intrinsics
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/tuple_inputs.html">
+       Compute and Reduce with Tuple Inputs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_schedules/tedd.html">
+       Use Tensor Expression Debug Display (TEDD) for Visualization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/optimize_operators/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/optimize_operators/opt_gemm.html">
+       How to optimize GEMM on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/optimize_operators/opt_conv_cuda.html">
+       How to optimize convolution on GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/optimize_operators/opt_conv_tensorcore.html">
+       How to optimize convolution using TensorCores
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/tune_with_autotvm/index.html">
+     Auto-Tune with Templates and AutoTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_conv2d_cuda.html">
+       Tuning High Performance Convolution on NVIDIA GPUs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_cuda.html">
+       Auto-tuning a Convolutional Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_x86.html">
+       Auto-tuning a Convolutional Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_arm.html">
+       Auto-tuning a Convolutional Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autotvm/tune_relay_mobile_gpu.html">
+       Auto-tuning a Convolutional Network for Mobile GPU
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/tune_with_autoscheduler/index.html">
+     Use AutoScheduler for Template-Free Scheduling
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
+       Auto-scheduling a Convolution Layer for GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_x86.html">
+       Auto-scheduling a Neural Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_cuda.html">
+       Auto-scheduling a Neural Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_arm.html">
+       Auto-scheduling a Neural Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_network_mali.html">
+       Auto-scheduling a Neural Network for mali GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/tune_with_autoscheduler/tune_sparse_x86.html">
+       Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/work_with_microtvm/index.html">
+     Work With microTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_autotune.html">
+       Autotuning with micro TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_ethosu.html">
+       Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_reference_vm.html">
+       microTVM Reference Virtual Machines
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/work_with_microtvm/micro_tflite.html">
+       microTVM with TFLite Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../how_to/extend_tvm/index.html">
+     Extend TVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/low_level_custom_pass.html">
+       Writing a Customized Pass
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/use_pass_infra.html">
+       How to Use TVM Pass Infra
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/use_pass_instrument.html">
+       How to Use TVM Pass Instrument
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../how_to/extend_tvm/bring_your_own_datatypes.html">
+       Bring Your Own Datatypes to TVM
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../topic/vta/tutorials/index.html">
+   VTA 教程
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+  <label for="toctree-checkbox-12">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../topic/vta/tutorials/vta_get_started.html">
+     Get Started with VTA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../topic/vta/tutorials/matrix_multiply.html">
+     Simple Matrix Multiply
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../topic/vta/tutorials/frontend/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/frontend/deploy_classification.html">
+       在 VTA 上从 MxNet 部署预先训练的视觉模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/frontend/deploy_detection.html">
+       Deploy Pretrained Vision Detection Model from Darknet on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../topic/vta/tutorials/optimize/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/optimize/convolution_opt.html">
+       2D Convolution Optimization
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/optimize/matrix_multiply_opt.html">
+       Matrix Multiply Blocking
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../topic/vta/tutorials/autotvm/index.html">
+     Auto tuning
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/autotvm/tune_alu_vta.html">
+       Auto-tuning a ALU fused op on VTA
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../topic/vta/tutorials/autotvm/tune_relay_vta.html">
+       Auto-tuning a convolutional network on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../vta/index.html">
+   VTA 指南
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../test.html">
+   草稿
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   安装依赖项
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#te">
+   基本的矩阵乘法与 TE
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   用 AutoTVM 进行矩阵乘法
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   基本的矩阵乘法模板
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#api">
+   使用高级参数 API 的矩阵乘法模板
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   第 2 步：使用 AutoTVM 来优化矩阵乘法
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#tvm">
+     TVM 中的自动调谐器
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id5">
+     开始调谐
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id6">
+   最后说明和总结
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/tutorial/autotvm_matmul_x86.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="autotvm">
+<span id="tutorial-autotvm-matmul-x86"></span><h1>用调度模板和 AutoTVM 优化算子<a class="headerlink" href="#autotvm" title="永久链接至标题">#</a></h1>
+<p>在本教程中，我们展示了如何使用 TVM 张量表达式（TE）语言来编写调度模板，这些模板可以被 AutoTVM 搜索到，以找到最佳调度。这个过程被称为 Auto-Tuning，它有助于将优化张量计算的过程自动化。</p>
+<p>本教程建立在之前关于 <a class="reference internal" href="tensor_expr_get_started.html"><span class="doc std std-doc">如何使用 TE 编写矩阵乘法</span></a> 的教程上。</p>
+<p>自动调谐有两个步骤。</p>
+<ul class="simple">
+<li><p>第一步是定义一个搜索空间。</p></li>
+<li><p>第二步是运行一个搜索算法来探索这个空间。</p></li>
+</ul>
+<p>在本教程中，你可以学习如何在TVM中执行这两个步骤。整个工作流程通过一个矩阵乘法的例子来说明。</p>
+<div class="alert alert-info admonition note">
+<p class="admonition-title">备注</p>
+<p>本教程不能在 Windows 或最近版本的 MacOS 上运行。为了让它运行，你需要将本教程的主体包裹在一个 <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> 块中。</p>
+</div>
+<section id="id1">
+<h2>安装依赖项<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
+<p>为了在 TVM 中使用 autotvm 包，我们需要安装一些额外的依赖项。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --user psutil xgboost cloudpickle
+</pre></div>
+</div>
+<p>为了使 TVM 在 tuning 中运行得更快，建议使用 cython 作为 TVM 的 FFI。在 TVM 的根目录下，执行：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --user cython
+sudo make cython3
+</pre></div>
+</div>
+<p>现在回到 Python 代码。首先，导入所需的包。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">env</span> <span class="kn">import</span> <span class="n">tvmx</span>
+
+<span class="c1"># 设定 TVM 项目的根目录</span>
+<span class="c1"># TVM_ROOT = Path(&#39;/media/pc/data/4tb/lxw/study/tvm&#39;)</span>
+<span class="n">TVM_ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">tvm</span><span class="p">,</span> <span class="n">vta</span> <span class="o">=</span> <span class="n">tvmx</span><span class="o">.</span><span class="n">import_tvm</span><span class="p">(</span><span class="n">TVM_ROOT</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
+<span class="kn">import</span> <span class="nn">tvm.testing</span>
+
+<span class="c1"># the module is called `autotvm`</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">autotvm</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;module &#39;tvmx&#39; from &#39;/media/pc/data/4tb/lxw/study/tvm/xinetzone/src/tvmx/__init__.py&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="te">
+<h2>基本的矩阵乘法与 TE<a class="headerlink" href="#te" title="永久链接至标题">#</a></h2>
+<p>回顾一下使用 TE 的矩阵乘法的基本实现。我们在这里把它写下来，并做一些修改。我们将用一个 python 函数定义来包装乘法。为了简单起见，我们将把注意力集中在分割优化上，使用一个固定值来定义重新排序的块大小。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">matmul_basic</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">te</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+
+    <span class="c1"># schedule</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">yo</span><span class="p">,</span> <span class="n">yi</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="n">xo</span><span class="p">,</span> <span class="n">xi</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+    <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span> <span class="n">xo</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2>用 AutoTVM 进行矩阵乘法<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>在以前的调度代码中，我们使用常数 “8” 作为平铺系数。然而，这可能不是最好的，因为最佳的平铺系数取决于实际的硬件环境和输入形状。</p>
+<p>如果你想让调度代码在更大范围的输入形状和目标硬件上可移植，最好是定义一组候选值，并根据目标硬件上的测量结果挑选最佳值。</p>
+<p>在 autotvm 中，我们可以定义一个可调整的参数，或者说是一个 “旋钮”，用于此类值。</p>
+</section>
+<section id="id3">
+<h2>基本的矩阵乘法模板<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>我们以一个例子开始，说明如何为 <code class="docutils literal notranslate"><span class="pre">split</span></code> 调度操作的块大小创建一个可调度的参数集。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Matmul V1: List candidate values</span>
+<span class="nd">@autotvm</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="s2">&quot;tutorial/matmul_v1&quot;</span><span class="p">)</span>  <span class="c1"># 1. use a decorator</span>
+<span class="k">def</span> <span class="nf">matmul_v1</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">te</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+
+    <span class="c1"># schedule</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># 2. get the config object</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+
+    <span class="c1"># 3. define search space</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">define_knob</span><span class="p">(</span><span class="s2">&quot;tile_y&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">define_knob</span><span class="p">(</span><span class="s2">&quot;tile_x&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+
+    <span class="c1"># 4. schedule according to config</span>
+    <span class="n">yo</span><span class="p">,</span> <span class="n">yi</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;tile_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+    <span class="n">xo</span><span class="p">,</span> <span class="n">xi</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;tile_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span> <span class="n">xo</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>在这里，我们对之前的调度代码做了四项修改，得到了一个可调度的 “模板”。我们可以逐一解释这些修改：</p>
+<ol>
+<li><p>使用装饰器将这个函数标记为一个简单的模板。</p></li>
+<li><p>获取 config 对象。你可以把这个 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 看作是这个函数的一个参数，但我们以不同的方式获得它。有了这个参数，这个函数就不再是一个确定性的调度了。相反，我们可以向这个函数传递不同的配置，得到不同的调度。一个像这样使用配置对象的函数被称为 “模板”。</p>
+<p>为了使模板函数更加紧凑，我们可以做两件事来定义单一函数中的参数搜索空间。</p>
+<ol class="simple">
+<li><p>定义一个跨越一组数值的搜索空间。这是通过使 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 成为一个 <code class="xref any docutils literal notranslate"><span class="pre">ConfigSpace</span></code> 对象来实现的。它将收集这个函数中的所有可调控旋钮，并从中建立一个搜索空间。</p></li>
+<li><p>根据这个空间的一个实体来调度。这是通过使 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 成为一个 <code class="xref any docutils literal notranslate"><span class="pre">ConfigEntity</span></code> 对象来实现的。当它是一个 <code class="xref any docutils literal notranslate"><span class="pre">ConfigEntity</span></code> 时，它将忽略所有空间定义 API（即 <code class="docutils literal notranslate"><span class="pre">cfg.define_XXXXX(...)</span></code>）。相反，它将为所有可调度的旋钮存储确定的值，我们根据这些值来调度。</p></li>
+</ol>
+<p>在自动调度过程中，我们将首先用 <code class="xref any docutils literal notranslate"><span class="pre">ConfigSpace</span></code> 对象调用该模板来构建搜索空间。然后，我们在构建的空间中用不同的 <code class="xref any docutils literal notranslate"><span class="pre">ConfigEntity</span></code> 调用该模板，以获得不同的调度。最后，我们将测量不同调度所产生的代码，并挑选出最好的一个。</p>
+</li>
+<li><p>定义两个可调度的旋钮。第一个是 <code class="docutils literal notranslate"><span class="pre">tile_y</span></code>，有 5 个可能的值。第二个是 <code class="docutils literal notranslate"><span class="pre">tile_x</span></code>，有相同的可能值列表。这两个旋钮是独立的，所以它们跨越了一个大小为 25=5x5 的搜索空间。</p></li>
+<li><p>配置旋钮被传递给 <code class="docutils literal notranslate"><span class="pre">split</span></code> 调度操作，使我们能够根据我们先前在 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 中定义的 5x5 确定值来调度。</p></li>
+</ol>
+</section>
+<section id="api">
+<h2>使用高级参数 API 的矩阵乘法模板<a class="headerlink" href="#api" title="永久链接至标题">#</a></h2>
+<p>在前面的模板中，我们手动列出了一个旋钮的所有可能值。这是定义空间的最底层的 API，它给出了要搜索的参数空间的明确列举。然而，我们还提供了另一组 API，可以使搜索空间的定义更容易、更智能。在可能的情况下，我们接受你使用这个更高级别的 API。</p>
+<p>在下面的例子中，我们使用 <code class="xref any docutils literal notranslate"><span class="pre">ConfigSpace.define_split</span></code> 来定义一个分割旋钮。它将列举所有可能的方式来分割一个轴并构建空间。</p>
+<p>我们还有 <code class="xref any docutils literal notranslate"><span class="pre">ConfigSpace.define_reorder</span></code> 用于重新排序旋钮，以及 <code class="xref any docutils literal notranslate"><span class="pre">ConfigSpace.define_annotate</span></code> 用于 unroll、矢量化、线程绑定等注释。当高级 API 不能满足您的要求时，您总是可以退回到使用低水平的 API。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@autotvm</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="s2">&quot;tutorial/matmul&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">te</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+
+    <span class="c1"># schedule</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1">##### define space begin #####</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">define_split</span><span class="p">(</span><span class="s2">&quot;tile_y&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">num_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">define_split</span><span class="p">(</span><span class="s2">&quot;tile_x&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">num_outputs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1">##### define space end #####</span>
+
+    <span class="c1"># schedule according to config</span>
+    <span class="n">yo</span><span class="p">,</span> <span class="n">yi</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;tile_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">xo</span><span class="p">,</span> <span class="n">xi</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;tile_x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span> <span class="n">xo</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-cfg-define-split admonition">
+<p class="admonition-title">关于 cfg.define_split 的更多解释</p>
+<p>在这个模板中，<code class="docutils literal notranslate"><span class="pre">cfg.define_split(&quot;tile_y&quot;,</span> <span class="pre">y,</span> <span class="pre">num_outputs=2)</span></code> 将列举所有能将轴 y 分割成两个轴的可能组合，其系数为 y 的长度。例如，如果 y 的长度是 32，我们想用 32 的因子将其分割成两个轴，那么（外轴的长度，内轴的长度）对有 6 种可能的值，即(32, 1), (16, 2), (8, 4), (4, 8), (2, 16) 或者 (1, 32)。这些都是 <code class="docutils literal notranslate"><span class="pre">tile_y</span></code> 的 6 种可能值。</p>
+<p>在调度过程中，<code class="docutils literal notranslate"><span class="pre">cfg[&quot;tile_y&quot;]</span></code> 是一个 <code class="docutils literal notranslate"><span class="pre">SplitEntity</span></code> 对象。我们将外轴和内轴的长度存储在 <code class="docutils literal notranslate"><span class="pre">cfg['tile_y'].size</span></code> 中（一个有两个元素的元组）。在这个模板中，我们通过使用  <code class="docutils literal notranslate"><span class="pre">yo,</span> <span class="pre">yi</span> <span class="pre">=</span> <span class="pre">cfg['tile_y'].apply(s,</span> <span class="pre">C,</span> <span class="pre">y)</span></code> 来应用它。实际上，这等同于 <code class="docutils literal notranslate"><span class="pre">yo,</span> <span class="pre">yi</span> <span class="pre">=</span> <span class="pre">s[C].split(y,</span> <span class="pre">cfg[&quot;tile_y&quot;].size[1])</span></code> 或者 <code class="docutils literal notranslate"><span class="pre">yo,</span> <span class="pre">yi</span> <span class="pre">=</span> <span class="pre">s[C].split(y,</span> <span class="pre">nparts=cfg['tile_y&quot;].size[0])</span></code></p>
+<p>使用 cfg.apply API 的好处是，它使多级拆分（即 <code class="docutils literal notranslate"><span class="pre">num_outputs</span> <span class="pre">&gt;=</span> <span class="pre">3</span></code> 时）更容易。</p>
+</div>
+</section>
+<section id="id4">
+<h2>第 2 步：使用 AutoTVM 来优化矩阵乘法<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
+<p>在步骤 1 中，我们编写了一个矩阵乘法模板，允许我们对分割调度中使用的块大小进行参数化。我们现在可以对这个参数空间进行搜索。下一步是选择一个调整器来指导对这个空间的探索。</p>
+<section id="tvm">
+<h3>TVM 中的自动调谐器<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h3>
+<p>调谐器的工作可以通过以下伪代码来描述</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">ct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="k">while</span><span class="w"> </span><span class="n">ct</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">max_number_of_trials</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">propose</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">batch</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">configs</span><span class="w"></span>
+<span class="w">    </span><span class="n">measure</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">batch</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">configs</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">real</span><span class="w"> </span><span class="n">hardware</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">get</span><span class="w"> </span><span class="n">results</span><span class="w"></span>
+<span class="w">    </span><span class="n">ct</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">batch_size</span><span class="w"></span>
+</pre></div>
+</div>
+<p>当提出下一批配置的时候，调谐器可以采取不同的策略。TVM 提供的一些调谐器策略包括：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/autotvm.html#tvm.autotvm.tuner.RandomTuner" title="(在 TVM)"><code class="xref any docutils literal notranslate"><span class="pre">tvm.autotvm.tuner.RandomTuner</span></code></a>：以随机顺序枚举空间。</p></li>
+<li><p><a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/autotvm.html#tvm.autotvm.tuner.GridSearchTuner" title="(在 TVM)"><code class="xref any docutils literal notranslate"><span class="pre">tvm.autotvm.tuner.GridSearchTuner</span></code></a>：以网格搜索的方式枚举空间。</p></li>
+<li><p><a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/autotvm.html#tvm.autotvm.tuner.GATuner" title="(在 TVM)"><code class="xref any docutils literal notranslate"><span class="pre">tvm.autotvm.tuner.GATuner</span></code></a>：使用遗传算法来搜索空间</p></li>
+<li><p><a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/autotvm.html#tvm.autotvm.tuner.XGBTuner" title="(在 TVM)"><code class="xref any docutils literal notranslate"><span class="pre">tvm.autotvm.tuner.XGBTuner</span></code></a>：使用一个基于模型的方法。训练一个 XGBoost 模型来预测降低 IR 的速度，并根据预测结果挑选下一批。</p></li>
+</ul>
+<p>你可以根据你的空间大小、你的时间预算和其他因素来选择调谐器。例如，如果你的空间非常小（小于 1000），网格搜索调谐器或随机调谐器就足够好了。如果你的空间在 <span class="math notranslate nohighlight">\(10^9\)</span> 的水平（这是 CUDA GPU 上 conv2d 运算器的空间大小），XGBoostTuner 可以更有效地探索并找到更好的配置。</p>
+</section>
+<section id="id5">
+<h3>开始调谐<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h3>
+<p>这里我们继续我们的矩阵乘法例子。首先我们创建一个调谐任务。我们也可以检查初始化的搜索空间。在这种情况下，对于 512x512 的正方形矩阵乘法，空间大小为 10x10=100 注意，任务和搜索空间与所选的调谐器无关。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;tutorial/matmul&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="s2">&quot;float32&quot;</span><span class="p">),</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;llvm&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">config_space</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ConfigSpace (len=100, space_map=
+   0 tile_y: Split(policy=factors, product=512, num_outputs=2) len=10
+   1 tile_x: Split(policy=factors, product=512, num_outputs=2) len=10
+)
+</pre></div>
+</div>
+</div>
+</div>
+<p>然后我们需要定义如何测量生成的代码并挑选一个调谐器。由于我们的空间很小，随机的调谐器就可以了。</p>
+<p>在本教程中，我们只做了 10 次试验，用于演示。在实践中，你可以根据你的时间预算做更多的试验。我们将把调谐结果记录到一个日志文件中。这个文件可以用来选择调谐器以后发现的最佳配置。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># logging config (for printing tuning log to the screen)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;autotvm&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;autotvm&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>测量一个配置有两个步骤：构建和运行。默认情况下，我们使用所有的 CPU 核心来编译程序。然后，我们按顺序测量它们。为了帮助减少差异，我们进行 5 次测量并取其平均值。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">measure_option</span> <span class="o">=</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">measure_option</span><span class="p">(</span><span class="n">builder</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="n">runner</span><span class="o">=</span><span class="n">autotvm</span><span class="o">.</span><span class="n">LocalRunner</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># Begin tuning with RandomTuner, log records to file `matmul.log`</span>
+<span class="c1"># You can use alternatives like XGBTuner.</span>
+<span class="n">tuner</span> <span class="o">=</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">tuner</span><span class="o">.</span><span class="n">RandomTuner</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<span class="n">tuner</span><span class="o">.</span><span class="n">tune</span><span class="p">(</span>
+    <span class="n">n_trial</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">measure_option</span><span class="o">=</span><span class="n">measure_option</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">autotvm</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">log_to_file</span><span class="p">(</span><span class="s2">&quot;matmul.log&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Get devices for measurement successfully!
+No: 1	GFLOPS: 5.77/5.77	result: MeasureResult(costs=(0.0465158568,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.068835973739624, timestamp=1642052994.4991827)	[(&#39;tile_y&#39;, [-1, 64]), (&#39;tile_x&#39;, [-1, 32])],None,56
+No: 2	GFLOPS: 0.71/5.77	result: MeasureResult(costs=(0.3782014292,), error_no=MeasureErrorNo.NO_ERROR, all_cost=6.235220193862915, timestamp=1642053000.7659876)	[(&#39;tile_y&#39;, [-1, 1]), (&#39;tile_x&#39;, [-1, 2])],None,10
+No: 3	GFLOPS: 4.87/5.77	result: MeasureResult(costs=(0.0551525064,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.3227694034576416, timestamp=1642053001.8689346)	[(&#39;tile_y&#39;, [-1, 256]), (&#39;tile_x&#39;, [-1, 128])],None,78
+No: 4	GFLOPS: 0.00/5.77	result: MeasureResult(costs=(RuntimeError(&#39;Traceback (most recent call last):\n  88: 0x0000561311d1fd1c\n  87: __libc_start_main\n  86: Py_BytesMain\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:1127\n  85: Py_RunMain\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:695\n  84: pymain_run_python\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:610\n  83: pymain_run_module\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:309\n  82: PyObject_Call\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:228\n  81: PyVectorcall_Call\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:200\n  80: _PyFunction_Vectorcall\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:436\n  79: _PyEval_EvalCodeWithName\n        at /home&#39;),), error_no=MeasureErrorNo.RUNTIME_DEVICE, all_cost=10.509941816329956, timestamp=1642053012.407437)	[(&#39;tile_y&#39;, [-1, 256]), (&#39;tile_x&#39;, [-1, 1])],None,8
+No: 5	GFLOPS: 0.00/5.77	result: MeasureResult(costs=(RuntimeError(&#39;Traceback (most recent call last):\n  88: 0x0000561311d1fd1c\n  87: __libc_start_main\n  86: Py_BytesMain\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:1127\n  85: Py_RunMain\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:695\n  84: pymain_run_python\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:610\n  83: pymain_run_module\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:309\n  82: PyObject_Call\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:228\n  81: PyVectorcall_Call\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:200\n  80: _PyFunction_Vectorcall\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:436\n  79: _PyEval_EvalCodeWithName\n        at /home&#39;),), error_no=MeasureErrorNo.RUNTIME_DEVICE, all_cost=10.131698369979858, timestamp=1642053022.5457065)	[(&#39;tile_y&#39;, [-1, 128]), (&#39;tile_x&#39;, [-1, 2])],None,17
+No: 6	GFLOPS: 7.05/7.05	result: MeasureResult(costs=(0.0380491336,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.0549180507659912, timestamp=1642053023.3820171)	[(&#39;tile_y&#39;, [-1, 64]), (&#39;tile_x&#39;, [-1, 128])],None,76
+No: 7	GFLOPS: 1.84/7.05	result: MeasureResult(costs=(0.1462092818,), error_no=MeasureErrorNo.NO_ERROR, all_cost=2.6323516368865967, timestamp=1642053025.9732308)	[(&#39;tile_y&#39;, [-1, 32]), (&#39;tile_x&#39;, [-1, 16])],None,45
+No: 8	GFLOPS: 6.48/7.05	result: MeasureResult(costs=(0.041411830200000006,), error_no=MeasureErrorNo.NO_ERROR, all_cost=0.8728179931640625, timestamp=1642053026.856571)	[(&#39;tile_y&#39;, [-1, 2]), (&#39;tile_x&#39;, [-1, 256])],None,81
+No: 9	GFLOPS: 3.88/7.05	result: MeasureResult(costs=(0.0691363904,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.2969236373901367, timestamp=1642053028.4048896)	[(&#39;tile_y&#39;, [-1, 512]), (&#39;tile_x&#39;, [-1, 32])],None,59
+No: 10	GFLOPS: 6.29/7.05	result: MeasureResult(costs=(0.042653947799999994,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.0349531173706055, timestamp=1642053029.3428807)	[(&#39;tile_y&#39;, [-1, 1]), (&#39;tile_x&#39;, [-1, 64])],None,60
+</pre></div>
+</div>
+</div>
+</div>
+<p>调谐完成后，我们可以从日志文件中选择具有最佳测量性能的配置，并用相应的参数来编译时间表。我们还可以做一个快速验证，以确保时间表产生正确的答案。我们可以在 <code class="xref any docutils literal notranslate"><span class="pre">autotvm.apply_history_best</span></code> 上下文下直接调用函数 <code class="docutils literal notranslate"><span class="pre">matmul</span></code>。当我们调用这个函数时，它将以其参数查询调度上下文，并以相同的参数获得最佳配置。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># apply history best from log file</span>
+<span class="k">with</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">apply_history_best</span><span class="p">(</span><span class="s2">&quot;matmul.log&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Target</span><span class="p">(</span><span class="s2">&quot;llvm&quot;</span><span class="p">):</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">arg_bufs</span> <span class="o">=</span> <span class="n">matmul</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">arg_bufs</span><span class="p">)</span>
+
+<span class="c1"># check correctness</span>
+<span class="n">a_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">b_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">c_np</span> <span class="o">=</span> <span class="n">a_np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b_np</span><span class="p">)</span>
+
+<span class="n">c_tvm</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">c_np</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">func</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a_np</span><span class="p">),</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b_np</span><span class="p">),</span> <span class="n">c_tvm</span><span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">c_np</span><span class="p">,</span> <span class="n">c_tvm</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Finish loading 10 records
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2>最后说明和总结<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
+<p>在本教程中，我们展示了如何建立运算符模板，让 TVM 搜索参数空间并选择优化的时间表配置。为了更深入地了解它的工作原理，我们建议在这个例子的基础上进行扩展，在 <a class="reference internal" href="tensor_expr_get_started.html"><span class="doc std std-doc">张量表达式入门</span></a> 教程中演示的调度操作的基础上添加新的搜索参数。在接下来的章节中，我们将演示 AutoScheduler，这是一种 TVM 优化常见运算符的方法，不需要用户提供一个用户定义的模板。</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="tensor_expr_get_started.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">使用张量表达式处理算子</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="auto_scheduler_matmul_x86.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">使用自动调度优化运算</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,447 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Convolution\n",
+    ":label:`ch_conv`\n",
+    "\n",
+    "The convolution (*CONV*) operator is the one of the most expensive and popular operators in neural networks. In this section, we will cover the operator with single input and output channels. Please refer to chapter [6.2](http://numpy.d2l.ai/chapter_convolutional-neural-networks/conv-layer.html), [6.3](http://numpy.d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html), and [6.4](http://numpy.d2l.ai/chapter_convolutional-neural-networks/channels.html) in D2L for more explanation about this operator. Here we would not explain much about the convolution-related terms such as padding, channel, stride, convolution kernel, etc.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import d2ltvm\n",
+    "import numpy as np\n",
+    "import tvm\n",
+    "from tvm import te"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "## Padding\n",
+    "\n",
+    "As a prerequisite to convolution, let's first implement *padding*, which visually surrounds the targeting tensor with a \"shell\" surrounding it. The padding values are normally 0. Note that we briefly touched padding in :numref:`ch_all_any` when introducing `te.any`, which was a padding for a 2-D matrix.\n",
+    "Here we generalize the padding to work for 2-D convolution on $n$-D tensors, which is usually used in the convolution operators of neural networks. In the general case, we assume the last two dimensions are rows and columns, 0s are only padded on these two dimensions. In particular, if the matrix height (i.e. number of rows) is $n_h$ and width (i.e. number of columns) is $n_w$, then we will pad $p_h$ rows with 0s on top and bottom, and $p_w$ columns with 0s on left and right to make its height and width to $n_h+2p_h$ and $n_w+2p_w$, respectively. We have mentioned it once in :numref:`ch_shapes`, but again note that `*X` and `*i` in `te.compute` are used to represent general multi-dimensional tensors.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "53"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def padding(X, ph, pw, val=0):\n",
+    "    \"\"\"Pad X with the given value in 2-D\n",
+    "\n",
+    "    ph, pw : height and width padding\n",
+    "    val : padding value, default 0\n",
+    "    \"\"\"\n",
+    "    assert len(X.shape) >= 2\n",
+    "    nh, nw = X.shape[-2], X.shape[-1]\n",
+    "    return te.compute(\n",
+    "            (*X.shape[0:-2], nh+ph*2, nw+pw*2),\n",
+    "            lambda *i: te.if_then_else(\n",
+    "                te.any(i[-2]<ph, i[-2]>=nh+ph, i[-1]<pw, i[-1]>=nw+pw),\n",
+    "                val, X[i[:-2]+(i[-2]-ph, i[-1]-pw)]),\n",
+    "            name='PaddedX')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "Verify the results for a 3-D tensor.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "51"
+    },
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[[[0. 0. 0. 0. 0. 0. 0. 0.]\n",
+      "  [0. 0. 1. 1. 1. 1. 0. 0.]\n",
+      "  [0. 0. 1. 1. 1. 1. 0. 0.]\n",
+      "  [0. 0. 1. 1. 1. 1. 0. 0.]\n",
+      "  [0. 0. 0. 0. 0. 0. 0. 0.]]\n",
+      "\n",
+      " [[0. 0. 0. 0. 0. 0. 0. 0.]\n",
+      "  [0. 0. 1. 1. 1. 1. 0. 0.]\n",
+      "  [0. 0. 1. 1. 1. 1. 0. 0.]\n",
+      "  [0. 0. 1. 1. 1. 1. 0. 0.]\n",
+      "  [0. 0. 0. 0. 0. 0. 0. 0.]]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "A = te.placeholder((2,3,4))\n",
+    "B = padding(A, 1, 2)\n",
+    "s = te.create_schedule(B.op)\n",
+    "mod = tvm.build(s, [A, B])\n",
+    "\n",
+    "a = tvm.nd.array(np.ones((2,3,4), dtype='float32'))\n",
+    "b = tvm.nd.array(np.empty((2,5,8), dtype='float32'))\n",
+    "mod(a, b)\n",
+    "print(b)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "## Convolution\n",
+    "\n",
+    "We consider the simple single-channel convolution first. Given an $n_h\\times n_w$ data matrix $X$, we first pad 0s into $(n_h+2p_h) \\times (n_w+2p_w)$. If the kernel matrix $K$ has a size of $k_h\\times k_w$, using a stride $s_h$ for height and $s_w$ for width, the output $Y = X \\star K$ will have a shape\n",
+    "\n",
+    "$$ \\lfloor (n_h-k_h+2p_h)/s_h+1\\rfloor  \\times \\lfloor (n_w-k_w+2p_w)/s_w+1\\rfloor.$$\n",
+    "\n",
+    "And the element of $Y$ can be computed $Y_{i,j}$ by\n",
+    "\n",
+    "$$ Y_{i,j} = \\sum_{a=0}^{k_w-1}\\sum_{b=0}^{k_h-1} X_{i s_w+a, j s_h+b} K_{a, b}$$\n",
+    "\n",
+    "An example is illustrated in :numref:`fig_conv_strides`.\n",
+    "\n",
+    "![The 2-D convolution with paddings for 1, and strides of 3 and 2 for height and width respectively. The shaded portions depicts the two output elements, with the corresponding input and kernel array elements used to calculate them: $0\\times0+0\\times1+1\\times2+2\\times3=8$, $0\\times0+6\\times1+0\\times2+0\\times3=6$. ](../img/conv-stride.svg)\n",
+    ":label:`fig_conv_strides`\n",
+    "\n",
+    "Now let's look at a more general case with multiple channels.\n",
+    "Assuming that we have a $c_i \\times n_h \\times n_w$ 3-D input tensor $X$, and a $c_o\\times c_i\\times k_h\\times k_w$ 4-D kernel tensor $K$, here $c_i$ and $c_o$ are the numbers of input channels and output channels, respectively. Then the output $Y$ has a shape\n",
+    "\n",
+    "$$ c_o \\times \\lfloor (h-k_h+2p_h)/s_h+1\\rfloor  \\times \\lfloor (w-k_w+2p_w)/s_w+1\\rfloor.$$\n",
+    "\n",
+    "In particular, the $i$-th 2-D matrix $Y_i$, $i=1,\\ldots,c_o$, is computed by\n",
+    "\n",
+    "$$ Y_i = \\sum_{j=1}^n X_j \\star K_{i,j},$$\n",
+    "\n",
+    "where $K_{i,j}$ is the 2-D kernel matrix with output channel $i$ and input channel $j$.\n",
+    "\n",
+    "In deep learning workloads, especially training, we often concatenate multiple inputs into a batch to process together. A batch of inputs has the shape $n \\times c_i \\times n_h \\times n_w$, where $n$ is the batch size. Applying convolution to a batch means running convolution on the $n$ 3-D tensors separately, and then concatenates results into a 4-D tensor with the first dimension size being $n$.\n",
+    "\n",
+    "Note that the input layout we used here is called `NCHW`, which means the 4 dimensions of the input tensors are batch, channel, height and width, respectively. \n",
+    "conventionally, `NCHW` means the data is arranged in the memory with `N` being the outer most dimension and `W` being the inner most dimension. Sometimes we use other data layouts such as `NHWC` which may offer a higher performance. We will discuss this in detail later.\n",
+    "Similarly, the kernel layout is defined as `KCRS`, which correspond to output channel, input channel, kernel height and width.\n",
+    "\n",
+    "Before implementing the convolution, we define a method to calculate the output width or height given the input width or height.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "52"
+    },
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def conv_out_size(n, k, p, s):\n",
+    "    \"\"\"Compute the output size by given input size n (width or height),\n",
+    "    kernel size k, padding p, and stride s\n",
+    "    Return output size (width or height)\n",
+    "    \"\"\"\n",
+    "    return (n - k + 2 * p)//s + 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "Now let's implement the convolution. For simplicity we only consider the single batch case, i.e. `N=1`. In this case, the input data layout can be treated as `CHW`.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "56"
+    },
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def conv(oc, ic, nh, nw, kh, kw, ph=0, pw=0, sh=1, sw=1):\n",
+    "    \"\"\"Convolution\n",
+    "\n",
+    "    oc, ic : output and input channels\n",
+    "    nh, nw : input width and height\n",
+    "    kh, kw : kernel width and height\n",
+    "    ph, pw : height and width padding sizes, default 0\n",
+    "    sh, sw : height and width strides, default 1\n",
+    "    \"\"\"\n",
+    "    # reduction axes\n",
+    "    ric = te.reduce_axis((0, ic), name='ric')\n",
+    "    rkh = te.reduce_axis((0, kh), name='rkh')\n",
+    "    rkw = te.reduce_axis((0, kw), name='rkw')\n",
+    "    # output height and width\n",
+    "    oh = conv_out_size(nh, kh, ph, sh)\n",
+    "    ow = conv_out_size(nw, kw, pw, sw)\n",
+    "    # pad X and then compute Y\n",
+    "    X = te.placeholder((ic, nh, nw), name='X')\n",
+    "    K = te.placeholder((oc, ic, kh, kw), name='K')\n",
+    "    PaddedX = padding(X, ph, pw) if ph * pw != 0 else X\n",
+    "    Y = te.compute(\n",
+    "        (oc, oh, ow),\n",
+    "        lambda c, i, j: te.sum(\n",
+    "            PaddedX[ric, i*sh+rkh, j*sw+rkw] * K[c, ric, rkh, rkw],\n",
+    "            axis=[ric, rkh, rkw]), name='Y')\n",
+    "    return X, K, Y, PaddedX"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "Just as what we created `get_abc` in :numref:`ch_vector_add`, we define a method to get the input and output tensors. Again, we fix the random seed so it returns the same results if calling multiple times.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "origin_pos": 11,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "def get_conv_data(oc, ic, n, k, p=0, s=1, constructor=None):\n",
+    "    \"\"\"Return random 3-D data tensor, 3-D kernel tenor and empty 3-D output \n",
+    "    tensor with the shapes specified by input arguments.\n",
+    "\n",
+    "    oc, ic : output and input channels\n",
+    "    n : input width and height\n",
+    "    k : kernel width and height\n",
+    "    p : padding size, default 0\n",
+    "    s : stride, default 1\n",
+    "    constructor : user-defined tensor constructor\n",
+    "    \"\"\"\n",
+    "    np.random.seed(0)\n",
+    "    data = np.random.normal(size=(ic, n, n)).astype('float32')\n",
+    "    weight = np.random.normal(size=(oc, ic, k, k)).astype('float32')\n",
+    "    on = conv_out_size(n, k, p, s)\n",
+    "    out = np.empty((oc, on, on), dtype='float32')\n",
+    "    if constructor:\n",
+    "        data, weight, out = (constructor(x) for x in [data, weight, out])\n",
+    "    return data, weight, out\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 12
+   },
+   "source": [
+    "Now compile a module and compute the results.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "origin_pos": 13,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "// attr [PaddedX] storage_scope = \"global\"\n",
+      "allocate PaddedX[float32 * 1176]\n",
+      "produce PaddedX {\n",
+      "  for (i0, 0, 6) {\n",
+      "    for (i1, 0, 14) {\n",
+      "      for (i2, 0, 14) {\n",
+      "        PaddedX[(((i0*196) + (i1*14)) + i2)] = tvm_if_then_else(((((i1 < 1) || (13 <= i1)) || (i2 < 1)) || (13 <= i2)), 0f, X[((((i0*144) + (i1*12)) + i2) - 13)])\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "produce Y {\n",
+      "  for (c, 0, 4) {\n",
+      "    for (i, 0, 12) {\n",
+      "      for (j, 0, 12) {\n",
+      "        Y[(((c*144) + (i*12)) + j)] = 0f\n",
+      "        for (ric, 0, 6) {\n",
+      "          for (rkh, 0, 3) {\n",
+      "            for (rkw, 0, 3) {\n",
+      "              Y[(((c*144) + (i*12)) + j)] = (Y[(((c*144) + (i*12)) + j)] + (PaddedX[(((((ric*196) + (i*14)) + (rkh*14)) + j) + rkw)]*K[((((c*54) + (ric*9)) + (rkh*3)) + rkw)]))\n",
+      "            }\n",
+      "          }\n",
+      "        }\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "oc, ic, n, k, p, s = 4, 6, 12, 3, 1, 1\n",
+    "X, K, Y, _ = conv(oc, ic, n, n, k, k, p, p, s, s)\n",
+    "sch = te.create_schedule(Y.op)\n",
+    "mod = tvm.build(sch, [X, K, Y])\n",
+    "print(tvm.lower(sch, [X, K, Y], simple_mode=True))\n",
+    "\n",
+    "data, weight, out = get_conv_data(oc, ic, n, k, p, s, tvm.nd.array)\n",
+    "mod(data, weight, out)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 14
+   },
+   "source": [
+    "In the last code block we also print out the pseudo code of a 2-D convolution, which is a naive 6-level nested for loop.\n",
+    "\n",
+    "Since NumPy only has a convolution for vectors, we use MXNet's convolution operator as the ground truth. The following code block defines the data generating function and a wrap function to call the convolution operator. Then we can feed the same tensors to compute the results in MXNet.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "origin_pos": 15,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import mxnet as mx\n",
+    "\n",
+    "def get_conv_data_mxnet(oc, ic, n, k, p, s, ctx='cpu'):\n",
+    "    ctx = getattr(mx, ctx)()\n",
+    "    data, weight, out = get_conv_data(oc, ic, n, k, p, s,\n",
+    "                                      lambda x: mx.nd.array(x, ctx=ctx))\n",
+    "    data, out = data.expand_dims(axis=0), out.expand_dims(axis=0)\n",
+    "    bias = mx.nd.zeros(out.shape[1], ctx=ctx)\n",
+    "    return data, weight, bias, out\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def conv_mxnet(data, weight, bias, out, k, p, s):\n",
+    "    mx.nd.Convolution(data, weight, bias, kernel=(k,k), stride=(s,s),\n",
+    "                      pad=(p,p), num_filter=out.shape[1], out=out)\n",
+    "\n",
+    "data, weight, bias, out_mx = get_conv_data_mxnet(oc, ic, n, k, p, s)\n",
+    "conv_mxnet(data, weight, bias, out_mx, k, p, s)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 16
+   },
+   "source": [
+    "Lastly, let's compare the results. For a similar reason mentioned in the last chapter, the multi-threading used in MXNet makes us use a relative large tolerant error here.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "origin_pos": 17,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "np.testing.assert_allclose(out_mx[0].asnumpy(), out.asnumpy(), atol=1e-5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 18
+   },
+   "source": [
+    "## Summary\n",
+    "\n",
+    "- We can express the computation of 2-D convolution in TVM in a fairly easy way.\n",
+    "- Deep learning workloads normally operate 2-D convolution on 4-D data tensors and kernel tensors.\n",
+    "- The naive 2-D convolution is a 6-level nested for loop.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

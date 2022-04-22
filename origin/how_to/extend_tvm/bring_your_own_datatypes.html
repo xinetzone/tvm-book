@@ -1,0 +1,1281 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Bring Your Own Datatypes to TVM &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="next" title="VTA 教程" href="../../topic/vta/tutorials/index.html" />
+    <link rel="prev" title="How to Use TVM Pass Instrument" href="use_pass_instrument.html" />
+    <link rel="stylesheet" href="../../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../d2l-tvm/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables origin/how_to/extend_tvm/bring_your_own_datatypes and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "origin/how_to/extend_tvm/bring_your_own_datatypes.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "origin/how_to/extend_tvm/bring_your_own_datatypes.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../tutorial/index.html">
+   用户指南
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/introduction.html">
+     TVM 和模型优化的概述
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tvmc_command_line_driver.html">
+     用 TVMC 编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tvmc_python.html">
+     开始使用 TVMC Python：TVM 的高级 API
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/autotvm_relay_x86.html">
+     用 Python 接口编译和优化模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tensor_expr_get_started.html">
+     使用张量表达式处理算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/autotvm_matmul_x86.html">
+     用调度模板和 AutoTVM 优化算子
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/auto_scheduler_matmul_x86.html">
+     使用自动调度优化运算
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/tensor_ir_blitz_course.html">
+     TensorIR 的突击课程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/cross_compilation_and_rpc.html">
+     交叉编译和RPC
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/relay_quick_start.html">
+     编译深度学习模型的快速入门教程
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../tutorial/intro_topi.html">
+     TOPI 简介
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../index.html">
+   How To 指南
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../compile_models/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_pytorch.html">
+       编译 PyTorch 模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_tensorflow.html">
+       Compile Tensorflow Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_mxnet.html">
+       Compile MXNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_onnx.html">
+       Compile ONNX Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_keras.html">
+       Compile Keras Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_tflite.html">
+       Compile TFLite Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_coreml.html">
+       Compile CoreML Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_darknet.html">
+       Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_caffe2.html">
+       Compile Caffe2 Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../compile_models/from_paddle.html">
+       Compile PaddlePaddle Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../deploy_models/index.html">
+     部署深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_model_on_android.html">
+       Deploy the Pretrained Model on Android
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_model_on_rasp.html">
+       Deploy the Pretrained Model on Raspberry Pi
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_object_detection_pytorch.html">
+       Compile PyTorch Object Detection Models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_prequantized.html">
+       使用 TVM 部署框架预量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_prequantized_tflite.html">
+       Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_quantized.html">
+       在 CUDA 上部署已量化模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_sparse.html">
+       Deploy a Hugging Face Pruned Model on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../deploy_models/deploy_ssd_gluoncv.html">
+       Deploy Single Shot Multibox Detector(SSD) model
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_relay/index.html">
+     Work With Relay
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_relay/build_gcn.html">
+       Building a Graph Convolutional Network
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_relay/using_external_lib.html">
+       Using External Libraries in Relay
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_schedules/index.html">
+     Work With Tensor Expression and Schedules
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/schedule_primitives.html">
+       Schedule Primitives in TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/reduction.html">
+       Reduction
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/intrin_math.html">
+       Intrinsics and Math Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/scan.html">
+       Scan and Recurrent Kernel
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/extern_op.html">
+       External Tensor Functions
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tensorize.html">
+       Use Tensorize to Leverage Hardware Intrinsics
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tuple_inputs.html">
+       Compute and Reduce with Tuple Inputs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_schedules/tedd.html">
+       Use Tensor Expression Debug Display (TEDD) for Visualization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../optimize_operators/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_gemm.html">
+       How to optimize GEMM on CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_conv_cuda.html">
+       How to optimize convolution on GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../optimize_operators/opt_conv_tensorcore.html">
+       How to optimize convolution using TensorCores
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../tune_with_autotvm/index.html">
+     Auto-Tune with Templates and AutoTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_conv2d_cuda.html">
+       Tuning High Performance Convolution on NVIDIA GPUs
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_cuda.html">
+       Auto-tuning a Convolutional Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_x86.html">
+       Auto-tuning a Convolutional Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_arm.html">
+       Auto-tuning a Convolutional Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autotvm/tune_relay_mobile_gpu.html">
+       Auto-tuning a Convolutional Network for Mobile GPU
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../tune_with_autoscheduler/index.html">
+     Use AutoScheduler for Template-Free Scheduling
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
+       Auto-scheduling a Convolution Layer for GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_x86.html">
+       Auto-scheduling a Neural Network for x86 CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_cuda.html">
+       Auto-scheduling a Neural Network for NVIDIA GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_arm.html">
+       Auto-scheduling a Neural Network for ARM CPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_network_mali.html">
+       Auto-scheduling a Neural Network for mali GPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../tune_with_autoscheduler/tune_sparse_x86.html">
+       Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../work_with_microtvm/index.html">
+     Work With microTVM
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_autotune.html">
+       Autotuning with micro TVM
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_ethosu.html">
+       Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_reference_vm.html">
+       microTVM Reference Virtual Machines
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../work_with_microtvm/micro_tflite.html">
+       microTVM with TFLite Models
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="index.html">
+     Extend TVM
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="low_level_custom_pass.html">
+       Writing a Customized Pass
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="use_pass_infra.html">
+       How to Use TVM Pass Infra
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="use_pass_instrument.html">
+       How to Use TVM Pass Instrument
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       Bring Your Own Datatypes to TVM
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../topic/vta/tutorials/index.html">
+   VTA 教程
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+  <label for="toctree-checkbox-12">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../topic/vta/tutorials/vta_get_started.html">
+     Get Started with VTA
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../topic/vta/tutorials/matrix_multiply.html">
+     Simple Matrix Multiply
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/frontend/index.html">
+     编译深度学习模型
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/frontend/deploy_classification.html">
+       在 VTA 上从 MxNet 部署预先训练的视觉模型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/frontend/deploy_detection.html">
+       Deploy Pretrained Vision Detection Model from Darknet on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/optimize/index.html">
+     Optimize Tensor Operators
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/optimize/convolution_opt.html">
+       2D Convolution Optimization
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/optimize/matrix_multiply_opt.html">
+       Matrix Multiply Blocking
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../topic/vta/tutorials/autotvm/index.html">
+     Auto tuning
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/autotvm/tune_alu_vta.html">
+       Auto-tuning a ALU fused op on VTA
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../topic/vta/tutorials/autotvm/tune_relay_vta.html">
+       Auto-tuning a convolutional network on VTA
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../vta/index.html">
+   VTA 指南
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../test.html">
+   草稿
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#datatype-libraries">
+   Datatype Libraries
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#setup">
+   Setup
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#a-simple-tvm-program">
+   A Simple TVM Program
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#adding-custom-datatypes">
+   Adding Custom Datatypes
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#running-models-with-custom-datatypes">
+   Running Models With Custom Datatypes
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/how_to/extend_tvm/bring_your_own_datatypes.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">备注</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-how-to-extend-tvm-bring-your-own-datatypes-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="bring-your-own-datatypes-to-tvm">
+<span id="sphx-glr-how-to-extend-tvm-bring-your-own-datatypes-py"></span><h1>Bring Your Own Datatypes to TVM<a class="headerlink" href="#bring-your-own-datatypes-to-tvm" title="永久链接至标题">#</a></h1>
+<p><strong>Authors</strong>: <a class="reference external" href="https://github.com/gussmith23">Gus Smith</a>, <a class="reference external" href="https://github.com/hypercubestart">Andrew Liu</a></p>
+<p>In this tutorial, we will show you how to utilize the Bring Your Own Datatypes framework to use your own custom datatypes in TVM.
+Note that the Bring Your Own Datatypes framework currently only handles <strong>software emulated versions of datatypes</strong>.
+The framework does not support compiling for custom accelerator datatypes out-of-the-box.</p>
+<section id="datatype-libraries">
+<h2>Datatype Libraries<a class="headerlink" href="#datatype-libraries" title="永久链接至标题">#</a></h2>
+<p>The Bring Your Own Datatypes allows users to register their own datatype implementations alongside TVM’s native datatypes (such as <code class="docutils literal notranslate"><span class="pre">float</span></code>).
+In the wild, these datatype implementations often appear as libraries.
+For example:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/cjdelisle/libposit">libposit</a>, a posit library</p></li>
+<li><p><a class="reference external" href="https://github.com/stillwater-sc/universal">Stillwater Universal</a>, a library with posits, fixed-point numbers, and other types</p></li>
+<li><p><a class="reference external" href="https://github.com/ucb-bar/berkeley-softfloat-3">SoftFloat</a>, Berkeley’s software implementation of IEEE 754 floating-point</p></li>
+</ul>
+<p>The Bring Your Own Datatypes enables users to plug these datatype implementations into TVM!</p>
+<p>In this section, we will use an example library we have already implemented, located at <code class="docutils literal notranslate"><span class="pre">3rdparty/byodt/myfloat.cc</span></code>.
+This datatype, which we dubbed “myfloat”, is really just a IEE-754 float under-the-hood, but it serves a useful example
+to show that any datatype can be used in the BYODT framework.</p>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
+<p>Since we do not use any 3rdparty library, there is no setup needed.</p>
+<p>If you would like to try this with your own datatype library, first bring the library’s functions into the process space with <code class="docutils literal notranslate"><span class="pre">CDLL</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="s1">&#39;my-datatype-lib.so&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">RTLD_GLOBAL</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="a-simple-tvm-program">
+<h2>A Simple TVM Program<a class="headerlink" href="#a-simple-tvm-program" title="永久链接至标题">#</a></h2>
+<p>We’ll begin by writing a simple program in TVM; afterwards, we will re-write it to use custom datatypes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+
+<span class="c1"># Our basic program: Z = X + Y</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+<span class="n">program</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">z</span><span class="p">)</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">IRModule</span><span class="o">.</span><span class="n">from_expr</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we create random inputs to feed into this program using numpy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>  <span class="c1"># for reproducibility</span>
+
+<span class="n">x_input</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">y_input</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_input</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y_input</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Finally, we’re ready to run the program:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">z_output</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="n">mod</span><span class="o">=</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()(</span><span class="n">x_input</span><span class="p">,</span> <span class="n">y_input</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_output</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-custom-datatypes">
+<h2>Adding Custom Datatypes<a class="headerlink" href="#adding-custom-datatypes" title="永久链接至标题">#</a></h2>
+<p>Now, we will do the same, but we will use a custom datatype for our intermediate computation.</p>
+<p>We use the same input variables <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> as above, but before adding <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">+</span> <span class="pre">y</span></code>, we first cast both <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> to a custom datatype via the <code class="docutils literal notranslate"><span class="pre">relay.cast(...)</span></code> call.</p>
+<p>Note how we specify the custom datatype: we indicate it using the special <code class="docutils literal notranslate"><span class="pre">custom[...]</span></code> syntax.
+Additionally, note the “32” after the datatype: this is the bitwidth of the custom datatype. This tells TVM that each instance of <code class="docutils literal notranslate"><span class="pre">myfloat</span></code> is 32 bits wide.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.disable_vectorize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}):</span>
+        <span class="n">x_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;custom[myfloat]32&quot;</span><span class="p">)</span>
+        <span class="n">y_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;custom[myfloat]32&quot;</span><span class="p">)</span>
+        <span class="n">z_myfloat</span> <span class="o">=</span> <span class="n">x_myfloat</span> <span class="o">+</span> <span class="n">y_myfloat</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">z_myfloat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">tvm</span><span class="o">.</span><span class="n">TVMError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Print last line of error</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Trying to generate this program throws an error from TVM.
+TVM does not know how to handle any custom datatype out of the box!
+We first have to register the custom type with TVM, giving it a name and a type code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;myfloat&quot;</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the type code, 150, is currently chosen manually by the user.
+See <code class="docutils literal notranslate"><span class="pre">TVMTypeCode::kCustomBegin</span></code> in <a class="reference external" href="https://github.com/apache/tvm/blob/main/include/tvm/runtime/data_type.h">include/tvm/runtime/c_runtime_api.h</a>.
+Now we can generate our program again:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;custom[myfloat]32&quot;</span><span class="p">)</span>
+<span class="n">y_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;custom[myfloat]32&quot;</span><span class="p">)</span>
+<span class="n">z_myfloat</span> <span class="o">=</span> <span class="n">x_myfloat</span> <span class="o">+</span> <span class="n">y_myfloat</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">z_myfloat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">program</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">z</span><span class="p">)</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">IRModule</span><span class="o">.</span><span class="n">from_expr</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">module</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we have a Relay program that uses myfloat!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now that we can express our program without errors, let’s try running it!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.disable_vectorize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}):</span>
+        <span class="n">z_output_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()(</span><span class="n">x_input</span><span class="p">,</span> <span class="n">y_input</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y_myfloat</span><span class="p">))</span>
+<span class="k">except</span> <span class="n">tvm</span><span class="o">.</span><span class="n">TVMError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Print last line of error</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Now, trying to compile this program throws an error.
+Let’s dissect this error.</p>
+<p>The error is occurring during the process of lowering the custom datatype code to code that TVM can compile and run.
+TVM is telling us that it cannot find a <em>lowering function</em> for the <code class="docutils literal notranslate"><span class="pre">Cast</span></code> operation, when casting from source type 2 (<code class="docutils literal notranslate"><span class="pre">float</span></code>, in TVM), to destination type 150 (our custom datatype).
+When lowering custom datatypes, if TVM encounters an operation over a custom datatype, it looks for a user-registered <em>lowering function</em>, which tells it how to lower the operation to an operation over datatypes it understands.
+We have not told TVM how to lower <code class="docutils literal notranslate"><span class="pre">Cast</span></code> operations for our custom datatypes; thus, the source of this error.</p>
+<p>To fix this error, we simply need to specify a lowering function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">):</span> <span class="s2">&quot;FloatToCustom32&quot;</span><span class="p">,</span>  <span class="c1"># cast from float32 to myfloat32</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;Cast&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">register_op(...)</span></code> call takes a lowering function, and a number of parameters which specify exactly the operation which should be lowered with the provided lowering function.
+In this case, the arguments we pass specify that this lowering function is for lowering a <code class="docutils literal notranslate"><span class="pre">Cast</span></code> from <code class="docutils literal notranslate"><span class="pre">float</span></code> to <code class="docutils literal notranslate"><span class="pre">myfloat</span></code> for target <code class="docutils literal notranslate"><span class="pre">&quot;llvm&quot;</span></code>.</p>
+<p>The lowering function passed into this call is very general: it should take an operation of the specified type (in this case, <cite>Cast</cite>) and return another operation which only uses datatypes which TVM understands.</p>
+<p>In the general case, we expect users to implement operations over their custom datatypes using calls to an external library.
+In our example, our <code class="docutils literal notranslate"><span class="pre">myfloat</span></code> library implements a <code class="docutils literal notranslate"><span class="pre">Cast</span></code> from <code class="docutils literal notranslate"><span class="pre">float</span></code> to 32-bit <code class="docutils literal notranslate"><span class="pre">myfloat</span></code> in the function <code class="docutils literal notranslate"><span class="pre">FloatToCustom32</span></code>.
+To provide for the general case, we have made a helper function, <code class="docutils literal notranslate"><span class="pre">create_lower_func(...)</span></code>,
+which does just this: given a dictionary, it replaces the given operation with a <code class="docutils literal notranslate"><span class="pre">Call</span></code> to the appropriate function name provided based on the op and the bit widths.
+It additionally removes usages of the custom datatype by storing the custom datatype in an opaque <code class="docutils literal notranslate"><span class="pre">uint</span></code> of the appropriate width; in our case, a <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code>.
+For more information, see <a class="reference external" href="https://github.com/apache/tvm/blob/main/python/tvm/target/datatype.py">the source code</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can now re-try running the program:</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.disable_vectorize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}):</span>
+        <span class="n">z_output_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()(</span><span class="n">x_input</span><span class="p">,</span> <span class="n">y_input</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_output_myfloat</span><span class="p">))</span>
+<span class="k">except</span> <span class="n">tvm</span><span class="o">.</span><span class="n">TVMError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Print last line of error</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This new error tells us that the <code class="docutils literal notranslate"><span class="pre">Add</span></code> lowering function is not found, which is good news, as it’s no longer complaining about the <code class="docutils literal notranslate"><span class="pre">Cast</span></code>!
+We know what to do from here: we just need to register the lowering functions for the other operations in our program.</p>
+<p>Note that for <code class="docutils literal notranslate"><span class="pre">Add</span></code>, <code class="docutils literal notranslate"><span class="pre">create_lower_func</span></code> takes in a dict where the key is an integer.
+For <code class="docutils literal notranslate"><span class="pre">Cast</span></code> operations, we require a 2-tuple to specify the <code class="docutils literal notranslate"><span class="pre">src_bit_length</span></code> and the <code class="docutils literal notranslate"><span class="pre">dest_bit_length</span></code>,
+while for all other operations, the bit length is the same between the operands so we only require one integer to specify <code class="docutils literal notranslate"><span class="pre">bit_length</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;Custom32Add&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Add&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">):</span> <span class="s2">&quot;Custom32ToFloat&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Cast&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Now, we can run our program without errors.</span>
+<span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.disable_vectorize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}):</span>
+    <span class="n">z_output_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="n">mod</span><span class="o">=</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()(</span><span class="n">x_input</span><span class="p">,</span> <span class="n">y_input</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_output_myfloat</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x:</span><span class="se">\t\t</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_input</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;y:</span><span class="se">\t\t</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y_input</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z (float32):</span><span class="se">\t</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_output</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z (myfloat32):</span><span class="se">\t</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z_output_myfloat</span><span class="p">))</span>
+
+<span class="c1"># Perhaps as expected, the ``myfloat32`` results and ``float32`` are exactly the same!</span>
+</pre></div>
+</div>
+</section>
+<section id="running-models-with-custom-datatypes">
+<h2>Running Models With Custom Datatypes<a class="headerlink" href="#running-models-with-custom-datatypes" title="永久链接至标题">#</a></h2>
+<p>We will first choose the model which we would like to run with myfloat.
+In this case we use <a class="reference external" href="https://arxiv.org/abs/1704.04861">Mobilenet</a>.
+We choose Mobilenet due to its small size.
+In this alpha state of the Bring Your Own Datatypes framework, we have not implemented any software optimizations for running software emulations of custom datatypes; the result is poor performance due to many calls into our datatype emulation library.</p>
+<p>First let us define two helper functions to get the mobilenet model and a cat image.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_mobilenet</span><span class="p">():</span>
+    <span class="n">dshape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">mxnet.gluon.model_zoo.vision</span> <span class="kn">import</span> <span class="n">get_model</span>
+
+    <span class="n">block</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;mobilenet0.25&quot;</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">shape_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">dshape</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_mxnet</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">shape_dict</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_cat_image</span><span class="p">():</span>
+    <span class="kn">from</span> <span class="nn">tvm.contrib.download</span> <span class="kn">import</span> <span class="n">download_testdata</span>
+    <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://gist.githubusercontent.com/zhreshold/bcda4716699ac97ea44f791c24310193/raw/fa7ef0e9c9a5daea686d6473a62aacd1a5885849/cat.png&quot;</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="s2">&quot;cat.png&quot;</span>
+    <span class="n">real_dst</span> <span class="o">=</span> <span class="n">download_testdata</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">real_dst</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
+    <span class="c1"># CoreML&#39;s standard model image format is BGR</span>
+    <span class="n">img_bgr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">img_bgr</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+
+
+<span class="n">module</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">get_mobilenet</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It’s easy to execute MobileNet with native TVM:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ex</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">get_cat_image</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()(</span><span class="nb">input</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="c1"># print first 10 elements</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:</span><span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Now, we would like to change the model to use myfloat internally. To do so, we need to convert the network. To do this, we first define a function which will help us convert tensors:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_ndarray</span><span class="p">(</span><span class="n">dst_dtype</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts an NDArray into the specified datatype&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+    <span class="n">cast</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dst_dtype</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.disable_vectorize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}):</span>
+        <span class="k">return</span> <span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="s2">&quot;graph&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">cast</span><span class="p">)(</span><span class="n">array</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, to actually convert the entire network, we have written <a class="reference external" href="https://github.com/gussmith23/tvm/blob/ea174c01c54a2529e19ca71e125f5884e728da6e/python/tvm/relay/frontend/change_datatype.py#L21">a pass in Relay</a> which simply converts all nodes within the model to use the new datatype.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.relay.frontend.change_datatype</span> <span class="kn">import</span> <span class="n">ChangeDatatype</span>
+
+<span class="n">src_dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
+<span class="n">dst_dtype</span> <span class="o">=</span> <span class="s2">&quot;custom[myfloat]32&quot;</span>
+
+<span class="n">module</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">module</span><span class="p">)</span>
+
+<span class="c1"># Currently, custom datatypes only work if you run simplify_inference beforehand</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">SimplifyInference</span><span class="p">()(</span><span class="n">module</span><span class="p">)</span>
+
+<span class="c1"># Run type inference before changing datatype</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">module</span><span class="p">)</span>
+
+<span class="c1"># Change datatype from float to myfloat and re-infer types</span>
+<span class="n">cdtype</span> <span class="o">=</span> <span class="n">ChangeDatatype</span><span class="p">(</span><span class="n">src_dtype</span><span class="p">,</span> <span class="n">dst_dtype</span><span class="p">)</span>
+<span class="n">expr</span> <span class="o">=</span> <span class="n">cdtype</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">module</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">])</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">module</span><span class="p">)</span>
+
+<span class="c1"># We also convert the parameters:</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">convert_ndarray</span><span class="p">(</span><span class="n">dst_dtype</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+<span class="c1"># We also need to convert our input:</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">convert_ndarray</span><span class="p">(</span><span class="n">dst_dtype</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span>
+
+<span class="c1"># Finally, we can try to run the converted model:</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Vectorization is not implemented with custom datatypes.</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.disable_vectorize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}):</span>
+        <span class="n">result_myfloat</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">expr</span><span class="p">)(</span>
+            <span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span>
+        <span class="p">)</span>
+<span class="k">except</span> <span class="n">tvm</span><span class="o">.</span><span class="n">TVMError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>When we attempt to run the model, we get a familiar error telling us that more functions need to be registerd for myfloat.</p>
+<p>Because this is a neural network, many more operations are required.
+Here, we register all the needed functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;FloatToCustom32&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;FloatImm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">lower_ite</span><span class="p">,</span> <span class="s2">&quot;Call&quot;</span><span class="p">,</span> <span class="s2">&quot;llvm&quot;</span><span class="p">,</span> <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span> <span class="n">intrinsic_name</span><span class="o">=</span><span class="s2">&quot;tir.if_then_else&quot;</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">lower_call_pure_extern</span><span class="p">,</span>
+    <span class="s2">&quot;Call&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+    <span class="n">intrinsic_name</span><span class="o">=</span><span class="s2">&quot;tir.call_pure_extern&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;Custom32Mul&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Mul&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;Custom32Div&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Div&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;Custom32Sqrt&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Call&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+    <span class="n">intrinsic_name</span><span class="o">=</span><span class="s2">&quot;tir.sqrt&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;Custom32Sub&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Sub&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;Custom32Exp&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Call&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+    <span class="n">intrinsic_name</span><span class="o">=</span><span class="s2">&quot;tir.exp&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_op</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;Custom32Max&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;Max&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;llvm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">register_min_func</span><span class="p">(</span>
+    <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">datatype</span><span class="o">.</span><span class="n">create_min_lower_func</span><span class="p">({</span><span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;MinCustom32&quot;</span><span class="p">},</span> <span class="s2">&quot;myfloat&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;myfloat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Note we are making use of two new functions: <code class="docutils literal notranslate"><span class="pre">register_min_func</span></code> and <code class="docutils literal notranslate"><span class="pre">create_min_lower_func</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">register_min_func</span></code> takes in an integer <code class="docutils literal notranslate"><span class="pre">num_bits</span></code> for the bit length, and should return an operation
+representing the minimum finite representable value for the custom data type with the specified bit length.</p>
+<p>Similar to <code class="docutils literal notranslate"><span class="pre">register_op</span></code> and <code class="docutils literal notranslate"><span class="pre">create_lower_func</span></code>, the <code class="docutils literal notranslate"><span class="pre">create_min_lower_func</span></code> handles the general case
+where the minimum representable custom datatype value is implemented using calls to an external library.</p>
+<p>Now we can finally run the model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Vectorization is not implemented with custom datatypes.</span>
+<span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.disable_vectorize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}):</span>
+    <span class="n">result_myfloat</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">create_executor</span><span class="p">(</span><span class="n">mod</span><span class="o">=</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">expr</span><span class="p">)(</span><span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">result_myfloat</span> <span class="o">=</span> <span class="n">convert_ndarray</span><span class="p">(</span><span class="n">src_dtype</span><span class="p">,</span> <span class="n">result_myfloat</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="c1"># print first 10 elements</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result_myfloat</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:</span><span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># Again, note that the output using 32-bit myfloat exactly the same as 32-bit floats,</span>
+<span class="c1"># because myfloat is exactly a float!</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">result_myfloat</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-how-to-extend-tvm-bring-your-own-datatypes-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">bring_your_own_datatypes.py</span></code></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">bring_your_own_datatypes.ipynb</span></code></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="use_pass_instrument.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">How to Use TVM Pass Instrument</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="../../topic/vta/tutorials/index.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">VTA 教程</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

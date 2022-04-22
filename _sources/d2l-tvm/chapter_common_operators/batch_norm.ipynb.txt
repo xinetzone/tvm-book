@@ -1,0 +1,347 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Batch Normalization\n",
+    ":label:`ch_batch_norm`\n",
+    "\n",
+    "This section talks about how to use TVM to do batch normalization (`batch_norm`). Like pooling, `batch_norm` is also a common operator in CNN. D2L introduces this operator in [details](https://d2l.ai/chapter_convolutional-modern/batch-norm.html). \n",
+    "\n",
+    "From the calculation perspective, for a given value, `batch_norm` subtracts the $mean$ out of it, and then divide it with the square root of the $variance$, no difference than a regular normalization. It is call `batch_norm` because the mean and variance are attained from the batches of when performed the training. After that, `batch_norm` also applies an affine transformation to the value, i.e. multiplies it with a scale value $gamma$ followed by adding a shift value $beta$. $Gamma$ and $beta$ are attained from the gradient computation of training. Lastly, a small positive value $epsilon$ is added to prevent the divisor to be 0.\n",
+    "\n",
+    "In the case of inference, both the mean and variance are determined, so the process of `batch_norm` is just a combination of several simple element-wise operations.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import tvm\n",
+    "from tvm import te\n",
+    "import d2ltvm\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "## Compute definition\n",
+    "\n",
+    "In practice, we are not going to perform `batch_norm` of one value. Instead, the `batch_norm` will be executed on the output of a convolution, namely, 3-D data in (channel, height, weight). Data in different channels have different values of $mean$, $variance$, $gamma$, and $beta$. The calculation can be expressed as the following formula.\n",
+    "\n",
+    "$$out[i,:,:] = \\frac{data[i,:,:] - mean[i]}{\\sqrt{var[i]+\\epsilon}} \\\n",
+    "* gamma[i] + beta[i] $$\n",
+    "\n",
+    "During model training, $mean$ and $var$ are computed from the input $data$. However, in model inference which we focus on here, $mean$ and $var$ are given; therefore we don't need to compute them from $data$.\n",
+    "\n",
+    "We will define the compute of this formula. Essentially, `batch_norm` is a combination of a number of simple broadcasting and element-wise calculations. \n",
+    "Note that in :numref:`ch_bcast_add` we defined a limited `broadcast_add` to perform only broadcast addition for 2-D tensors. If we generalize it to more dimensions and more calculators, we can reuse them to compose the `batch_norm` operator. This is actually what TVM does.\n",
+    "\n",
+    "Here, for simplicity, we use TVM basic operators for broadcast calculation. TVM operators are defined in `TOPI`, which stands for Tensor OPerator Inventory. It follows the NumPy convention to override the arithmetic operators (i.e. `+`, `-`, `*`, `/`) for broadcast calculation. The element-wise square root can be found in `TOPI`, too.\n",
+    "\n",
+    "The code snippet to define `batch_norm` is as follows.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "2"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "import topi\n",
+    "\n",
+    "def batch_norm(c, n, eps=1e-5):\n",
+    "    \"\"\"batch normalization\n",
+    "    \n",
+    "    c : channels\n",
+    "    N : input width and height\n",
+    "    eps : small positive value to prevent divide 0\n",
+    "    \"\"\"\n",
+    "        \n",
+    "    X = te.placeholder((c, n, n), name='X')\n",
+    "    Mean = te.placeholder((c, 1, 1), name='Mean')\n",
+    "    Var = te.placeholder((c, 1, 1), name='Var')\n",
+    "    Gamma = te.placeholder((c, 1, 1), name='Gamma')\n",
+    "    Beta = te.placeholder((c, 1, 1), name='Beta')\n",
+    "    C1 = X - Mean\n",
+    "    C2 = topi.sqrt(Var + eps)\n",
+    "    Y = C1 / C2 * Gamma + Beta\n",
+    "    return X, Mean, Var, Gamma, Beta, Y"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "We can then compile print the IR and compile it. The IR contains several stages but should be easy to follow.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "// attr [T_subtract] storage_scope = \"global\"\n",
+      "allocate T_subtract[float32 * 25088]\n",
+      "// attr [T_add] storage_scope = \"global\"\n",
+      "allocate T_add[float32 * 32]\n",
+      "produce T_subtract {\n",
+      "  for (ax0, 0, 32) {\n",
+      "    for (ax1, 0, 28) {\n",
+      "      for (ax2, 0, 28) {\n",
+      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (X[(((ax0*784) + (ax1*28)) + ax2)] - Mean[ax0])\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "produce T_add {\n",
+      "  for (ax0, 0, 32) {\n",
+      "    T_add[ax0] = (Var[ax0] + 1e-05f)\n",
+      "  }\n",
+      "}\n",
+      "produce compute {\n",
+      "  for (i0, 0, 32) {\n",
+      "    T_add[i0] = sqrt(T_add[i0])\n",
+      "  }\n",
+      "}\n",
+      "produce T_divide {\n",
+      "  for (ax0, 0, 32) {\n",
+      "    for (ax1, 0, 28) {\n",
+      "      for (ax2, 0, 28) {\n",
+      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)]/T_add[ax0])\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "produce T_multiply {\n",
+      "  for (ax0, 0, 32) {\n",
+      "    for (ax1, 0, 28) {\n",
+      "      for (ax2, 0, 28) {\n",
+      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)]*Gamma[ax0])\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "produce T_add {\n",
+      "  for (ax0, 0, 32) {\n",
+      "    for (ax1, 0, 28) {\n",
+      "      for (ax2, 0, 28) {\n",
+      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)] + Beta[ax0])\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "c = 32\n",
+    "n = 28\n",
+    "X, Mean, Var, Gamma, Beta, Y = batch_norm(c, n)\n",
+    "\n",
+    "sch = te.create_schedule(Y.op)\n",
+    "mod = tvm.build(sch, [X, Mean, Var, Gamma, Beta, Y])\n",
+    "\n",
+    "print(tvm.lower(sch, [X, Mean, Var, Gamma, Beta], simple_mode=True))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "To execute it, we will need to create data for `batch_norm`. Similar to the previous sections for getting conv and pooling data, we define a `get_bn_data` method to generate the data of `batch_norm`. One tricky thing is that the variance must be non-negative numbers. Therefore, we move the mean value of the random number generator's normal distribution to 1 (by default mean 0 and standard deviation 1), and get the absolute numbers of generated results.\n",
+    "\n",
+    "After getting the data, we can simply call the compiled module to execute.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "3"
+    },
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def get_bn_data(c, n, constructor=None):\n",
+    "    \"\"\"Return the batch norm data, mean, variance, gamma and beta tensors.\n",
+    "       Also return the empty tensor for output.\n",
+    "\n",
+    "    c : channels\n",
+    "    n : input width and height\n",
+    "    constructor : user-defined tensor constructor\n",
+    "    \"\"\"\n",
+    "    np.random.seed(0)\n",
+    "    data = np.random.normal(size=(c, n, n)).astype('float32')\n",
+    "    mean = np.random.normal(size=(c, 1, 1)).astype('float32')\n",
+    "    # move the mean of the normal distribution to be 1\n",
+    "    var = np.random.normal(loc=1.0, size=(c, 1, 1)).astype('float32')\n",
+    "    # make sure all variance numbers are not negative\n",
+    "    var = np.absolute(var)\n",
+    "    gamma = np.random.normal(size=(c, 1, 1)).astype('float32')\n",
+    "    beta = np.random.normal(size=(c, 1, 1)).astype('float32')\n",
+    "    out = np.empty((c, n, n), dtype='float32')\n",
+    "    if constructor:\n",
+    "        data, mean, var, gamma, beta, out = \\\n",
+    "        (constructor(x) for x in [data, mean, var, gamma, beta, out])\n",
+    "    return data, mean, var, gamma, beta, out\n",
+    "\n",
+    "data, mean, var, gamma, beta, out = get_bn_data(c, n, tvm.nd.array)\n",
+    "mod(data, mean, var, gamma, beta, out)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "## MXNet Baseline\n",
+    "\n",
+    "We use the `batch_norm` function of MXNet as the baseline to check the correctness of our compiled functions. \n",
+    "This function in MXNet was defined to be generic for both training and inference. In the inference case that we talk about here, we will need to set the corresponding input arguments properly. \n",
+    "One is $use_global_stats$, which needs to be set `True` as we will use the input mean and variance for `batch_norm` to compute instead of computing them from the input data (training will do so). \n",
+    "The other is $fix\\_gamma$, which needs to be set `False` so that the input $gamma$ will be used instead of setting $gamma$ to be all 1.\n",
+    "\n",
+    "Lastly, like we have discussed in other cases, MXNet `batch_norm` has input data in 4D, including batch as the outmost dimension. So we will expand this dimension in the data accordingly.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "7"
+    },
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import mxnet as mx\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def get_bn_data_mxnet(c, n, ctx='cpu'):\n",
+    "    ctx = getattr(mx, ctx)()\n",
+    "    data, mean, var, gamma, beta, out = get_bn_data(c, n,\n",
+    "                                      lambda x: mx.nd.array(x, ctx=ctx))\n",
+    "    data, out = data.expand_dims(axis=0), out.expand_dims(axis=0)\n",
+    "    return data, mean, var, gamma, beta, out\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def batch_norm_mxnet(data, mean, var, gamma, beta, out, eps=1e-5):\n",
+    "    # use_global_stats=True to use the input mean and var instead of computing\n",
+    "    # the mean and var of the input data.\n",
+    "    # fix_gamma=False so that gamma won't be set to 1.\n",
+    "    mx.nd.BatchNorm(data, gamma, beta, mean, var, eps, \n",
+    "                    use_global_stats=True, fix_gamma=False, out=out)\n",
+    "\n",
+    "data, mean, var, gamma, beta, out_mx = get_bn_data_mxnet(c, n)\n",
+    "batch_norm_mxnet(data, mean, var, gamma, beta, out_mx)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "Finally, we check if our results are close enough to the results produced by MXNet.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "9"
+    },
+    "origin_pos": 11,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "np.testing.assert_allclose(out_mx[0].asnumpy(), out.asnumpy(), atol=1e-5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 12
+   },
+   "source": [
+    "## Summary\n",
+    "\n",
+    "- From the computation perspective, `batch_norm` is a combination of a number of broadcast and element-wise simple operators, which can be easily attained from TVM's Tensor OPerator Inventory (TOPI).\n",
+    "- In inference, $mean$ and $var$ of `batch_norm` are pre-defined.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

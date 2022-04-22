@@ -1,0 +1,331 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Pooling\n",
+    ":label:`ch_pooling`\n",
+    "\n",
+    "This section talks about how to use TVM to do pooling. Pooling is a common operator in CNN, please refer to chapter [6.5](https://d2l.ai/chapter_convolutional-neural-networks/pooling.html) in D2L if you are not familiar with this operator. Here we will skip the why, only focus on how.\n",
+    "\n",
+    "There are two types of pooling, `max pooling` which returns the maximal value of a pool, and `avg pooling` which returns the average value of a pool. For simplicity, we work on 2D pooling in this section. Like conv2d, the pooling operator moves the pooling kernel across the feature map with some stride. Sometimes padding is needed to match the required output size. Pooling has significantly less computation than conv2d as it only needs to get the maximal or average value. It is a memory-bound operator.\n",
+    "\n",
+    ":numref:`fig_pooling` illustrate how 2D `max pooling` and `avg pooling` work, with the following setting: kernel size `[3, 3]`, stride `[1, 1]`, and padding `[1, 1]`.\n",
+    "\n",
+    "![2D max and average poolings. The blue shape indicates a particular pooling step. Note that besides the algorithm, the padding values are also different.](../img/pooling.svg)\n",
+    ":label:`fig_pooling`\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import tvm\n",
+    "from tvm import te\n",
+    "import d2ltvm"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "## Compute definition\n",
+    "\n",
+    "The computation manner of `pooling` is similar to `conv`, so you will find the pooling definition code below takes similar arguments as `conv` defined in :numref:`ch_conv`. The output size of pooling can be calculated by reusing the `conv_out_size` method, too.\n",
+    "\n",
+    "We include two types of `pooling` in the same method using different `te.compute`. In the `pool_type` is specified otherwise, the method will throw an error. \n",
+    "We use `te.max` to perform `max pooling` and `te.sum` and element-wise division to perform `avg pooling`. In addition, please also note that the padding values of `max pooling` is the `te.min_value` while `avg pooling` being 0.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def pool(pool_type, c, nh, nw, kh, kw, ph=0, pw=0, sh=1, sw=1):\n",
+    "    \"\"\"2D pooling\n",
+    "    \n",
+    "    pool_type: pooling type, 'max' or 'avg'\n",
+    "    c : channels\n",
+    "    nh, nw : input width and height\n",
+    "    kh, kw : kernel width and height\n",
+    "    ph, pw : height and width padding sizes, default 0\n",
+    "    sh, sw : height and width strides, default 1\n",
+    "    \"\"\"\n",
+    "    # reduction axes\n",
+    "    rkh = te.reduce_axis((0, kh), name='rkh')\n",
+    "    rkw = te.reduce_axis((0, kw), name='rkw')\n",
+    "    # output height and weights\n",
+    "    oh = d2ltvm.conv_out_size(nh, kh, ph, sh)\n",
+    "    ow = d2ltvm.conv_out_size(nw, kw, pw, sw)\n",
+    "    # pad X and then compute Y\n",
+    "    X = te.placeholder((c, nh, nw), name='X')\n",
+    "    \n",
+    "    \n",
+    "    if pool_type == 'max':\n",
+    "        PaddedX = d2ltvm.padding(X, ph, pw, val=te.min_value(X.dtype)) \\\n",
+    "            if ph * pw != 0 else X\n",
+    "        Y = te.compute((c, oh, ow), \\\n",
+    "                            lambda c, h, w: \\\n",
+    "                            te.max(PaddedX[c, h*sh+rkh, w*sw+rkw], \\\n",
+    "                                axis=[rkh, rkw]), \\\n",
+    "                            tag=\"pool_max\", name='PoolMax')\n",
+    "    elif pool_type == 'avg':\n",
+    "        PaddedX = d2ltvm.padding(X, ph, pw) if ph * pw != 0 else X\n",
+    "        tsum = te.compute((c, oh, ow), \\\n",
+    "                            lambda c, h, w: \\\n",
+    "                            te.sum(PaddedX[c, h*sh+rkh, w*sw+rkw], \\\n",
+    "                                axis=[rkh, rkw]), \\\n",
+    "                            tag=\"pool_avg1\", name='PoolSum')\n",
+    "        Y = te.compute((c, oh, ow), \\\n",
+    "                            lambda c, h, w: \\\n",
+    "                            tsum[c, h, w] / (kh*kw), \\\n",
+    "                            tag='pool_avg2', name='PoolAvg')\n",
+    "    else:\n",
+    "        raise ValueError(\"Pool type should be 'avg' or 'max'.\")\n",
+    "    return X, Y, PaddedX"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "We then compile the `max pooling` using some toy data sizes. The compute logic is simple as shown in the IR. Again, the `get_conv_data` method in :numref:`ch_conv` can be reused to initialize the data. Note that we don't need weights in this case.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "// attr [PaddedX] storage_scope = \"global\"\n",
+      "allocate PaddedX[float32 * 784]\n",
+      "produce PaddedX {\n",
+      "  for (i0, 0, 4) {\n",
+      "    for (i1, 0, 14) {\n",
+      "      for (i2, 0, 14) {\n",
+      "        PaddedX[(((i0*196) + (i1*14)) + i2)] = tvm_if_then_else(((((i1 < 1) || (13 <= i1)) || (i2 < 1)) || (13 <= i2)), -3.40282e+38f, X[((((i0*144) + (i1*12)) + i2) - 13)])\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "produce PoolMax {\n",
+      "  for (c, 0, 4) {\n",
+      "    for (h, 0, 12) {\n",
+      "      for (w, 0, 12) {\n",
+      "        PoolMax[(((c*144) + (h*12)) + w)] = -3.40282e+38f\n",
+      "        for (rkh, 0, 3) {\n",
+      "          for (rkw, 0, 3) {\n",
+      "            PoolMax[(((c*144) + (h*12)) + w)] = max(PoolMax[(((c*144) + (h*12)) + w)], PaddedX[(((((c*196) + (h*14)) + (rkh*14)) + w) + rkw)])\n",
+      "          }\n",
+      "        }\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "c, n, k, p, s = 4, 12, 3, 1, 1\n",
+    "X, Y, PaddedX = pool('max', c, n, n, k, k, p, p, s, s)\n",
+    "sch = te.create_schedule(Y.op)\n",
+    "mod = tvm.build(sch, [X, Y])\n",
+    "print(tvm.lower(sch, [X, Y], simple_mode=True))\n",
+    "data, _, out_max = d2ltvm.get_conv_data(c, c, n, k, p, s, tvm.nd.array)\n",
+    "mod(data, out_max)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "Next, we compile the `avg pooling` using the same toy data sizes. The compute logic is also simple. Check out the computation as well as the padding value difference from the `max pooling`.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "// attr [PaddedX] storage_scope = \"global\"\n",
+      "allocate PaddedX[float32 * 784]\n",
+      "// attr [PoolSum] storage_scope = \"global\"\n",
+      "allocate PoolSum[float32 * 576]\n",
+      "produce PaddedX {\n",
+      "  for (i0, 0, 4) {\n",
+      "    for (i1, 0, 14) {\n",
+      "      for (i2, 0, 14) {\n",
+      "        PaddedX[(((i0*196) + (i1*14)) + i2)] = tvm_if_then_else(((((i1 < 1) || (13 <= i1)) || (i2 < 1)) || (13 <= i2)), 0f, X[((((i0*144) + (i1*12)) + i2) - 13)])\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "produce PoolSum {\n",
+      "  for (c, 0, 4) {\n",
+      "    for (h, 0, 12) {\n",
+      "      for (w, 0, 12) {\n",
+      "        PoolSum[(((c*144) + (h*12)) + w)] = 0f\n",
+      "        for (rkh, 0, 3) {\n",
+      "          for (rkw, 0, 3) {\n",
+      "            PoolSum[(((c*144) + (h*12)) + w)] = (PoolSum[(((c*144) + (h*12)) + w)] + PaddedX[(((((c*196) + (h*14)) + (rkh*14)) + w) + rkw)])\n",
+      "          }\n",
+      "        }\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "produce PoolAvg {\n",
+      "  for (c, 0, 4) {\n",
+      "    for (h, 0, 12) {\n",
+      "      for (w, 0, 12) {\n",
+      "        PoolAvg[(((c*144) + (h*12)) + w)] = (PoolSum[(((c*144) + (h*12)) + w)]*0.111111f)\n",
+      "      }\n",
+      "    }\n",
+      "  }\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "X, Y, PaddedX = pool('avg', c, n, n, k, k, p, p, s, s)\n",
+    "sch = te.create_schedule(Y.op)\n",
+    "mod = tvm.build(sch, [X, Y])\n",
+    "print(tvm.lower(sch, [X, Y], simple_mode=True))\n",
+    "data, _, out_avg = d2ltvm.get_conv_data(c, c, n, k, p, s, tvm.nd.array)\n",
+    "mod(data, out_avg)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "## MXNet Baseline\n",
+    "\n",
+    "We use the pooling functions of MXNet as the baseline to check the correctness of our compiled functions. MXNet computes pooling similarly as what we have done. The only difference is that its input data is in 4D, including batch as the outmost dimension.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import mxnet as mx\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def get_pool_data_mxnet(c, n, k, p, s, ctx='cpu'):\n",
+    "    ctx = getattr(mx, ctx)()\n",
+    "    data, _, out = d2ltvm.get_conv_data(c, c, n, k, p, s,\n",
+    "                                      lambda x: mx.nd.array(x, ctx=ctx))\n",
+    "    data, out = data.expand_dims(axis=0), out.expand_dims(axis=0)\n",
+    "    return data, out\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def pool_mxnet(pool_type, data, out, k, p, s):\n",
+    "    mx.nd.Pooling(data, kernel=(k,k), stride=(s,s),\n",
+    "                      pad=(p,p), pool_type=pool_type, out=out)\n",
+    "\n",
+    "data, out_max_mx = get_pool_data_mxnet(c, n, k, p, s)\n",
+    "pool_mxnet('max', data, out_max_mx, k, p, s)\n",
+    "data, out_avg_mx = get_pool_data_mxnet(c, n, k, p, s)\n",
+    "pool_mxnet('avg', data, out_avg_mx, k, p, s)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "Finally, we check if our results are close enough to the results produced by MXNet.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "origin_pos": 11,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "np.testing.assert_allclose(out_max_mx[0].asnumpy(), out_max.asnumpy(), atol=1e-5)\n",
+    "np.testing.assert_allclose(out_avg_mx[0].asnumpy(), out_avg.asnumpy(), atol=1e-5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 12
+   },
+   "source": [
+    "## Summary\n",
+    "\n",
+    "- 2D pooling handles the data in the similar way as 2D convolution, but the computation itself is much lighter.\n",
+    "- We can define `max pooling` and `avg pooling` easily using TVM expressions.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

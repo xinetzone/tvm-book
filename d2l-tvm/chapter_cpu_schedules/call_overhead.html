@@ -1,0 +1,815 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Function Call Overhead &#8212; tvm-book 0.0.1 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="Vector Add" href="vector_add.html" />
+    <link rel="prev" title="CPU Architecture" href="arch.html" />
+    <link rel="stylesheet" href="../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../start/index.html">
+  快速上手
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../origin/index.html">
+  TVM 官方教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables d2l-tvm/chapter_cpu_schedules/call_overhead and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "d2l-tvm/chapter_cpu_schedules/call_overhead.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "d2l-tvm/chapter_cpu_schedules/call_overhead.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.1 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.1") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_getting_started/index.html">
+   入门
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/install.html">
+     安装
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/vector_add.html">
+     向量加法
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/from_mxnet.html">
+     Neural Network Inference
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_getting_started/remote.html">
+     Running on a Remote Machine
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_expressions/index.html">
+   Expressions for Operators
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/data_types.html">
+     Data Types
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/shapes.html">
+     Shapes
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/index_shape_expressions.html">
+     Index and Shape Expressions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/reductions.html">
+     Reduction Operations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/if_then_else.html">
+     Conditional Expression:
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       if-then-else
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_expressions/all_any.html">
+     Truth Value Testing:
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       all
+      </span>
+     </code>
+     and
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       any
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_common_operators/index.html">
+   常见的算子
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_common_operators/broadcast_add.html">
+     Broadcast Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_common_operators/matmul.html">
+     Matrix Multiplication
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_common_operators/conv.html">
+     Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_common_operators/depthwise_conv.html">
+     Depthwise Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_common_operators/pooling.html">
+     Pooling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_common_operators/batch_norm.html">
+     Batch Normalization
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   Operator Optimizations on CPUs
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="arch.html">
+     CPU Architecture
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Function Call Overhead
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="vector_add.html">
+     Vector Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="broadcast_add.html">
+     Broadcast Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="matmul.html">
+     Matrix Multiplication
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="block_matmul.html">
+     Improve Cache Efficiency by Blocking
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="conv.html">
+     Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="packed_conv.html">
+     Packed Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="depthwise_conv.html">
+     Depthwise Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pooling.html">
+     Pooling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="batch_norm.html">
+     Batch Normalization
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../chapter_gpu_schedules/index.html">
+   Operator Optimizations on GPUs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/arch.html">
+     GPU Architecture
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/vector_add.html">
+     Vector Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/broadcast_add.html">
+     Broadcast Add
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/matmul.html">
+     Matrix Multiplication
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/conv.html">
+     Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/depthwise_conv.html">
+     Depthwise Convolution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/pooling.html">
+     Pooling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../chapter_gpu_schedules/batch_norm.html">
+     Batch Norm
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../chapter_neural_networks/index.html">
+   Neural Networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../chapter_deployment/index.html">
+   部署
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../zreferences.html">
+   参考文献
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#execution-time-measurement">
+   Execution Time Measurement
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-non-negligible-overhead">
+   The Non-Negligible Overhead
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overhead-of-numpy-tvm-and-mxnet">
+   Overhead of NumPy, TVM and MXNet
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/d2l-tvm/chapter_cpu_schedules/call_overhead.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="function-call-overhead">
+<h1>Function Call Overhead<a class="headerlink" href="#function-call-overhead" title="永久链接至标题">#</a></h1>
+<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_call_overhead</span></code></p>
+<p>We are starting to benchmark various schedules since this chapter. Before diving into various execution time numbers, we need to be aware of the overhead of issuing a function call in Python. It’s well known that Python is not the fastest language on earth. Prototyping with Python is fast, but we also need to pay the cost that Python does smart things for us under the hook. In this section, we will investigate the overhead to call a function in Python, and demonstrate its impact to our later benchmarking results.</p>
+<section id="execution-time-measurement">
+<h2>Execution Time Measurement<a class="headerlink" href="#execution-time-measurement" title="永久链接至标题">#</a></h2>
+<p>In Python, we often use the <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module to benchmark a workload, especially when its execution time is way less than 1 second. Note that Jupyter has a magic build-in function <code class="docutils literal notranslate"><span class="pre">%timeit</span></code> that makes the usage simpler, but a function using it cannot be saved for future usage, so we will use <code class="docutils literal notranslate"><span class="pre">timeit</span></code> directly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">timeit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The following codes return the execution time of creating a <code class="docutils literal notranslate"><span class="pre">[4,</span> <span class="pre">4]</span></code> zero matrix by 10 times.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">timer</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">setup</span><span class="o">=</span><span class="s1">&#39;import numpy as np&#39;</span><span class="p">,</span>
+                     <span class="n">stmt</span><span class="o">=</span><span class="s1">&#39;np.zeros((4, 4))&#39;</span><span class="p">)</span>
+<span class="n">timer</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.514570951461792e-05
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that the above workload can be done in tens of microsecond, we may need to increase the number of repeats to obtain relatively accurate execution time.
+The following function will determine the number of repeats needed to run a workload for at least 1 second, and then return the average execution time.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">bench_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Benchmark a workload</span>
+<span class="sd">    </span>
+<span class="sd">    workload: a method that accept a num_repeat argument </span>
+<span class="sd">    and return its total execution time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">workload</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># warmup</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">workload</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># the time to run once</span>
+    <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="n">time</span>
+    <span class="c1"># The number of repeats to measure at least 1 second</span>
+    <span class="n">num_repeats</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">time</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">workload</span><span class="p">(</span><span class="n">num_repeats</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_repeats</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;time for np.zeros((4, 4)):&#39;</span><span class="p">,</span> <span class="n">bench_workload</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">timeit</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>time for np.zeros((4, 4)): 2.6995336035230484e-07
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that the newly measured execution time of <code class="docutils literal notranslate"><span class="pre">np.zeros((4,</span> <span class="pre">4))</span></code> is much smaller than the one we first measured, as the former one includes the warmup time.</p>
+</section>
+<section id="the-non-negligible-overhead">
+<h2>The Non-Negligible Overhead<a class="headerlink" href="#the-non-negligible-overhead" title="永久链接至标题">#</a></h2>
+<p>Now we benchmark the <code class="docutils literal notranslate"><span class="pre">copyto</span></code> method, which copies the contents of an ndarray to another one, on various size ndarrays.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">np_setup</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;import numpy as np</span><span class="se">\n</span><span class="s1">&#39;</span> \
+           <span class="s1">&#39;x = np.random.normal(size=</span><span class="si">%d</span><span class="s1">).astype(&quot;float32&quot;)</span><span class="se">\n</span><span class="s1">&#39;</span> \
+           <span class="s1">&#39;y = np.empty_like(x)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span> <span class="n">n</span>
+        
+<span class="k">def</span> <span class="nf">np_copy</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">setup</span><span class="o">=</span><span class="n">np_setup</span><span class="p">(</span><span class="n">n</span><span class="p">),</span>
+                        <span class="n">stmt</span><span class="o">=</span><span class="s1">&#39;np.copyto(y, x)&#39;</span><span class="p">)</span>
+    
+<span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+<span class="n">exe_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">np_copy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">timeit</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Plot the throughput versus vector length.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">set_matplotlib_formats</span><span class="p">(</span><span class="s1">&#39;svg&#39;</span><span class="p">)</span>
+<span class="c1"># one float32 takes 4 bytes</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">sizes</span><span class="o">*</span><span class="mi">4</span><span class="o">/</span><span class="n">exe_times</span><span class="o">/</span><span class="mf">1e9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Vector length&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Throughput (GB/sec)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/call_overhead_9_0.svg" src="../../_images/call_overhead_9_0.svg" /></div>
+</div>
+<p>We can see that the throughput first increases and then plateaus. The plateau reflects the saturation of the memory bandwidth. However, the behavior of small vectors is not as expected since when the vector length is small, all data should be in the cache which should result in much higher throughput. To examine the reason, let’s simply draw the execution time versus vector length.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">exe_times</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Vector length&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Time (sec)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/call_overhead_11_0.svg" src="../../_images/call_overhead_11_0.svg" /></div>
+</div>
+<p>We can see that when the vector length is smaller than <span class="math notranslate nohighlight">\(10^3\)</span>, the execution time barely decrease when the vector length shortens. This is because when the vector length is short, the real <code class="docutils literal notranslate"><span class="pre">copyto</span></code> execution time is too small, and the total execution time is dominated by the function call overhead. The overhead includes any argument preprocessing in the Python function, evoking the foreign function interface, and other <a class="reference external" href="https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/">Python backend overhead</a>. Therefore, benchmarking too small workloads is not quite meaningful.</p>
+</section>
+<section id="overhead-of-numpy-tvm-and-mxnet">
+<h2>Overhead of NumPy, TVM and MXNet<a class="headerlink" href="#overhead-of-numpy-tvm-and-mxnet" title="永久链接至标题">#</a></h2>
+<p>Throughout the book, we will benchmark various operators in Numpy, TVM and MXNet. Let’s examine their function call overheads. We could roughly estimate it by executing some small workloads where the actual execution time is negligible compared to the overhead. Let’s first check NumPy.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+<span class="n">exe_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">np_copy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">timeit</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NumPy call overhead: </span><span class="si">%.1f</span><span class="s1"> microsecond&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">exe_times</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mf">1e6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NumPy call overhead: 0.6 microsecond
+</pre></div>
+</div>
+</div>
+</div>
+<p>The overhead of TVM is higher but in the same order of magnitude.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">tvm_copy</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">setup</span><span class="o">=</span><span class="n">np_setup</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;import tvm</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="s1">&#39;x, y = tvm.nd.array(x), tvm.nd.array(y)&#39;</span><span class="p">,</span>
+                        <span class="n">stmt</span><span class="o">=</span><span class="s1">&#39;x.copyto(y)&#39;</span><span class="p">)</span>
+
+<span class="n">tvm_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">tvm_copy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">timeit</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;TVM call overhead: </span><span class="si">%.1f</span><span class="s1"> microsecond&#39;</span><span class="o">%</span> <span class="p">(</span><span class="n">tvm_times</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TVM call overhead: 0.2 microsecond
+</pre></div>
+</div>
+</div>
+</div>
+<p>Compared to NumPy and TVM, MXNet has substantially higher overhead. The reason might due to MXNet uses <code class="docutils literal notranslate"><span class="pre">ctypes</span></code> while TVM is compiled with <code class="docutils literal notranslate"><span class="pre">cython</span></code>, and MXNet uses lazy evaluation that brings additional overhead.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mx_copy</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">setup</span><span class="o">=</span><span class="n">np_setup</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;import mxnet as mx</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="s1">&#39;x, y = mx.nd.array(x), mx.nd.array(y)</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="s1">&#39;mx.nd.waitall()&#39;</span><span class="o">%</span> <span class="n">n</span><span class="p">,</span>
+                        <span class="n">stmt</span><span class="o">=</span><span class="s1">&#39;x.copyto(y); y.wait_to_read()&#39;</span><span class="p">)</span>
+
+<span class="n">mx_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">mx_copy</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">timeit</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MXNet call overhead: </span><span class="si">%.1f</span><span class="s1"> microsecond&#39;</span><span class="o">%</span> <span class="p">(</span><span class="n">mx_times</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MXNet call overhead: 37.4 microsecond
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<ul class="simple">
+<li><p>Warming up a method by running it a few times beforehand is a good practice to measure its execution time.</p></li>
+<li><p>The function call overhead might takes several microsecond. Benchmarking too small functions in Python is meaningless.</p></li>
+</ul>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="arch.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">CPU Architecture</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="vector_add.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">Vector Add</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-04-22, 12:42:10.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

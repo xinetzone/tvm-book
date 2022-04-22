@@ -1,0 +1,460 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Reduction Operations\n",
+    "\n",
+    "Reduction is an operation to reduce certain dimension(s) of an input tensor, usually to scalar(s), e.g. `np.sum` in NumPy. Reduction is often straightforward to implement with for-loops. But it's a little bit more complicated in TVM since we cannot use a Python for-loop directly. In this section, we will describe how to implement reduction in TVM.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import d2ltvm\n",
+    "import numpy as np\n",
+    "import tvm\n",
+    "from tvm import te"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "## Sum\n",
+    "\n",
+    "Let's start with summing the rows of a 2-D matrix to reduce it to be a 1-D vector. In NumPy, we can do it with the `sum` method.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "29"
+    },
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([ 1.8948135, -2.4319794,  1.9638997], dtype=float32)"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a = np.random.normal(size=(3,4)).astype('float32')\n",
+    "a.sum(axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "As we did before, let's implement this operation from scratch to help understand the TVM expression.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "2"
+    },
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([ 1.8948135, -2.4319794,  1.9638997], dtype=float32)"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "def sum_rows(a, b):\n",
+    "    \"\"\"a is an n-by-m 2-D matrix, b is an n-length 1-D vector \n",
+    "    \"\"\"\n",
+    "    n = len(b)\n",
+    "    for i in range(n):\n",
+    "        b[i] = np.sum(a[i,:])\n",
+    "\n",
+    "b = np.empty((3,), dtype='float32')\n",
+    "sum_rows(a, b)\n",
+    "b"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "It's fairly straightforward, we first iterate on the first dimension, `axis=0`, and then sum all elements on the second dimension to write the results. In NumPy, we can use `:` to slice all elements along that dimension.\n",
+    "\n",
+    "Now let's implement the same thing in TVM. Comparing to the vector addition in :numref:`ch_vector_add`, we used two new operators here. One is `tvm.reduce_axis`, which create an axis for reduction with range from 0 to `m`. It's functionally similar to the `:` used in `sum_rows`, but we need to explicitly specify the range in TVM. The other one is `tvm.sum`, which sums all elements along the reducing axis `k` and returns a scalar.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "30"
+    },
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "produce b {\n",
+       "  for (i, 0, n) {\n",
+       "    b[(i*stride)] = 0f\n",
+       "    for (j, 0, m) {\n",
+       "      b[(i*stride)] = (b[(i*stride)] + a[((i*stride) + (j*stride))])\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "n, m = te.var('n'), te.var('m')\n",
+    "A = te.placeholder((n, m), name='a')\n",
+    "j = te.reduce_axis((0, m), name='j')\n",
+    "B = te.compute((n,), lambda i: te.sum(A[i, j], axis=j), name='b')\n",
+    "s = te.create_schedule(B.op)\n",
+    "tvm.lower(s, [A, B], simple_mode=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "We can see that the generated pseudo codes expand `tvm.sum` into another for loop along axis `k`. As mentioned before, the pseudo codes are C-like, so the index of `a[i,j]` is expanded to `(i*m)+j` by treating `a` as a 1-D array. Also note that `b` is initialized to be all-zero before summation.\n",
+    "\n",
+    "Now test the results are as expected.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "5"
+    },
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "mod = tvm.build(s, [A, B])\n",
+    "c = tvm.nd.array(np.empty((3,), dtype='float32'))\n",
+    "mod(tvm.nd.array(a), c)\n",
+    "np.testing.assert_equal(b, c.asnumpy())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "We know that `a.sum()` will sum all elements in `a` and returns a scalar. Let's also implement this in TVM. To do it, we need another reduction axis along the first dimension, whose size is `n`. The result is a scalar, namely a 0-rank tensor, can be created with an empty tuple `()`.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "31"
+    },
+    "origin_pos": 11,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "produce b {\n",
+       "  b[0] = 0f\n",
+       "  for (i, 0, n) {\n",
+       "    for (j, 0, m) {\n",
+       "      b[0] = (b[0] + a[((i*stride) + (j*stride))])\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "i = te.reduce_axis((0, n), name='i')\n",
+    "B = te.compute((), lambda: te.sum(A[i, j], axis=(i, j)), name='b')\n",
+    "s = te.create_schedule(B.op)\n",
+    "tvm.lower(s, [A, B], simple_mode=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 12
+   },
+   "source": [
+    "Let's also verify the results.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "17"
+    },
+    "origin_pos": 13,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "mod = tvm.build(s, [A, B])\n",
+    "c = tvm.nd.array(np.empty((), dtype='float32'))\n",
+    "mod(tvm.nd.array(a), c)\n",
+    "np.testing.assert_allclose(a.sum(), c.asnumpy(), atol=1e-5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 14
+   },
+   "source": [
+    "In this case we use `np.testing.assert_allclose` instead of `np.testing.assert_equal` to verify the results as the calculation on `float32` numbers may differ due to the numerical error.\n",
+    "\n",
+    "Beyond `tvm.sum`, there are other reduction operators in TVM such as `tvm.min` and `tvm.max`. We can also use them to implement the corresponding reduction operations as well.\n",
+    "\n",
+    "## Commutative Reduction\n",
+    "\n",
+    "In mathematics, an operator $\\circ$ is commutative if $a\\circ b = b\\circ a$. TVM allows to define a customized commutative reduction operator through `tvm.comm_reducer`. It accepts two function arguments, one defines how to compute $a\\circ b$, the other one specifies the initial value.\n",
+    "\n",
+    "Let's use the production by rows, e.g `a.prod(axis=1)`, as an example. Again, we first show how to implement it from scratch.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "25"
+    },
+    "origin_pos": 15,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "def prod_rows(a, b):\n",
+    "    \"\"\"a is an n-by-m 2-D matrix, b is an n-length 1-D vector \n",
+    "    \"\"\"\n",
+    "    n, m = a.shape\n",
+    "    for i in range(n):\n",
+    "        b[i] = 1\n",
+    "        for j in range(m):\n",
+    "            b[i] = b[i] * a[i, j]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 16
+   },
+   "source": [
+    "As can be seen, we need to first initialize the return values to be 1, and then compute the reduction using scalar product `*`. Now let's define these two functions in TVM to serve as the arguments of `te.comm_reducer`. As discussed, the first one defines $a\\circ b$ with two scalar inputs. The second one accepts a data type argument to return the initial value of an element. Then we can create the reduction operator.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "origin_pos": 17,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "comp = lambda a, b: a * b\n",
+    "init = lambda dtype: tvm.tir.const(1, dtype=dtype)\n",
+    "product = te.comm_reducer(comp, init)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 18
+   },
+   "source": [
+    "The usage of `product` is similar to `te.sum`. Actually, `te.sum` is a pre-defined reduction operator using the same way.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "26"
+    },
+    "origin_pos": 19,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "produce b {\n",
+       "  for (i, 0, n) {\n",
+       "    b[(i*stride)] = 1f\n",
+       "    for (k, 0, m) {\n",
+       "      b[(i*stride)] = (b[(i*stride)]*a[((i*stride) + (k*stride))])\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "n = te.var('n')\n",
+    "m = te.var('m')\n",
+    "A = te.placeholder((n, m), name='a')\n",
+    "k = te.reduce_axis((0, m), name='k')\n",
+    "B = te.compute((n,), lambda i: product(A[i, k], axis=k), name='b')\n",
+    "s = te.create_schedule(B.op)\n",
+    "tvm.lower(s, [A, B], simple_mode=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 20
+   },
+   "source": [
+    "The generated pseudo codes are similar to the one for summing by rows, except for the initialized value and the reduction arithmetic.\n",
+    "\n",
+    "Again, let's verify the results.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "28"
+    },
+    "origin_pos": 21,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "mod = tvm.build(s, [A, B])\n",
+    "b = tvm.nd.array(np.empty((3,), dtype='float32'))\n",
+    "mod(tvm.nd.array(a), b)\n",
+    "np.testing.assert_allclose(a.prod(axis=1), b.asnumpy(), atol=1e-5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 22
+   },
+   "source": [
+    "## Summary\n",
+    "\n",
+    "- We can apply a reduction operator, e.g. `te.sum` over a reduction axis `te.reduce_axis`.\n",
+    "- We can implement customized commutative reduction operators by `te.comm_reducer`.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

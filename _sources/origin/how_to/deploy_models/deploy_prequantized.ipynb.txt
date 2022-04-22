@@ -1,0 +1,897 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# 使用 TVM 部署框架预量化模型\n",
+        "\n",
+        "**原作者**: [Masahiro Masuda](https://github.com/masahi)\n",
+        "\n",
+        "这是关于将深度学习框架量化的模型加载到 TVM 的教程。预量化模型导入是 TVM 中量化支持的一种。TVM 中量化的更多细节可以在[这里](https://discuss.tvm.apache.org/t/quantization-story/3920)找到。\n",
+        "\n",
+        "这里，将演示如何加载和运行由 PyTorch、MXNet 和 TFLite 量化的模型。一旦加载，就可以在任何 TVM 支持的硬件上运行已编译的、量化的模型。"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "首先，一些必备的载入："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "from PIL import Image\n",
+        "import numpy as np\n",
+        "\n",
+        "import torch\n",
+        "from torchvision.models.quantization import mobilenet as qmobilenet"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "加载 TVM 库："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Python: 3.10.4\n",
+            "TVM 根目录： /media/pc/data/4tb/lxw/study/tvm\n"
+          ]
+        }
+      ],
+      "source": [
+        "import sys\n",
+        "from pathlib import Path\n",
+        "\n",
+        "ROOT = Path('.').resolve().parents[2]\n",
+        "sys.path.extend([str(ROOT)])\n",
+        "from utils.tvm import set_env\n",
+        "\n",
+        "\n",
+        "import tvm\n",
+        "from tvm import relay\n",
+        "from tvm.contrib.download import download_testdata"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "运行演示程序的辅助函数："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def get_transform():\n",
+        "    import torchvision.transforms as transforms\n",
+        "\n",
+        "    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])\n",
+        "    return transforms.Compose(\n",
+        "        [\n",
+        "            transforms.Resize(256),\n",
+        "            transforms.CenterCrop(224),\n",
+        "            transforms.ToTensor(),\n",
+        "            normalize,\n",
+        "        ]\n",
+        "    )\n",
+        "\n",
+        "\n",
+        "def get_real_image(im_height, im_width):\n",
+        "    img_url = \"https://github.com/dmlc/mxnet.js/blob/main/data/cat.png?raw=true\"\n",
+        "    img_path = download_testdata(img_url, \"cat.png\", module=\"data\")\n",
+        "    return Image.open(img_path).resize((im_height, im_width))\n",
+        "\n",
+        "\n",
+        "def get_imagenet_input():\n",
+        "    im = get_real_image(224, 224)\n",
+        "    preprocess = get_transform()\n",
+        "    pt_tensor = preprocess(im)\n",
+        "    return np.expand_dims(pt_tensor.numpy(), 0)\n",
+        "\n",
+        "\n",
+        "def get_synset():\n",
+        "    synset_url = \"\".join(\n",
+        "        [\n",
+        "            \"https://gist.githubusercontent.com/zhreshold/\",\n",
+        "            \"4d0b62f3d01426887599d4f7ede23ee5/raw/\",\n",
+        "            \"596b27d23537e5a1b5751d2b0481ef172f58b539/\",\n",
+        "            \"imagenet1000_clsid_to_human.txt\",\n",
+        "        ]\n",
+        "    )\n",
+        "    synset_name = \"imagenet1000_clsid_to_human.txt\"\n",
+        "    synset_path = download_testdata(synset_url, synset_name, module=\"data\")\n",
+        "    with open(synset_path) as f:\n",
+        "        return eval(f.read())\n",
+        "\n",
+        "\n",
+        "def run_tvm_model(mod, params, input_name, inp, target=\"llvm\"):\n",
+        "    with tvm.transform.PassContext(opt_level=3):\n",
+        "        lib = relay.build(mod, target=target, params=params)\n",
+        "\n",
+        "    runtime = tvm.contrib.graph_executor.GraphModule(lib[\"default\"](tvm.device(target, 0)))\n",
+        "\n",
+        "    runtime.set_input(input_name, inp)\n",
+        "    runtime.run()\n",
+        "    return runtime.get_output(0).numpy(), runtime"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "从标签到类名的映射，以验证下面模型的输出是合理的："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "synset = get_synset()"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "大家最喜欢的猫的图像演示："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 5,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "inp = get_imagenet_input()"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 部署已量化的 PyTorch 模型\n",
+        "\n",
+        "首先，演示如何使用 PyTorch 前端加载由 PyTorch 量化的深度学习模型。\n",
+        "\n",
+        "请参阅 [PyTorch 静态量化教程](https://pytorch.org/tutorials/advanced/static_quantization_tutorial.html)，了解它们的量化工作流程。\n",
+        "\n",
+        "使用 {func}`quantize_model` 函数来量化 PyTorch 模型。简而言之，此函数采取浮点模型，并将其转换为 uint8。模型是逐通道量化的。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 6,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def quantize_model(model, inp):\n",
+        "    model.fuse_model()\n",
+        "    model.qconfig = torch.quantization.get_default_qconfig(\"fbgemm\")\n",
+        "    torch.quantization.prepare(model, inplace=True)\n",
+        "    # Dummy calibration\n",
+        "    model(inp)\n",
+        "    torch.quantization.convert(model, inplace=True)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 从 torchvision 加载量化准备，预训练的 Mobilenet v2 模型\n",
+        "\n",
+        "选择 mobilenet v2 是因为此模型是用量化感知训练训练的。其他模型需要完整的后训练校准。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 7,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "qmodel = qmobilenet.mobilenet_v2(pretrained=True).eval()"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 量化，跟踪和运行 PyTorch Mobilenet v2 模型\n",
+        "\n",
+        "详细信息超出了本教程的范围。请参考 PyTorch 网站上的教程来学习 quantization 和 jit。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 8,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stderr",
+          "output_type": "stream",
+          "text": [
+            "/media/pc/data/4tb/lxw/anaconda3/envs/tvm-base/lib/python3.10/site-packages/torch/ao/quantization/observer.py:177: UserWarning: Please use quant_min and quant_max to specify the range for observers.                     reduce_range will be deprecated in a future release of PyTorch.\n",
+            "  warnings.warn(\n",
+            "/media/pc/data/4tb/lxw/anaconda3/envs/tvm-base/lib/python3.10/site-packages/torch/ao/quantization/observer.py:1124: UserWarning: must run observer before calling calculate_qparams.                                    Returning default scale and zero point \n",
+            "  warnings.warn(\n"
+          ]
+        }
+      ],
+      "source": [
+        "pt_inp = torch.from_numpy(inp)\n",
+        "quantize_model(qmodel, pt_inp)\n",
+        "script_module = torch.jit.trace(qmodel, pt_inp).eval()\n",
+        "\n",
+        "with torch.no_grad():\n",
+        "    pt_result = script_module(pt_inp).numpy()"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 使用 PyTorch 前端将量化的 Mobilenet v2 转换为 Relay-QNN\n",
+        "\n",
+        "PyTorch 前端支持将量化的 PyTorch 模型转换为具有量化感知算子（quantization-aware operator）的等效 Relay 模块。称这种表示 Relay QNN dialect。\n",
+        "\n",
+        "可以从前端打印输出，以查看量化模型是如何表示的。\n",
+        "\n",
+        "将看到针对量化的运算符，如 `qnn.quantize`、`qnn.dequantize`、`qnn.requantize` 和 `qnn.conv2d` 等等。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 9,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "fn (%input: Tensor[(1, 3, 224, 224), float32], %features.0.0_weight: Tensor[(32, 3, 3, 3), float32], %features.0.0_bias: Tensor[(32), float32], %features.1.conv.0.0_weight: Tensor[(32, 1, 3, 3), float32], %features.1.conv.0.0_bias: Tensor[(32), float32], %features.1.conv.1_weight: Tensor[(16, 32, 1, 1), float32], %features.1.conv.1_bias: Tensor[(16), float32], %features.2.conv.0.0_weight: Tensor[(96, 16, 1, 1), float32], %features.2.conv.0.0_bias: Tensor[(96), float32], %features.2.conv.1.0_weight: Tensor[(96, 1, 3, 3), float32], %features.2.conv.1.0_bias: Tensor[(96), float32], %features.2.conv.2_weight: Tensor[(24, 96, 1, 1), float32], %features.2.conv.2_bias: Tensor[(24), float32], %features.3.conv.0.0_weight: Tensor[(144, 24, 1, 1), float32], %features.3.conv.0.0_bias: Tensor[(144), float32], %features.3.conv.1.0_weight: Tensor[(144, 1, 3, 3), float32], %features.3.conv.1.0_bias: Tensor[(144), float32], %features.3.conv.2_weight: Tensor[(24, 144, 1, 1), float32], %features.3.conv.2_bias: Tensor[(24), float32], %features.4.conv.0.0_weight: Tensor[(144, 24, 1, 1), float32], %features.4.conv.0.0_bias: Tensor[(144), float32], %features.4.conv.1.0_weight: Tensor[(144, 1, 3, 3), float32], %features.4.conv.1.0_bias: Tensor[(144), float32], %features.4.conv.2_weight: Tensor[(32, 144, 1, 1), float32], %features.4.conv.2_bias: Tensor[(32), float32], %features.5.conv.0.0_weight: Tensor[(192, 32, 1, 1), float32], %features.5.conv.0.0_bias: Tensor[(192), float32], %features.5.conv.1.0_weight: Tensor[(192, 1, 3, 3), float32], %features.5.conv.1.0_bias: Tensor[(192), float32], %features.5.conv.2_weight: Tensor[(32, 192, 1, 1), float32], %features.5.conv.2_bias: Tensor[(32), float32], %features.6.conv.0.0_weight: Tensor[(192, 32, 1, 1), float32], %features.6.conv.0.0_bias: Tensor[(192), float32], %features.6.conv.1.0_weight: Tensor[(192, 1, 3, 3), float32], %features.6.conv.1.0_bias: Tensor[(192), float32], %features.6.conv.2_weight: Tensor[(32, 192, 1, 1), float32], %features.6.conv.2_bias: Tensor[(32), float32], %features.7.conv.0.0_weight: Tensor[(192, 32, 1, 1), float32], %features.7.conv.0.0_bias: Tensor[(192), float32], %features.7.conv.1.0_weight: Tensor[(192, 1, 3, 3), float32], %features.7.conv.1.0_bias: Tensor[(192), float32], %features.7.conv.2_weight: Tensor[(64, 192, 1, 1), float32], %features.7.conv.2_bias: Tensor[(64), float32], %features.8.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.8.conv.0.0_bias: Tensor[(384), float32], %features.8.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.8.conv.1.0_bias: Tensor[(384), float32], %features.8.conv.2_weight: Tensor[(64, 384, 1, 1), float32], %features.8.conv.2_bias: Tensor[(64), float32], %features.9.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.9.conv.0.0_bias: Tensor[(384), float32], %features.9.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.9.conv.1.0_bias: Tensor[(384), float32], %features.9.conv.2_weight: Tensor[(64, 384, 1, 1), float32], %features.9.conv.2_bias: Tensor[(64), float32], %features.10.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.10.conv.0.0_bias: Tensor[(384), float32], %features.10.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.10.conv.1.0_bias: Tensor[(384), float32], %features.10.conv.2_weight: Tensor[(64, 384, 1, 1), float32], %features.10.conv.2_bias: Tensor[(64), float32], %features.11.conv.0.0_weight: Tensor[(384, 64, 1, 1), float32], %features.11.conv.0.0_bias: Tensor[(384), float32], %features.11.conv.1.0_weight: Tensor[(384, 1, 3, 3), float32], %features.11.conv.1.0_bias: Tensor[(384), float32], %features.11.conv.2_weight: Tensor[(96, 384, 1, 1), float32], %features.11.conv.2_bias: Tensor[(96), float32], %features.12.conv.0.0_weight: Tensor[(576, 96, 1, 1), float32], %features.12.conv.0.0_bias: Tensor[(576), float32], %features.12.conv.1.0_weight: Tensor[(576, 1, 3, 3), float32], %features.12.conv.1.0_bias: Tensor[(576), float32], %features.12.conv.2_weight: Tensor[(96, 576, 1, 1), float32], %features.12.conv.2_bias: Tensor[(96), float32], %features.13.conv.0.0_weight: Tensor[(576, 96, 1, 1), float32], %features.13.conv.0.0_bias: Tensor[(576), float32], %features.13.conv.1.0_weight: Tensor[(576, 1, 3, 3), float32], %features.13.conv.1.0_bias: Tensor[(576), float32], %features.13.conv.2_weight: Tensor[(96, 576, 1, 1), float32], %features.13.conv.2_bias: Tensor[(96), float32], %features.14.conv.0.0_weight: Tensor[(576, 96, 1, 1), float32], %features.14.conv.0.0_bias: Tensor[(576), float32], %features.14.conv.1.0_weight: Tensor[(576, 1, 3, 3), float32], %features.14.conv.1.0_bias: Tensor[(576), float32], %features.14.conv.2_weight: Tensor[(160, 576, 1, 1), float32], %features.14.conv.2_bias: Tensor[(160), float32], %features.15.conv.0.0_weight: Tensor[(960, 160, 1, 1), float32], %features.15.conv.0.0_bias: Tensor[(960), float32], %features.15.conv.1.0_weight: Tensor[(960, 1, 3, 3), float32], %features.15.conv.1.0_bias: Tensor[(960), float32], %features.15.conv.2_weight: Tensor[(160, 960, 1, 1), float32], %features.15.conv.2_bias: Tensor[(160), float32], %features.16.conv.0.0_weight: Tensor[(960, 160, 1, 1), float32], %features.16.conv.0.0_bias: Tensor[(960), float32], %features.16.conv.1.0_weight: Tensor[(960, 1, 3, 3), float32], %features.16.conv.1.0_bias: Tensor[(960), float32], %features.16.conv.2_weight: Tensor[(160, 960, 1, 1), float32], %features.16.conv.2_bias: Tensor[(160), float32], %features.17.conv.0.0_weight: Tensor[(960, 160, 1, 1), float32], %features.17.conv.0.0_bias: Tensor[(960), float32], %features.17.conv.1.0_weight: Tensor[(960, 1, 3, 3), float32], %features.17.conv.1.0_bias: Tensor[(960), float32], %features.17.conv.2_weight: Tensor[(320, 960, 1, 1), float32], %features.17.conv.2_bias: Tensor[(320), float32], %features.18.0_weight: Tensor[(1280, 320, 1, 1), float32], %features.18.0_bias: Tensor[(1280), float32], %classifier.1._packed_params_weight: Tensor[(1000, 1280), float32], %classifier.1._packed_params_bias: Tensor[(1000), float32]) {\n",
+            "  %0 = qnn.quantize(%input, 0.0359743f, 54, out_dtype=\"uint8\", axis=1);\n",
+            "  %1 = nn.pad(%0, 54f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %2 = qnn.quantize(%features.0.0_weight, meta[relay.Constant][0], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %3 = qnn.conv2d(%1, %2, 54, 0, 0.0359743f, meta[relay.Constant][0], strides=[2, 2], padding=[0, 0, 0, 0], channels=32, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %4 = qnn.quantize(%features.0.0_bias, meta[relay.Constant][1], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %5 = nn.bias_add(%3, %4);\n",
+            "  %6 = qnn.requantize(%5, meta[relay.Constant][2], 0, 0.0132992f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %7 = clip(%6, a_min=0f, a_max=255f);\n",
+            "  %8 = cast(%7, dtype=\"uint8\");\n",
+            "  %9 = nn.pad(%8, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %10 = qnn.quantize(%features.1.conv.0.0_weight, meta[relay.Constant][3], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %11 = qnn.conv2d(%9, %10, 0, 0, 0.0132992f, meta[relay.Constant][3], padding=[0, 0, 0, 0], groups=32, channels=32, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %12 = qnn.quantize(%features.1.conv.0.0_bias, meta[relay.Constant][4], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %13 = nn.bias_add(%11, %12);\n",
+            "  %14 = qnn.requantize(%13, meta[relay.Constant][5], 0, 0.0710117f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %15 = clip(%14, a_min=0f, a_max=255f);\n",
+            "  %16 = cast(%15, dtype=\"uint8\");\n",
+            "  %17 = qnn.quantize(%features.1.conv.1_weight, meta[relay.Constant][6], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %18 = qnn.conv2d(%16, %17, 0, 0, 0.0710117f, meta[relay.Constant][6], padding=[0, 0, 0, 0], channels=16, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %19 = qnn.quantize(%features.1.conv.1_bias, meta[relay.Constant][7], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %20 = nn.bias_add(%18, %19);\n",
+            "  %21 = qnn.requantize(%20, meta[relay.Constant][8], 0, 0.0674597f, 58, axis=1, out_dtype=\"int32\");\n",
+            "  %22 = clip(%21, a_min=0f, a_max=255f);\n",
+            "  %23 = cast(%22, dtype=\"uint8\");\n",
+            "  %24 = qnn.quantize(%features.2.conv.0.0_weight, meta[relay.Constant][9], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %25 = qnn.conv2d(%23, %24, 58, 0, 0.0674597f, meta[relay.Constant][9], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %26 = qnn.quantize(%features.2.conv.0.0_bias, meta[relay.Constant][10], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %27 = nn.bias_add(%25, %26);\n",
+            "  %28 = qnn.requantize(%27, meta[relay.Constant][11], 0, 0.0274019f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %29 = clip(%28, a_min=0f, a_max=255f);\n",
+            "  %30 = cast(%29, dtype=\"uint8\");\n",
+            "  %31 = nn.pad(%30, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %32 = qnn.quantize(%features.2.conv.1.0_weight, meta[relay.Constant][12], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %33 = qnn.conv2d(%31, %32, 0, 0, 0.0274019f, meta[relay.Constant][12], strides=[2, 2], padding=[0, 0, 0, 0], groups=96, channels=96, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %34 = qnn.quantize(%features.2.conv.1.0_bias, meta[relay.Constant][13], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %35 = nn.bias_add(%33, %34);\n",
+            "  %36 = qnn.requantize(%35, meta[relay.Constant][14], 0, 0.018431f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %37 = clip(%36, a_min=0f, a_max=255f);\n",
+            "  %38 = cast(%37, dtype=\"uint8\");\n",
+            "  %39 = qnn.quantize(%features.2.conv.2_weight, meta[relay.Constant][15], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %40 = qnn.conv2d(%38, %39, 0, 0, 0.018431f, meta[relay.Constant][15], padding=[0, 0, 0, 0], channels=24, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %41 = qnn.quantize(%features.2.conv.2_bias, meta[relay.Constant][16], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %42 = nn.bias_add(%40, %41);\n",
+            "  %43 = qnn.requantize(%42, meta[relay.Constant][17], 0, 0.044329f, 59, axis=1, out_dtype=\"int32\");\n",
+            "  %44 = clip(%43, a_min=0f, a_max=255f);\n",
+            "  %45 = cast(%44, dtype=\"uint8\");\n",
+            "  %46 = qnn.quantize(%features.3.conv.0.0_weight, meta[relay.Constant][18], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %47 = qnn.conv2d(%45, %46, 59, 0, 0.044329f, meta[relay.Constant][18], padding=[0, 0, 0, 0], channels=144, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %48 = qnn.quantize(%features.3.conv.0.0_bias, meta[relay.Constant][19], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %49 = nn.bias_add(%47, %48);\n",
+            "  %50 = qnn.requantize(%49, meta[relay.Constant][20], 0, 0.00914225f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %51 = clip(%50, a_min=0f, a_max=255f);\n",
+            "  %52 = cast(%51, dtype=\"uint8\");\n",
+            "  %53 = nn.pad(%52, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %54 = qnn.quantize(%features.3.conv.1.0_weight, meta[relay.Constant][21], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %55 = qnn.conv2d(%53, %54, 0, 0, 0.00914225f, meta[relay.Constant][21], padding=[0, 0, 0, 0], groups=144, channels=144, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %56 = qnn.quantize(%features.3.conv.1.0_bias, meta[relay.Constant][22], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %57 = nn.bias_add(%55, %56);\n",
+            "  %58 = qnn.requantize(%57, meta[relay.Constant][23], 0, 0.0202167f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %59 = clip(%58, a_min=0f, a_max=255f);\n",
+            "  %60 = cast(%59, dtype=\"uint8\");\n",
+            "  %61 = qnn.quantize(%features.3.conv.2_weight, meta[relay.Constant][24], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %62 = qnn.conv2d(%60, %61, 0, 0, 0.0202167f, meta[relay.Constant][24], padding=[0, 0, 0, 0], channels=24, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %63 = qnn.quantize(%features.3.conv.2_bias, meta[relay.Constant][25], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %64 = nn.bias_add(%62, %63);\n",
+            "  %65 = qnn.requantize(%64, meta[relay.Constant][26], 0, 0.0576775f, 58, axis=1, out_dtype=\"int32\");\n",
+            "  %66 = clip(%65, a_min=0f, a_max=255f);\n",
+            "  %67 = cast(%66, dtype=\"uint8\");\n",
+            "  %68 = qnn.add(%45, %67, 0.044329f, 59, 0.0576775f, 58, 0.0764764f, 61);\n",
+            "  %69 = qnn.quantize(%features.4.conv.0.0_weight, meta[relay.Constant][27], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %70 = qnn.conv2d(%68, %69, 61, 0, 0.0764764f, meta[relay.Constant][27], padding=[0, 0, 0, 0], channels=144, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %71 = qnn.quantize(%features.4.conv.0.0_bias, meta[relay.Constant][28], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %72 = nn.bias_add(%70, %71);\n",
+            "  %73 = qnn.requantize(%72, meta[relay.Constant][29], 0, 0.0126277f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %74 = clip(%73, a_min=0f, a_max=255f);\n",
+            "  %75 = cast(%74, dtype=\"uint8\");\n",
+            "  %76 = nn.pad(%75, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %77 = qnn.quantize(%features.4.conv.1.0_weight, meta[relay.Constant][30], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %78 = qnn.conv2d(%76, %77, 0, 0, 0.0126277f, meta[relay.Constant][30], strides=[2, 2], padding=[0, 0, 0, 0], groups=144, channels=144, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %79 = qnn.quantize(%features.4.conv.1.0_bias, meta[relay.Constant][31], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %80 = nn.bias_add(%78, %79);\n",
+            "  %81 = qnn.requantize(%80, meta[relay.Constant][32], 0, 0.0223427f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %82 = clip(%81, a_min=0f, a_max=255f);\n",
+            "  %83 = cast(%82, dtype=\"uint8\");\n",
+            "  %84 = qnn.quantize(%features.4.conv.2_weight, meta[relay.Constant][33], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %85 = qnn.conv2d(%83, %84, 0, 0, 0.0223427f, meta[relay.Constant][33], padding=[0, 0, 0, 0], channels=32, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %86 = qnn.quantize(%features.4.conv.2_bias, meta[relay.Constant][34], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %87 = nn.bias_add(%85, %86);\n",
+            "  %88 = qnn.requantize(%87, meta[relay.Constant][35], 0, 0.0386601f, 72, axis=1, out_dtype=\"int32\");\n",
+            "  %89 = clip(%88, a_min=0f, a_max=255f);\n",
+            "  %90 = cast(%89, dtype=\"uint8\");\n",
+            "  %91 = qnn.quantize(%features.5.conv.0.0_weight, meta[relay.Constant][36], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %92 = qnn.conv2d(%90, %91, 72, 0, 0.0386601f, meta[relay.Constant][36], padding=[0, 0, 0, 0], channels=192, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %93 = qnn.quantize(%features.5.conv.0.0_bias, meta[relay.Constant][37], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %94 = nn.bias_add(%92, %93);\n",
+            "  %95 = qnn.requantize(%94, meta[relay.Constant][38], 0, 0.00836057f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %96 = clip(%95, a_min=0f, a_max=255f);\n",
+            "  %97 = cast(%96, dtype=\"uint8\");\n",
+            "  %98 = nn.pad(%97, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %99 = qnn.quantize(%features.5.conv.1.0_weight, meta[relay.Constant][39], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %100 = qnn.conv2d(%98, %99, 0, 0, 0.00836057f, meta[relay.Constant][39], padding=[0, 0, 0, 0], groups=192, channels=192, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %101 = qnn.quantize(%features.5.conv.1.0_bias, meta[relay.Constant][40], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %102 = nn.bias_add(%100, %101);\n",
+            "  %103 = qnn.requantize(%102, meta[relay.Constant][41], 0, 0.0112039f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %104 = clip(%103, a_min=0f, a_max=255f);\n",
+            "  %105 = cast(%104, dtype=\"uint8\");\n",
+            "  %106 = qnn.quantize(%features.5.conv.2_weight, meta[relay.Constant][42], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %107 = qnn.conv2d(%105, %106, 0, 0, 0.0112039f, meta[relay.Constant][42], padding=[0, 0, 0, 0], channels=32, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %108 = qnn.quantize(%features.5.conv.2_bias, meta[relay.Constant][43], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %109 = nn.bias_add(%107, %108);\n",
+            "  %110 = qnn.requantize(%109, meta[relay.Constant][44], 0, 0.0291111f, 69, axis=1, out_dtype=\"int32\");\n",
+            "  %111 = clip(%110, a_min=0f, a_max=255f);\n",
+            "  %112 = cast(%111, dtype=\"uint8\");\n",
+            "  %113 = qnn.add(%90, %112, 0.0386601f, 72, 0.0291111f, 69, 0.049797f, 74);\n",
+            "  %114 = qnn.quantize(%features.6.conv.0.0_weight, meta[relay.Constant][45], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %115 = qnn.conv2d(%113, %114, 74, 0, 0.049797f, meta[relay.Constant][45], padding=[0, 0, 0, 0], channels=192, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %116 = qnn.quantize(%features.6.conv.0.0_bias, meta[relay.Constant][46], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %117 = nn.bias_add(%115, %116);\n",
+            "  %118 = qnn.requantize(%117, meta[relay.Constant][47], 0, 0.0105545f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %119 = clip(%118, a_min=0f, a_max=255f);\n",
+            "  %120 = cast(%119, dtype=\"uint8\");\n",
+            "  %121 = nn.pad(%120, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %122 = qnn.quantize(%features.6.conv.1.0_weight, meta[relay.Constant][48], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %123 = qnn.conv2d(%121, %122, 0, 0, 0.0105545f, meta[relay.Constant][48], padding=[0, 0, 0, 0], groups=192, channels=192, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %124 = qnn.quantize(%features.6.conv.1.0_bias, meta[relay.Constant][49], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %125 = nn.bias_add(%123, %124);\n",
+            "  %126 = qnn.requantize(%125, meta[relay.Constant][50], 0, 0.0122615f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %127 = clip(%126, a_min=0f, a_max=255f);\n",
+            "  %128 = cast(%127, dtype=\"uint8\");\n",
+            "  %129 = qnn.quantize(%features.6.conv.2_weight, meta[relay.Constant][51], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %130 = qnn.conv2d(%128, %129, 0, 0, 0.0122615f, meta[relay.Constant][51], padding=[0, 0, 0, 0], channels=32, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %131 = qnn.quantize(%features.6.conv.2_bias, meta[relay.Constant][52], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %132 = nn.bias_add(%130, %131);\n",
+            "  %133 = qnn.requantize(%132, meta[relay.Constant][53], 0, 0.0446687f, 62, axis=1, out_dtype=\"int32\");\n",
+            "  %134 = clip(%133, a_min=0f, a_max=255f);\n",
+            "  %135 = cast(%134, dtype=\"uint8\");\n",
+            "  %136 = qnn.add(%113, %135, 0.049797f, 74, 0.0446687f, 62, 0.0765793f, 66);\n",
+            "  %137 = qnn.quantize(%features.7.conv.0.0_weight, meta[relay.Constant][54], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %138 = qnn.conv2d(%136, %137, 66, 0, 0.0765793f, meta[relay.Constant][54], padding=[0, 0, 0, 0], channels=192, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %139 = qnn.quantize(%features.7.conv.0.0_bias, meta[relay.Constant][55], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %140 = nn.bias_add(%138, %139);\n",
+            "  %141 = qnn.requantize(%140, meta[relay.Constant][56], 0, 0.0156126f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %142 = clip(%141, a_min=0f, a_max=255f);\n",
+            "  %143 = cast(%142, dtype=\"uint8\");\n",
+            "  %144 = nn.pad(%143, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %145 = qnn.quantize(%features.7.conv.1.0_weight, meta[relay.Constant][57], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %146 = qnn.conv2d(%144, %145, 0, 0, 0.0156126f, meta[relay.Constant][57], strides=[2, 2], padding=[0, 0, 0, 0], groups=192, channels=192, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %147 = qnn.quantize(%features.7.conv.1.0_bias, meta[relay.Constant][58], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %148 = nn.bias_add(%146, %147);\n",
+            "  %149 = qnn.requantize(%148, meta[relay.Constant][59], 0, 0.0258851f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %150 = clip(%149, a_min=0f, a_max=255f);\n",
+            "  %151 = cast(%150, dtype=\"uint8\");\n",
+            "  %152 = qnn.quantize(%features.7.conv.2_weight, meta[relay.Constant][60], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %153 = qnn.conv2d(%151, %152, 0, 0, 0.0258851f, meta[relay.Constant][60], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %154 = qnn.quantize(%features.7.conv.2_bias, meta[relay.Constant][61], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %155 = nn.bias_add(%153, %154);\n",
+            "  %156 = qnn.requantize(%155, meta[relay.Constant][62], 0, 0.0366653f, 68, axis=1, out_dtype=\"int32\");\n",
+            "  %157 = clip(%156, a_min=0f, a_max=255f);\n",
+            "  %158 = cast(%157, dtype=\"uint8\");\n",
+            "  %159 = qnn.quantize(%features.8.conv.0.0_weight, meta[relay.Constant][63], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %160 = qnn.conv2d(%158, %159, 68, 0, 0.0366653f, meta[relay.Constant][63], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %161 = qnn.quantize(%features.8.conv.0.0_bias, meta[relay.Constant][64], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %162 = nn.bias_add(%160, %161);\n",
+            "  %163 = qnn.requantize(%162, meta[relay.Constant][65], 0, 0.00672913f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %164 = clip(%163, a_min=0f, a_max=255f);\n",
+            "  %165 = cast(%164, dtype=\"uint8\");\n",
+            "  %166 = nn.pad(%165, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %167 = qnn.quantize(%features.8.conv.1.0_weight, meta[relay.Constant][66], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %168 = qnn.conv2d(%166, %167, 0, 0, 0.00672913f, meta[relay.Constant][66], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %169 = qnn.quantize(%features.8.conv.1.0_bias, meta[relay.Constant][67], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %170 = nn.bias_add(%168, %169);\n",
+            "  %171 = qnn.requantize(%170, meta[relay.Constant][68], 0, 0.0121738f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %172 = clip(%171, a_min=0f, a_max=255f);\n",
+            "  %173 = cast(%172, dtype=\"uint8\");\n",
+            "  %174 = qnn.quantize(%features.8.conv.2_weight, meta[relay.Constant][69], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %175 = qnn.conv2d(%173, %174, 0, 0, 0.0121738f, meta[relay.Constant][69], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %176 = qnn.quantize(%features.8.conv.2_bias, meta[relay.Constant][70], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %177 = nn.bias_add(%175, %176);\n",
+            "  %178 = qnn.requantize(%177, meta[relay.Constant][71], 0, 0.025833f, 69, axis=1, out_dtype=\"int32\");\n",
+            "  %179 = clip(%178, a_min=0f, a_max=255f);\n",
+            "  %180 = cast(%179, dtype=\"uint8\");\n",
+            "  %181 = qnn.add(%158, %180, 0.0366653f, 68, 0.025833f, 69, 0.0461001f, 70);\n",
+            "  %182 = qnn.quantize(%features.9.conv.0.0_weight, meta[relay.Constant][72], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %183 = qnn.conv2d(%181, %182, 70, 0, 0.0461001f, meta[relay.Constant][72], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %184 = qnn.quantize(%features.9.conv.0.0_bias, meta[relay.Constant][73], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %185 = nn.bias_add(%183, %184);\n",
+            "  %186 = qnn.requantize(%185, meta[relay.Constant][74], 0, 0.00661229f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %187 = clip(%186, a_min=0f, a_max=255f);\n",
+            "  %188 = cast(%187, dtype=\"uint8\");\n",
+            "  %189 = nn.pad(%188, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %190 = qnn.quantize(%features.9.conv.1.0_weight, meta[relay.Constant][75], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %191 = qnn.conv2d(%189, %190, 0, 0, 0.00661229f, meta[relay.Constant][75], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %192 = qnn.quantize(%features.9.conv.1.0_bias, meta[relay.Constant][76], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %193 = nn.bias_add(%191, %192);\n",
+            "  %194 = qnn.requantize(%193, meta[relay.Constant][77], 0, 0.0111176f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %195 = clip(%194, a_min=0f, a_max=255f);\n",
+            "  %196 = cast(%195, dtype=\"uint8\");\n",
+            "  %197 = qnn.quantize(%features.9.conv.2_weight, meta[relay.Constant][78], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %198 = qnn.conv2d(%196, %197, 0, 0, 0.0111176f, meta[relay.Constant][78], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %199 = qnn.quantize(%features.9.conv.2_bias, meta[relay.Constant][79], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %200 = nn.bias_add(%198, %199);\n",
+            "  %201 = qnn.requantize(%200, meta[relay.Constant][80], 0, 0.0231473f, 68, axis=1, out_dtype=\"int32\");\n",
+            "  %202 = clip(%201, a_min=0f, a_max=255f);\n",
+            "  %203 = cast(%202, dtype=\"uint8\");\n",
+            "  %204 = qnn.add(%181, %203, 0.0461001f, 70, 0.0231473f, 68, 0.0460796f, 67);\n",
+            "  %205 = qnn.quantize(%features.10.conv.0.0_weight, meta[relay.Constant][81], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %206 = qnn.conv2d(%204, %205, 67, 0, 0.0460796f, meta[relay.Constant][81], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %207 = qnn.quantize(%features.10.conv.0.0_bias, meta[relay.Constant][82], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %208 = nn.bias_add(%206, %207);\n",
+            "  %209 = qnn.requantize(%208, meta[relay.Constant][83], 0, 0.00706947f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %210 = clip(%209, a_min=0f, a_max=255f);\n",
+            "  %211 = cast(%210, dtype=\"uint8\");\n",
+            "  %212 = nn.pad(%211, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %213 = qnn.quantize(%features.10.conv.1.0_weight, meta[relay.Constant][84], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %214 = qnn.conv2d(%212, %213, 0, 0, 0.00706947f, meta[relay.Constant][84], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %215 = qnn.quantize(%features.10.conv.1.0_bias, meta[relay.Constant][85], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %216 = nn.bias_add(%214, %215);\n",
+            "  %217 = qnn.requantize(%216, meta[relay.Constant][86], 0, 0.0126431f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %218 = clip(%217, a_min=0f, a_max=255f);\n",
+            "  %219 = cast(%218, dtype=\"uint8\");\n",
+            "  %220 = qnn.quantize(%features.10.conv.2_weight, meta[relay.Constant][87], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %221 = qnn.conv2d(%219, %220, 0, 0, 0.0126431f, meta[relay.Constant][87], padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %222 = qnn.quantize(%features.10.conv.2_bias, meta[relay.Constant][88], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %223 = nn.bias_add(%221, %222);\n",
+            "  %224 = qnn.requantize(%223, meta[relay.Constant][89], 0, 0.0226677f, 66, axis=1, out_dtype=\"int32\");\n",
+            "  %225 = clip(%224, a_min=0f, a_max=255f);\n",
+            "  %226 = cast(%225, dtype=\"uint8\");\n",
+            "  %227 = qnn.add(%204, %226, 0.0460796f, 67, 0.0226677f, 66, 0.0497065f, 66);\n",
+            "  %228 = qnn.quantize(%features.11.conv.0.0_weight, meta[relay.Constant][90], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %229 = qnn.conv2d(%227, %228, 66, 0, 0.0497065f, meta[relay.Constant][90], padding=[0, 0, 0, 0], channels=384, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %230 = qnn.quantize(%features.11.conv.0.0_bias, meta[relay.Constant][91], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %231 = nn.bias_add(%229, %230);\n",
+            "  %232 = qnn.requantize(%231, meta[relay.Constant][92], 0, 0.00856039f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %233 = clip(%232, a_min=0f, a_max=255f);\n",
+            "  %234 = cast(%233, dtype=\"uint8\");\n",
+            "  %235 = nn.pad(%234, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %236 = qnn.quantize(%features.11.conv.1.0_weight, meta[relay.Constant][93], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %237 = qnn.conv2d(%235, %236, 0, 0, 0.00856039f, meta[relay.Constant][93], padding=[0, 0, 0, 0], groups=384, channels=384, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %238 = qnn.quantize(%features.11.conv.1.0_bias, meta[relay.Constant][94], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %239 = nn.bias_add(%237, %238);\n",
+            "  %240 = qnn.requantize(%239, meta[relay.Constant][95], 0, 0.0180649f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %241 = clip(%240, a_min=0f, a_max=255f);\n",
+            "  %242 = cast(%241, dtype=\"uint8\");\n",
+            "  %243 = qnn.quantize(%features.11.conv.2_weight, meta[relay.Constant][96], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %244 = qnn.conv2d(%242, %243, 0, 0, 0.0180649f, meta[relay.Constant][96], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %245 = qnn.quantize(%features.11.conv.2_bias, meta[relay.Constant][97], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %246 = nn.bias_add(%244, %245);\n",
+            "  %247 = qnn.requantize(%246, meta[relay.Constant][98], 0, 0.0334507f, 65, axis=1, out_dtype=\"int32\");\n",
+            "  %248 = clip(%247, a_min=0f, a_max=255f);\n",
+            "  %249 = cast(%248, dtype=\"uint8\");\n",
+            "  %250 = qnn.quantize(%features.12.conv.0.0_weight, meta[relay.Constant][99], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %251 = qnn.conv2d(%249, %250, 65, 0, 0.0334507f, meta[relay.Constant][99], padding=[0, 0, 0, 0], channels=576, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %252 = qnn.quantize(%features.12.conv.0.0_bias, meta[relay.Constant][100], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %253 = nn.bias_add(%251, %252);\n",
+            "  %254 = qnn.requantize(%253, meta[relay.Constant][101], 0, 0.0100234f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %255 = clip(%254, a_min=0f, a_max=255f);\n",
+            "  %256 = cast(%255, dtype=\"uint8\");\n",
+            "  %257 = nn.pad(%256, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %258 = qnn.quantize(%features.12.conv.1.0_weight, meta[relay.Constant][102], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %259 = qnn.conv2d(%257, %258, 0, 0, 0.0100234f, meta[relay.Constant][102], padding=[0, 0, 0, 0], groups=576, channels=576, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %260 = qnn.quantize(%features.12.conv.1.0_bias, meta[relay.Constant][103], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %261 = nn.bias_add(%259, %260);\n",
+            "  %262 = qnn.requantize(%261, meta[relay.Constant][104], 0, 0.0209109f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %263 = clip(%262, a_min=0f, a_max=255f);\n",
+            "  %264 = cast(%263, dtype=\"uint8\");\n",
+            "  %265 = qnn.quantize(%features.12.conv.2_weight, meta[relay.Constant][105], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %266 = qnn.conv2d(%264, %265, 0, 0, 0.0209109f, meta[relay.Constant][105], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %267 = qnn.quantize(%features.12.conv.2_bias, meta[relay.Constant][106], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %268 = nn.bias_add(%266, %267);\n",
+            "  %269 = qnn.requantize(%268, meta[relay.Constant][107], 0, 0.0344069f, 71, axis=1, out_dtype=\"int32\");\n",
+            "  %270 = clip(%269, a_min=0f, a_max=255f);\n",
+            "  %271 = cast(%270, dtype=\"uint8\");\n",
+            "  %272 = qnn.add(%249, %271, 0.0334507f, 65, 0.0344069f, 71, 0.0492622f, 68);\n",
+            "  %273 = qnn.quantize(%features.13.conv.0.0_weight, meta[relay.Constant][108], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %274 = qnn.conv2d(%272, %273, 68, 0, 0.0492622f, meta[relay.Constant][108], padding=[0, 0, 0, 0], channels=576, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %275 = qnn.quantize(%features.13.conv.0.0_bias, meta[relay.Constant][109], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %276 = nn.bias_add(%274, %275);\n",
+            "  %277 = qnn.requantize(%276, meta[relay.Constant][110], 0, 0.00855432f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %278 = clip(%277, a_min=0f, a_max=255f);\n",
+            "  %279 = cast(%278, dtype=\"uint8\");\n",
+            "  %280 = nn.pad(%279, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %281 = qnn.quantize(%features.13.conv.1.0_weight, meta[relay.Constant][111], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %282 = qnn.conv2d(%280, %281, 0, 0, 0.00855432f, meta[relay.Constant][111], padding=[0, 0, 0, 0], groups=576, channels=576, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %283 = qnn.quantize(%features.13.conv.1.0_bias, meta[relay.Constant][112], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %284 = nn.bias_add(%282, %283);\n",
+            "  %285 = qnn.requantize(%284, meta[relay.Constant][113], 0, 0.018431f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %286 = clip(%285, a_min=0f, a_max=255f);\n",
+            "  %287 = cast(%286, dtype=\"uint8\");\n",
+            "  %288 = qnn.quantize(%features.13.conv.2_weight, meta[relay.Constant][114], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %289 = qnn.conv2d(%287, %288, 0, 0, 0.018431f, meta[relay.Constant][114], padding=[0, 0, 0, 0], channels=96, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %290 = qnn.quantize(%features.13.conv.2_bias, meta[relay.Constant][115], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %291 = nn.bias_add(%289, %290);\n",
+            "  %292 = qnn.requantize(%291, meta[relay.Constant][116], 0, 0.0394398f, 66, axis=1, out_dtype=\"int32\");\n",
+            "  %293 = clip(%292, a_min=0f, a_max=255f);\n",
+            "  %294 = cast(%293, dtype=\"uint8\");\n",
+            "  %295 = qnn.add(%272, %294, 0.0492622f, 68, 0.0394398f, 66, 0.0541895f, 63);\n",
+            "  %296 = qnn.quantize(%features.14.conv.0.0_weight, meta[relay.Constant][117], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %297 = qnn.conv2d(%295, %296, 63, 0, 0.0541895f, meta[relay.Constant][117], padding=[0, 0, 0, 0], channels=576, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %298 = qnn.quantize(%features.14.conv.0.0_bias, meta[relay.Constant][118], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %299 = nn.bias_add(%297, %298);\n",
+            "  %300 = qnn.requantize(%299, meta[relay.Constant][119], 0, 0.0102233f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %301 = clip(%300, a_min=0f, a_max=255f);\n",
+            "  %302 = cast(%301, dtype=\"uint8\");\n",
+            "  %303 = nn.pad(%302, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %304 = qnn.quantize(%features.14.conv.1.0_weight, meta[relay.Constant][120], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %305 = qnn.conv2d(%303, %304, 0, 0, 0.0102233f, meta[relay.Constant][120], strides=[2, 2], padding=[0, 0, 0, 0], groups=576, channels=576, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %306 = qnn.quantize(%features.14.conv.1.0_bias, meta[relay.Constant][121], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %307 = nn.bias_add(%305, %306);\n",
+            "  %308 = qnn.requantize(%307, meta[relay.Constant][122], 0, 0.0202212f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %309 = clip(%308, a_min=0f, a_max=255f);\n",
+            "  %310 = cast(%309, dtype=\"uint8\");\n",
+            "  %311 = qnn.quantize(%features.14.conv.2_weight, meta[relay.Constant][123], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %312 = qnn.conv2d(%310, %311, 0, 0, 0.0202212f, meta[relay.Constant][123], padding=[0, 0, 0, 0], channels=160, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %313 = qnn.quantize(%features.14.conv.2_bias, meta[relay.Constant][124], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %314 = nn.bias_add(%312, %313);\n",
+            "  %315 = qnn.requantize(%314, meta[relay.Constant][125], 0, 0.0259642f, 60, axis=1, out_dtype=\"int32\");\n",
+            "  %316 = clip(%315, a_min=0f, a_max=255f);\n",
+            "  %317 = cast(%316, dtype=\"uint8\");\n",
+            "  %318 = qnn.quantize(%features.15.conv.0.0_weight, meta[relay.Constant][126], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %319 = qnn.conv2d(%317, %318, 60, 0, 0.0259642f, meta[relay.Constant][126], padding=[0, 0, 0, 0], channels=960, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %320 = qnn.quantize(%features.15.conv.0.0_bias, meta[relay.Constant][127], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %321 = nn.bias_add(%319, %320);\n",
+            "  %322 = qnn.requantize(%321, meta[relay.Constant][128], 0, 0.00756458f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %323 = clip(%322, a_min=0f, a_max=255f);\n",
+            "  %324 = cast(%323, dtype=\"uint8\");\n",
+            "  %325 = nn.pad(%324, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %326 = qnn.quantize(%features.15.conv.1.0_weight, meta[relay.Constant][129], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %327 = qnn.conv2d(%325, %326, 0, 0, 0.00756458f, meta[relay.Constant][129], padding=[0, 0, 0, 0], groups=960, channels=960, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %328 = qnn.quantize(%features.15.conv.1.0_bias, meta[relay.Constant][130], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %329 = nn.bias_add(%327, %328);\n",
+            "  %330 = qnn.requantize(%329, meta[relay.Constant][131], 0, 0.0160764f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %331 = clip(%330, a_min=0f, a_max=255f);\n",
+            "  %332 = cast(%331, dtype=\"uint8\");\n",
+            "  %333 = qnn.quantize(%features.15.conv.2_weight, meta[relay.Constant][132], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %334 = qnn.conv2d(%332, %333, 0, 0, 0.0160764f, meta[relay.Constant][132], padding=[0, 0, 0, 0], channels=160, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %335 = qnn.quantize(%features.15.conv.2_bias, meta[relay.Constant][133], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %336 = nn.bias_add(%334, %335);\n",
+            "  %337 = qnn.requantize(%336, meta[relay.Constant][134], 0, 0.0181289f, 54, axis=1, out_dtype=\"int32\");\n",
+            "  %338 = clip(%337, a_min=0f, a_max=255f);\n",
+            "  %339 = cast(%338, dtype=\"uint8\");\n",
+            "  %340 = qnn.add(%317, %339, 0.0259642f, 60, 0.0181289f, 54, 0.0289816f, 63);\n",
+            "  %341 = qnn.quantize(%features.16.conv.0.0_weight, meta[relay.Constant][135], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %342 = qnn.conv2d(%340, %341, 63, 0, 0.0289816f, meta[relay.Constant][135], padding=[0, 0, 0, 0], channels=960, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %343 = qnn.quantize(%features.16.conv.0.0_bias, meta[relay.Constant][136], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %344 = nn.bias_add(%342, %343);\n",
+            "  %345 = qnn.requantize(%344, meta[relay.Constant][137], 0, 0.0071422f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %346 = clip(%345, a_min=0f, a_max=255f);\n",
+            "  %347 = cast(%346, dtype=\"uint8\");\n",
+            "  %348 = nn.pad(%347, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %349 = qnn.quantize(%features.16.conv.1.0_weight, meta[relay.Constant][138], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %350 = qnn.conv2d(%348, %349, 0, 0, 0.0071422f, meta[relay.Constant][138], padding=[0, 0, 0, 0], groups=960, channels=960, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %351 = qnn.quantize(%features.16.conv.1.0_bias, meta[relay.Constant][139], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %352 = nn.bias_add(%350, %351);\n",
+            "  %353 = qnn.requantize(%352, meta[relay.Constant][140], 0, 0.012938f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %354 = clip(%353, a_min=0f, a_max=255f);\n",
+            "  %355 = cast(%354, dtype=\"uint8\");\n",
+            "  %356 = qnn.quantize(%features.16.conv.2_weight, meta[relay.Constant][141], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %357 = qnn.conv2d(%355, %356, 0, 0, 0.012938f, meta[relay.Constant][141], padding=[0, 0, 0, 0], channels=160, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %358 = qnn.quantize(%features.16.conv.2_bias, meta[relay.Constant][142], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %359 = nn.bias_add(%357, %358);\n",
+            "  %360 = qnn.requantize(%359, meta[relay.Constant][143], 0, 0.0474633f, 64, axis=1, out_dtype=\"int32\");\n",
+            "  %361 = clip(%360, a_min=0f, a_max=255f);\n",
+            "  %362 = cast(%361, dtype=\"uint8\");\n",
+            "  %363 = qnn.add(%340, %362, 0.0289816f, 63, 0.0474633f, 64, 0.0527368f, 71);\n",
+            "  %364 = qnn.quantize(%features.17.conv.0.0_weight, meta[relay.Constant][144], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %365 = qnn.conv2d(%363, %364, 71, 0, 0.0527368f, meta[relay.Constant][144], padding=[0, 0, 0, 0], channels=960, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %366 = qnn.quantize(%features.17.conv.0.0_bias, meta[relay.Constant][145], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %367 = nn.bias_add(%365, %366);\n",
+            "  %368 = qnn.requantize(%367, meta[relay.Constant][146], 0, 0.00500424f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %369 = clip(%368, a_min=0f, a_max=255f);\n",
+            "  %370 = cast(%369, dtype=\"uint8\");\n",
+            "  %371 = nn.pad(%370, 0f, pad_width=[[0, 0], [0, 0], [1, 1], [1, 1]]);\n",
+            "  %372 = qnn.quantize(%features.17.conv.1.0_weight, meta[relay.Constant][147], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %373 = qnn.conv2d(%371, %372, 0, 0, 0.00500424f, meta[relay.Constant][147], padding=[0, 0, 0, 0], groups=960, channels=960, kernel_size=[3, 3], out_dtype=\"int32\");\n",
+            "  %374 = qnn.quantize(%features.17.conv.1.0_bias, meta[relay.Constant][148], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %375 = nn.bias_add(%373, %374);\n",
+            "  %376 = qnn.requantize(%375, meta[relay.Constant][149], 0, 0.00623393f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %377 = clip(%376, a_min=0f, a_max=255f);\n",
+            "  %378 = cast(%377, dtype=\"uint8\");\n",
+            "  %379 = qnn.quantize(%features.17.conv.2_weight, meta[relay.Constant][150], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %380 = qnn.conv2d(%378, %379, 0, 0, 0.00623393f, meta[relay.Constant][150], padding=[0, 0, 0, 0], channels=320, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %381 = qnn.quantize(%features.17.conv.2_bias, meta[relay.Constant][151], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %382 = nn.bias_add(%380, %381);\n",
+            "  %383 = qnn.requantize(%382, meta[relay.Constant][152], 0, 0.0126421f, 74, axis=1, out_dtype=\"int32\");\n",
+            "  %384 = clip(%383, a_min=0f, a_max=255f);\n",
+            "  %385 = cast(%384, dtype=\"uint8\");\n",
+            "  %386 = qnn.quantize(%features.18.0_weight, meta[relay.Constant][153], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %387 = qnn.conv2d(%385, %386, 74, 0, 0.0126421f, meta[relay.Constant][153], padding=[0, 0, 0, 0], channels=1280, kernel_size=[1, 1], out_dtype=\"int32\");\n",
+            "  %388 = qnn.quantize(%features.18.0_bias, meta[relay.Constant][154], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %389 = nn.bias_add(%387, %388);\n",
+            "  %390 = qnn.requantize(%389, meta[relay.Constant][155], 0, 0.0430538f, 0, axis=1, out_dtype=\"int32\");\n",
+            "  %391 = clip(%390, a_min=0f, a_max=255f);\n",
+            "  %392 = cast(%391, dtype=\"uint8\");\n",
+            "  %393 = cast(%392, dtype=\"int32\");\n",
+            "  %394 = nn.adaptive_avg_pool2d(%393, output_size=[1, 1]);\n",
+            "  %395 = cast(%394, dtype=\"uint8\");\n",
+            "  %396 = reshape(%395, newshape=[0, -1, 1, 1]);\n",
+            "  %397 = squeeze(%396, axis=[2, 3]);\n",
+            "  %398 = qnn.quantize(%classifier.1._packed_params_weight, meta[relay.Constant][156], 0, out_dtype=\"int8\", axis=0);\n",
+            "  %399 = qnn.dense(%397, %398, 0, 0, 0.0430538f, meta[relay.Constant][156], units=1000, out_dtype=\"int32\");\n",
+            "  %400 = qnn.quantize(%classifier.1._packed_params_bias, meta[relay.Constant][157], 0, out_dtype=\"int32\", axis=0);\n",
+            "  %401 = nn.bias_add(%399, %400);\n",
+            "  %402 = qnn.requantize(%401, meta[relay.Constant][158], 0, 0.104443f, 46, axis=1, out_dtype=\"int32\");\n",
+            "  %403 = clip(%402, a_min=0f, a_max=255f);\n",
+            "  %404 = cast(%403, dtype=\"uint8\");\n",
+            "  qnn.dequantize(%404, 0.104443f, 46)\n",
+            "}\n",
+            "\n"
+          ]
+        }
+      ],
+      "source": [
+        "input_name = \"input\"  # the input name can be be arbitrary for PyTorch frontend.\n",
+        "input_shapes = [(input_name, (1, 3, 224, 224))]\n",
+        "mod, params = relay.frontend.from_pytorch(script_module, input_shapes)\n",
+        "print(mod['main']) # comment in to see the QNN IR dump"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 编译和运行 Relay 模块\n",
+        "\n",
+        "一旦获得了量化的 Relay 模块，其余的工作流程就像运行浮点模型一样。请参考其他教程了解更多细节。\n",
+        "\n",
+        "在编译之前，量化特定的算子被 lower 到标准 Relay 算子序列。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 10,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stderr",
+          "output_type": "stream",
+          "text": [
+            "One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.\n"
+          ]
+        }
+      ],
+      "source": [
+        "target = \"llvm\"\n",
+        "tvm_result, rt_mod = run_tvm_model(mod, params, input_name, inp, target=target)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 计算输出标签\n",
+        "\n",
+        "应该看到打印出相同的标签。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 11,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "PyTorch top3 labels: ['tiger cat', 'Egyptian cat', 'tabby, tabby cat']\n",
+            "TVM top3 labels: ['tiger cat', 'Egyptian cat', 'tabby, tabby cat']\n"
+          ]
+        }
+      ],
+      "source": [
+        "pt_top3_labels = np.argsort(pt_result[0])[::-1][:3]\n",
+        "tvm_top3_labels = np.argsort(tvm_result[0])[::-1][:3]\n",
+        "\n",
+        "print(\"PyTorch top3 labels:\", [synset[label] for label in pt_top3_labels])\n",
+        "print(\"TVM top3 labels:\", [synset[label] for label in tvm_top3_labels])"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "然而，由于数值上的差异，通常原始浮点输出不会是相同的。这里，打印从 mobilenet v2 的 1000 个输出中有多少个浮点输出值是相同的。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 12,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "147 in 1000 raw floating outputs identical.\n"
+          ]
+        }
+      ],
+      "source": [
+        "print(\"%d in 1000 raw floating outputs identical.\" % np.sum(tvm_result[0] == pt_result[0]))"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 性能度量\n",
+        "\n",
+        "在此，举例说明如何度量 TVM 编译模型的性能。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 13,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Execution time summary:\n",
+            " mean (ms)   median (ms)    max (ms)     min (ms)     std (ms)  \n",
+            "  11.0926      11.1429      11.8076       9.7922       0.3016   \n",
+            "               \n"
+          ]
+        }
+      ],
+      "source": [
+        "n_repeat = 100  # should be bigger to make the measurement more accurate\n",
+        "dev = tvm.cpu(0)\n",
+        "print(rt_mod.benchmark(dev, number=1, repeat=n_repeat))"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "```{note}\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "* 由于度量是在 C++ 中完成的，所以没有 Python 的开销\n",
+        "* 它包括几个 warm up 运行\n",
+        "* 同样的方法可以用于远程设备（android 等）的配置。\n",
+        "```\n",
+        "\n",
+        "```{warning}\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "除非硬件对快速 8 bit 指令有特殊支持，否则量化模型不会比 FP32 模型更快。如果没有快速的 8 bit 指令，可 TVM 以在 16 bit 进行量化卷积，即使模型本身是 8 bit。\n",
+        "\n",
+        "对于 x86，最好的性能可以在带有 AVX512 指令集的 CPU 上实现。在这种情况下，TVM 为给定的目标使用最快的可用 8 bit 指令。这包括对 VNNI 8 bit 点积指令（CascadeLake 或更新版本）的支持。\n",
+        "\n",
+        "此外，以下对 CPU 性能的一般建议同样适用：\n",
+        "\n",
+        "- 将环境变量 ``TVM_NUM_THREADS`` 设置为物理核数\n",
+        "- 为您的硬件选择最佳的目标，例如 `\"llvm -mcpu=skylake-avx512\" ` 或 `\"llvm -mcpu=cascadelake\"` （将来会有更多带有 AVX512 的 CPU）\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Deploy a quantized MXNet Model\n",
+        "------------------------------\n",
+        "TODO\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Deploy a quantized TFLite Model\n",
+        "-------------------------------\n",
+        "TODO\n",
+        "\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.4"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

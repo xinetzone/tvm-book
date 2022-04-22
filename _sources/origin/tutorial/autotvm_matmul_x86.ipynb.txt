@@ -1,0 +1,437 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%matplotlib inline"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "(tutorial-autotvm-matmul-x86)=\n",
+    "# 用调度模板和 AutoTVM 优化算子\n",
+    "\n",
+    "在本教程中，我们展示了如何使用 TVM 张量表达式（TE）语言来编写调度模板，这些模板可以被 AutoTVM 搜索到，以找到最佳调度。这个过程被称为 Auto-Tuning，它有助于将优化张量计算的过程自动化。\n",
+    "\n",
+    "本教程建立在之前关于 [如何使用 TE 编写矩阵乘法](tensor_expr_get_started) 的教程上。\n",
+    "\n",
+    "自动调谐有两个步骤。\n",
+    "\n",
+    "- 第一步是定义一个搜索空间。\n",
+    "- 第二步是运行一个搜索算法来探索这个空间。\n",
+    "\n",
+    "在本教程中，你可以学习如何在TVM中执行这两个步骤。整个工作流程通过一个矩阵乘法的例子来说明。\n",
+    "\n",
+    "```{note}\n",
+    ":class: alert alert-info\n",
+    "本教程不能在 Windows 或最近版本的 MacOS 上运行。为了让它运行，你需要将本教程的主体包裹在一个 `if __name__ == \"__main__\":` 块中。\n",
+    "```\n",
+    "\n",
+    "## 安装依赖项\n",
+    "\n",
+    "为了在 TVM 中使用 autotvm 包，我们需要安装一些额外的依赖项。\n",
+    "\n",
+    "```bash\n",
+    "pip3 install --user psutil xgboost cloudpickle\n",
+    "```\n",
+    "\n",
+    "为了使 TVM 在 tuning 中运行得更快，建议使用 cython 作为 TVM 的 FFI。在 TVM 的根目录下，执行：\n",
+    "\n",
+    "```bash\n",
+    "pip3 install --user cython\n",
+    "sudo make cython3\n",
+    "```\n",
+    "\n",
+    "现在回到 Python 代码。首先，导入所需的包。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<module 'tvmx' from '/media/pc/data/4tb/lxw/study/tvm/xinetzone/src/tvmx/__init__.py'>\n"
+     ]
+    }
+   ],
+   "source": [
+    "import logging\n",
+    "import sys\n",
+    "\n",
+    "import numpy as np\n",
+    "\n",
+    "from pathlib import Path\n",
+    "from env import tvmx\n",
+    "\n",
+    "# 设定 TVM 项目的根目录\n",
+    "# TVM_ROOT = Path('/media/pc/data/4tb/lxw/study/tvm')\n",
+    "TVM_ROOT = Path('.').absolute().parents[1]\n",
+    "tvm, vta = tvmx.import_tvm(TVM_ROOT)\n",
+    "import tvm\n",
+    "from tvm import te\n",
+    "import tvm.testing\n",
+    "\n",
+    "# the module is called `autotvm`\n",
+    "from tvm import autotvm"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 基本的矩阵乘法与 TE\n",
+    "\n",
+    "回顾一下使用 TE 的矩阵乘法的基本实现。我们在这里把它写下来，并做一些修改。我们将用一个 python 函数定义来包装乘法。为了简单起见，我们将把注意力集中在分割优化上，使用一个固定值来定义重新排序的块大小。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def matmul_basic(N, L, M, dtype):\n",
+    "\n",
+    "    A = te.placeholder((N, L), name=\"A\", dtype=dtype)\n",
+    "    B = te.placeholder((L, M), name=\"B\", dtype=dtype)\n",
+    "\n",
+    "    k = te.reduce_axis((0, L), name=\"k\")\n",
+    "    C = te.compute((N, M), lambda i, j: te.sum(A[i, k] * B[k, j], axis=k), name=\"C\")\n",
+    "    s = te.create_schedule(C.op)\n",
+    "\n",
+    "    # schedule\n",
+    "    y, x = s[C].op.axis\n",
+    "    k = s[C].op.reduce_axis[0]\n",
+    "\n",
+    "    yo, yi = s[C].split(y, 8)\n",
+    "    xo, xi = s[C].split(x, 8)\n",
+    "\n",
+    "    s[C].reorder(yo, xo, k, yi, xi)\n",
+    "\n",
+    "    return s, [A, B, C]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 用 AutoTVM 进行矩阵乘法\n",
+    "\n",
+    "在以前的调度代码中，我们使用常数 \"8\" 作为平铺系数。然而，这可能不是最好的，因为最佳的平铺系数取决于实际的硬件环境和输入形状。\n",
+    "\n",
+    "如果你想让调度代码在更大范围的输入形状和目标硬件上可移植，最好是定义一组候选值，并根据目标硬件上的测量结果挑选最佳值。\n",
+    "\n",
+    "在 autotvm 中，我们可以定义一个可调整的参数，或者说是一个 \"旋钮\"，用于此类值。\n",
+    "\n",
+    "## 基本的矩阵乘法模板\n",
+    "\n",
+    "我们以一个例子开始，说明如何为 `split` 调度操作的块大小创建一个可调度的参数集。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Matmul V1: List candidate values\n",
+    "@autotvm.template(\"tutorial/matmul_v1\")  # 1. use a decorator\n",
+    "def matmul_v1(N, L, M, dtype):\n",
+    "    A = te.placeholder((N, L), name=\"A\", dtype=dtype)\n",
+    "    B = te.placeholder((L, M), name=\"B\", dtype=dtype)\n",
+    "\n",
+    "    k = te.reduce_axis((0, L), name=\"k\")\n",
+    "    C = te.compute((N, M), lambda i, j: te.sum(A[i, k] * B[k, j], axis=k), name=\"C\")\n",
+    "    s = te.create_schedule(C.op)\n",
+    "\n",
+    "    # schedule\n",
+    "    y, x = s[C].op.axis\n",
+    "    k = s[C].op.reduce_axis[0]\n",
+    "\n",
+    "    # 2. get the config object\n",
+    "    cfg = autotvm.get_config()\n",
+    "\n",
+    "    # 3. define search space\n",
+    "    cfg.define_knob(\"tile_y\", [1, 2, 4, 8, 16])\n",
+    "    cfg.define_knob(\"tile_x\", [1, 2, 4, 8, 16])\n",
+    "\n",
+    "    # 4. schedule according to config\n",
+    "    yo, yi = s[C].split(y, cfg[\"tile_y\"].val)\n",
+    "    xo, xi = s[C].split(x, cfg[\"tile_x\"].val)\n",
+    "\n",
+    "    s[C].reorder(yo, xo, k, yi, xi)\n",
+    "\n",
+    "    return s, [A, B, C]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "在这里，我们对之前的调度代码做了四项修改，得到了一个可调度的 \"模板\"。我们可以逐一解释这些修改：\n",
+    "\n",
+    "1. 使用装饰器将这个函数标记为一个简单的模板。\n",
+    "2. 获取 config 对象。你可以把这个 `cfg` 看作是这个函数的一个参数，但我们以不同的方式获得它。有了这个参数，这个函数就不再是一个确定性的调度了。相反，我们可以向这个函数传递不同的配置，得到不同的调度。一个像这样使用配置对象的函数被称为 \"模板\"。\n",
+    "\n",
+    "   为了使模板函数更加紧凑，我们可以做两件事来定义单一函数中的参数搜索空间。\n",
+    "\n",
+    "   1. 定义一个跨越一组数值的搜索空间。这是通过使 `cfg` 成为一个 {any}`ConfigSpace` 对象来实现的。它将收集这个函数中的所有可调控旋钮，并从中建立一个搜索空间。\n",
+    "   2. 根据这个空间的一个实体来调度。这是通过使 `cfg` 成为一个 {any}`ConfigEntity` 对象来实现的。当它是一个 {any}`ConfigEntity` 时，它将忽略所有空间定义 API（即 `cfg.define_XXXXX(...)`）。相反，它将为所有可调度的旋钮存储确定的值，我们根据这些值来调度。\n",
+    "\n",
+    "   在自动调度过程中，我们将首先用 {any}`ConfigSpace` 对象调用该模板来构建搜索空间。然后，我们在构建的空间中用不同的 {any}`ConfigEntity` 调用该模板，以获得不同的调度。最后，我们将测量不同调度所产生的代码，并挑选出最好的一个。\n",
+    "\n",
+    "3. 定义两个可调度的旋钮。第一个是 `tile_y`，有 5 个可能的值。第二个是 `tile_x`，有相同的可能值列表。这两个旋钮是独立的，所以它们跨越了一个大小为 25=5x5 的搜索空间。\n",
+    "4. 配置旋钮被传递给 `split` 调度操作，使我们能够根据我们先前在 `cfg` 中定义的 5x5 确定值来调度。\n",
+    "\n",
+    "## 使用高级参数 API 的矩阵乘法模板\n",
+    "\n",
+    "在前面的模板中，我们手动列出了一个旋钮的所有可能值。这是定义空间的最底层的 API，它给出了要搜索的参数空间的明确列举。然而，我们还提供了另一组 API，可以使搜索空间的定义更容易、更智能。在可能的情况下，我们接受你使用这个更高级别的 API。\n",
+    "\n",
+    "在下面的例子中，我们使用 {any}`ConfigSpace.define_split` 来定义一个分割旋钮。它将列举所有可能的方式来分割一个轴并构建空间。\n",
+    "\n",
+    "我们还有 {any}`ConfigSpace.define_reorder` 用于重新排序旋钮，以及 {any}`ConfigSpace.define_annotate` 用于 unroll、矢量化、线程绑定等注释。当高级 API 不能满足您的要求时，您总是可以退回到使用低水平的 API。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "@autotvm.template(\"tutorial/matmul\")\n",
+    "def matmul(N, L, M, dtype):\n",
+    "    A = te.placeholder((N, L), name=\"A\", dtype=dtype)\n",
+    "    B = te.placeholder((L, M), name=\"B\", dtype=dtype)\n",
+    "\n",
+    "    k = te.reduce_axis((0, L), name=\"k\")\n",
+    "    C = te.compute((N, M), lambda i, j: te.sum(A[i, k] * B[k, j], axis=k), name=\"C\")\n",
+    "    s = te.create_schedule(C.op)\n",
+    "\n",
+    "    # schedule\n",
+    "    y, x = s[C].op.axis\n",
+    "    k = s[C].op.reduce_axis[0]\n",
+    "\n",
+    "    ##### define space begin #####\n",
+    "    cfg = autotvm.get_config()\n",
+    "    cfg.define_split(\"tile_y\", y, num_outputs=2)\n",
+    "    cfg.define_split(\"tile_x\", x, num_outputs=2)\n",
+    "    ##### define space end #####\n",
+    "\n",
+    "    # schedule according to config\n",
+    "    yo, yi = cfg[\"tile_y\"].apply(s, C, y)\n",
+    "    xo, xi = cfg[\"tile_x\"].apply(s, C, x)\n",
+    "\n",
+    "    s[C].reorder(yo, xo, k, yi, xi)\n",
+    "\n",
+    "    return s, [A, B, C]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```{admonition} 关于 cfg.define_split 的更多解释\n",
+    "在这个模板中，`cfg.define_split(\"tile_y\", y, num_outputs=2)` 将列举所有能将轴 y 分割成两个轴的可能组合，其系数为 y 的长度。例如，如果 y 的长度是 32，我们想用 32 的因子将其分割成两个轴，那么（外轴的长度，内轴的长度）对有 6 种可能的值，即(32, 1), (16, 2), (8, 4), (4, 8), (2, 16) 或者 (1, 32)。这些都是 `tile_y` 的 6 种可能值。\n",
+    "\n",
+    "在调度过程中，`cfg[\"tile_y\"]` 是一个 `SplitEntity` 对象。我们将外轴和内轴的长度存储在 `cfg['tile_y'].size` 中（一个有两个元素的元组）。在这个模板中，我们通过使用  `yo, yi = cfg['tile_y'].apply(s, C, y)` 来应用它。实际上，这等同于 `yo, yi = s[C].split(y, cfg[\"tile_y\"].size[1])` 或者 `yo, yi = s[C].split(y, nparts=cfg['tile_y\"].size[0])`\n",
+    "\n",
+    "使用 cfg.apply API 的好处是，它使多级拆分（即 `num_outputs >= 3` 时）更容易。\n",
+    "```\n",
+    "\n",
+    "## 第 2 步：使用 AutoTVM 来优化矩阵乘法\n",
+    "\n",
+    "在步骤 1 中，我们编写了一个矩阵乘法模板，允许我们对分割调度中使用的块大小进行参数化。我们现在可以对这个参数空间进行搜索。下一步是选择一个调整器来指导对这个空间的探索。\n",
+    "\n",
+    "### TVM 中的自动调谐器\n",
+    "\n",
+    "调谐器的工作可以通过以下伪代码来描述\n",
+    "\n",
+    "```c\n",
+    "ct = 0\n",
+    "while ct < max_number_of_trials:\n",
+    "    propose a batch of configs\n",
+    "    measure this batch of configs on real hardware and get results\n",
+    "    ct += batch_size\n",
+    "```\n",
+    "\n",
+    "当提出下一批配置的时候，调谐器可以采取不同的策略。TVM 提供的一些调谐器策略包括：\n",
+    "\n",
+    "- {any}`tvm.autotvm.tuner.RandomTuner`：以随机顺序枚举空间。\n",
+    "- {any}`tvm.autotvm.tuner.GridSearchTuner`：以网格搜索的方式枚举空间。\n",
+    "- {any}`tvm.autotvm.tuner.GATuner`：使用遗传算法来搜索空间\n",
+    "- {any}`tvm.autotvm.tuner.XGBTuner`：使用一个基于模型的方法。训练一个 XGBoost 模型来预测降低 IR 的速度，并根据预测结果挑选下一批。\n",
+    "\n",
+    "你可以根据你的空间大小、你的时间预算和其他因素来选择调谐器。例如，如果你的空间非常小（小于 1000），网格搜索调谐器或随机调谐器就足够好了。如果你的空间在 $10^9$ 的水平（这是 CUDA GPU 上 conv2d 运算器的空间大小），XGBoostTuner 可以更有效地探索并找到更好的配置。\n",
+    "\n",
+    "### 开始调谐\n",
+    "\n",
+    "这里我们继续我们的矩阵乘法例子。首先我们创建一个调谐任务。我们也可以检查初始化的搜索空间。在这种情况下，对于 512x512 的正方形矩阵乘法，空间大小为 10x10=100 注意，任务和搜索空间与所选的调谐器无关。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ConfigSpace (len=100, space_map=\n",
+      "   0 tile_y: Split(policy=factors, product=512, num_outputs=2) len=10\n",
+      "   1 tile_x: Split(policy=factors, product=512, num_outputs=2) len=10\n",
+      ")\n"
+     ]
+    }
+   ],
+   "source": [
+    "N, L, M = 512, 512, 512\n",
+    "task = autotvm.task.create(\"tutorial/matmul\", args=(N, L, M, \"float32\"), target=\"llvm\")\n",
+    "print(task.config_space)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "然后我们需要定义如何测量生成的代码并挑选一个调谐器。由于我们的空间很小，随机的调谐器就可以了。\n",
+    "\n",
+    "在本教程中，我们只做了 10 次试验，用于演示。在实践中，你可以根据你的时间预算做更多的试验。我们将把调谐结果记录到一个日志文件中。这个文件可以用来选择调谐器以后发现的最佳配置。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# logging config (for printing tuning log to the screen)\n",
+    "logging.getLogger(\"autotvm\").setLevel(logging.DEBUG)\n",
+    "logging.getLogger(\"autotvm\").addHandler(logging.StreamHandler(sys.stdout))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "测量一个配置有两个步骤：构建和运行。默认情况下，我们使用所有的 CPU 核心来编译程序。然后，我们按顺序测量它们。为了帮助减少差异，我们进行 5 次测量并取其平均值。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Get devices for measurement successfully!\n",
+      "No: 1\tGFLOPS: 5.77/5.77\tresult: MeasureResult(costs=(0.0465158568,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.068835973739624, timestamp=1642052994.4991827)\t[('tile_y', [-1, 64]), ('tile_x', [-1, 32])],None,56\n",
+      "No: 2\tGFLOPS: 0.71/5.77\tresult: MeasureResult(costs=(0.3782014292,), error_no=MeasureErrorNo.NO_ERROR, all_cost=6.235220193862915, timestamp=1642053000.7659876)\t[('tile_y', [-1, 1]), ('tile_x', [-1, 2])],None,10\n",
+      "No: 3\tGFLOPS: 4.87/5.77\tresult: MeasureResult(costs=(0.0551525064,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.3227694034576416, timestamp=1642053001.8689346)\t[('tile_y', [-1, 256]), ('tile_x', [-1, 128])],None,78\n",
+      "No: 4\tGFLOPS: 0.00/5.77\tresult: MeasureResult(costs=(RuntimeError('Traceback (most recent call last):\\n  88: 0x0000561311d1fd1c\\n  87: __libc_start_main\\n  86: Py_BytesMain\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:1127\\n  85: Py_RunMain\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:695\\n  84: pymain_run_python\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:610\\n  83: pymain_run_module\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:309\\n  82: PyObject_Call\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:228\\n  81: PyVectorcall_Call\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:200\\n  80: _PyFunction_Vectorcall\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:436\\n  79: _PyEval_EvalCodeWithName\\n        at /home'),), error_no=MeasureErrorNo.RUNTIME_DEVICE, all_cost=10.509941816329956, timestamp=1642053012.407437)\t[('tile_y', [-1, 256]), ('tile_x', [-1, 1])],None,8\n",
+      "No: 5\tGFLOPS: 0.00/5.77\tresult: MeasureResult(costs=(RuntimeError('Traceback (most recent call last):\\n  88: 0x0000561311d1fd1c\\n  87: __libc_start_main\\n  86: Py_BytesMain\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:1127\\n  85: Py_RunMain\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:695\\n  84: pymain_run_python\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:610\\n  83: pymain_run_module\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Modules/main.c:309\\n  82: PyObject_Call\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:228\\n  81: PyVectorcall_Call\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:200\\n  80: _PyFunction_Vectorcall\\n        at /home/conda/feedstock_root/build_artifacts/python-split_1634073028862/work/Objects/call.c:436\\n  79: _PyEval_EvalCodeWithName\\n        at /home'),), error_no=MeasureErrorNo.RUNTIME_DEVICE, all_cost=10.131698369979858, timestamp=1642053022.5457065)\t[('tile_y', [-1, 128]), ('tile_x', [-1, 2])],None,17\n",
+      "No: 6\tGFLOPS: 7.05/7.05\tresult: MeasureResult(costs=(0.0380491336,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.0549180507659912, timestamp=1642053023.3820171)\t[('tile_y', [-1, 64]), ('tile_x', [-1, 128])],None,76\n",
+      "No: 7\tGFLOPS: 1.84/7.05\tresult: MeasureResult(costs=(0.1462092818,), error_no=MeasureErrorNo.NO_ERROR, all_cost=2.6323516368865967, timestamp=1642053025.9732308)\t[('tile_y', [-1, 32]), ('tile_x', [-1, 16])],None,45\n",
+      "No: 8\tGFLOPS: 6.48/7.05\tresult: MeasureResult(costs=(0.041411830200000006,), error_no=MeasureErrorNo.NO_ERROR, all_cost=0.8728179931640625, timestamp=1642053026.856571)\t[('tile_y', [-1, 2]), ('tile_x', [-1, 256])],None,81\n",
+      "No: 9\tGFLOPS: 3.88/7.05\tresult: MeasureResult(costs=(0.0691363904,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.2969236373901367, timestamp=1642053028.4048896)\t[('tile_y', [-1, 512]), ('tile_x', [-1, 32])],None,59\n",
+      "No: 10\tGFLOPS: 6.29/7.05\tresult: MeasureResult(costs=(0.042653947799999994,), error_no=MeasureErrorNo.NO_ERROR, all_cost=1.0349531173706055, timestamp=1642053029.3428807)\t[('tile_y', [-1, 1]), ('tile_x', [-1, 64])],None,60\n"
+     ]
+    }
+   ],
+   "source": [
+    "measure_option = autotvm.measure_option(builder=\"local\", runner=autotvm.LocalRunner(number=5))\n",
+    "\n",
+    "# Begin tuning with RandomTuner, log records to file `matmul.log`\n",
+    "# You can use alternatives like XGBTuner.\n",
+    "tuner = autotvm.tuner.RandomTuner(task)\n",
+    "tuner.tune(\n",
+    "    n_trial=10,\n",
+    "    measure_option=measure_option,\n",
+    "    callbacks=[autotvm.callback.log_to_file(\"matmul.log\")],\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "调谐完成后，我们可以从日志文件中选择具有最佳测量性能的配置，并用相应的参数来编译时间表。我们还可以做一个快速验证，以确保时间表产生正确的答案。我们可以在 {any}`autotvm.apply_history_best` 上下文下直接调用函数 `matmul`。当我们调用这个函数时，它将以其参数查询调度上下文，并以相同的参数获得最佳配置。\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Finish loading 10 records\n"
+     ]
+    }
+   ],
+   "source": [
+    "# apply history best from log file\n",
+    "with autotvm.apply_history_best(\"matmul.log\"):\n",
+    "    with tvm.target.Target(\"llvm\"):\n",
+    "        s, arg_bufs = matmul(N, L, M, \"float32\")\n",
+    "        func = tvm.build(s, arg_bufs)\n",
+    "\n",
+    "# check correctness\n",
+    "a_np = np.random.uniform(size=(N, L)).astype(np.float32)\n",
+    "b_np = np.random.uniform(size=(L, M)).astype(np.float32)\n",
+    "c_np = a_np.dot(b_np)\n",
+    "\n",
+    "c_tvm = tvm.nd.empty(c_np.shape)\n",
+    "func(tvm.nd.array(a_np), tvm.nd.array(b_np), c_tvm)\n",
+    "\n",
+    "tvm.testing.assert_allclose(c_np, c_tvm.numpy(), rtol=1e-4)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 最后说明和总结\n",
+    "\n",
+    "在本教程中，我们展示了如何建立运算符模板，让 TVM 搜索参数空间并选择优化的时间表配置。为了更深入地了解它的工作原理，我们建议在这个例子的基础上进行扩展，在 [张量表达式入门](tensor_expr_get_started) 教程中演示的调度操作的基础上添加新的搜索参数。在接下来的章节中，我们将演示 AutoScheduler，这是一种 TVM 优化常见运算符的方法，不需要用户提供一个用户定义的模板。"
+   ]
+  }
+ ],
+ "metadata": {
+  "interpreter": {
+   "hash": "c511b0f8d14c599968740f54565442fc40c9f074e764420f5186e5a17d5491bb"
+  },
+  "kernelspec": {
+   "display_name": "tvmx",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}

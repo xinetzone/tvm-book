@@ -1,0 +1,270 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# 在 CUDA 上部署已量化模型\n",
+        "\n",
+        "**原作者**: [Wuwei Lin](https://github.com/vinx13)\n",
+        "\n",
+        "本文是使用 TVM 进行自动量化的入门教程。自动量化是 TVM 中的量化方式之一。TVM 中量化的更多细节可以在 [Quantization Story](https://discuss.tvm.apache.org/t/quantization-story/3920) 找到。在本教程中，将在 ImageNet 上导入 GluonCV 预训练模型到 Relay，接着量化 Relay 模型，然后执行推理。"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "加载 TVM 库："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {},
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Python: 3.10.4\n",
+            "TVM 根目录： /media/pc/data/4tb/lxw/study/tvm\n"
+          ]
+        }
+      ],
+      "source": [
+        "import sys\n",
+        "from pathlib import Path\n",
+        "\n",
+        "ROOT = Path('.').resolve().parents[2]\n",
+        "sys.path.extend([str(ROOT)])\n",
+        "from utils.tvm import set_env\n",
+        "\n",
+        "import tvm\n",
+        "from tvm import te\n",
+        "from tvm import relay\n",
+        "from tvm.contrib.download import download_testdata\n",
+        "\n",
+        "batch_size = 1\n",
+        "model_name = \"resnet18_v1\"\n",
+        "target = \"cuda\"\n",
+        "dev = tvm.device(target)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 准备数据集\n",
+        "\n",
+        "演示如何准备用于量化的校准数据集。\n",
+        "\n",
+        "首先下载 ImageNet 的验证集并对数据集进行预处理。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import mxnet as mx\n",
+        "from mxnet import gluon\n",
+        "\n",
+        "calibration_rec = download_testdata(\n",
+        "    \"http://data.mxnet.io.s3-website-us-west-1.amazonaws.com/data/val_256_q90.rec\",\n",
+        "    \"val_256_q90.rec\",\n",
+        ")\n",
+        "\n",
+        "\n",
+        "def get_val_data(num_workers=4):\n",
+        "    mean_rgb = [123.68, 116.779, 103.939]\n",
+        "    std_rgb = [58.393, 57.12, 57.375]\n",
+        "\n",
+        "    def batch_fn(batch):\n",
+        "        return batch.data[0].asnumpy(), batch.label[0].asnumpy()\n",
+        "\n",
+        "    img_size = 299 if model_name == \"inceptionv3\" else 224\n",
+        "    val_data = mx.io.ImageRecordIter(\n",
+        "        path_imgrec=calibration_rec,\n",
+        "        preprocess_threads=num_workers,\n",
+        "        shuffle=False,\n",
+        "        batch_size=batch_size,\n",
+        "        resize=256,\n",
+        "        data_shape=(3, img_size, img_size),\n",
+        "        mean_r=mean_rgb[0],\n",
+        "        mean_g=mean_rgb[1],\n",
+        "        mean_b=mean_rgb[2],\n",
+        "        std_r=std_rgb[0],\n",
+        "        std_g=std_rgb[1],\n",
+        "        std_b=std_rgb[2],\n",
+        "    )\n",
+        "    return val_data, batch_fn"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "校准数据集应该是可迭代对象。在 Python 中，将校准数据集定义为生成器对象。在本教程中，只使用一些样本进行校准。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "calibration_samples = 10\n",
+        "\n",
+        "\n",
+        "def calibrate_dataset():\n",
+        "    val_data, batch_fn = get_val_data()\n",
+        "    val_data.reset()\n",
+        "    for i, batch in enumerate(val_data):\n",
+        "        if i * batch_size >= calibration_samples:\n",
+        "            break\n",
+        "        data, _ = batch_fn(batch)\n",
+        "        yield {\"data\": data}"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 导入模型\n",
+        "\n",
+        "使用 Relay MxNet 前端从 Gluon 模型动物园导入模型。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def get_model():\n",
+        "    gluon_model = gluon.model_zoo.vision.get_model(model_name, pretrained=True)\n",
+        "    img_size = 299 if model_name == \"inceptionv3\" else 224\n",
+        "    data_shape = (batch_size, 3, img_size, img_size)\n",
+        "    mod, params = relay.frontend.from_mxnet(gluon_model, {\"data\": data_shape})\n",
+        "    return mod, params"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 量化模型\n",
+        "\n",
+        "在量化时，需要找到每一层的每个权重和中间 feature map 张量的 scale。\n",
+        "\n",
+        "对于权重，scale 是直接根据权重值计算的。支持 ``power2`` 和 ``max`` 两种模式。两种模式都首先在权重张量内找到最大值。在 ``power2`` 模式中，最大值被四舍五入到 2 的幂。如果权重和中间特征映射的比例都是 2 的幂，可以利用 bit shifting 进行乘法。这使得它的计算效率更高。在 ``max`` 模式下，以最大值作为 scale。在不 rounding 的情况下，``max`` 模式在某些情况下可能有更好的精度。当 scale 不是二的幂时，将使用不动点（fixed point）乘法。\n",
+        "\n",
+        "对于中间 feature map，可以通过数据感知（data-aware）量化来找到 scale。数据感知量化将校准数据集作为输入参数。通过最小化量化前后激活分布之间的 KL 散度来计算 scale。或者，也可以使用预定义的 global scale。这节省了校准的时间。但准确性可能会受到影响。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 5,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def quantize(mod, params, data_aware):\n",
+        "    if data_aware:\n",
+        "        with relay.quantize.qconfig(calibrate_mode=\"kl_divergence\", weight_scale=\"max\"):\n",
+        "            mod = relay.quantize.quantize(mod, params, dataset=calibrate_dataset())\n",
+        "    else:\n",
+        "        with relay.quantize.qconfig(calibrate_mode=\"global_scale\", global_scale=8.0):\n",
+        "            mod = relay.quantize.quantize(mod, params)\n",
+        "    return mod"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 运行推理\n",
+        "\n",
+        "创建 Relay VM 来构建和执行模型。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 6,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stderr",
+          "output_type": "stream",
+          "text": [
+            "[15:35:26] ../src/io/iter_image_recordio_2.cc:177: ImageRecordIOParser2: /home/pc/.tvm_test_data/val_256_q90.rec, use 4 threads for decoding..\n",
+            "WARNING:autotvm:One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.\n",
+            "[15:35:55] ../src/io/iter_image_recordio_2.cc:177: ImageRecordIOParser2: /home/pc/.tvm_test_data/val_256_q90.rec, use 4 threads for decoding..\n"
+          ]
+        }
+      ],
+      "source": [
+        "def run_inference(mod):\n",
+        "    model = relay.create_executor(\"vm\", mod, dev, target).evaluate()\n",
+        "    val_data, batch_fn = get_val_data()\n",
+        "    for i, batch in enumerate(val_data):\n",
+        "        data, label = batch_fn(batch)\n",
+        "        prediction = model(data)\n",
+        "        if i > 10:  # only run inference on a few samples in this tutorial\n",
+        "            break\n",
+        "\n",
+        "\n",
+        "def main():\n",
+        "    mod, params = get_model()\n",
+        "    mod = quantize(mod, params, data_aware=True)\n",
+        "    run_inference(mod)\n",
+        "\n",
+        "\n",
+        "if __name__ == \"__main__\":\n",
+        "    import os\n",
+        "    os.environ['MXNET_CUDNN_AUTOTUNE_DEFAULT'] = '0'\n",
+        "    os.environ['MXNET_CUDNN_LIB_CHECKING'] = '0'\n",
+        "    main()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.4"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

@@ -1,0 +1,663 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# 开始使用 TVMC Python：TVM 的高级 API\n",
+        "\n",
+        "**Author**: [Jocelyn Shiue](https://github.com/CircleSpin)\n",
+        "\n",
+        "这就跟你问声好！这里我们将解释为 TVM 初学者设计的脚本工具。🙂\n",
+        "\n",
+        "在我们开始之前，让我们先看一个例子模型，如果你还没有的话。按照以下步骤通过终端下载 resnet 模型：\n",
+        "\n",
+        "```shell\n",
+        "!mkdir myscripts\n",
+        "!cd myscripts\n",
+        "!wget https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx\n",
+        "!mv resnet50-v2-7.onnx models/resnet50-v2-7.onnx\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 0: 导入\n",
+        "\n",
+        "导入本地 TVM 环境："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {},
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "<module 'tvmx' from '/media/pc/data/4tb/lxw/study/tvm/xinetzone/src/tvmx/__init__.py'>\n"
+          ]
+        }
+      ],
+      "source": [
+        "from pathlib import Path\n",
+        "from env import tvmx\n",
+        "\n",
+        "# 设定 TVM 项目的根目录\n",
+        "# TVM_ROOT = Path('/media/pc/data/4tb/lxw/study/tvm')\n",
+        "TVM_ROOT = Path('.').absolute().parents[1]\n",
+        "tvm, vta = tvmx.import_tvm(TVM_ROOT)\n",
+        "# # 查看 TVM 和 VTA 路径\n",
+        "# print(f'{tvm}\\n{vta}')"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "from tvm.driver import tvmc"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 1: 加载模型\n",
+        "\n",
+        "让我们将模型导入到 tvmc 中。这一步将机器学习模型从受支持的框架转换为 TVM 的高级图表示语言 Relay。这将为 TVM 中的所有模型提供一个统一的起点。目前支持的框架有：Keras、ONNX、Tensorflow、TFLite 和 PyTorch。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "import onnx\n",
+        "\n",
+        "model_path = '../../models/resnet50-v2-7.onnx'\n",
+        "onnx_model = onnx.load(model_path)\n",
+        "\n",
+        "model = tvmc.load(model_path) # Step 1: Load"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "所有框架都支持使用 `shape_dict` 参数覆盖输入 shape。对于大多数框架来说，这是可选的，但对于 Pytorch 来说，这是必要的，因为 TVM 不能自动搜索它。\n",
+        "\n",
+        "```python\n",
+        "model = tvmc.load(my_model, shape_dict={'input1' : [1, 2, 3, 4], 'input2' : [1, 2, 3, 4]}) #Step 1: Load + shape_dict\n",
+        "```\n",
+        "\n",
+        "```{tip}\n",
+        "查看模型的 input/shape_dict 的推荐方法是通过 [netron](https://netron.app/)。打开模型后，单击第一个节点，在 inputs 部分查看名称和形状。\n",
+        "```\n",
+        "\n",
+        "如果你想看 Relay，你可以运行："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 5,
+      "metadata": {},
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "def @main(%data: Tensor[(1, 3, 224, 224), float32]) -> Tensor[(1, 1000), float32] {\n",
+            "  %0 = nn.batch_norm(%data, meta[relay.Constant][0] /* ty=Tensor[(3), float32] */, meta[relay.Constant][1] /* ty=Tensor[(3), float32] */, meta[relay.Constant][2] /* ty=Tensor[(3), float32] */, meta[relay.Constant][3] /* ty=Tensor[(3), float32] */) /* ty=(Tensor[(1, 3, 224, 224), float32], Tensor[(3), float32], Tensor[(3), float32]) */;\n",
+            "  %1 = %0.0;\n",
+            "  %2 = nn.conv2d(%1, meta[relay.Constant][4] /* ty=Tensor[(64, 3, 7, 7), float32] */, strides=[2, 2], padding=[3, 3, 3, 3], channels=64, kernel_size=[7, 7]) /* ty=Tensor[(1, 64, 112, 112), float32] */;\n",
+            "  %3 = nn.batch_norm(%2, meta[relay.Constant][5] /* ty=Tensor[(64), float32] */, meta[relay.Constant][6] /* ty=Tensor[(64), float32] */, meta[relay.Constant][7] /* ty=Tensor[(64), float32] */, meta[relay.Constant][8] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 112, 112), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %4 = %3.0;\n",
+            "  %5 = nn.relu(%4) /* ty=Tensor[(1, 64, 112, 112), float32] */;\n",
+            "  %6 = nn.max_pool2d(%5, pool_size=[3, 3], strides=[2, 2], padding=[1, 1, 1, 1]) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %7 = nn.batch_norm(%6, meta[relay.Constant][9] /* ty=Tensor[(64), float32] */, meta[relay.Constant][10] /* ty=Tensor[(64), float32] */, meta[relay.Constant][11] /* ty=Tensor[(64), float32] */, meta[relay.Constant][12] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %8 = %7.0;\n",
+            "  %9 = nn.relu(%8) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %10 = nn.conv2d(%9, meta[relay.Constant][13] /* ty=Tensor[(64, 64, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1]) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %11 = nn.batch_norm(%10, meta[relay.Constant][14] /* ty=Tensor[(64), float32] */, meta[relay.Constant][15] /* ty=Tensor[(64), float32] */, meta[relay.Constant][16] /* ty=Tensor[(64), float32] */, meta[relay.Constant][17] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %12 = %11.0;\n",
+            "  %13 = nn.relu(%12) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %14 = nn.conv2d(%13, meta[relay.Constant][18] /* ty=Tensor[(64, 64, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=64, kernel_size=[3, 3]) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %15 = nn.batch_norm(%14, meta[relay.Constant][19] /* ty=Tensor[(64), float32] */, meta[relay.Constant][20] /* ty=Tensor[(64), float32] */, meta[relay.Constant][21] /* ty=Tensor[(64), float32] */, meta[relay.Constant][22] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %16 = %15.0;\n",
+            "  %17 = nn.relu(%16) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %18 = nn.conv2d(%17, meta[relay.Constant][23] /* ty=Tensor[(256, 64, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %19 = nn.conv2d(%9, meta[relay.Constant][24] /* ty=Tensor[(256, 64, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %20 = add(%18, %19) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %21 = nn.batch_norm(%20, meta[relay.Constant][25] /* ty=Tensor[(256), float32] */, meta[relay.Constant][26] /* ty=Tensor[(256), float32] */, meta[relay.Constant][27] /* ty=Tensor[(256), float32] */, meta[relay.Constant][28] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 56, 56), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %22 = %21.0;\n",
+            "  %23 = nn.relu(%22) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %24 = nn.conv2d(%23, meta[relay.Constant][29] /* ty=Tensor[(64, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1]) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %25 = nn.batch_norm(%24, meta[relay.Constant][30] /* ty=Tensor[(64), float32] */, meta[relay.Constant][31] /* ty=Tensor[(64), float32] */, meta[relay.Constant][32] /* ty=Tensor[(64), float32] */, meta[relay.Constant][33] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %26 = %25.0;\n",
+            "  %27 = nn.relu(%26) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %28 = nn.conv2d(%27, meta[relay.Constant][34] /* ty=Tensor[(64, 64, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=64, kernel_size=[3, 3]) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %29 = nn.batch_norm(%28, meta[relay.Constant][35] /* ty=Tensor[(64), float32] */, meta[relay.Constant][36] /* ty=Tensor[(64), float32] */, meta[relay.Constant][37] /* ty=Tensor[(64), float32] */, meta[relay.Constant][38] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %30 = %29.0;\n",
+            "  %31 = nn.relu(%30) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %32 = nn.conv2d(%31, meta[relay.Constant][39] /* ty=Tensor[(256, 64, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %33 = add(%32, %20) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %34 = nn.batch_norm(%33, meta[relay.Constant][40] /* ty=Tensor[(256), float32] */, meta[relay.Constant][41] /* ty=Tensor[(256), float32] */, meta[relay.Constant][42] /* ty=Tensor[(256), float32] */, meta[relay.Constant][43] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 56, 56), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %35 = %34.0;\n",
+            "  %36 = nn.relu(%35) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %37 = nn.conv2d(%36, meta[relay.Constant][44] /* ty=Tensor[(64, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=64, kernel_size=[1, 1]) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %38 = nn.batch_norm(%37, meta[relay.Constant][45] /* ty=Tensor[(64), float32] */, meta[relay.Constant][46] /* ty=Tensor[(64), float32] */, meta[relay.Constant][47] /* ty=Tensor[(64), float32] */, meta[relay.Constant][48] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %39 = %38.0;\n",
+            "  %40 = nn.relu(%39) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %41 = nn.conv2d(%40, meta[relay.Constant][49] /* ty=Tensor[(64, 64, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=64, kernel_size=[3, 3]) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %42 = nn.batch_norm(%41, meta[relay.Constant][50] /* ty=Tensor[(64), float32] */, meta[relay.Constant][51] /* ty=Tensor[(64), float32] */, meta[relay.Constant][52] /* ty=Tensor[(64), float32] */, meta[relay.Constant][53] /* ty=Tensor[(64), float32] */) /* ty=(Tensor[(1, 64, 56, 56), float32], Tensor[(64), float32], Tensor[(64), float32]) */;\n",
+            "  %43 = %42.0;\n",
+            "  %44 = nn.relu(%43) /* ty=Tensor[(1, 64, 56, 56), float32] */;\n",
+            "  %45 = nn.conv2d(%44, meta[relay.Constant][54] /* ty=Tensor[(256, 64, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %46 = add(%45, %33) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %47 = nn.batch_norm(%46, meta[relay.Constant][55] /* ty=Tensor[(256), float32] */, meta[relay.Constant][56] /* ty=Tensor[(256), float32] */, meta[relay.Constant][57] /* ty=Tensor[(256), float32] */, meta[relay.Constant][58] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 56, 56), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %48 = %47.0;\n",
+            "  %49 = nn.relu(%48) /* ty=Tensor[(1, 256, 56, 56), float32] */;\n",
+            "  %50 = nn.conv2d(%49, meta[relay.Constant][59] /* ty=Tensor[(128, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=128, kernel_size=[1, 1]) /* ty=Tensor[(1, 128, 56, 56), float32] */;\n",
+            "  %51 = nn.batch_norm(%50, meta[relay.Constant][60] /* ty=Tensor[(128), float32] */, meta[relay.Constant][61] /* ty=Tensor[(128), float32] */, meta[relay.Constant][62] /* ty=Tensor[(128), float32] */, meta[relay.Constant][63] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 56, 56), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %52 = %51.0;\n",
+            "  %53 = nn.relu(%52) /* ty=Tensor[(1, 128, 56, 56), float32] */;\n",
+            "  %54 = nn.conv2d(%53, meta[relay.Constant][64] /* ty=Tensor[(128, 128, 3, 3), float32] */, strides=[2, 2], padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %55 = nn.batch_norm(%54, meta[relay.Constant][65] /* ty=Tensor[(128), float32] */, meta[relay.Constant][66] /* ty=Tensor[(128), float32] */, meta[relay.Constant][67] /* ty=Tensor[(128), float32] */, meta[relay.Constant][68] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %56 = %55.0;\n",
+            "  %57 = nn.relu(%56) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %58 = nn.conv2d(%57, meta[relay.Constant][69] /* ty=Tensor[(512, 128, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %59 = nn.conv2d(%49, meta[relay.Constant][70] /* ty=Tensor[(512, 256, 1, 1), float32] */, strides=[2, 2], padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %60 = add(%58, %59) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %61 = nn.batch_norm(%60, meta[relay.Constant][71] /* ty=Tensor[(512), float32] */, meta[relay.Constant][72] /* ty=Tensor[(512), float32] */, meta[relay.Constant][73] /* ty=Tensor[(512), float32] */, meta[relay.Constant][74] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 28, 28), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %62 = %61.0;\n",
+            "  %63 = nn.relu(%62) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %64 = nn.conv2d(%63, meta[relay.Constant][75] /* ty=Tensor[(128, 512, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=128, kernel_size=[1, 1]) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %65 = nn.batch_norm(%64, meta[relay.Constant][76] /* ty=Tensor[(128), float32] */, meta[relay.Constant][77] /* ty=Tensor[(128), float32] */, meta[relay.Constant][78] /* ty=Tensor[(128), float32] */, meta[relay.Constant][79] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %66 = %65.0;\n",
+            "  %67 = nn.relu(%66) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %68 = nn.conv2d(%67, meta[relay.Constant][80] /* ty=Tensor[(128, 128, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %69 = nn.batch_norm(%68, meta[relay.Constant][81] /* ty=Tensor[(128), float32] */, meta[relay.Constant][82] /* ty=Tensor[(128), float32] */, meta[relay.Constant][83] /* ty=Tensor[(128), float32] */, meta[relay.Constant][84] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %70 = %69.0;\n",
+            "  %71 = nn.relu(%70) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %72 = nn.conv2d(%71, meta[relay.Constant][85] /* ty=Tensor[(512, 128, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %73 = add(%72, %60) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %74 = nn.batch_norm(%73, meta[relay.Constant][86] /* ty=Tensor[(512), float32] */, meta[relay.Constant][87] /* ty=Tensor[(512), float32] */, meta[relay.Constant][88] /* ty=Tensor[(512), float32] */, meta[relay.Constant][89] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 28, 28), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %75 = %74.0;\n",
+            "  %76 = nn.relu(%75) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %77 = nn.conv2d(%76, meta[relay.Constant][90] /* ty=Tensor[(128, 512, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=128, kernel_size=[1, 1]) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %78 = nn.batch_norm(%77, meta[relay.Constant][91] /* ty=Tensor[(128), float32] */, meta[relay.Constant][92] /* ty=Tensor[(128), float32] */, meta[relay.Constant][93] /* ty=Tensor[(128), float32] */, meta[relay.Constant][94] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %79 = %78.0;\n",
+            "  %80 = nn.relu(%79) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %81 = nn.conv2d(%80, meta[relay.Constant][95] /* ty=Tensor[(128, 128, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %82 = nn.batch_norm(%81, meta[relay.Constant][96] /* ty=Tensor[(128), float32] */, meta[relay.Constant][97] /* ty=Tensor[(128), float32] */, meta[relay.Constant][98] /* ty=Tensor[(128), float32] */, meta[relay.Constant][99] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %83 = %82.0;\n",
+            "  %84 = nn.relu(%83) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %85 = nn.conv2d(%84, meta[relay.Constant][100] /* ty=Tensor[(512, 128, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %86 = add(%85, %73) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %87 = nn.batch_norm(%86, meta[relay.Constant][101] /* ty=Tensor[(512), float32] */, meta[relay.Constant][102] /* ty=Tensor[(512), float32] */, meta[relay.Constant][103] /* ty=Tensor[(512), float32] */, meta[relay.Constant][104] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 28, 28), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %88 = %87.0;\n",
+            "  %89 = nn.relu(%88) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %90 = nn.conv2d(%89, meta[relay.Constant][105] /* ty=Tensor[(128, 512, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=128, kernel_size=[1, 1]) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %91 = nn.batch_norm(%90, meta[relay.Constant][106] /* ty=Tensor[(128), float32] */, meta[relay.Constant][107] /* ty=Tensor[(128), float32] */, meta[relay.Constant][108] /* ty=Tensor[(128), float32] */, meta[relay.Constant][109] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %92 = %91.0;\n",
+            "  %93 = nn.relu(%92) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %94 = nn.conv2d(%93, meta[relay.Constant][110] /* ty=Tensor[(128, 128, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=128, kernel_size=[3, 3]) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %95 = nn.batch_norm(%94, meta[relay.Constant][111] /* ty=Tensor[(128), float32] */, meta[relay.Constant][112] /* ty=Tensor[(128), float32] */, meta[relay.Constant][113] /* ty=Tensor[(128), float32] */, meta[relay.Constant][114] /* ty=Tensor[(128), float32] */) /* ty=(Tensor[(1, 128, 28, 28), float32], Tensor[(128), float32], Tensor[(128), float32]) */;\n",
+            "  %96 = %95.0;\n",
+            "  %97 = nn.relu(%96) /* ty=Tensor[(1, 128, 28, 28), float32] */;\n",
+            "  %98 = nn.conv2d(%97, meta[relay.Constant][115] /* ty=Tensor[(512, 128, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %99 = add(%98, %86) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %100 = nn.batch_norm(%99, meta[relay.Constant][116] /* ty=Tensor[(512), float32] */, meta[relay.Constant][117] /* ty=Tensor[(512), float32] */, meta[relay.Constant][118] /* ty=Tensor[(512), float32] */, meta[relay.Constant][119] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 28, 28), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %101 = %100.0;\n",
+            "  %102 = nn.relu(%101) /* ty=Tensor[(1, 512, 28, 28), float32] */;\n",
+            "  %103 = nn.conv2d(%102, meta[relay.Constant][120] /* ty=Tensor[(256, 512, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 28, 28), float32] */;\n",
+            "  %104 = nn.batch_norm(%103, meta[relay.Constant][121] /* ty=Tensor[(256), float32] */, meta[relay.Constant][122] /* ty=Tensor[(256), float32] */, meta[relay.Constant][123] /* ty=Tensor[(256), float32] */, meta[relay.Constant][124] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 28, 28), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %105 = %104.0;\n",
+            "  %106 = nn.relu(%105) /* ty=Tensor[(1, 256, 28, 28), float32] */;\n",
+            "  %107 = nn.conv2d(%106, meta[relay.Constant][125] /* ty=Tensor[(256, 256, 3, 3), float32] */, strides=[2, 2], padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %108 = nn.batch_norm(%107, meta[relay.Constant][126] /* ty=Tensor[(256), float32] */, meta[relay.Constant][127] /* ty=Tensor[(256), float32] */, meta[relay.Constant][128] /* ty=Tensor[(256), float32] */, meta[relay.Constant][129] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %109 = %108.0;\n",
+            "  %110 = nn.relu(%109) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %111 = nn.conv2d(%110, meta[relay.Constant][130] /* ty=Tensor[(1024, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=1024, kernel_size=[1, 1]) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %112 = nn.conv2d(%102, meta[relay.Constant][131] /* ty=Tensor[(1024, 512, 1, 1), float32] */, strides=[2, 2], padding=[0, 0, 0, 0], channels=1024, kernel_size=[1, 1]) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %113 = add(%111, %112) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %114 = nn.batch_norm(%113, meta[relay.Constant][132] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][133] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][134] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][135] /* ty=Tensor[(1024), float32] */) /* ty=(Tensor[(1, 1024, 14, 14), float32], Tensor[(1024), float32], Tensor[(1024), float32]) */;\n",
+            "  %115 = %114.0;\n",
+            "  %116 = nn.relu(%115) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %117 = nn.conv2d(%116, meta[relay.Constant][136] /* ty=Tensor[(256, 1024, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %118 = nn.batch_norm(%117, meta[relay.Constant][137] /* ty=Tensor[(256), float32] */, meta[relay.Constant][138] /* ty=Tensor[(256), float32] */, meta[relay.Constant][139] /* ty=Tensor[(256), float32] */, meta[relay.Constant][140] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %119 = %118.0;\n",
+            "  %120 = nn.relu(%119) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %121 = nn.conv2d(%120, meta[relay.Constant][141] /* ty=Tensor[(256, 256, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %122 = nn.batch_norm(%121, meta[relay.Constant][142] /* ty=Tensor[(256), float32] */, meta[relay.Constant][143] /* ty=Tensor[(256), float32] */, meta[relay.Constant][144] /* ty=Tensor[(256), float32] */, meta[relay.Constant][145] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %123 = %122.0;\n",
+            "  %124 = nn.relu(%123) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %125 = nn.conv2d(%124, meta[relay.Constant][146] /* ty=Tensor[(1024, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=1024, kernel_size=[1, 1]) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %126 = add(%125, %113) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %127 = nn.batch_norm(%126, meta[relay.Constant][147] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][148] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][149] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][150] /* ty=Tensor[(1024), float32] */) /* ty=(Tensor[(1, 1024, 14, 14), float32], Tensor[(1024), float32], Tensor[(1024), float32]) */;\n",
+            "  %128 = %127.0;\n",
+            "  %129 = nn.relu(%128) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %130 = nn.conv2d(%129, meta[relay.Constant][151] /* ty=Tensor[(256, 1024, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %131 = nn.batch_norm(%130, meta[relay.Constant][152] /* ty=Tensor[(256), float32] */, meta[relay.Constant][153] /* ty=Tensor[(256), float32] */, meta[relay.Constant][154] /* ty=Tensor[(256), float32] */, meta[relay.Constant][155] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %132 = %131.0;\n",
+            "  %133 = nn.relu(%132) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %134 = nn.conv2d(%133, meta[relay.Constant][156] /* ty=Tensor[(256, 256, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %135 = nn.batch_norm(%134, meta[relay.Constant][157] /* ty=Tensor[(256), float32] */, meta[relay.Constant][158] /* ty=Tensor[(256), float32] */, meta[relay.Constant][159] /* ty=Tensor[(256), float32] */, meta[relay.Constant][160] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %136 = %135.0;\n",
+            "  %137 = nn.relu(%136) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %138 = nn.conv2d(%137, meta[relay.Constant][161] /* ty=Tensor[(1024, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=1024, kernel_size=[1, 1]) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %139 = add(%138, %126) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %140 = nn.batch_norm(%139, meta[relay.Constant][162] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][163] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][164] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][165] /* ty=Tensor[(1024), float32] */) /* ty=(Tensor[(1, 1024, 14, 14), float32], Tensor[(1024), float32], Tensor[(1024), float32]) */;\n",
+            "  %141 = %140.0;\n",
+            "  %142 = nn.relu(%141) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %143 = nn.conv2d(%142, meta[relay.Constant][166] /* ty=Tensor[(256, 1024, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %144 = nn.batch_norm(%143, meta[relay.Constant][167] /* ty=Tensor[(256), float32] */, meta[relay.Constant][168] /* ty=Tensor[(256), float32] */, meta[relay.Constant][169] /* ty=Tensor[(256), float32] */, meta[relay.Constant][170] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %145 = %144.0;\n",
+            "  %146 = nn.relu(%145) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %147 = nn.conv2d(%146, meta[relay.Constant][171] /* ty=Tensor[(256, 256, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %148 = nn.batch_norm(%147, meta[relay.Constant][172] /* ty=Tensor[(256), float32] */, meta[relay.Constant][173] /* ty=Tensor[(256), float32] */, meta[relay.Constant][174] /* ty=Tensor[(256), float32] */, meta[relay.Constant][175] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %149 = %148.0;\n",
+            "  %150 = nn.relu(%149) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %151 = nn.conv2d(%150, meta[relay.Constant][176] /* ty=Tensor[(1024, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=1024, kernel_size=[1, 1]) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %152 = add(%151, %139) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %153 = nn.batch_norm(%152, meta[relay.Constant][177] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][178] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][179] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][180] /* ty=Tensor[(1024), float32] */) /* ty=(Tensor[(1, 1024, 14, 14), float32], Tensor[(1024), float32], Tensor[(1024), float32]) */;\n",
+            "  %154 = %153.0;\n",
+            "  %155 = nn.relu(%154) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %156 = nn.conv2d(%155, meta[relay.Constant][181] /* ty=Tensor[(256, 1024, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %157 = nn.batch_norm(%156, meta[relay.Constant][182] /* ty=Tensor[(256), float32] */, meta[relay.Constant][183] /* ty=Tensor[(256), float32] */, meta[relay.Constant][184] /* ty=Tensor[(256), float32] */, meta[relay.Constant][185] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %158 = %157.0;\n",
+            "  %159 = nn.relu(%158) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %160 = nn.conv2d(%159, meta[relay.Constant][186] /* ty=Tensor[(256, 256, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %161 = nn.batch_norm(%160, meta[relay.Constant][187] /* ty=Tensor[(256), float32] */, meta[relay.Constant][188] /* ty=Tensor[(256), float32] */, meta[relay.Constant][189] /* ty=Tensor[(256), float32] */, meta[relay.Constant][190] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %162 = %161.0;\n",
+            "  %163 = nn.relu(%162) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %164 = nn.conv2d(%163, meta[relay.Constant][191] /* ty=Tensor[(1024, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=1024, kernel_size=[1, 1]) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %165 = add(%164, %152) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %166 = nn.batch_norm(%165, meta[relay.Constant][192] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][193] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][194] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][195] /* ty=Tensor[(1024), float32] */) /* ty=(Tensor[(1, 1024, 14, 14), float32], Tensor[(1024), float32], Tensor[(1024), float32]) */;\n",
+            "  %167 = %166.0;\n",
+            "  %168 = nn.relu(%167) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %169 = nn.conv2d(%168, meta[relay.Constant][196] /* ty=Tensor[(256, 1024, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=256, kernel_size=[1, 1]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %170 = nn.batch_norm(%169, meta[relay.Constant][197] /* ty=Tensor[(256), float32] */, meta[relay.Constant][198] /* ty=Tensor[(256), float32] */, meta[relay.Constant][199] /* ty=Tensor[(256), float32] */, meta[relay.Constant][200] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %171 = %170.0;\n",
+            "  %172 = nn.relu(%171) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %173 = nn.conv2d(%172, meta[relay.Constant][201] /* ty=Tensor[(256, 256, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=256, kernel_size=[3, 3]) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %174 = nn.batch_norm(%173, meta[relay.Constant][202] /* ty=Tensor[(256), float32] */, meta[relay.Constant][203] /* ty=Tensor[(256), float32] */, meta[relay.Constant][204] /* ty=Tensor[(256), float32] */, meta[relay.Constant][205] /* ty=Tensor[(256), float32] */) /* ty=(Tensor[(1, 256, 14, 14), float32], Tensor[(256), float32], Tensor[(256), float32]) */;\n",
+            "  %175 = %174.0;\n",
+            "  %176 = nn.relu(%175) /* ty=Tensor[(1, 256, 14, 14), float32] */;\n",
+            "  %177 = nn.conv2d(%176, meta[relay.Constant][206] /* ty=Tensor[(1024, 256, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=1024, kernel_size=[1, 1]) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %178 = add(%177, %165) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %179 = nn.batch_norm(%178, meta[relay.Constant][207] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][208] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][209] /* ty=Tensor[(1024), float32] */, meta[relay.Constant][210] /* ty=Tensor[(1024), float32] */) /* ty=(Tensor[(1, 1024, 14, 14), float32], Tensor[(1024), float32], Tensor[(1024), float32]) */;\n",
+            "  %180 = %179.0;\n",
+            "  %181 = nn.relu(%180) /* ty=Tensor[(1, 1024, 14, 14), float32] */;\n",
+            "  %182 = nn.conv2d(%181, meta[relay.Constant][211] /* ty=Tensor[(512, 1024, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 14, 14), float32] */;\n",
+            "  %183 = nn.batch_norm(%182, meta[relay.Constant][212] /* ty=Tensor[(512), float32] */, meta[relay.Constant][213] /* ty=Tensor[(512), float32] */, meta[relay.Constant][214] /* ty=Tensor[(512), float32] */, meta[relay.Constant][215] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 14, 14), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %184 = %183.0;\n",
+            "  %185 = nn.relu(%184) /* ty=Tensor[(1, 512, 14, 14), float32] */;\n",
+            "  %186 = nn.conv2d(%185, meta[relay.Constant][216] /* ty=Tensor[(512, 512, 3, 3), float32] */, strides=[2, 2], padding=[1, 1, 1, 1], channels=512, kernel_size=[3, 3]) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %187 = nn.batch_norm(%186, meta[relay.Constant][217] /* ty=Tensor[(512), float32] */, meta[relay.Constant][218] /* ty=Tensor[(512), float32] */, meta[relay.Constant][219] /* ty=Tensor[(512), float32] */, meta[relay.Constant][220] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %188 = %187.0;\n",
+            "  %189 = nn.relu(%188) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %190 = nn.conv2d(%189, meta[relay.Constant][221] /* ty=Tensor[(2048, 512, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=2048, kernel_size=[1, 1]) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %191 = nn.conv2d(%181, meta[relay.Constant][222] /* ty=Tensor[(2048, 1024, 1, 1), float32] */, strides=[2, 2], padding=[0, 0, 0, 0], channels=2048, kernel_size=[1, 1]) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %192 = add(%190, %191) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %193 = nn.batch_norm(%192, meta[relay.Constant][223] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][224] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][225] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][226] /* ty=Tensor[(2048), float32] */) /* ty=(Tensor[(1, 2048, 7, 7), float32], Tensor[(2048), float32], Tensor[(2048), float32]) */;\n",
+            "  %194 = %193.0;\n",
+            "  %195 = nn.relu(%194) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %196 = nn.conv2d(%195, meta[relay.Constant][227] /* ty=Tensor[(512, 2048, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %197 = nn.batch_norm(%196, meta[relay.Constant][228] /* ty=Tensor[(512), float32] */, meta[relay.Constant][229] /* ty=Tensor[(512), float32] */, meta[relay.Constant][230] /* ty=Tensor[(512), float32] */, meta[relay.Constant][231] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %198 = %197.0;\n",
+            "  %199 = nn.relu(%198) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %200 = nn.conv2d(%199, meta[relay.Constant][232] /* ty=Tensor[(512, 512, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=512, kernel_size=[3, 3]) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %201 = nn.batch_norm(%200, meta[relay.Constant][233] /* ty=Tensor[(512), float32] */, meta[relay.Constant][234] /* ty=Tensor[(512), float32] */, meta[relay.Constant][235] /* ty=Tensor[(512), float32] */, meta[relay.Constant][236] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %202 = %201.0;\n",
+            "  %203 = nn.relu(%202) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %204 = nn.conv2d(%203, meta[relay.Constant][237] /* ty=Tensor[(2048, 512, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=2048, kernel_size=[1, 1]) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %205 = add(%204, %192) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %206 = nn.batch_norm(%205, meta[relay.Constant][238] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][239] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][240] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][241] /* ty=Tensor[(2048), float32] */) /* ty=(Tensor[(1, 2048, 7, 7), float32], Tensor[(2048), float32], Tensor[(2048), float32]) */;\n",
+            "  %207 = %206.0;\n",
+            "  %208 = nn.relu(%207) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %209 = nn.conv2d(%208, meta[relay.Constant][242] /* ty=Tensor[(512, 2048, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=512, kernel_size=[1, 1]) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %210 = nn.batch_norm(%209, meta[relay.Constant][243] /* ty=Tensor[(512), float32] */, meta[relay.Constant][244] /* ty=Tensor[(512), float32] */, meta[relay.Constant][245] /* ty=Tensor[(512), float32] */, meta[relay.Constant][246] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %211 = %210.0;\n",
+            "  %212 = nn.relu(%211) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %213 = nn.conv2d(%212, meta[relay.Constant][247] /* ty=Tensor[(512, 512, 3, 3), float32] */, padding=[1, 1, 1, 1], channels=512, kernel_size=[3, 3]) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %214 = nn.batch_norm(%213, meta[relay.Constant][248] /* ty=Tensor[(512), float32] */, meta[relay.Constant][249] /* ty=Tensor[(512), float32] */, meta[relay.Constant][250] /* ty=Tensor[(512), float32] */, meta[relay.Constant][251] /* ty=Tensor[(512), float32] */) /* ty=(Tensor[(1, 512, 7, 7), float32], Tensor[(512), float32], Tensor[(512), float32]) */;\n",
+            "  %215 = %214.0;\n",
+            "  %216 = nn.relu(%215) /* ty=Tensor[(1, 512, 7, 7), float32] */;\n",
+            "  %217 = nn.conv2d(%216, meta[relay.Constant][252] /* ty=Tensor[(2048, 512, 1, 1), float32] */, padding=[0, 0, 0, 0], channels=2048, kernel_size=[1, 1]) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %218 = add(%217, %205) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %219 = nn.batch_norm(%218, meta[relay.Constant][253] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][254] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][255] /* ty=Tensor[(2048), float32] */, meta[relay.Constant][256] /* ty=Tensor[(2048), float32] */) /* ty=(Tensor[(1, 2048, 7, 7), float32], Tensor[(2048), float32], Tensor[(2048), float32]) */;\n",
+            "  %220 = %219.0;\n",
+            "  %221 = nn.relu(%220) /* ty=Tensor[(1, 2048, 7, 7), float32] */;\n",
+            "  %222 = nn.global_avg_pool2d(%221) /* ty=Tensor[(1, 2048, 1, 1), float32] */;\n",
+            "  %223 = reshape(%222, newshape=[0, -1]) /* ty=Tensor[(1, 2048), float32] */;\n",
+            "  %224 = nn.dense(%223, meta[relay.Constant][257] /* ty=Tensor[(1000, 2048), float32] */, units=1000) /* ty=Tensor[(1, 1000), float32] */;\n",
+            "  add(%224, meta[relay.Constant][258] /* ty=Tensor[(1000), float32] */) /* ty=Tensor[(1, 1000), float32] */\n",
+            "}\n",
+            "\n",
+            "\n"
+          ]
+        }
+      ],
+      "source": [
+        "model.summary()"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 2: 编译\n",
+        "\n",
+        "既然我们的模型已经在 Relay 中，下一步就是将它编译到需要运行的硬件上。我们把这个硬件称为目标（target）。此编译过程将模型从 Relay 转换为目标机器可以理解的较低级语言。\n",
+        "\n",
+        "为了编译模型 ``tvm.target`` 字符串是必需的。查看[文档](https://tvm.apache.org/docs/api/python/target.html)，了解更多关于 `tvm.target` 的信息及其选项。一些例子包括：\n",
+        "\n",
+        "1. cuda (Nvidia GPU)\n",
+        "2. llvm (CPU)\n",
+        "3. llvm -mcpu=cascadelake (Intel CPU)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 6,
+      "metadata": {},
+      "outputs": [
+        {
+          "name": "stderr",
+          "output_type": "stream",
+          "text": [
+            "One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.\n"
+          ]
+        }
+      ],
+      "source": [
+        "package = tvmc.compile(model, target=\"llvm\") #Step 2: Compile"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "编译步骤返回 `package`。\n",
+        "\n",
+        "## Step 3: 运行\n",
+        "\n",
+        "编译后的包现在可以在硬件目标上运行。设备输入选项有：CPU、Cuda、CL、Metal 和 Vulkan。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 9,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "results = tvmc.run(package, device=\"cpu\") #Step 3: Run"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "也可以打印结果："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 10,
+      "metadata": {},
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Execution time summary:\n",
+            " mean (ms)   median (ms)    max (ms)     min (ms)     std (ms)  \n",
+            "  50.3164      50.1710      51.5931      50.0196       0.4442   \n",
+            "               \n",
+            "Output Names:\n",
+            " ['output_0']\n"
+          ]
+        }
+      ],
+      "source": [
+        "print(results)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Step 1.5: Tune [可选 && 推荐]\n",
+        "\n",
+        "通过调优可以进一步提高运行速度。这个可选步骤使用机器学习来查看模型（函数）中的每个运算，并试图找到更快的方法来运行它。我们通过成本模型来做到这一点，并对可能的调度进行基准测试。\n",
+        "\n",
+        "此处 `target` 与编译相同。\n",
+        "\n",
+        "```python\n",
+        "tvmc.tune(model, target=\"llvm\") #Step 1.5: Optional Tune\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "可能存在可以忽略的用户警告。这将使最终结果更快，但可能需要数小时来调优。\n",
+        "\n",
+        "请参阅下面的“保存调优结果”一节。如果希望应用调优结果，请确保将调优结果传递到 compile 中。\n",
+        "\n",
+        "```python\n",
+        "tvmc.compile(model, target=\"llvm\", tuning_records = \"records.log\") #Step 2: Compile\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Save and then start the process in the terminal:\n",
+        "\n",
+        "\n",
+        "```shell\n",
+        "python my_tvmc_script.py\n",
+        "```\n",
+        "\n",
+        "Note: Your fans may become very active"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Example results:\n",
+        "\n",
+        "```{eval-rst}\n",
+        ".. code-block:: python\n",
+        "\n",
+        "  Time elapsed for training: 18.99 s\n",
+        "  Execution time summary:\n",
+        "  mean (ms)   max (ms)   min (ms)   std (ms)\n",
+        "    25.24      26.12      24.89       0.38\n",
+        "\n",
+        "\n",
+        "  Output Names:\n",
+        "  ['output_0']\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Additional TVMC Functionalities\n",
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
+        "\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Saving the model\n",
+        "\n",
+        "To make things faster for later, after loading the model (Step 1) save the Relay version.\n",
+        "The model will then appear where you saved it for later in the coverted syntax.\n",
+        "\n",
+        "```python\n",
+        "model = tvmc.load('my_model.onnx') #Step 1: Load\n",
+        "model.save(desired_model_path)\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Saving the package\n",
+        "\n",
+        "After the model has been compiled (Step 2) the package also is also saveable.\n",
+        "\n",
+        "```{eval-rst}\n",
+        ".. code-block:: python\n",
+        "\n",
+        "  tvmc.compile(model, target=\"llvm\", package_path=\"whatever\")\n",
+        "\n",
+        "  new_package = tvmc.TVMCPackage(package_path=\"whatever\")\n",
+        "  result = tvmc.run(new_package) #Step 3: Run\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Using Autoscheduler\n",
+        "\n",
+        "Use the next generation of tvm to enable potentially faster run speed results.\n",
+        "The search space of the schedules is automatically generated unlike\n",
+        "previously where they needed to be hand written. (Learn more:\n",
+        "`1 <https://tvm.apache.org/2021/03/03/intro-auto-scheduler>`_,\n",
+        "`2 <https://arxiv.org/abs/2006.06762>`_)\n",
+        "\n",
+        "```python\n",
+        "tvmc.tune(model, target=\"llvm\", enable_autoscheduler = True)\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Saving the tuning results\n",
+        "\n",
+        "```{eval-rst}\n",
+        "\n",
+        "The tuning results can be saved in a file for later reuse.\n",
+        "\n",
+        "Method 1:\n",
+        "   .. code-block:: python\n",
+        "\n",
+        "     log_file = \"hello.json\"\n",
+        "\n",
+        "     # Run tuning\n",
+        "     tvmc.tune(model, target=\"llvm\",tuning_records=log_file)\n",
+        "\n",
+        "     ...\n",
+        "\n",
+        "     # Later run tuning and reuse tuning results\n",
+        "     tvmc.tune(model, target=\"llvm\",tuning_records=log_file)\n",
+        "\n",
+        "Method 2:\n",
+        "   .. code-block:: python\n",
+        "\n",
+        "     # Run tuning\n",
+        "     tuning_records = tvmc.tune(model, target=\"llvm\")\n",
+        "\n",
+        "     ...\n",
+        "\n",
+        "     # Later run tuning and reuse tuning results\n",
+        "     tvmc.tune(model, target=\"llvm\",tuning_records=tuning_records)\n",
+        "\n",
+        "```\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Tuning a more complex model:\n",
+        "\n",
+        "If you notice T's printing that look like ``.........T.T..T..T..T.T.T.T.T.T.``\n",
+        "increase the searching time frame:\n",
+        "\n",
+        "```python\n",
+        "tvmc.tune(model,trials=10000,timeout=10,)\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Compiling a model for a remote device:\n",
+        "\n",
+        "A remote procedural call (RPC) is useful when you would like to compile for hardware\n",
+        "that is not on your local machine. The tvmc methods support this.\n",
+        "To set up the RPC server take a look at the 'Set up RPC Server on Device'\n",
+        "section in this `document <https://tvm.apache.org/docs/tutorials/get_started/cross_compilation_and_rpc.html>`_.\n",
+        "\n",
+        "Within the TVMC Script include the following and adjust accordingly:\n",
+        "\n",
+        "```{python\n",
+        "tvmc.tune(\n",
+        "    model,\n",
+        "    target=target,  # Compilation target as string // Device to compile for\n",
+        "    target_host=target_host,  # Host processor\n",
+        "    # The IP address of an RPC tracker, used when benchmarking remotely.\n",
+        "    hostname=host_ip_address,\n",
+        "    # The port of the RPC tracker to connect to. Defaults to 9090.\n",
+        "    port=port_number,\n",
+        "    # The RPC tracker key of the target device. Required when rpc_tracker is provided\n",
+        "    rpc_key=your_key,\n",
+        ")   \n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.4"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

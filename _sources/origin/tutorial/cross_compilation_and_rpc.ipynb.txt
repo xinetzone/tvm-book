@@ -1,0 +1,331 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "%matplotlib inline"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "(tutorial-cross-compilation-and-rpc)=\n",
+        "\n",
+        "# 交叉编译和RPC\n",
+        "\n",
+        "**作者**: [Ziheng Jiang](https://github.com/ZihengJiang/), [Lianmin Zheng](https://github.com/merrymercy/)\n",
+        "\n",
+        "本教程介绍了 TVM 中的交叉编译和使用 RPC 的远程设备执行。\n",
+        "\n",
+        "通过交叉编译和 RPC，**你可以在本地机器上编译一个程序，然后在远程设备上运行它**。在远程设备资源有限的情况下，如 Raspberry Pi 和移动平台，这很有用。在本教程中，我们将使用 Raspberry Pi 作为 CPU 例子，使用 Firefly-RK3399 作为 OpenCL 例子。\n",
+        "\n",
+        "## 在设备上建立 TVM 运行时\n",
+        "\n",
+        "第一步是在远程设备上建立 TVM 运行时。\n",
+        "\n",
+        "```{admonition} 注意\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "本节和下一节的所有指令都应该在目标设备上执行，例如 Raspberry Pi。我们假设目标设备运行的是 Linux。\n",
+        "```\n",
+        "\n",
+        "由于我们在本地机器上进行编译，远程设备只用于运行生成的代码。我们只需要在远程设备上构建 TVM 运行时。\n",
+        "\n",
+        "```bash\n",
+        "git clone --recursive https://github.com/apache/tvm tvm\n",
+        "cd tvm\n",
+        "make runtime -j2\n",
+        "```\n",
+        "\n",
+        "成功构建运行时后，我们需要在 `~/.bashrc` 文件中设置环境变量。我们可以用 `vi ~/.bashrc` 编辑 `~/.bashrc`，并添加以下一行（假设你的 TVM 目录在 `~/tvm`）。\n",
+        "\n",
+        "```bash\n",
+        "export PYTHONPATH=$PYTHONPATH:~/tvm/python\n",
+        "```\n",
+        "\n",
+        "要更新环境变量，执行 `source ~/.bashrc`。\n",
+        "\n",
+        "## 在设备上设置 RPC 服务器\n",
+        "\n",
+        "要启动 RPC 服务器，请在你的远程设备上运行以下命令（本例中为 Raspberry Pi）。\n",
+        "\n",
+        "```bash\n",
+        "python -m tvm.exec.rpc_server --host 0.0.0.0 --port=9090\n",
+        "```\n",
+        "\n",
+        "如果你看到下面这一行，这意味着 RPC 服务器在你的设备上成功启动。\n",
+        "\n",
+        "```bash\n",
+        "INFO:root:RPCServer: bind to 0.0.0.0:9090\n",
+        "```\n",
+        "\n",
+        "在本地机器上声明和交叉编译内核\n",
+        "\n",
+        "\n",
+        "```{admonition} 注意\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "现在我们回到本地机器，它安装了一个完整的 TVM（含 LLVM）。\n",
+        "```\n",
+        "\n",
+        "这里我们将在本地机器上声明一个简单的内核："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import numpy as np\n",
+        "\n",
+        "import tvm\n",
+        "from tvm import te\n",
+        "from tvm import rpc\n",
+        "from tvm.contrib import utils\n",
+        "\n",
+        "n = tvm.runtime.convert(1024)\n",
+        "A = te.placeholder((n,), name=\"A\")\n",
+        "B = te.compute((n,), lambda i: A[i] + 1.0, name=\"B\")\n",
+        "s = te.create_schedule(B.op)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "然后我们交叉编译内核。对于 Raspberry Pi 3B 来说，目标应该是 `'llvm -mtriple=armv7l-linux-gnueabihf'`，但我们在这里使用 `'llvm'` 来使这个教程可以在我们的网页构建服务器上运行。请看下面区块中的详细说明。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "local_demo = True\n",
+        "\n",
+        "if local_demo:\n",
+        "    target = \"llvm\"\n",
+        "else:\n",
+        "    target = \"llvm -mtriple=armv7l-linux-gnueabihf\"\n",
+        "\n",
+        "func = tvm.build(s, [A, B], target=target, name=\"add_one\")\n",
+        "# save the lib at a local temp folder\n",
+        "temp = utils.tempdir()\n",
+        "path = temp.relpath(\"lib.tar\")\n",
+        "func.export_library(path)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "```{admonition} 注意\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "要在真正的远程设备上运行本教程，请将 `local_demo` 改为 `False`，并将 `target` 中的 `build` 改为适合你设备的目标 triple。对于不同的设备，目标 triple 可能是不同的。例如，对于 Raspberry Pi 3B，它是 `'llvm -mtriple=armv7l-linux-gnueabihf'`，对于 RK3399，它是 `'llvm -mtriple=aarch64-linux-gnu'`。\n",
+        "\n",
+        "通常，你可以通过在你的设备上运行 `gcc -v` 来查询目标，并寻找以 `Target:` 开始的行。（尽管它可能仍然是一个松散的配置）。\n",
+        "\n",
+        "除了`-mtriple`，你还可以设置其他的编译选项，比如：\n",
+        "\n",
+        "`-mcpu=<cpuname>`\n",
+        ":   指定一个当前架构中的特定芯片来生成代码。默认情况下，这是从目标芯片中推断出来的，并自动检测到当前架构。\n",
+        "\n",
+        "`-mattr=a1,+a2,-a3,…`\n",
+        ":   覆盖或控制目标的特定属性，比如是否启用 SIMD 操作。默认的属性集是由当前的 CPU 设置的。要获得可用的属性列表，你可以这样做：\n",
+        "\n",
+        "    ```bash\n",
+        "    llc -mtriple=<your device target triple> -mattr=help\n",
+        "    ```      \n",
+        "\n",
+        "这些选项与 [llc](http://llvm.org/docs/CommandGuide/llc.html) 一致。建议将目标 triple  和特性集设置为包含可用的特定特性，这样我们就可以充分利用板子的特性。你可以从 [LLVM 的交叉编译指南](https://clang.llvm.org/docs/CrossCompilation.html) 中找到更多关于交叉编译属性的细节。  \n",
+        "```\n",
+        "\n",
+        "## 通过 RPC 远程运行 CPU 内核\n",
+        "\n",
+        "我们将展示如何在远程设备上运行已经生成的 CPU 内核。首先，我们从远程设备获得一个 RPC 会话。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "if local_demo:\n",
+        "    remote = rpc.LocalSession()\n",
+        "else:\n",
+        "    # 以下是我的环境，将其改为你的目标设备的 IP 地址\n",
+        "    host = \"10.77.1.162\"\n",
+        "    port = 9090\n",
+        "    remote = rpc.connect(host, port)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "将 lib 上传至远程设备，然后调用设备本地编译器重新链接它们。现在 `func` 是一个远程模块对象。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "remote.upload(path)\n",
+        "func = remote.load_module(\"lib.tar\")\n",
+        "\n",
+        "# create arrays on the remote device\n",
+        "dev = remote.cpu()\n",
+        "a = tvm.nd.array(np.random.uniform(size=1024).astype(A.dtype), dev)\n",
+        "b = tvm.nd.array(np.zeros(1024, dtype=A.dtype), dev)\n",
+        "# the function will run on the remote device\n",
+        "func(a, b)\n",
+        "np.testing.assert_equal(b.numpy(), a.numpy() + 1)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "当你想评估内核在远程设备上的性能时，避免网络开销是很重要的。`time_evaluator` 将返回一个远程函数，该函数在远程设备上运行多次，测量每次运行的成本并返回测量的成本。网络开销被排除在外。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 5,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "4.445e-07 secs/op\n"
+          ]
+        }
+      ],
+      "source": [
+        "time_f = func.time_evaluator(func.entry_name, dev, number=10)\n",
+        "cost = time_f(a, b).mean\n",
+        "print(\"%g secs/op\" % cost)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 通过 RPC 远程运行 OpenCL 内核\n",
+        "\n",
+        "对于远程 OpenCL 设备，工作流程几乎和上面一样。你可以定义内核，上传文件，并通过 RPC 运行。\n",
+        "\n",
+        "````{admonition} 注意\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "Raspberry Pi 不支持 OpenCL，以下代码是在 Firefly-RK3399 上测试的。你可以按照这个 [教程](https://gist.github.com/mli/585aed2cec0b5178b1a510f9f236afa2) 来设置操作系统和 RK3399 的 OpenCL 驱动。\n",
+        "\n",
+        "此外，我们还需要在 rk3399 板上启用 OpenCL 来构建运行时。在 TVM 根目录下，执行\n",
+        "\n",
+        "   ```bash\n",
+        "   cp cmake/config.cmake .\n",
+        "   sed -i \"s/USE_OPENCL OFF/USE_OPENCL ON/\" config.cmake\n",
+        "   make runtime -j4\n",
+        "   ```\n",
+        "````\n",
+        "\n",
+        "下面的函数显示了我们如何远程运行一个 OpenCL 内核"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 6,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def run_opencl():\n",
+        "    # NOTE: This is the setting for my rk3399 board. You need to modify\n",
+        "    # them according to your environment.\n",
+        "    opencl_device_host = \"10.77.1.145\"\n",
+        "    opencl_device_port = 9090\n",
+        "    target = tvm.target.Target(\"opencl\", host=\"llvm -mtriple=aarch64-linux-gnu\")\n",
+        "\n",
+        "    # create schedule for the above \"add one\" compute declaration\n",
+        "    s = te.create_schedule(B.op)\n",
+        "    xo, xi = s[B].split(B.op.axis[0], factor=32)\n",
+        "    s[B].bind(xo, te.thread_axis(\"blockIdx.x\"))\n",
+        "    s[B].bind(xi, te.thread_axis(\"threadIdx.x\"))\n",
+        "    func = tvm.build(s, [A, B], target=target)\n",
+        "\n",
+        "    remote = rpc.connect(opencl_device_host, opencl_device_port)\n",
+        "\n",
+        "    # export and upload\n",
+        "    path = temp.relpath(\"lib_cl.tar\")\n",
+        "    func.export_library(path)\n",
+        "    remote.upload(path)\n",
+        "    func = remote.load_module(\"lib_cl.tar\")\n",
+        "\n",
+        "    # run\n",
+        "    dev = remote.cl()\n",
+        "    a = tvm.nd.array(np.random.uniform(size=1024).astype(A.dtype), dev)\n",
+        "    b = tvm.nd.array(np.zeros(1024, dtype=A.dtype), dev)\n",
+        "    func(a, b)\n",
+        "    np.testing.assert_equal(b.numpy(), a.numpy() + 1)\n",
+        "    print(\"OpenCL test passed!\")"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 总结\n",
+        "\n",
+        "- 本教程提供了 TVM 中交叉编译和 RPC 功能的介绍。\n",
+        "- 在远程设备上设置一个 RPC 服务器。\n",
+        "- 设置目标设备配置，在本地机器上交叉编译内核。\n",
+        "- 通过 RPC API 远程上传和运行内核。"
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.8.12"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
