@@ -1,0 +1,380 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 0
+   },
+   "source": [
+    "# Convolution\n",
+    ":label:`ch_conv_cpu`\n",
+    "\n",
+    "In this section, we will optimize the convolution operator defined in :numref:`ch_conv` on CPUs. Specifically, this is a 2-D convolution operator.\n",
+    "\n",
+    "## Setup\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "attributes": {
+     "classes": [],
+     "id": "",
+     "n": "1"
+    },
+    "origin_pos": 1,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "def set_env(num, current_path='.'):\n",
+    "    import sys\n",
+    "    from pathlib import Path\n",
+    "\n",
+    "    ROOT = Path(current_path).resolve().parents[num]\n",
+    "    sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境\n",
+    "    from tvm_book.contrib.tvm import set_env # 设置 TVM 环境\n",
+    "\n",
+    "set_env(3)\n",
+    "from tvm_book.contrib import d2ltvm\n",
+    "\n",
+    "import numpy as np\n",
+    "import timeit\n",
+    "import tvm\n",
+    "from tvm import te\n",
+    "\n",
+    "target = 'llvm -mcpu=skylake-avx512'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 2
+   },
+   "source": [
+    "Let's first define our performance baseline, which is the convolution operator provided by MXNet, backing up by Intel MKL-DNN library. MKL-DNN uses OpenMP compiled by Intel compiler to implement the thread-level parallelization. In order to match the thread behavior of TVM described in :numref:`ch_vector_add_cpu`, we specify the following Intel OpenMP environment variables. Without setting them, sometimes the multi-thread performance of MKL-DNN kernels may not be stable.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "origin_pos": 3,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "os.environ['KMP_AFFINITY']='granularity=fine,noduplicates,compact,1,0'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 4
+   },
+   "source": [
+    "To simplify the measurement, we use the same number of input and output channels, and the same size of height and width of input and kernel tensors. The padding will be `(kernel - 1) // 2` and the stride will be 1 so that the output will have the same width and height as the input, i.e. `SAME` padding.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "origin_pos": 5,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def conv_gflop(oc, ic, n, k, p, s):\n",
+    "    \"\"\"Compute the #floating point operations in a convolution.\n",
+    "\n",
+    "    The arguments are output channels oc, input channels ic, input size n,\n",
+    "    kernel size k, padding p and stride s.\n",
+    "    \"\"\"\n",
+    "    on = d2ltvm.conv_out_size(n, k, p, s)\n",
+    "    return 2 * oc * ic * on * on * k * k / 1e9\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def conv_timer_mxnet(c, n, k, ctx):\n",
+    "    \"\"\"Benchmark convolution in MXNet\n",
+    "\n",
+    "    c : input, output channels\n",
+    "    n : input width and height\n",
+    "    k : kernel width and height\n",
+    "    \"\"\"\n",
+    "    timer = timeit.Timer(\n",
+    "        setup='import d2ltvm\\n'\n",
+    "        'import mxnet as mx\\n'\n",
+    "        'c, n, k, p, s = %d, %d, %d, %d, 1\\n'\n",
+    "        'data, weight, bias, out = d2ltvm.get_conv_data_mxnet(\\n'\n",
+    "        '    c, c, n, k, p, s, \"%s\")'%(c, n, k, (k-1)//2, ctx),\n",
+    "        stmt='d2ltvm.conv_mxnet(data, weight, bias, out, k, p, s);'\n",
+    "        'out.wait_to_read()')\n",
+    "    return timer.timeit\n",
+    "\n",
+    "# Save to the d2ltvm package.\n",
+    "def bench_conv_mxnet(sizes, ctx='cpu'):\n",
+    "    \"\"\"Return the GFLOPS of MXNet convolution\"\"\"\n",
+    "    return [conv_gflop(c, c, n, k, (k-1)//2, 1) /\n",
+    "            d2ltvm.bench_workload(conv_timer_mxnet(c, n, k, ctx))\n",
+    "            for c, n, k in sizes]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 6
+   },
+   "source": [
+    "Then benchmark its performance with various numbers of channels, when the input and kernel width/height are fixed to be 64 and 3, respectively.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "origin_pos": 7,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "channels = 2**np.arange(4, 9)\n",
+    "# a list of (c, n, k)\n",
+    "sizes = [(int(c), 64, 3) for c in channels]\n",
+    "mxnet_gflops = bench_conv_mxnet(sizes)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 8
+   },
+   "source": [
+    "Similar to the `bench_matmul_tvm` method implemented in :numref:`ch_matmul_cpu`, we implement the reusable method to benchmark the convolution operator. Note that the first argument `func` here is a function that takes input arguments `oc, ic, n, k, p, s` and returns the schedule as well as its corresponding tensor symbolic arguments.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "origin_pos": 9,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Save to the d2ltvm package.\n",
+    "def bench_conv_tvm(func, sizes, target):\n",
+    "    def workload(nrepeats):\n",
+    "        timer = mod.time_evaluator(mod.entry_name, ctx=ctx, number=nrepeats)\n",
+    "        return timer(x, k, y).mean * nrepeats\n",
+    "    gflops, times = [], []\n",
+    "    for (c, n, k) in sizes:\n",
+    "        args = c, c, n, k, (k-1)//2, 1 # oc, ic, n, k, p, s\n",
+    "        s, (X, K, Y) = func(*args)\n",
+    "        mod = tvm.build(s, [X, K, Y], target)\n",
+    "        ctx = tvm.context(target, 0)\n",
+    "        x, k, y = d2ltvm.get_conv_data(\n",
+    "            *args, lambda x: tvm.nd.array(x, ctx=ctx))\n",
+    "        times.append(d2ltvm.bench_workload(workload))\n",
+    "        gflops.append(conv_gflop(*args))\n",
+    "    return np.array(gflops) / np.array(times)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 10
+   },
+   "source": [
+    "## Blocked Convolution\n",
+    "\n",
+    "Just as we tiled matrices into blocks to improve the cache efficiency for matrix multiplication in :numref:`ch_block_matmul_cpu`, we can do the same thing for convolution. Let's consider the case with a single output channel for simplicity.\n",
+    "\n",
+    "Consider a block of $Y$, denoted as `Y[i:i+tw, j:j+th]`, where `th` and `tw` are the tile sizes for height and width, respectively. We know the it can be computed by applying the convolution on a block of $X$ with kernel $K$. In particular, assuming the width and height of $K$ are `kw` and `kh`, then\n",
+    "\n",
+    "`Y[i:i+tw, j:j+th] = conv(X[i:i+tw+kw-1, j:j+th+kh-1], K)`\n",
+    "\n",
+    "The elements that needed for a block are illustrated in :numref:`fig_conv_block`. If we choose proper `tw` and `th`, we can fit data into the cache to improve its efficiency. This is easy to be generated to multiple output channels as it simply adds the number of kernels accordingly.\n",
+    "\n",
+    "![Compute a block of $Y$ in convolution.](../img/conv_block.svg)\n",
+    ":label:`fig_conv_block`\n",
+    "\n",
+    "The implementation of this schedule is similar to the one for matrix multiplication defined in :numref:`ch_block_matmul_cpu`. But also note the following two differences:\n",
+    "\n",
+    "1. We parallelize the outer data blocks across the output channels.\n",
+    "2. We move the inner height and width axes before the reduction axes, since they are more effectively to be optimized through vectorization and unrolling.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "origin_pos": 11,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "// attr [PaddedX] storage_scope = \"global\"\n",
+       "allocate PaddedX[float32 * 139392]\n",
+       "produce PaddedX {\n",
+       "  parallel (i0, 0, 32) {\n",
+       "    for (i1, 0, 66) {\n",
+       "      for (i2, 0, 66) {\n",
+       "        PaddedX[(((i0*4356) + (i1*66)) + i2)] = tvm_if_then_else(((((i1 < 1) || (65 <= i1)) || (i2 < 1)) || (65 <= i2)), 0f, X[((((i0*4096) + (i1*64)) + i2) - 65)])\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "}\n",
+       "produce Y {\n",
+       "  parallel (c.i.outer.fused.j.outer.fused, 0, 2048) {\n",
+       "    // attr [Y.local] storage_scope = \"local\"\n",
+       "    allocate Y.local[float32 * 64]\n",
+       "    produce Y.local {\n",
+       "      Y.local[ramp(0, 1, 8)] = x8(0f)\n",
+       "      Y.local[ramp(8, 1, 8)] = x8(0f)\n",
+       "      Y.local[ramp(16, 1, 8)] = x8(0f)\n",
+       "      Y.local[ramp(24, 1, 8)] = x8(0f)\n",
+       "      Y.local[ramp(32, 1, 8)] = x8(0f)\n",
+       "      Y.local[ramp(40, 1, 8)] = x8(0f)\n",
+       "      Y.local[ramp(48, 1, 8)] = x8(0f)\n",
+       "      Y.local[ramp(56, 1, 8)] = x8(0f)\n",
+       "      for (ric, 0, 32) {\n",
+       "        for (rkh, 0, 3) {\n",
+       "          for (rkw, 0, 3) {\n",
+       "            Y.local[ramp(0, 1, 8)] = (Y.local[ramp(0, 1, 8)] + (PaddedX[ramp((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "            Y.local[ramp(8, 1, 8)] = (Y.local[ramp(8, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 66), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "            Y.local[ramp(16, 1, 8)] = (Y.local[ramp(16, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 132), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "            Y.local[ramp(24, 1, 8)] = (Y.local[ramp(24, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 198), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "            Y.local[ramp(32, 1, 8)] = (Y.local[ramp(32, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 264), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "            Y.local[ramp(40, 1, 8)] = (Y.local[ramp(40, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 330), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "            Y.local[ramp(48, 1, 8)] = (Y.local[ramp(48, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 396), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "            Y.local[ramp(56, 1, 8)] = (Y.local[ramp(56, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 462), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))\n",
+       "          }\n",
+       "        }\n",
+       "      }\n",
+       "    }\n",
+       "    for (i.inner, 0, 8) {\n",
+       "      for (j.inner, 0, 8) {\n",
+       "        Y[((((floordiv(c.i.outer.fused.j.outer.fused, 8)*512) + (i.inner*64)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + j.inner)] = Y.local[((i.inner*8) + j.inner)]\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "th, tw = 8, 8  # Tile sizes for height and weight\n",
+    "\n",
+    "def cached_block(oc, ic, n, k, p, s):\n",
+    "    X, K, Y, PaddedX = d2ltvm.conv(oc, ic, n, n, k, k, p, p, s, s)\n",
+    "    s = te.create_schedule(Y.op)\n",
+    "    CachedY = s.cache_write(Y, 'local')\n",
+    "    # Compute the output block for every output channel in parallel\n",
+    "    oc, h, w = Y.op.axis\n",
+    "    ho, wo, hi, wi = s[Y].tile(h, w, th, tw)\n",
+    "    ochw = s[Y].fuse(oc, ho, wo)\n",
+    "    s[Y].parallel(ochw)\n",
+    "    # Cache the output block, and move the inner height and width axes\n",
+    "    # to innermost, so we can vectorize and unroll them\n",
+    "    s[CachedY].compute_at(s[Y], ochw)\n",
+    "    _,  ch, cw = CachedY.op.axis\n",
+    "    ric, rkh, rkw = CachedY.op.reduce_axis\n",
+    "    s[CachedY].reorder(ric, rkh, rkw, ch, cw)\n",
+    "    s[CachedY].vectorize(cw)\n",
+    "    s[CachedY].unroll(ch)\n",
+    "    # Schedule the padding by adding thread-level parallelism\n",
+    "    if PaddedX != X:\n",
+    "        s[PaddedX].parallel(PaddedX.op.axis[0])\n",
+    "    return s, (X, K, Y)\n",
+    "\n",
+    "s, args = cached_block(32, 32, 64, 3, 1, 1)\n",
+    "tvm.lower(s, args, simple_mode=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 12
+   },
+   "source": [
+    "The output pseudo code becomes a bit long, but as long as you understand the scheduling primitives we used above, the code should make sense if you take a close look.\n",
+    "\n",
+    "Now let's benchmark its performance and compare with our baseline.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "origin_pos": 13,
+    "tab": [
+     "tvm"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<!-- Created with matplotlib (https://matplotlib.org/) -->\n<svg height=\"207.83625pt\" version=\"1.1\" viewBox=\"0 0 303.778125 207.83625\" width=\"303.778125pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n <metadata>\n  <rdf:RDF xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n   <cc:Work>\n    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n    <dc:date>2020-10-13T10:38:39.429626</dc:date>\n    <dc:format>image/svg+xml</dc:format>\n    <dc:creator>\n     <cc:Agent>\n      <dc:title>Matplotlib v3.3.2, https://matplotlib.org/</dc:title>\n     </cc:Agent>\n    </dc:creator>\n   </cc:Work>\n  </rdf:RDF>\n </metadata>\n <defs>\n  <style type=\"text/css\">*{stroke-linecap:butt;stroke-linejoin:round;}</style>\n </defs>\n <g id=\"figure_1\">\n  <g id=\"patch_1\">\n   <path d=\"M 0 207.83625 \nL 303.778125 207.83625 \nL 303.778125 0 \nL 0 0 \nz\n\" style=\"fill:none;\"/>\n  </g>\n  <g id=\"axes_1\">\n   <g id=\"patch_2\">\n    <path d=\"M 45.478125 170.28 \nL 296.578125 170.28 \nL 296.578125 7.2 \nL 45.478125 7.2 \nz\n\" style=\"fill:#ffffff;\"/>\n   </g>\n   <g id=\"matplotlib.axis_1\">\n    <g id=\"xtick_1\">\n     <g id=\"line2d_1\">\n      <path clip-path=\"url(#p09459dc2b5)\" d=\"M 207.771827 170.28 \nL 207.771827 7.2 \n\" style=\"fill:none;stroke:#b0b0b0;stroke-linecap:square;stroke-width:0.8;\"/>\n     </g>\n     <g id=\"line2d_2\">\n      <defs>\n       <path d=\"M 0 0 \nL 0 3.5 \n\" id=\"m5bb3ee419b\" style=\"stroke:#000000;stroke-width:0.8;\"/>\n      </defs>\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.8;\" x=\"207.771827\" xlink:href=\"#m5bb3ee419b\" y=\"170.28\"/>\n      </g>\n     </g>\n     <g id=\"text_1\">\n      <!-- $\\mathdefault{10^{2}}$ -->\n      <g transform=\"translate(198.971827 184.878438)scale(0.1 -0.1)\">\n       <defs>\n        <path d=\"M 12.40625 8.296875 \nL 28.515625 8.296875 \nL 28.515625 63.921875 \nL 10.984375 60.40625 \nL 10.984375 69.390625 \nL 28.421875 72.90625 \nL 38.28125 72.90625 \nL 38.28125 8.296875 \nL 54.390625 8.296875 \nL 54.390625 0 \nL 12.40625 0 \nz\n\" id=\"DejaVuSans-49\"/>\n        <path d=\"M 31.78125 66.40625 \nQ 24.171875 66.40625 20.328125 58.90625 \nQ 16.5 51.421875 16.5 36.375 \nQ 16.5 21.390625 20.328125 13.890625 \nQ 24.171875 6.390625 31.78125 6.390625 \nQ 39.453125 6.390625 43.28125 13.890625 \nQ 47.125 21.390625 47.125 36.375 \nQ 47.125 51.421875 43.28125 58.90625 \nQ 39.453125 66.40625 31.78125 66.40625 \nz\nM 31.78125 74.21875 \nQ 44.046875 74.21875 50.515625 64.515625 \nQ 56.984375 54.828125 56.984375 36.375 \nQ 56.984375 17.96875 50.515625 8.265625 \nQ 44.046875 -1.421875 31.78125 -1.421875 \nQ 19.53125 -1.421875 13.0625 8.265625 \nQ 6.59375 17.96875 6.59375 36.375 \nQ 6.59375 54.828125 13.0625 64.515625 \nQ 19.53125 74.21875 31.78125 74.21875 \nz\n\" id=\"DejaVuSans-48\"/>\n        <path d=\"M 19.1875 8.296875 \nL 53.609375 8.296875 \nL 53.609375 0 \nL 7.328125 0 \nL 7.328125 8.296875 \nQ 12.9375 14.109375 22.625 23.890625 \nQ 32.328125 33.6875 34.8125 36.53125 \nQ 39.546875 41.84375 41.421875 45.53125 \nQ 43.3125 49.21875 43.3125 52.78125 \nQ 43.3125 58.59375 39.234375 62.25 \nQ 35.15625 65.921875 28.609375 65.921875 \nQ 23.96875 65.921875 18.8125 64.3125 \nQ 13.671875 62.703125 7.8125 59.421875 \nL 7.8125 69.390625 \nQ 13.765625 71.78125 18.9375 73 \nQ 24.125 74.21875 28.421875 74.21875 \nQ 39.75 74.21875 46.484375 68.546875 \nQ 53.21875 62.890625 53.21875 53.421875 \nQ 53.21875 48.921875 51.53125 44.890625 \nQ 49.859375 40.875 45.40625 35.40625 \nQ 44.1875 33.984375 37.640625 27.21875 \nQ 31.109375 20.453125 19.1875 8.296875 \nz\n\" id=\"DejaVuSans-50\"/>\n       </defs>\n       <use transform=\"translate(0 0.765625)\" xlink:href=\"#DejaVuSans-49\"/>\n       <use transform=\"translate(63.623047 0.765625)\" xlink:href=\"#DejaVuSans-48\"/>\n       <use transform=\"translate(128.203125 39.046875)scale(0.7)\" xlink:href=\"#DejaVuSans-50\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_2\">\n     <g id=\"line2d_3\">\n      <defs>\n       <path d=\"M 0 0 \nL 0 2 \n\" id=\"m12bf133e48\" style=\"stroke:#000000;stroke-width:0.6;\"/>\n      </defs>\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"75.263612\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_3\">\n     <g id=\"line2d_4\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"108.646359\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_4\">\n     <g id=\"line2d_5\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"132.331794\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_5\">\n     <g id=\"line2d_6\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"150.703645\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_6\">\n     <g id=\"line2d_7\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"165.714541\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_7\">\n     <g id=\"line2d_8\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"178.406072\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_8\">\n     <g id=\"line2d_9\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"189.399976\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_9\">\n     <g id=\"line2d_10\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"199.097287\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"xtick_10\">\n     <g id=\"line2d_11\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"264.840009\" xlink:href=\"#m12bf133e48\" y=\"170.28\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"text_2\">\n     <!-- Size -->\n     <g transform=\"translate(160.764062 198.556563)scale(0.1 -0.1)\">\n      <defs>\n       <path d=\"M 53.515625 70.515625 \nL 53.515625 60.890625 \nQ 47.90625 63.578125 42.921875 64.890625 \nQ 37.9375 66.21875 33.296875 66.21875 \nQ 25.25 66.21875 20.875 63.09375 \nQ 16.5 59.96875 16.5 54.203125 \nQ 16.5 49.359375 19.40625 46.890625 \nQ 22.3125 44.4375 30.421875 42.921875 \nL 36.375 41.703125 \nQ 47.40625 39.59375 52.65625 34.296875 \nQ 57.90625 29 57.90625 20.125 \nQ 57.90625 9.515625 50.796875 4.046875 \nQ 43.703125 -1.421875 29.984375 -1.421875 \nQ 24.8125 -1.421875 18.96875 -0.25 \nQ 13.140625 0.921875 6.890625 3.21875 \nL 6.890625 13.375 \nQ 12.890625 10.015625 18.65625 8.296875 \nQ 24.421875 6.59375 29.984375 6.59375 \nQ 38.421875 6.59375 43.015625 9.90625 \nQ 47.609375 13.234375 47.609375 19.390625 \nQ 47.609375 24.75 44.3125 27.78125 \nQ 41.015625 30.8125 33.5 32.328125 \nL 27.484375 33.5 \nQ 16.453125 35.6875 11.515625 40.375 \nQ 6.59375 45.0625 6.59375 53.421875 \nQ 6.59375 63.09375 13.40625 68.65625 \nQ 20.21875 74.21875 32.171875 74.21875 \nQ 37.3125 74.21875 42.625 73.28125 \nQ 47.953125 72.359375 53.515625 70.515625 \nz\n\" id=\"DejaVuSans-83\"/>\n       <path d=\"M 9.421875 54.6875 \nL 18.40625 54.6875 \nL 18.40625 0 \nL 9.421875 0 \nz\nM 9.421875 75.984375 \nL 18.40625 75.984375 \nL 18.40625 64.59375 \nL 9.421875 64.59375 \nz\n\" id=\"DejaVuSans-105\"/>\n       <path d=\"M 5.515625 54.6875 \nL 48.1875 54.6875 \nL 48.1875 46.484375 \nL 14.40625 7.171875 \nL 48.1875 7.171875 \nL 48.1875 0 \nL 4.296875 0 \nL 4.296875 8.203125 \nL 38.09375 47.515625 \nL 5.515625 47.515625 \nz\n\" id=\"DejaVuSans-122\"/>\n       <path d=\"M 56.203125 29.59375 \nL 56.203125 25.203125 \nL 14.890625 25.203125 \nQ 15.484375 15.921875 20.484375 11.0625 \nQ 25.484375 6.203125 34.421875 6.203125 \nQ 39.59375 6.203125 44.453125 7.46875 \nQ 49.3125 8.734375 54.109375 11.28125 \nL 54.109375 2.78125 \nQ 49.265625 0.734375 44.1875 -0.34375 \nQ 39.109375 -1.421875 33.890625 -1.421875 \nQ 20.796875 -1.421875 13.15625 6.1875 \nQ 5.515625 13.8125 5.515625 26.8125 \nQ 5.515625 40.234375 12.765625 48.109375 \nQ 20.015625 56 32.328125 56 \nQ 43.359375 56 49.78125 48.890625 \nQ 56.203125 41.796875 56.203125 29.59375 \nz\nM 47.21875 32.234375 \nQ 47.125 39.59375 43.09375 43.984375 \nQ 39.0625 48.390625 32.421875 48.390625 \nQ 24.90625 48.390625 20.390625 44.140625 \nQ 15.875 39.890625 15.1875 32.171875 \nz\n\" id=\"DejaVuSans-101\"/>\n      </defs>\n      <use xlink:href=\"#DejaVuSans-83\"/>\n      <use x=\"63.476562\" xlink:href=\"#DejaVuSans-105\"/>\n      <use x=\"91.259766\" xlink:href=\"#DejaVuSans-122\"/>\n      <use x=\"143.75\" xlink:href=\"#DejaVuSans-101\"/>\n     </g>\n    </g>\n   </g>\n   <g id=\"matplotlib.axis_2\">\n    <g id=\"ytick_1\">\n     <g id=\"line2d_12\">\n      <path clip-path=\"url(#p09459dc2b5)\" d=\"M 45.478125 145.48907 \nL 296.578125 145.48907 \n\" style=\"fill:none;stroke:#b0b0b0;stroke-linecap:square;stroke-width:0.8;\"/>\n     </g>\n     <g id=\"line2d_13\">\n      <defs>\n       <path d=\"M 0 0 \nL -3.5 0 \n\" id=\"m62e4075589\" style=\"stroke:#000000;stroke-width:0.8;\"/>\n      </defs>\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.8;\" x=\"45.478125\" xlink:href=\"#m62e4075589\" y=\"145.48907\"/>\n      </g>\n     </g>\n     <g id=\"text_3\">\n      <!-- $\\mathdefault{10^{2}}$ -->\n      <g transform=\"translate(20.878125 149.288289)scale(0.1 -0.1)\">\n       <use transform=\"translate(0 0.765625)\" xlink:href=\"#DejaVuSans-49\"/>\n       <use transform=\"translate(63.623047 0.765625)\" xlink:href=\"#DejaVuSans-48\"/>\n       <use transform=\"translate(128.203125 39.046875)scale(0.7)\" xlink:href=\"#DejaVuSans-50\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_2\">\n     <g id=\"line2d_14\">\n      <path clip-path=\"url(#p09459dc2b5)\" d=\"M 45.478125 13.596922 \nL 296.578125 13.596922 \n\" style=\"fill:none;stroke:#b0b0b0;stroke-linecap:square;stroke-width:0.8;\"/>\n     </g>\n     <g id=\"line2d_15\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.8;\" x=\"45.478125\" xlink:href=\"#m62e4075589\" y=\"13.596922\"/>\n      </g>\n     </g>\n     <g id=\"text_4\">\n      <!-- $\\mathdefault{10^{3}}$ -->\n      <g transform=\"translate(20.878125 17.39614)scale(0.1 -0.1)\">\n       <defs>\n        <path d=\"M 40.578125 39.3125 \nQ 47.65625 37.796875 51.625 33 \nQ 55.609375 28.21875 55.609375 21.1875 \nQ 55.609375 10.40625 48.1875 4.484375 \nQ 40.765625 -1.421875 27.09375 -1.421875 \nQ 22.515625 -1.421875 17.65625 -0.515625 \nQ 12.796875 0.390625 7.625 2.203125 \nL 7.625 11.71875 \nQ 11.71875 9.328125 16.59375 8.109375 \nQ 21.484375 6.890625 26.8125 6.890625 \nQ 36.078125 6.890625 40.9375 10.546875 \nQ 45.796875 14.203125 45.796875 21.1875 \nQ 45.796875 27.640625 41.28125 31.265625 \nQ 36.765625 34.90625 28.71875 34.90625 \nL 20.21875 34.90625 \nL 20.21875 43.015625 \nL 29.109375 43.015625 \nQ 36.375 43.015625 40.234375 45.921875 \nQ 44.09375 48.828125 44.09375 54.296875 \nQ 44.09375 59.90625 40.109375 62.90625 \nQ 36.140625 65.921875 28.71875 65.921875 \nQ 24.65625 65.921875 20.015625 65.03125 \nQ 15.375 64.15625 9.8125 62.3125 \nL 9.8125 71.09375 \nQ 15.4375 72.65625 20.34375 73.4375 \nQ 25.25 74.21875 29.59375 74.21875 \nQ 40.828125 74.21875 47.359375 69.109375 \nQ 53.90625 64.015625 53.90625 55.328125 \nQ 53.90625 49.265625 50.4375 45.09375 \nQ 46.96875 40.921875 40.578125 39.3125 \nz\n\" id=\"DejaVuSans-51\"/>\n       </defs>\n       <use transform=\"translate(0 0.765625)\" xlink:href=\"#DejaVuSans-49\"/>\n       <use transform=\"translate(63.623047 0.765625)\" xlink:href=\"#DejaVuSans-48\"/>\n       <use transform=\"translate(128.203125 39.046875)scale(0.7)\" xlink:href=\"#DejaVuSans-51\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_3\">\n     <g id=\"line2d_16\">\n      <defs>\n       <path d=\"M 0 0 \nL -2 0 \n\" id=\"md709f405cc\" style=\"stroke:#000000;stroke-width:0.6;\"/>\n      </defs>\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"165.919422\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_4\">\n     <g id=\"line2d_17\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"158.27074\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_5\">\n     <g id=\"line2d_18\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"151.524124\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_6\">\n     <g id=\"line2d_19\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"105.785577\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_7\">\n     <g id=\"line2d_20\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"82.560523\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_8\">\n     <g id=\"line2d_21\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"66.082084\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_9\">\n     <g id=\"line2d_22\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"53.300414\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_10\">\n     <g id=\"line2d_23\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"42.85703\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_11\">\n     <g id=\"line2d_24\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"34.027274\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_12\">\n     <g id=\"line2d_25\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"26.378591\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"ytick_13\">\n     <g id=\"line2d_26\">\n      <g>\n       <use style=\"stroke:#000000;stroke-width:0.6;\" x=\"45.478125\" xlink:href=\"#md709f405cc\" y=\"19.631975\"/>\n      </g>\n     </g>\n    </g>\n    <g id=\"text_5\">\n     <!-- GFLOPS -->\n     <g transform=\"translate(14.798438 108.219688)rotate(-90)scale(0.1 -0.1)\">\n      <defs>\n       <path d=\"M 59.515625 10.40625 \nL 59.515625 29.984375 \nL 43.40625 29.984375 \nL 43.40625 38.09375 \nL 69.28125 38.09375 \nL 69.28125 6.78125 \nQ 63.578125 2.734375 56.6875 0.65625 \nQ 49.8125 -1.421875 42 -1.421875 \nQ 24.90625 -1.421875 15.25 8.5625 \nQ 5.609375 18.5625 5.609375 36.375 \nQ 5.609375 54.25 15.25 64.234375 \nQ 24.90625 74.21875 42 74.21875 \nQ 49.125 74.21875 55.546875 72.453125 \nQ 61.96875 70.703125 67.390625 67.28125 \nL 67.390625 56.78125 \nQ 61.921875 61.421875 55.765625 63.765625 \nQ 49.609375 66.109375 42.828125 66.109375 \nQ 29.4375 66.109375 22.71875 58.640625 \nQ 16.015625 51.171875 16.015625 36.375 \nQ 16.015625 21.625 22.71875 14.15625 \nQ 29.4375 6.6875 42.828125 6.6875 \nQ 48.046875 6.6875 52.140625 7.59375 \nQ 56.25 8.5 59.515625 10.40625 \nz\n\" id=\"DejaVuSans-71\"/>\n       <path d=\"M 9.8125 72.90625 \nL 51.703125 72.90625 \nL 51.703125 64.59375 \nL 19.671875 64.59375 \nL 19.671875 43.109375 \nL 48.578125 43.109375 \nL 48.578125 34.8125 \nL 19.671875 34.8125 \nL 19.671875 0 \nL 9.8125 0 \nz\n\" id=\"DejaVuSans-70\"/>\n       <path d=\"M 9.8125 72.90625 \nL 19.671875 72.90625 \nL 19.671875 8.296875 \nL 55.171875 8.296875 \nL 55.171875 0 \nL 9.8125 0 \nz\n\" id=\"DejaVuSans-76\"/>\n       <path d=\"M 39.40625 66.21875 \nQ 28.65625 66.21875 22.328125 58.203125 \nQ 16.015625 50.203125 16.015625 36.375 \nQ 16.015625 22.609375 22.328125 14.59375 \nQ 28.65625 6.59375 39.40625 6.59375 \nQ 50.140625 6.59375 56.421875 14.59375 \nQ 62.703125 22.609375 62.703125 36.375 \nQ 62.703125 50.203125 56.421875 58.203125 \nQ 50.140625 66.21875 39.40625 66.21875 \nz\nM 39.40625 74.21875 \nQ 54.734375 74.21875 63.90625 63.9375 \nQ 73.09375 53.65625 73.09375 36.375 \nQ 73.09375 19.140625 63.90625 8.859375 \nQ 54.734375 -1.421875 39.40625 -1.421875 \nQ 24.03125 -1.421875 14.8125 8.828125 \nQ 5.609375 19.09375 5.609375 36.375 \nQ 5.609375 53.65625 14.8125 63.9375 \nQ 24.03125 74.21875 39.40625 74.21875 \nz\n\" id=\"DejaVuSans-79\"/>\n       <path d=\"M 19.671875 64.796875 \nL 19.671875 37.40625 \nL 32.078125 37.40625 \nQ 38.96875 37.40625 42.71875 40.96875 \nQ 46.484375 44.53125 46.484375 51.125 \nQ 46.484375 57.671875 42.71875 61.234375 \nQ 38.96875 64.796875 32.078125 64.796875 \nz\nM 9.8125 72.90625 \nL 32.078125 72.90625 \nQ 44.34375 72.90625 50.609375 67.359375 \nQ 56.890625 61.8125 56.890625 51.125 \nQ 56.890625 40.328125 50.609375 34.8125 \nQ 44.34375 29.296875 32.078125 29.296875 \nL 19.671875 29.296875 \nL 19.671875 0 \nL 9.8125 0 \nz\n\" id=\"DejaVuSans-80\"/>\n      </defs>\n      <use xlink:href=\"#DejaVuSans-71\"/>\n      <use x=\"77.490234\" xlink:href=\"#DejaVuSans-70\"/>\n      <use x=\"135.009766\" xlink:href=\"#DejaVuSans-76\"/>\n      <use x=\"187.097656\" xlink:href=\"#DejaVuSans-79\"/>\n      <use x=\"265.808594\" xlink:href=\"#DejaVuSans-80\"/>\n      <use x=\"326.111328\" xlink:href=\"#DejaVuSans-83\"/>\n     </g>\n    </g>\n   </g>\n   <g id=\"line2d_27\">\n    <path clip-path=\"url(#p09459dc2b5)\" d=\"M 56.891761 162.867273 \nL 113.959943 108.986931 \nL 171.028125 80.623796 \nL 228.096307 25.965624 \nL 285.164489 14.612727 \n\" style=\"fill:none;stroke:#1f77b4;stroke-dasharray:5.55,2.4;stroke-dashoffset:0;stroke-width:1.5;\"/>\n   </g>\n   <g id=\"line2d_28\">\n    <path clip-path=\"url(#p09459dc2b5)\" d=\"M 56.891761 83.408139 \nL 113.959943 69.598773 \nL 171.028125 80.562836 \nL 228.096307 86.551933 \nL 285.164489 88.052908 \n\" style=\"fill:none;stroke:#ff7f0e;stroke-linecap:square;stroke-width:1.5;\"/>\n   </g>\n   <g id=\"patch_3\">\n    <path d=\"M 45.478125 170.28 \nL 45.478125 7.2 \n\" style=\"fill:none;stroke:#000000;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.8;\"/>\n   </g>\n   <g id=\"patch_4\">\n    <path d=\"M 296.578125 170.28 \nL 296.578125 7.2 \n\" style=\"fill:none;stroke:#000000;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.8;\"/>\n   </g>\n   <g id=\"patch_5\">\n    <path d=\"M 45.478125 170.28 \nL 296.578125 170.28 \n\" style=\"fill:none;stroke:#000000;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.8;\"/>\n   </g>\n   <g id=\"patch_6\">\n    <path d=\"M 45.478125 7.2 \nL 296.578125 7.2 \n\" style=\"fill:none;stroke:#000000;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.8;\"/>\n   </g>\n   <g id=\"legend_1\">\n    <g id=\"patch_7\">\n     <path d=\"M 52.478125 44.55625 \nL 116.548438 44.55625 \nQ 118.548438 44.55625 118.548438 42.55625 \nL 118.548438 14.2 \nQ 118.548438 12.2 116.548438 12.2 \nL 52.478125 12.2 \nQ 50.478125 12.2 50.478125 14.2 \nL 50.478125 42.55625 \nQ 50.478125 44.55625 52.478125 44.55625 \nz\n\" style=\"fill:#ffffff;opacity:0.8;stroke:#cccccc;stroke-linejoin:miter;\"/>\n    </g>\n    <g id=\"line2d_29\">\n     <path d=\"M 54.478125 20.298438 \nL 74.478125 20.298438 \n\" style=\"fill:none;stroke:#1f77b4;stroke-dasharray:5.55,2.4;stroke-dashoffset:0;stroke-width:1.5;\"/>\n    </g>\n    <g id=\"line2d_30\"/>\n    <g id=\"text_6\">\n     <!-- mxnet -->\n     <g transform=\"translate(82.478125 23.798438)scale(0.1 -0.1)\">\n      <defs>\n       <path d=\"M 52 44.1875 \nQ 55.375 50.25 60.0625 53.125 \nQ 64.75 56 71.09375 56 \nQ 79.640625 56 84.28125 50.015625 \nQ 88.921875 44.046875 88.921875 33.015625 \nL 88.921875 0 \nL 79.890625 0 \nL 79.890625 32.71875 \nQ 79.890625 40.578125 77.09375 44.375 \nQ 74.3125 48.1875 68.609375 48.1875 \nQ 61.625 48.1875 57.5625 43.546875 \nQ 53.515625 38.921875 53.515625 30.90625 \nL 53.515625 0 \nL 44.484375 0 \nL 44.484375 32.71875 \nQ 44.484375 40.625 41.703125 44.40625 \nQ 38.921875 48.1875 33.109375 48.1875 \nQ 26.21875 48.1875 22.15625 43.53125 \nQ 18.109375 38.875 18.109375 30.90625 \nL 18.109375 0 \nL 9.078125 0 \nL 9.078125 54.6875 \nL 18.109375 54.6875 \nL 18.109375 46.1875 \nQ 21.1875 51.21875 25.484375 53.609375 \nQ 29.78125 56 35.6875 56 \nQ 41.65625 56 45.828125 52.96875 \nQ 50 49.953125 52 44.1875 \nz\n\" id=\"DejaVuSans-109\"/>\n       <path d=\"M 54.890625 54.6875 \nL 35.109375 28.078125 \nL 55.90625 0 \nL 45.3125 0 \nL 29.390625 21.484375 \nL 13.484375 0 \nL 2.875 0 \nL 24.125 28.609375 \nL 4.6875 54.6875 \nL 15.28125 54.6875 \nL 29.78125 35.203125 \nL 44.28125 54.6875 \nz\n\" id=\"DejaVuSans-120\"/>\n       <path d=\"M 54.890625 33.015625 \nL 54.890625 0 \nL 45.90625 0 \nL 45.90625 32.71875 \nQ 45.90625 40.484375 42.875 44.328125 \nQ 39.84375 48.1875 33.796875 48.1875 \nQ 26.515625 48.1875 22.3125 43.546875 \nQ 18.109375 38.921875 18.109375 30.90625 \nL 18.109375 0 \nL 9.078125 0 \nL 9.078125 54.6875 \nL 18.109375 54.6875 \nL 18.109375 46.1875 \nQ 21.34375 51.125 25.703125 53.5625 \nQ 30.078125 56 35.796875 56 \nQ 45.21875 56 50.046875 50.171875 \nQ 54.890625 44.34375 54.890625 33.015625 \nz\n\" id=\"DejaVuSans-110\"/>\n       <path d=\"M 18.3125 70.21875 \nL 18.3125 54.6875 \nL 36.8125 54.6875 \nL 36.8125 47.703125 \nL 18.3125 47.703125 \nL 18.3125 18.015625 \nQ 18.3125 11.328125 20.140625 9.421875 \nQ 21.96875 7.515625 27.59375 7.515625 \nL 36.8125 7.515625 \nL 36.8125 0 \nL 27.59375 0 \nQ 17.1875 0 13.234375 3.875 \nQ 9.28125 7.765625 9.28125 18.015625 \nL 9.28125 47.703125 \nL 2.6875 47.703125 \nL 2.6875 54.6875 \nL 9.28125 54.6875 \nL 9.28125 70.21875 \nz\n\" id=\"DejaVuSans-116\"/>\n      </defs>\n      <use xlink:href=\"#DejaVuSans-109\"/>\n      <use x=\"97.412109\" xlink:href=\"#DejaVuSans-120\"/>\n      <use x=\"156.591797\" xlink:href=\"#DejaVuSans-110\"/>\n      <use x=\"219.970703\" xlink:href=\"#DejaVuSans-101\"/>\n      <use x=\"281.494141\" xlink:href=\"#DejaVuSans-116\"/>\n     </g>\n    </g>\n    <g id=\"line2d_31\">\n     <path d=\"M 54.478125 34.976562 \nL 74.478125 34.976562 \n\" style=\"fill:none;stroke:#ff7f0e;stroke-linecap:square;stroke-width:1.5;\"/>\n    </g>\n    <g id=\"line2d_32\"/>\n    <g id=\"text_7\">\n     <!-- tvm -->\n     <g transform=\"translate(82.478125 38.476562)scale(0.1 -0.1)\">\n      <defs>\n       <path d=\"M 2.984375 54.6875 \nL 12.5 54.6875 \nL 29.59375 8.796875 \nL 46.6875 54.6875 \nL 56.203125 54.6875 \nL 35.6875 0 \nL 23.484375 0 \nz\n\" id=\"DejaVuSans-118\"/>\n      </defs>\n      <use xlink:href=\"#DejaVuSans-116\"/>\n      <use x=\"39.208984\" xlink:href=\"#DejaVuSans-118\"/>\n      <use x=\"98.388672\" xlink:href=\"#DejaVuSans-109\"/>\n     </g>\n    </g>\n   </g>\n  </g>\n </g>\n <defs>\n  <clipPath id=\"p09459dc2b5\">\n   <rect height=\"163.08\" width=\"251.1\" x=\"45.478125\" y=\"7.2\"/>\n  </clipPath>\n </defs>\n</svg>\n",
+      "text/plain": [
+       "<Figure size 324x216 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "tvm_gflops = bench_conv_tvm(cached_block, sizes, target)\n",
+    "d2ltvm.plot_gflops(channels, [mxnet_gflops, tvm_gflops], ['mxnet', 'tvm'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "origin_pos": 14
+   },
+   "source": [
+    "As we can seen that our schedule does well for small channel sizes, while its performance decrease for large channel sizes. We will optimize the later in :numref:`ch_packed_conv_cpu`.\n",
+    "\n",
+    "## Summary\n",
+    "\n",
+    "- We tile the input and output data of convolution as we did for matrix multiplication for better cache efficiency.\n",
+    "\n",
+    "## Exercises\n",
+    "\n",
+    "- Try different tiling sizes.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

@@ -4,9 +4,8 @@
 ```{toctree}
 :maxdepth: 3
 
-d2l-tvm/index
-start/index
-origin/index
+tutorials
+tests/index
 chaos
 api/index
 about/index

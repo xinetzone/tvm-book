@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>TVM 手册 &#8212; tvm-book 0.0.1 文档</title>
+    <title>TVM 手册 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -47,7 +47,7 @@
     <link rel="shortcut icon" href="_static/favicon.jpg"/>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="教程" href="d2l-tvm/index.html" />
+    <link rel="next" title="教程" href="tutorials.html" />
     <link rel="stylesheet" href="_static/css/default.css"/>
     <link rel="stylesheet" href="_static/css/custom.css"/>
 
@@ -82,20 +82,14 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="d2l-tvm/index.html">
+ <a class="reference internal nav-link" href="tutorials.html">
   教程
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="start/index.html">
-  快速上手
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="origin/index.html">
-  TVM 官方教程
+ <a class="reference internal nav-link" href="tests/index.html">
+  测试
  </a>
 </li>
 
@@ -136,7 +130,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.1  <!-- this text may get changed later by javascript -->
+        v0.0.2  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -146,7 +140,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables index and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.1', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables index and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.2', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -197,10 +191,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.1 variable.
+            // this version, rather than using sphinx's 0.0.2 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.1") {
+            if (entry.version == "v0.0.2") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -304,127 +298,24 @@ function checkPageExistsAndRedirect(event) {
 <p>打造优质的 TVM 中文社区。</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="d2l-tvm/index.html">教程</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/chapter_getting_started/index.html">入门</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_getting_started/install.html">安装</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_getting_started/vector_add.html">向量加法</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_getting_started/from_mxnet.html">神经网络推理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_getting_started/remote.html">在远程计算机上运行</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">教程</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="origin/index.html">TVM 官方教程</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/chapter_expressions/index.html">Expressions for Operators</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_expressions/data_types.html">Data Types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_expressions/shapes.html">Shapes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_expressions/index_shape_expressions.html">Index and Shape Expressions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_expressions/reductions.html">Reduction Operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_expressions/if_then_else.html">Conditional Expression: <code class="docutils literal notranslate"><span class="pre">if-then-else</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_expressions/all_any.html">Truth Value Testing: <code class="docutils literal notranslate"><span class="pre">all</span></code> and <code class="docutils literal notranslate"><span class="pre">any</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests/index.html">测试</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tests/intro.html">TVM 简介</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests/nn.html">神经网络测试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests/config.html">配置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tests/config.html#tvm">安装 TVM</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/chapter_common_operators/index.html">常见的算子</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_common_operators/broadcast_add.html">Broadcast Add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_common_operators/matmul.html">Matrix Multiplication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_common_operators/conv.html">Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_common_operators/depthwise_conv.html">Depthwise Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_common_operators/pooling.html">Pooling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_common_operators/batch_norm.html">Batch Normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests/demo.html">TVM 操练场</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tests/demo.html#id1">推理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tests/demo.html#id2">保存模型</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/index.html">Operator Optimizations on CPUs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/arch.html">CPU Architecture</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/call_overhead.html">Function Call Overhead</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/vector_add.html">Vector Add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/broadcast_add.html">Broadcast Add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/matmul.html">Matrix Multiplication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/block_matmul.html">Improve Cache Efficiency by Blocking</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/conv.html">Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/packed_conv.html">Packed Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/depthwise_conv.html">Depthwise Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/pooling.html">Pooling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_cpu_schedules/batch_norm.html">Batch Normalization</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/index.html">Operator Optimizations on GPUs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/arch.html">GPU Architecture</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/vector_add.html">Vector Add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/broadcast_add.html">Broadcast Add</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/matmul.html">Matrix Multiplication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/conv.html">Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/depthwise_conv.html">Depthwise Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/pooling.html">Pooling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="d2l-tvm/chapter_gpu_schedules/batch_norm.html">Batch Norm</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/chapter_neural_networks/index.html">Neural Networks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/chapter_deployment/index.html">部署</a></li>
-<li class="toctree-l2"><a class="reference internal" href="d2l-tvm/zreferences.html">参考文献</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="start/index.html">快速上手</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="start/demo.html">TVM 操练场</a></li>
-<li class="toctree-l2"><a class="reference internal" href="start/intro.html">TVM 简介</a></li>
-<li class="toctree-l2"><a class="reference internal" href="start/advance.html">高级</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="start/advance.html#vta">针对 VTA 卷积计算的计算表达式和调度表达式</a></li>
-<li class="toctree-l3"><a class="reference internal" href="start/advance.html#id2">针对 VTA 卷积计算的指令序列</a></li>
-<li class="toctree-l3"><a class="reference internal" href="start/advance.html#id3">量化专题</a></li>
-<li class="toctree-l3"><a class="reference internal" href="start/advance.html#id4">压缩专题</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="start/config.html">配置</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="start/config.html#tvm">安装 TVM</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="start/dsl.html">领域专用语言</a></li>
-<li class="toctree-l2"><a class="reference internal" href="start/refs.html">参考</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="origin/index.html">TVM 官方教程</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="origin/tutorial/index.html">用户指南</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/introduction.html">TVM 和模型优化的概述</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/tvmc_command_line_driver.html">用 TVMC 编译和优化模型</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/tvmc_python.html">开始使用 TVMC Python：TVM 的高级 API</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/autotvm_relay_x86.html">用 Python 接口编译和优化模型</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/tensor_expr_get_started.html">使用张量表达式处理算子</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/autotvm_matmul_x86.html">用调度模板和 AutoTVM 优化算子</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/auto_scheduler_matmul_x86.html">使用自动调度优化运算</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/tensor_ir_blitz_course.html">TensorIR 的突击课程</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/cross_compilation_and_rpc.html">交叉编译和RPC</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/relay_quick_start.html">编译深度学习模型的快速入门教程</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/tutorial/intro_topi.html">TOPI 简介</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="origin/how_to/index.html">How To 指南</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/compile_models/index.html">编译深度学习模型</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/deploy_models/index.html">部署深度学习模型</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/work_with_relay/index.html">Work With Relay</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/work_with_schedules/index.html">Work With Tensor Expression and Schedules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/optimize_operators/index.html">Optimize Tensor Operators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/tune_with_autotvm/index.html">Auto-Tune with Templates and AutoTVM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/tune_with_autoscheduler/index.html">Use AutoScheduler for Template-Free Scheduling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/work_with_microtvm/index.html">Work With microTVM</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/how_to/extend_tvm/index.html">Extend TVM</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="origin/topic/vta/tutorials/index.html">VTA 教程</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="origin/topic/vta/tutorials/vta_get_started.html">Get Started with VTA</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/topic/vta/tutorials/matrix_multiply.html">Simple Matrix Multiply</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/topic/vta/tutorials/frontend/index.html">编译深度学习模型</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/topic/vta/tutorials/optimize/index.html">Optimize Tensor Operators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/topic/vta/tutorials/autotvm/index.html">Auto tuning</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="origin/vta/index.html">VTA 指南</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="origin/vta/index.html#id1">VTA 堆栈</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/vta/index.html#id2">概述</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="origin/test.html">草稿</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="origin/test.html#relay">用 Relay 编译模型</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/test.html#tvm">在 TVM 运行时上执行</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/test.html#id2">收集基本性能数据</a></li>
-<li class="toctree-l3"><a class="reference internal" href="origin/test.html#id3">对输出进行后处理</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="tests/dsl.html">领域专用语言</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests/refs.html">参考</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="chaos.html">混沌</a><ul>
@@ -461,7 +352,7 @@ function checkPageExistsAndRedirect(event) {
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='right-next' id="next-link" href="d2l-tvm/index.html" title="下一页 页">
+    <a class='right-next' id="next-link" href="tutorials.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
         <p class="prev-next-title">教程</p>
@@ -489,7 +380,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-22, 15:08:58.<br>
+最后更新于 2022-04-24, 05:53:35.<br>
 </p>
     </div>
     

@@ -7,7 +7,9 @@
 
 ```{toctree}
 :maxdepth: 3
+:hidden:
 
+d2l-tvm/index
 tutorial/index
 how_to/index
 topic/vta/tutorials/index
