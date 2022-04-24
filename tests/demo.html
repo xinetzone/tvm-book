@@ -82,13 +82,7 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../tutorials.html">
-  教程
- </a>
-</li>
-
-<li class="toctree-l1 current active nav-item">
+    <li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="index.html">
   测试
  </a>
@@ -241,7 +235,7 @@ function checkPageExistsAndRedirect(event) {
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="nn.html">
-   神经网络测试
+   神经网络
   </a>
  </li>
  <li class="toctree-l1">
@@ -281,24 +275,9 @@ function checkPageExistsAndRedirect(event) {
               
               <div class="toc-item">
                 
-<div class="tocsection onthispage mt-5 pt-1 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
 
 <nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id1">
-   推理
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id2">
-   保存模型
-  </a>
- </li>
-</ul>
-
+    
 </nav>
               </div>
               
@@ -339,6 +318,7 @@ function checkPageExistsAndRedirect(event) {
     <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
 
 <span class="n">set_env</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
 </pre></div>
 </div>
 </div>
@@ -351,227 +331,130 @@ TVM: 0.9.dev0
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
-<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
-<span class="kn">import</span> <span class="nn">tvm</span>
-<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># mod_add = tvm.runtime.load_module(&#39;add.tar&#39;)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># mod_add(a, b, c)</span>
-<span class="c1"># np.testing.assert_equal(c.numpy(), a.numpy()+b.numpy())</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ROOT</span> <span class="o">=</span> <span class="s1">&#39;../origin/d2l-tvm&#39;</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ROOT</span><span class="si">}</span><span class="s1">/data/imagenet1k_labels.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
 
-<span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ROOT</span><span class="si">}</span><span class="s1">/data/cat.jpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
-<span class="n">image</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;mobilenet1.0&#39;</span>
+<span class="n">gluon_model</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">gluon</span><span class="o">.</span><span class="n">model_zoo</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
+<span class="n">gluon_model</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/demo_5_0.png" src="../_images/demo_5_0.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--------------------------------------------------------------------------------
+        Layer (type)                                Output Shape         Param #
+================================================================================
+               Input                            (1, 3, 224, 224)               0
+            Conv2D-1                           (1, 32, 112, 112)             864
+         BatchNorm-2                           (1, 32, 112, 112)             128
+        Activation-3                           (1, 32, 112, 112)               0
+            Conv2D-4                           (1, 32, 112, 112)             288
+         BatchNorm-5                           (1, 32, 112, 112)             128
+        Activation-6                           (1, 32, 112, 112)               0
+            Conv2D-7                           (1, 64, 112, 112)            2048
+         BatchNorm-8                           (1, 64, 112, 112)             256
+        Activation-9                           (1, 64, 112, 112)               0
+           Conv2D-10                             (1, 64, 56, 56)             576
+        BatchNorm-11                             (1, 64, 56, 56)             256
+       Activation-12                             (1, 64, 56, 56)               0
+           Conv2D-13                            (1, 128, 56, 56)            8192
+        BatchNorm-14                            (1, 128, 56, 56)             512
+       Activation-15                            (1, 128, 56, 56)               0
+           Conv2D-16                            (1, 128, 56, 56)            1152
+        BatchNorm-17                            (1, 128, 56, 56)             512
+       Activation-18                            (1, 128, 56, 56)               0
+           Conv2D-19                            (1, 128, 56, 56)           16384
+        BatchNorm-20                            (1, 128, 56, 56)             512
+       Activation-21                            (1, 128, 56, 56)               0
+           Conv2D-22                            (1, 128, 28, 28)            1152
+        BatchNorm-23                            (1, 128, 28, 28)             512
+       Activation-24                            (1, 128, 28, 28)               0
+           Conv2D-25                            (1, 256, 28, 28)           32768
+        BatchNorm-26                            (1, 256, 28, 28)            1024
+       Activation-27                            (1, 256, 28, 28)               0
+           Conv2D-28                            (1, 256, 28, 28)            2304
+        BatchNorm-29                            (1, 256, 28, 28)            1024
+       Activation-30                            (1, 256, 28, 28)               0
+           Conv2D-31                            (1, 256, 28, 28)           65536
+        BatchNorm-32                            (1, 256, 28, 28)            1024
+       Activation-33                            (1, 256, 28, 28)               0
+           Conv2D-34                            (1, 256, 14, 14)            2304
+        BatchNorm-35                            (1, 256, 14, 14)            1024
+       Activation-36                            (1, 256, 14, 14)               0
+           Conv2D-37                            (1, 512, 14, 14)          131072
+        BatchNorm-38                            (1, 512, 14, 14)            2048
+       Activation-39                            (1, 512, 14, 14)               0
+           Conv2D-40                            (1, 512, 14, 14)            4608
+        BatchNorm-41                            (1, 512, 14, 14)            2048
+       Activation-42                            (1, 512, 14, 14)               0
+           Conv2D-43                            (1, 512, 14, 14)          262144
+        BatchNorm-44                            (1, 512, 14, 14)            2048
+       Activation-45                            (1, 512, 14, 14)               0
+           Conv2D-46                            (1, 512, 14, 14)            4608
+        BatchNorm-47                            (1, 512, 14, 14)            2048
+       Activation-48                            (1, 512, 14, 14)               0
+           Conv2D-49                            (1, 512, 14, 14)          262144
+        BatchNorm-50                            (1, 512, 14, 14)            2048
+       Activation-51                            (1, 512, 14, 14)               0
+           Conv2D-52                            (1, 512, 14, 14)            4608
+        BatchNorm-53                            (1, 512, 14, 14)            2048
+       Activation-54                            (1, 512, 14, 14)               0
+           Conv2D-55                            (1, 512, 14, 14)          262144
+        BatchNorm-56                            (1, 512, 14, 14)            2048
+       Activation-57                            (1, 512, 14, 14)               0
+           Conv2D-58                            (1, 512, 14, 14)            4608
+        BatchNorm-59                            (1, 512, 14, 14)            2048
+       Activation-60                            (1, 512, 14, 14)               0
+           Conv2D-61                            (1, 512, 14, 14)          262144
+        BatchNorm-62                            (1, 512, 14, 14)            2048
+       Activation-63                            (1, 512, 14, 14)               0
+           Conv2D-64                            (1, 512, 14, 14)            4608
+        BatchNorm-65                            (1, 512, 14, 14)            2048
+       Activation-66                            (1, 512, 14, 14)               0
+           Conv2D-67                            (1, 512, 14, 14)          262144
+        BatchNorm-68                            (1, 512, 14, 14)            2048
+       Activation-69                            (1, 512, 14, 14)               0
+           Conv2D-70                              (1, 512, 7, 7)            4608
+        BatchNorm-71                              (1, 512, 7, 7)            2048
+       Activation-72                              (1, 512, 7, 7)               0
+           Conv2D-73                             (1, 1024, 7, 7)          524288
+        BatchNorm-74                             (1, 1024, 7, 7)            4096
+       Activation-75                             (1, 1024, 7, 7)               0
+           Conv2D-76                             (1, 1024, 7, 7)            9216
+        BatchNorm-77                             (1, 1024, 7, 7)            4096
+       Activation-78                             (1, 1024, 7, 7)               0
+           Conv2D-79                             (1, 1024, 7, 7)         1048576
+        BatchNorm-80                             (1, 1024, 7, 7)            4096
+       Activation-81                             (1, 1024, 7, 7)               0
+  GlobalAvgPool2D-82                             (1, 1024, 1, 1)               0
+          Flatten-83                                   (1, 1024)               0
+            Dense-84                                   (1, 1000)         1025000
+        MobileNet-85                                   (1, 1000)               0
+================================================================================
+Parameters in forward computation graph, duplicate included
+   Total params: 4253864
+   Trainable params: 4231976
+   Non-trainable params: 21888
+Shared params in forward computation graph: 0
+Unique parameters in model: 4253864
+--------------------------------------------------------------------------------
 </pre></div>
 </div>
 </div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># def image_preprocessing(image):</span>
-<span class="c1">#     image = np.array(image) - np.array([123., 117., 104.])</span>
-<span class="c1">#     image /= np.array([58.395, 57.12, 57.375])</span>
-<span class="c1">#     image = image.transpose((2, 0, 1))</span>
-<span class="c1">#     image = image[np.newaxis, :]</span>
-<span class="c1">#     return image.astype(&#39;float32&#39;)</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">image_preprocessing</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-<span class="n">x</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 3, 224, 224)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;resnet18_v2&#39;</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">gluon</span><span class="o">.</span><span class="n">model_zoo</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">output</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(13, Dense(512 -&gt; 1000, linear))
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_name</span> <span class="o">=</span> <span class="s1">&#39;data&#39;</span>
-<span class="n">relay_mod</span><span class="p">,</span> <span class="n">relay_params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_mxnet</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">{</span><span class="n">input_name</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">})</span>
-<span class="nb">type</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">relay_params</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.ir.module.IRModule, dict)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">graph_executor</span>
-
-<span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm&#39;</span>
-<span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-    <span class="n">lib</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">relay_params</span><span class="p">)</span>
-
-
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">module</span> <span class="o">=</span> <span class="n">graph_executor</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">ctx</span><span class="p">))</span>
-
-<span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
-<span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-<span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-<span class="n">tvm_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">output_shape</span><span class="p">))</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>编译模块有三个部分：<code class="docutils literal notranslate"><span class="pre">graph</span></code> 是描述神经网络的 json 字符串，<code class="docutils literal notranslate"><span class="pre">mod</span></code> 是包含所有用于运行推断的编译算子的库，<code class="docutils literal notranslate"><span class="pre">params</span></code> 是映射参数名到权重的字典。</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">graph_executor</span>
-<span class="k">with</span> <span class="n">relay</span><span class="o">.</span><span class="n">build_config</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-    <span class="n">graph</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">relay_params</span><span class="p">)</span>
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-<span class="n">rt</span> <span class="o">=</span> <span class="n">graph_executor</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
-<span class="n">rt</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
-<span class="n">rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span>
-<span class="n">scores</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_917788/30083050.py:3: DeprecationWarning: legacy graph executor behavior of producing json / lib / params will be removed in the next release. Please see documents of tvm.contrib.graph_executor.GraphModule for the  new recommended usage.
-  graph, mod, params = relay.build(relay_mod, target, params=relay_params)
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 1000)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">graph</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">mod</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(str, tvm.runtime.module.Module, dict)
-</pre></div>
-</div>
-</div>
-</div>
-<section id="id1">
-<h2>推理<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">graph_executor</span>
-<span class="k">with</span> <span class="n">relay</span><span class="o">.</span><span class="n">build_config</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-    <span class="n">graph</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">relay_params</span><span class="p">)</span>
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-<span class="n">rt</span> <span class="o">=</span> <span class="n">graph_executor</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
-<span class="n">rt</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
-<span class="n">rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span>
-<span class="n">scores</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_917788/30083050.py:3: DeprecationWarning: legacy graph executor behavior of producing json / lib / params will be removed in the next release. Please see documents of tvm.contrib.graph_executor.GraphModule for the  new recommended usage.
-  graph, mod, params = relay.build(relay_mod, target, params=relay_params)
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 1000)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">tvm_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">scores</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">labels</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">labels</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;tiger cat&#39;, &#39;Egyptian cat&#39;)
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="id2">
-<h2>保存模型<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
-<p>可以保存 <code class="docutils literal notranslate"><span class="pre">relay.build</span></code> 的输出到磁盘以便以后重用它们。下面的代码块保存了 json 字符串、库和参数。</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>rm -rf resnet18*
-
-<span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;resnet18&#39;</span>
-<span class="n">graph_fn</span><span class="p">,</span> <span class="n">mod_fn</span><span class="p">,</span> <span class="n">params_fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">+</span><span class="n">ext</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span><span class="s1">&#39;.tar&#39;</span><span class="p">,</span><span class="s1">&#39;.params&#39;</span><span class="p">)]</span>
-<span class="n">mod</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">mod_fn</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_fn</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">relay</span><span class="o">.</span><span class="n">save_param_dict</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
-
-<span class="o">!</span>ls -alht resnet18*
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc  45M 4月  23 18:05 resnet18.params
--rw-rw-r-- 1 pc pc  36K 4月  23 18:05 resnet18.json
--rw-rw-r-- 1 pc pc 166K 4月  23 18:05 resnet18.tar
-</pre></div>
-</div>
-</div>
-</div>
-</section>
 </section>
 
 
@@ -615,7 +498,7 @@ TVM: 0.9.dev0
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-24, 05:53:35.<br>
+最后更新于 2022-04-24, 12:42:30.<br>
 </p>
     </div>
     

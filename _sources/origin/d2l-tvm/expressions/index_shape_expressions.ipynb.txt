@@ -8,6 +8,8 @@
    "source": [
     "# Index and Shape Expressions\n",
     "\n",
+    "你已经知道形状可以是符号元组，例如 `(n, m)`，元素可以通过索引访问，例如 `a[i, j]`。在实践中，形状和索引都可以通过复杂的表达式来计算。在本节中，我们将介绍几个示例。\n",
+    "\n",
     "You already know that a shape can be a tuple of symbols such as `(n, m)` and the elements can be accessed via indexing, e.g. `a[i, j]`. In practice, both shapes and indices may be computed through complex expressions. We will go through several examples in this section.\n"
    ]
   },

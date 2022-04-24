@@ -4,7 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# 神经网络测试\n",
+    "# 神经网络\n",
     "\n",
     "载入一些库："
    ]
@@ -53,7 +53,7 @@
     "model_name = 'vgg11'\n",
     "\n",
     "model = mx.gluon.model_zoo.vision.get_model(model_name, pretrained=True)\n",
-    "len(model.features), model.output"
+    "# len(model.features), model.output"
    ]
   },
   {
@@ -270,31 +270,21 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 1,
    "metadata": {},
    "outputs": [],
-   "source": []
+   "source": [
+    "import torch"
+   ]
   },
   {
    "cell_type": "code",
    "execution_count": null,
    "metadata": {},
    "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
+   "source": [
+    "torch.quantization.get_default_qconfig"
+   ]
   }
  ],
  "metadata": {

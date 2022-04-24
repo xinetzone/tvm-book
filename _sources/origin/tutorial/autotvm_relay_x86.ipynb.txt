@@ -5,13 +5,13 @@
    "metadata": {},
    "source": [
     "(sphx_glr_tutorial_autotvm_relay_x86)=\n",
-    "# 用 Python 接口编译和优化模型\n",
+    "# 用 Python 接口编译和优化模型（AutoTVM）\n",
     "\n",
-    "**Author**: [Chris Hoge](https://github.com/hogepodge>)\n",
+    "**原作者**: [Chris Hoge](https://github.com/hogepodge>)\n",
     "\n",
-    "在 [TVMC 教程](tvmc_command_line_driver) 中，我们介绍了如何使用 TVM 的命令行界面 TVMC 来编译、运行和微调预训练的视觉模型 ResNet-50 v2。不过，TVM 不仅仅是命令行工具，它也是优化框架，其 API 可用于许多不同的语言，在处理机器学习模型方面给你带来巨大的灵活性。\n",
+    "在 [TVMC 教程](tvmc_command_line_driver) 中，介绍了如何使用 TVM 的命令行界面 TVMC 来编译、运行和微调预训练的视觉模型 ResNet-50 v2。不过，TVM 不仅仅是命令行工具，它也是优化框架，其 API 可用于许多不同的语言，在处理机器学习模型方面给你带来巨大的灵活性。\n",
     "\n",
-    "在本教程中，我们将涵盖与 TVMC 相同的内容，但展示如何用 Python API 来完成它。完成本节后，我们将使用 TVM 的 Python API 来完成以下任务：\n",
+    "在本教程中，将涵盖与 TVMC 相同的内容，但展示如何用 Python API 来完成它。完成本节后，将使用 TVM 的 Python API 来完成以下任务：\n",
     "\n",
     "- 编译预训练的 ResNet-50 v2 模型供 TVM 运行时使用。\n",
     "- 使用编译后的模型，运行真实图像，并解释输出和评估模型性能。\n",
@@ -23,60 +23,15 @@
     "\n",
     "TVM 是一个深度学习编译器框架，有许多不同的模块可用于处理深度学习模型和算子。在本教程中，我们将研究如何使用 Python API 加载、编译和优化一个模型。\n",
     "\n",
-    "我们首先要导入一些依赖关系，包括用于加载和转换模型的 ``onnx``，用于下载测试数据的辅助工具，用于处理图像数据的 Python 图像库，用于图像数据预处理和后处理的 ``numpy``，TVM Relay 框架，以及 TVM Graph Executor。"
+    "首先要导入一些依赖关系，包括用于加载和转换模型的 ``mxnet``，用于下载测试数据的辅助工具，用于处理图像数据的 Python 图像库，用于图像数据预处理和后处理的 ``numpy``，TVM Relay 框架，以及 TVM Graph Executor。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "<module 'tvmx' from '/media/pc/data/4tb/lxw/study/tvm/xinetzone/src/tvmx/__init__.py'>\n",
-      "<module 'tvm' from '/media/pc/data/4tb/lxw/study/tvm/python/tvm/__init__.py'>\n",
-      "<module 'vta' from '/media/pc/data/4tb/lxw/study/tvm/vta/python/vta/__init__.py'>\n"
-     ]
-    }
-   ],
-   "source": [
-    "from pathlib import Path\n",
-    "from env import tvmx\n",
-    "\n",
-    "# 设定 TVM 项目的根目录\n",
-    "# TVM_ROOT = Path('/media/pc/data/4tb/lxw/study/tvm')\n",
-    "TVM_ROOT = Path('.').absolute().parents[1]\n",
-    "tvm, vta = tvmx.import_tvm(TVM_ROOT)\n",
-    "# # 查看 TVM 和 VTA 路径\n",
-    "print(f'{tvm}\\n{vta}')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 2,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Python 3.8.13\r\n"
-     ]
-    }
-   ],
-   "source": [
-    "!python -V"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 3,
-   "metadata": {},
    "outputs": [],
    "source": [
-    "import onnx\n",
     "from tvm.contrib.download import download_testdata\n",
     "from PIL import Image\n",
     "import numpy as np\n",
@@ -89,17 +44,18 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## 下载和加载 ONNX 模型\n",
+    "## 下载和加载前端模型\n",
     "\n",
-    "在本教程中，我们将使用 ResNet-50 v2。ResNet-50 是一个卷积神经网络，有 50 层深度，旨在对图像进行分类。我们将使用的模型已经在超过一百万张图片上进行了预训练，有 1000 种不同的分类。该网络的输入图像大小为 224x224。如果你有兴趣探索更多关于 ResNet-50 模型的结构，我们建议下载 [Netron](https://netron.app)，一个免费的 ML 模型查看器。\n",
+    "在本教程中，我们将使用 ResNet-50 v2。ResNet-50 是卷积神经网络，有 50 层深度，旨在对图像进行分类。该模型已经在超过一百万张图片上进行了预训练，有 1000 种不同的分类。该网络的输入图像大小为 224x224。如果你有兴趣探索更多关于 ResNet-50 模型的结构，我们建议下载免费的 ML 模型查看器 [Netron](https://netron.app)。\n",
     "\n",
-    "TVM 提供了一个辅助库来下载预训练的模型。通过该模块提供模型的 URL、文件名和模型类型，TVM 将下载模型并保存到磁盘。对于 ONNX 模型的实例，你就可以使用 ONNX 运行时将其加载到内存中。\n",
+    "TVM 提供了辅助库来下载预训练的模型。通过该模块提供模型的 URL、文件名和模型类型，TVM 将下载模型并保存到磁盘。\n",
     "\n",
     "```{admonition} 与其他模型格式一起工作\n",
     "TVM 支持许多流行的模型格式。清单可以在 TVM 文档的 [编译深度学习模型](tutorial-frontend) 部分找到。\n",
     "```\n",
     "\n",
-    "可以直接使用如下方式下载预训练的模型：\n",
+    "````{note}\n",
+    "可以直接使用如下方式下载预训练的模型（以 ONNX 为例）：\n",
     "\n",
     "```python\n",
     "model_url = \"\".join(\n",
@@ -112,18 +68,21 @@
     "\n",
     "model_path = download_testdata(model_url, \"resnet50-v2-7.onnx\", module=\"onnx\")\n",
     "```\n",
+    "````\n",
     "\n",
-    "也可以直接载入本地模型："
+    "MXNet 可直接载入模型："
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 2,
    "metadata": {},
    "outputs": [],
    "source": [
-    "model_path = '../../models/resnet50-v2-7.onnx'\n",
-    "onnx_model = onnx.load(model_path)"
+    "import mxnet as mx\n",
+    "\n",
+    "model_name = 'resnet50_v2'\n",
+    "gluon_model = mx.gluon.model_zoo.vision.get_model(model_name, pretrained=True)"
    ]
   },
   {
@@ -134,35 +93,38 @@
     "\n",
     "当涉及到预期的张量形状、格式和数据类型时，每个模型都很特别。出于这个原因，大多数模型需要一些预处理和后处理，以确保输入是有效的，并解释输出。TVMC 对输入和输出数据都采用了 NumPy 的 ``.npz`` 格式。\n",
     "\n",
-    "作为本教程的输入，我们将使用一只猫的图像，但你可以自由地用你选择的任何图像来代替这个图像。\n",
+    "作为本教程的输入，将使用一只猫的图像，但你可以自由地用你选择的任何图像来代替这个图像。\n",
     "\n",
     "<img src=\"https://s3.amazonaws.com/model-server/inputs/kitten.jpg\" height=\"224px\" width=\"224px\" align=\"center\">\n",
     "\n",
-    "下载图像数据，然后将其转换成一个 numpy 数组，作为模型的输入。"
+    "下载图像数据，然后将其转换成 numpy 数组，作为模型的输入。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 3,
    "metadata": {},
    "outputs": [],
    "source": [
     "img_url = \"https://s3.amazonaws.com/model-server/inputs/kitten.jpg\"\n",
     "img_path = download_testdata(img_url, \"imagenet_cat.png\", module=\"data\")\n",
     "\n",
-    "# Resize it to 224x224\n",
-    "resized_image = Image.open(img_path).resize((224, 224))\n",
+    "# resize 到 224x224\n",
+    "with Image.open(img_path) as im:\n",
+    "    resized_image = im.resize((224, 224))\n",
+    "\n",
+    "# 转换为 float32\n",
     "img_data = np.asarray(resized_image).astype(\"float32\")\n",
     "\n",
-    "# Our input image is in HWC layout while ONNX expects CHW input, so convert the array\n",
+    "# 输入图像是在 HWC 布局，而 MXNet 期望 CHW 输入\n",
     "img_data = np.transpose(img_data, (2, 0, 1))\n",
     "\n",
-    "# Normalize according to the ImageNet input specification\n",
+    "# 根据 ImageNet 输入规范进行 Normalize\n",
     "imagenet_mean = np.array([0.485, 0.456, 0.406]).reshape((3, 1, 1))\n",
     "imagenet_stddev = np.array([0.229, 0.224, 0.225]).reshape((3, 1, 1))\n",
     "norm_img_data = (img_data / 255 - imagenet_mean) / imagenet_stddev\n",
     "\n",
-    "# Add the batch dimension, as we are expecting 4-dimensional input: NCHW.\n",
+    "# 添加批处理维度，设置数据为 4 维 输入：NCHW\n",
     "img_data = np.expand_dims(norm_img_data, axis=0)"
    ]
   },
@@ -172,30 +134,37 @@
    "source": [
     "## 用 Relay 编译模型\n",
     "\n",
-    "下一步是编译 ResNet 模型。首先使用 `from_onnx` 导入器将模型导入到 relay。然后，将模型与标准优化一起构建成 TVM 库。最后，我们从该库中创建 TVM graph 运行时模块。"
+    "下一步是编译 ResNet 模型。使用 {func}`~tvm.relay.frontend.from_mxnet` 导入器将模型导入到 {mod}`~tvm.relay`。\n",
+    "\n",
+    "不同的模型类型，输入的名称可能不同。你可以使用 Netron 这样的工具来检查输入名称。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 4,
    "metadata": {},
    "outputs": [],
    "source": [
-    "target = \"llvm\""
+    "input_name = \"data\"\n",
+    "shape_dict = {input_name: img_data.shape}\n",
+    "\n",
+    "mod, params = relay.frontend.from_mxnet(gluon_model, shape_dict)"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "将模型与标准优化一起构建成 TVM 库。\n",
+    "\n",
     "```{admonition} 定义正确的目标\n",
-    "指定正确的目标可以对编译后的模块的性能产生巨大影响，因为它可以利用目标上可用的硬件特性。欲了解更多信息，请参考为 [x86 CPU 自动调整卷积网络](tune_relay_x86)。我们建议确定你运行的是哪种 CPU，以及可选的功能，并适当地设置目标。例如，对于某些处理器， `target = \"llvm -mcpu=skylake\"`，或者对于具有 AVX-512 向量指令集的处理器， `target = \"llvm-mcpu=skylake-avx512\"`。\n",
+    "指定正确的目标可以对编译后的模块的性能产生巨大影响，因为它可以利用目标上可用的硬件特性。欲了解更多信息，请参考为 [x86 CPU 自动调整卷积网络](tune_relay_x86)。建议确定你运行的是哪种 CPU，以及可选的功能，并适当地设置目标。例如，对于某些处理器， `target = \"llvm -mcpu=skylake\"`，或者对于具有 AVX-512 向量指令集的处理器， `target = \"llvm-mcpu=skylake-avx512\"`。\n",
     "```"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 5,
    "metadata": {},
    "outputs": [
     {
@@ -207,16 +176,25 @@
     }
    ],
    "source": [
-    "# 不同的模型类型，输入的名称可能不同。\n",
-    "# 你可以使用 Netron 这样的工具来检查输入名称\n",
-    "input_name = \"data\"\n",
-    "shape_dict = {input_name: img_data.shape}\n",
-    "\n",
-    "mod, params = relay.frontend.from_onnx(onnx_model, shape_dict)\n",
+    "target = \"llvm\"\n",
     "\n",
     "with tvm.transform.PassContext(opt_level=3):\n",
-    "    lib = relay.build(mod, target=target, params=params)\n",
-    "\n",
+    "    lib = relay.build(mod, target=target, params=params)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "从该库中创建 TVM graph 运行时模块。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
     "dev = tvm.device(str(target), 0)\n",
     "module = graph_executor.GraphModule(lib[\"default\"](dev))"
    ]
@@ -227,15 +205,15 @@
    "source": [
     "## 在 TVM 运行时上执行\n",
     "\n",
-    "现在我们已经编译了模型，我们可以使用 TVM 运行时来进行预测。要使用 TVM 来运行模型并进行预测，我们需要两样东西：\n",
+    "已经编译了模型，下面可以使用 TVM 运行时来进行预测。要使用 TVM 来运行模型并进行预测，需要两样东西：\n",
     "\n",
-    "- 编译后的模型，也就是我们刚刚制作的模型。\n",
+    "- 编译后的模型，也就是我们刚刚制作的模块 `module`。\n",
     "- 对模型的有效输入，以便进行预测。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 7,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -243,7 +221,8 @@
     "module.set_input(input_name, img_data)\n",
     "module.run()\n",
     "output_shape = (1, 1000)\n",
-    "tvm_output = module.get_output(0, tvm.nd.empty(output_shape)).numpy()"
+    "tvm_output = module.get_output(0,\n",
+    "                               tvm.nd.empty(output_shape)).numpy()"
    ]
   },
   {
@@ -252,19 +231,19 @@
    "source": [
     "## 收集基本性能数据\n",
     "\n",
-    "我们想收集一些与这个未优化的模型相关的基本性能数据，并在以后与调整后的模型进行比较。为了帮助说明 CPU 的噪音，我们在多个批次的重复中运行计算，然后收集一些关于平均值、中位数和标准差的基础统计数据。"
+    "想收集一些与这个未优化的模型相关的基本性能数据，并在以后与调整后的模型进行比较。为了帮助说明 CPU 的噪音，在多个批次的重复中运行计算，然后收集一些关于平均值、中位数和标准差的基础统计数据。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 8,
    "metadata": {},
    "outputs": [
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "{'mean': 52.21782130654901, 'median': 52.12806384079158, 'std': 0.2602809127443859}\n"
+      "{'mean': 33.839258244261146, 'median': 32.91657278314233, 'std': 2.2038196319125745}\n"
      ]
     }
    ],
@@ -295,42 +274,40 @@
     "\n",
     "如前所述，每个模型都有自己提供输出张量的特殊方式。\n",
     "\n",
-    "在我们的案例中，我们需要运行一些后处理，利用为模型提供的查找表，将 ResNet-50 v2 的输出渲染成更适合人类阅读的形式。"
+    "在案例中，需要运行一些后处理，利用为模型提供的查找表，将 ResNet-50 v2 的输出渲染成更适合人类阅读的形式。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
+   "execution_count": 9,
    "metadata": {},
    "outputs": [
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "class='n02123045 tabby, tabby cat' with probability=0.621103\n",
-      "class='n02123159 tiger cat' with probability=0.356379\n",
-      "class='n02124075 Egyptian cat' with probability=0.019712\n",
-      "class='n02129604 tiger, Panthera tigris' with probability=0.001215\n",
-      "class='n04040759 radiator' with probability=0.000262\n"
+      "class='tiger cat' with probability=0.526644\n",
+      "class='tabby, tabby cat' with probability=0.403282\n",
+      "class='Egyptian cat' with probability=0.036493\n",
+      "class='tiger, Panthera tigris' with probability=0.004262\n",
+      "class='plastic bag' with probability=0.002360\n"
      ]
     }
    ],
    "source": [
     "from scipy.special import softmax\n",
     "\n",
-    "# Download a list of labels\n",
-    "labels_url = \"https://s3.amazonaws.com/onnx-model-zoo/synset.txt\"\n",
-    "labels_path = download_testdata(labels_url, \"synset.txt\", module=\"data\")\n",
+    "from gluoncv.data.imagenet.classification import ImageNet1kAttr\n",
     "\n",
-    "with open(labels_path, \"r\") as f:\n",
-    "    labels = [l.rstrip() for l in f]\n",
-    "\n",
-    "# Open the output and read the output tensor\n",
+    "# 获取 ImageNet 标签列表\n",
+    "imagenet_1k_attr = ImageNet1kAttr()\n",
+    "labels = imagenet_1k_attr.classes_long\n",
+    "# 获取输出张量\n",
     "scores = softmax(tvm_output)\n",
     "scores = np.squeeze(scores)\n",
     "ranks = np.argsort(scores)[::-1]\n",
     "for rank in ranks[0:5]:\n",
-    "    print(\"class='%s' with probability=%f\" % (labels[rank], scores[rank]))"
+    "    print(f\"class='{labels[rank]}' with probability={scores[rank]:f}\")"
    ]
   },
   {
@@ -352,7 +329,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": 10,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -370,7 +347,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
+   "execution_count": 11,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -398,7 +375,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
+   "execution_count": 12,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -428,22 +405,13 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
+   "execution_count": 13,
    "metadata": {},
    "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "/home/pc/.local/lib/python3.8/site-packages/xgboost/compat.py:36: FutureWarning: pandas.Int64Index is deprecated and will be removed from pandas in a future version. Use pandas.Index with the appropriate dtype instead.\n",
-      "  from pandas import MultiIndex, Int64Index\n"
-     ]
-    },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "\r\n",
       "[Task  1/25]  Current/Best:    0.00/   0.00 GFLOPS | Progress: (0/10) | 0.00 s"
      ]
     },
@@ -451,24 +419,38 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "/home/pc/xinet/anaconda3/envs/tvm-buildl4/bin/python: Error while finding module specification for 'tvm.exec.popen_worker' (ModuleNotFoundError: No module named 'tvm')\n"
+      "/media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/xgboost/compat.py:36: FutureWarning: pandas.Int64Index is deprecated and will be removed from pandas in a future version. Use pandas.Index with the appropriate dtype instead.\n",
+      "  from pandas import MultiIndex, Int64Index\n"
      ]
     },
     {
-     "ename": "ChildProcessError",
-     "evalue": "Subprocess terminated",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mChildProcessError\u001b[0m                         Traceback (most recent call last)",
-      "Input \u001b[0;32mIn [14]\u001b[0m, in \u001b[0;36m<cell line: 5>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      6\u001b[0m prefix \u001b[38;5;241m=\u001b[39m \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m[Task \u001b[39m\u001b[38;5;132;01m%2d\u001b[39;00m\u001b[38;5;124m/\u001b[39m\u001b[38;5;132;01m%2d\u001b[39;00m\u001b[38;5;124m] \u001b[39m\u001b[38;5;124m\"\u001b[39m \u001b[38;5;241m%\u001b[39m (i \u001b[38;5;241m+\u001b[39m \u001b[38;5;241m1\u001b[39m, \u001b[38;5;28mlen\u001b[39m(tasks))\n\u001b[1;32m      7\u001b[0m tuner_obj \u001b[38;5;241m=\u001b[39m XGBTuner(task, loss_type\u001b[38;5;241m=\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mrank\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n\u001b[0;32m----> 8\u001b[0m \u001b[43mtuner_obj\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mtune\u001b[49m\u001b[43m(\u001b[49m\n\u001b[1;32m      9\u001b[0m \u001b[43m    \u001b[49m\u001b[43mn_trial\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;28;43mmin\u001b[39;49m\u001b[43m(\u001b[49m\u001b[43mtuning_option\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[38;5;124;43mtrials\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;28;43mlen\u001b[39;49m\u001b[43m(\u001b[49m\u001b[43mtask\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mconfig_space\u001b[49m\u001b[43m)\u001b[49m\u001b[43m)\u001b[49m\u001b[43m,\u001b[49m\n\u001b[1;32m     10\u001b[0m \u001b[43m    \u001b[49m\u001b[43mearly_stopping\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43mtuning_option\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[38;5;124;43mearly_stopping\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m,\u001b[49m\n\u001b[1;32m     11\u001b[0m \u001b[43m    \u001b[49m\u001b[43mmeasure_option\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43mtuning_option\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[38;5;124;43mmeasure_option\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m,\u001b[49m\n\u001b[1;32m     12\u001b[0m \u001b[43m    \u001b[49m\u001b[43mcallbacks\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43m[\u001b[49m\n\u001b[1;32m     13\u001b[0m \u001b[43m        \u001b[49m\u001b[43mautotvm\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mcallback\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mprogress_bar\u001b[49m\u001b[43m(\u001b[49m\u001b[43mtuning_option\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[38;5;124;43mtrials\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mprefix\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43mprefix\u001b[49m\u001b[43m)\u001b[49m\u001b[43m,\u001b[49m\n\u001b[1;32m     14\u001b[0m \u001b[43m        \u001b[49m\u001b[43mautotvm\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mcallback\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mlog_to_file\u001b[49m\u001b[43m(\u001b[49m\u001b[43mtuning_option\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[38;5;124;43mtuning_records\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m)\u001b[49m\u001b[43m,\u001b[49m\n\u001b[1;32m     15\u001b[0m \u001b[43m    \u001b[49m\u001b[43m]\u001b[49m\u001b[43m,\u001b[49m\n\u001b[1;32m     16\u001b[0m \u001b[43m\u001b[49m\u001b[43m)\u001b[49m\n",
-      "File \u001b[0;32m/media/pc/data/4tb/lxw/study/tvm/python/tvm/autotvm/tuner/xgboost_tuner.py:105\u001b[0m, in \u001b[0;36mXGBTuner.tune\u001b[0;34m(self, *args, **kwargs)\u001b[0m\n\u001b[1;32m    104\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mtune\u001b[39m(\u001b[38;5;28mself\u001b[39m, \u001b[38;5;241m*\u001b[39margs, \u001b[38;5;241m*\u001b[39m\u001b[38;5;241m*\u001b[39mkwargs):  \u001b[38;5;66;03m# pylint: disable=arguments-differ\u001b[39;00m\n\u001b[0;32m--> 105\u001b[0m     \u001b[38;5;28;43msuper\u001b[39;49m\u001b[43m(\u001b[49m\u001b[43mXGBTuner\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;28;43mself\u001b[39;49m\u001b[43m)\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mtune\u001b[49m\u001b[43m(\u001b[49m\u001b[38;5;241;43m*\u001b[39;49m\u001b[43margs\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;241;43m*\u001b[39;49m\u001b[38;5;241;43m*\u001b[39;49m\u001b[43mkwargs\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m    107\u001b[0m     \u001b[38;5;66;03m# manually close pool to avoid multiprocessing issues\u001b[39;00m\n\u001b[1;32m    108\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mcost_model\u001b[38;5;241m.\u001b[39m_close_pool()\n",
-      "File \u001b[0;32m/media/pc/data/4tb/lxw/study/tvm/python/tvm/autotvm/tuner/tuner.py:113\u001b[0m, in \u001b[0;36mTuner.tune\u001b[0;34m(self, n_trial, measure_option, early_stopping, callbacks, si_prefix)\u001b[0m\n\u001b[1;32m     93\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mtune\u001b[39m(\u001b[38;5;28mself\u001b[39m, n_trial, measure_option, early_stopping\u001b[38;5;241m=\u001b[39m\u001b[38;5;28;01mNone\u001b[39;00m, callbacks\u001b[38;5;241m=\u001b[39m(), si_prefix\u001b[38;5;241m=\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mG\u001b[39m\u001b[38;5;124m\"\u001b[39m):\n\u001b[1;32m     94\u001b[0m     \u001b[38;5;124;03m\"\"\"Begin tuning\u001b[39;00m\n\u001b[1;32m     95\u001b[0m \n\u001b[1;32m     96\u001b[0m \u001b[38;5;124;03m    Parameters\u001b[39;00m\n\u001b[0;32m   (...)\u001b[0m\n\u001b[1;32m    111\u001b[0m \u001b[38;5;124;03m        One of tvm.autotvm.utils.SI_PREFIXES. The SI prefix to use when reporting FLOPS.\u001b[39;00m\n\u001b[1;32m    112\u001b[0m \u001b[38;5;124;03m    \"\"\"\u001b[39;00m\n\u001b[0;32m--> 113\u001b[0m     measure_batch \u001b[38;5;241m=\u001b[39m \u001b[43mcreate_measure_batch\u001b[49m\u001b[43m(\u001b[49m\u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mtask\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mmeasure_option\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m    114\u001b[0m     n_parallel \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mgetattr\u001b[39m(measure_batch, \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mn_parallel\u001b[39m\u001b[38;5;124m\"\u001b[39m, \u001b[38;5;241m1\u001b[39m)\n\u001b[1;32m    115\u001b[0m     early_stopping \u001b[38;5;241m=\u001b[39m early_stopping \u001b[38;5;129;01mor\u001b[39;00m \u001b[38;5;241m1e9\u001b[39m\n",
-      "File \u001b[0;32m/media/pc/data/4tb/lxw/study/tvm/python/tvm/autotvm/measure/measure.py:282\u001b[0m, in \u001b[0;36mcreate_measure_batch\u001b[0;34m(task, option)\u001b[0m\n\u001b[1;32m    279\u001b[0m builder \u001b[38;5;241m=\u001b[39m option[\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mbuilder\u001b[39m\u001b[38;5;124m\"\u001b[39m]\n\u001b[1;32m    280\u001b[0m runner \u001b[38;5;241m=\u001b[39m option[\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mrunner\u001b[39m\u001b[38;5;124m\"\u001b[39m]\n\u001b[0;32m--> 282\u001b[0m attach_objects \u001b[38;5;241m=\u001b[39m \u001b[43mrunner\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mset_task\u001b[49m\u001b[43m(\u001b[49m\u001b[43mtask\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m    284\u001b[0m \u001b[38;5;66;03m# feed device related information from runner to builder\u001b[39;00m\n\u001b[1;32m    285\u001b[0m \u001b[38;5;66;03m# (e.g. max shared memory for validity checking)\u001b[39;00m\n\u001b[1;32m    286\u001b[0m build_kwargs \u001b[38;5;241m=\u001b[39m runner\u001b[38;5;241m.\u001b[39mget_build_kwargs()\n",
-      "File \u001b[0;32m/media/pc/data/4tb/lxw/study/tvm/python/tvm/autotvm/measure/measure_methods.py:479\u001b[0m, in \u001b[0;36mLocalRunner.set_task\u001b[0;34m(self, task)\u001b[0m\n\u001b[1;32m    476\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mrpc\u001b[39;00m\u001b[38;5;21;01m.\u001b[39;00m\u001b[38;5;21;01mtracker\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Tracker\n\u001b[1;32m    478\u001b[0m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mtask \u001b[38;5;241m=\u001b[39m task\n\u001b[0;32m--> 479\u001b[0m tracker \u001b[38;5;241m=\u001b[39m \u001b[43mTracker\u001b[49m\u001b[43m(\u001b[49m\u001b[43mport\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;241;43m9000\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mport_end\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;241;43m10000\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43msilent\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;28;43;01mTrue\u001b[39;49;00m\u001b[43m)\u001b[49m\n\u001b[1;32m    480\u001b[0m device_key \u001b[38;5;241m=\u001b[39m \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m$local$device$\u001b[39m\u001b[38;5;132;01m%d\u001b[39;00m\u001b[38;5;124m\"\u001b[39m \u001b[38;5;241m%\u001b[39m tracker\u001b[38;5;241m.\u001b[39mport\n\u001b[1;32m    481\u001b[0m server \u001b[38;5;241m=\u001b[39m Server(\n\u001b[1;32m    482\u001b[0m     port\u001b[38;5;241m=\u001b[39m\u001b[38;5;241m9000\u001b[39m,\n\u001b[1;32m    483\u001b[0m     port_end\u001b[38;5;241m=\u001b[39m\u001b[38;5;241m10000\u001b[39m,\n\u001b[0;32m   (...)\u001b[0m\n\u001b[1;32m    486\u001b[0m     tracker_addr\u001b[38;5;241m=\u001b[39m(\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m127.0.0.1\u001b[39m\u001b[38;5;124m\"\u001b[39m, tracker\u001b[38;5;241m.\u001b[39mport),\n\u001b[1;32m    487\u001b[0m )\n",
-      "File \u001b[0;32m/media/pc/data/4tb/lxw/study/tvm/python/tvm/rpc/tracker.py:451\u001b[0m, in \u001b[0;36mTracker.__init__\u001b[0;34m(self, host, port, port_end, silent)\u001b[0m\n\u001b[1;32m    441\u001b[0m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mproc\u001b[38;5;241m.\u001b[39msend(\n\u001b[1;32m    442\u001b[0m     _popen_start_tracker_server,\n\u001b[1;32m    443\u001b[0m     [\n\u001b[0;32m   (...)\u001b[0m\n\u001b[1;32m    448\u001b[0m     ],\n\u001b[1;32m    449\u001b[0m )\n\u001b[1;32m    450\u001b[0m \u001b[38;5;66;03m# receive the port\u001b[39;00m\n\u001b[0;32m--> 451\u001b[0m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mport, \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mstop_key \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mproc\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mrecv\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m    452\u001b[0m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mhost \u001b[38;5;241m=\u001b[39m host\n",
-      "File \u001b[0;32m/media/pc/data/4tb/lxw/study/tvm/python/tvm/contrib/popen_pool.py:260\u001b[0m, in \u001b[0;36mPopenWorker.recv\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m    257\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_child_process_error()\n\u001b[1;32m    259\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28mlen\u001b[39m(len_data) \u001b[38;5;241m==\u001b[39m \u001b[38;5;241m0\u001b[39m:\n\u001b[0;32m--> 260\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_child_process_error()\n\u001b[1;32m    262\u001b[0m \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[1;32m    263\u001b[0m     recv_bytes \u001b[38;5;241m=\u001b[39m struct\u001b[38;5;241m.\u001b[39munpack(\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m<i\u001b[39m\u001b[38;5;124m\"\u001b[39m, len_data)[\u001b[38;5;241m0\u001b[39m]\n",
-      "\u001b[0;31mChildProcessError\u001b[0m: Subprocess terminated"
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Task  1/25]  Current/Best:  177.77/ 199.05 GFLOPS | Progress: (10/10) | 4.51 s Done.\n",
+      "[Task  2/25]  Current/Best:  126.34/ 126.34 GFLOPS | Progress: (10/10) | 3.78 s Done.\n",
+      "[Task  3/25]  Current/Best:  143.37/ 151.65 GFLOPS | Progress: (10/10) | 3.52 s Done.\n",
+      "[Task  4/25]  Current/Best:   50.36/ 140.31 GFLOPS | Progress: (10/10) | 8.44 s Done.\n",
+      "[Task  5/25]  Current/Best:  197.46/ 197.46 GFLOPS | Progress: (10/10) | 3.75 s Done.\n",
+      "[Task  6/25]  Current/Best:  102.33/ 274.47 GFLOPS | Progress: (10/10) | 3.71 s Done.\n",
+      "[Task  7/25]  Current/Best:  121.23/ 212.21 GFLOPS | Progress: (10/10) | 3.19 s Done.\n",
+      "[Task  8/25]  Current/Best:  256.87/ 300.88 GFLOPS | Progress: (10/10) | 5.40 s Done.\n",
+      "[Task  9/25]  Current/Best:   87.31/ 154.16 GFLOPS | Progress: (10/10) | 5.16 s Done.\n",
+      "[Task 10/25]  Current/Best:  165.09/ 165.09 GFLOPS | Progress: (10/10) | 3.03 s Done.\n",
+      "[Task 11/25]  Current/Best:   78.56/ 255.95 GFLOPS | Progress: (10/10) | 3.02 s Done.\n",
+      "[Task 12/25]  Current/Best:  113.57/ 213.63 GFLOPS | Progress: (10/10) | 3.92 s Done.\n",
+      "[Task 13/25]  Current/Best:   72.96/ 182.89 GFLOPS | Progress: (10/10) | 4.24 s Done.\n",
+      "[Task 15/25]  Current/Best:    0.00/   0.00 GFLOPS | Progress: (0/10) | 0.00 s s Done.\n",
+      "[Task 16/25]  Current/Best:   90.12/ 166.68 GFLOPS | Progress: (10/10) | 4.02 ss Done.\n",
+      "[Task 17/25]  Current/Best:   81.15/ 204.05 GFLOPS | Progress: (10/10) | 3.64 s Done.\n",
+      "[Task 18/25]  Current/Best:   32.93/ 101.79 GFLOPS | Progress: (10/10) | 13.54 s Done.\n",
+      "[Task 19/25]  Current/Best:  100.82/ 103.35 GFLOPS | Progress: (10/10) | 5.88 s Done.\n",
+      "[Task 20/25]  Current/Best:   50.29/ 213.17 GFLOPS | Progress: (10/10) | 12.39 s Done.\n",
+      "[Task 21/25]  Current/Best:   92.27/ 187.80 GFLOPS | Progress: (10/10) | 7.00 s Done.\n",
+      "[Task 22/25]  Current/Best:   46.94/ 170.27 GFLOPS | Progress: (10/10) | 3.72 s Done.\n",
+      "[Task 23/25]  Current/Best:  355.18/ 387.55 GFLOPS | Progress: (10/10) | 5.29 s Done.\n",
+      "[Task 25/25]  Current/Best:    0.00/   0.00 GFLOPS | Progress: (0/10) | 0.00 s s Done.\n",
+      "[Task 25/25]  Current/Best:    9.98/  41.21 GFLOPS | Progress: (10/10) | 12.91 s"
      ]
     }
    ],
@@ -504,9 +486,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 14,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      " Done.\n",
+      " Done.\n"
+     ]
+    }
+   ],
    "source": [
     "with autotvm.apply_history_best(tuning_option[\"tuning_records\"]):\n",
     "    with tvm.transform.PassContext(opt_level=3, config={}):\n",
@@ -525,9 +516,21 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 15,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "class='tiger cat' with probability=0.526640\n",
+      "class='tabby, tabby cat' with probability=0.403286\n",
+      "class='Egyptian cat' with probability=0.036493\n",
+      "class='tiger, Panthera tigris' with probability=0.004262\n",
+      "class='plastic bag' with probability=0.002361\n"
+     ]
+    }
+   ],
    "source": [
     "dtype = \"float32\"\n",
     "module.set_input(input_name, img_data)\n",
@@ -553,9 +556,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 16,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "optimized: {'mean': 30.120539935305715, 'median': 29.088086308911443, 'std': 2.3462227941326783}\n",
+      "unoptimized: {'mean': 33.839258244261146, 'median': 32.91657278314233, 'std': 2.2038196319125745}\n"
+     ]
+    }
+   ],
    "source": [
     "import timeit\n",
     "\n",
@@ -604,7 +616,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.13"
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,

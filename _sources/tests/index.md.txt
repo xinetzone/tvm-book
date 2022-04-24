@@ -8,6 +8,7 @@ intro
 nn
 config
 demo
+vta-smi
 dsl
 refs
 ```

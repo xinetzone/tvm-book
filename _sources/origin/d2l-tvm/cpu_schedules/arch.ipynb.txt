@@ -15,7 +15,7 @@
     "\n",
     "Arithmetic Units\n",
     "\n",
-    "典型的通用 CPU 有硬件单元来执行整数（称为 [ALU](https://en.wikipedia.org/wiki/Arithmetic_logic_unit)）和浮点数（称为 [FPU](https://en.wikipedia.org/wiki/Floating-point_unit)）上的运算。各种数据类型的性能取决于硬件。让我们先检查一下我们使用的 CPU 型号。"
+    "典型的通用 CPU 有硬件单元来执行整数（称为 [ALU](https://en.wikipedia.org/wiki/Arithmetic_logic_unit)，中文：算术逻辑单元）和浮点数（称为 [FPU](https://en.wikipedia.org/wiki/Floating-point_unit)）上的运算。各种数据类型的性能取决于硬件。让我们先检查一下我们使用的 CPU 型号。"
    ]
   },
   {
@@ -74,10 +74,10 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "3.09 ms ± 24.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
-      "6.36 ms ± 62.8 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
-      "1.08 s ± 3.97 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n",
-      "1.02 s ± 894 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+      "2.77 ms ± 18 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
+      "5.99 ms ± 166 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
+      "1.09 s ± 20 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n",
+      "1.1 s ± 4.25 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
      ]
     }
    ],
@@ -100,19 +100,19 @@
    "source": [
     "可以看出，32 位浮点（floating-point）(float32) 比 64 位浮点 (floati64) 快 2 倍。整数性能要慢得多，32 位整数 (int32) 和 64 位整数之间没有太大区别。我们将在后面进一步了解这些数字。\n",
     "\n",
-    "然而，有些运算符可能比矩阵乘法中使用的乘法和加法 `a += b * c` 要慢得多。例如，CPU 可能需要数百个周期来计算 transcendental 函数，例如 `exp`。你可以看到，`np.exp(x)` 比 `np.dot(x, x)` 需要的操作少了很多，前者需要更长的时间。"
+    "然而，有些算子可能比矩阵乘法中使用的乘法和加法 `a += b * c` 要慢得多。例如，CPU 可能需要数百个周期来计算 transcendental 函数，例如 `exp`。你可以看到，`np.exp(x)` 比 `np.dot(x, x)` 需要的运算少了很多，前者需要更长的时间。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 3,
    "metadata": {},
    "outputs": [
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "1.56 ms ± 5.94 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)\n"
+      "1.54 ms ± 34.5 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)\n"
      ]
     }
    ],
@@ -134,7 +134,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 4,
    "metadata": {
     "origin_pos": 7,
     "tab": [
@@ -146,7 +146,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU MHz:                         2895.863\n",
+      "CPU MHz:                         1200.000\n",
       "CPU max MHz:                     3300.0000\n",
       "CPU min MHz:                     1200.0000\n"
      ]
@@ -163,7 +163,6 @@
    "source": [
     "可以看到它的时钟速率比 2003 年的产品低，但它可能比奔腾 4 CPU 快 100 倍。秘密来源是，新的 CPU 模型在并行执行领域探索了更多。接下来简要地讨论两种典型的并行化。\n",
     "\n",
-    "(fig_cpu_parallel_arch)=\n",
     "### SIMD\n",
     "\n",
     "单指令多数据流（Single instruction, multiple data，简称 [SIMD](https://en.wikipedia.org/wiki/SIMD)）是指使用相同指令同时处理多个元素。\n",
@@ -176,12 +175,12 @@
     "\n",
     "流行的 SIMD 指令集包括英特尔的 [SSE](https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions) 和 [AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions)，ARM 的 [Neon](https://en.wikipedia.org/wiki/ARM_architecture#Advanced_SIMD_(NEON)) 和 AMD 的 [3DNow!](https://en.wikipedia.org/wiki/3DNow!)。\n",
     "\n",
-    "让我们检查一下 CPU 支持。"
+    "查看 CPU SIMD 支持。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 5,
    "metadata": {
     "origin_pos": 9,
     "tab": [
@@ -221,7 +220,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 6,
    "metadata": {
     "origin_pos": 11,
     "tab": [
@@ -246,22 +245,29 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "但是请注意，现代的 Intel CPU 通常有 [hyper-threading](https://en.wikipedia.org/wiki/Hyper-threading)，即每个核运行 2 个硬件线程。通过超线程化（hyper-threading），每个核心被表示为操作系统的 2 个逻辑核心。所以即使系统显示有 48 核，我们的 CPU 实际上只有 24 核。\n",
+    "但是请注意，现代的 Intel CPU 通常有 [hyper-threading](https://en.wikipedia.org/wiki/Hyper-threading)，即每个核运行 2 个硬件线程。通过超线程化（hyper-threading），每个内核被表示为操作系统的 2 个逻辑内核。所以即使系统显示有 48 核，我们的 CPU 实际上只有 24 核。\n",
     "\n",
-    "让两个线程共享同一个核的资源可能会增加总吞吐量，但会以增加总体延迟为代价。此外，超线程的效果在很大程度上取决于应用程序。因此，一般不建议在深度学习工作负载中利用超线程。在本书后面，您将看到，即使我们的 CPU 有48 个核，我们也只启动了 24 个线程。\n",
+    "让两个线程共享同一个核的资源可能会增加总吞吐量，但会以增加总体延迟为代价。此外，超线程的效果在很大程度上取决于应用程序。因此，一般不建议在深度学习工作负载中利用超线程。在本书后面，您将看到，即使我们的 CPU 有 48 个核，我们也只启动了 24 个线程。\n",
     "\n",
     "### 性能\n",
     "\n",
-    "我们经常使用每秒浮点运算（floating point operations per second，即 [FLOPS](https://en.wikipedia.org/wiki/FLOPS)）来衡量硬件平台或可执行程序的性能。\n",
+    "我们经常使用每秒浮点运算次数（floating point operations per second，即 [FLOPS](https://en.wikipedia.org/wiki/FLOPS)）来衡量硬件平台或可执行程序的性能。\n",
+    "\n",
+    "$$\n",
+    "\\begin{cases}\n",
+    "1M FLOPS = 10^6 次/秒\\\\\n",
+    "1G FLOPS = 10^9 次/秒\n",
+    "\\end{cases}\n",
+    "$$\n",
     "\n",
     "单个 CPU 的理论峰值性能可以通过 ``#physical_cores * #cycles_per_second * #instructions_per_cycle * #operations_per_instruction`` 计算。这里 `#instructions_per_cycle` 被称为 SIMD width。\n",
     "\n",
-    "假设 CPU 有 8 个物理核，最大的时钟速率（即 `#cycles_per_second`）是 $2.5\\times 10^9$，AVX-512 每周期计算 16 个 float32 指令，AVX-512 中的 [FMA](https://en.wikipedia.org/wiki/FMA_instruction_set) 指令集每次计算 `a += b * c`，它包含 2 个运算。因此，单精度 (float32) 的 GFLOPS (gigaFLOPS) 为"
+    "我们的 CPU 有 24 个物理核，最大的时钟速率（即 `#cycles_per_second`）是 $2.5\\times 10^9$，AVX-512 每周期计算 48 个 float32 指令，AVX-512 中的 [FMA](https://en.wikipedia.org/wiki/FMA_instruction_set) 指令集每次计算 `a += b * c`，它包含 2 个运算。因此，单精度 (float32) 的 GFLOPS (gigaFLOPS) 为"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 7,
    "metadata": {
     "origin_pos": 13,
     "tab": [
@@ -272,16 +278,16 @@
     {
      "data": {
       "text/plain": [
-       "640.0"
+       "5760.0"
       ]
      },
-     "execution_count": 9,
+     "execution_count": 7,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "2.5 * 8 * 16 * 2"
+    "2.5 * 24 * 48 * 2"
    ]
   },
   {
@@ -295,7 +301,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
+   "execution_count": 8,
    "metadata": {
     "origin_pos": 15,
     "tab": [
@@ -306,10 +312,10 @@
     {
      "data": {
       "text/plain": [
-       "743.9781900250707"
+       "665.4080305521185"
       ]
      },
-     "execution_count": 10,
+     "execution_count": 8,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -333,7 +339,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": 9,
    "metadata": {
     "origin_pos": 17,
     "tab": [
@@ -369,7 +375,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 19,
+   "execution_count": 10,
    "metadata": {
     "origin_pos": 19,
     "tab": [
@@ -381,7 +387,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "AVG\tMethod: MEMCPY\tElapsed: 0.04500\tMiB: 256.00000\tCopy: 5688.383 MiB/s\n"
+      "AVG\tMethod: MEMCPY\tElapsed: 0.04695\tMiB: 256.00000\tCopy: 5452.992 MiB/s\n"
      ]
     }
    ],
@@ -396,12 +402,12 @@
     "origin_pos": 20
    },
    "source": [
-    "注意，我们的 CPU 每秒可以对 float32 执行 $640\\times 10^9$ 运算。这要求带宽至少为 $640\\times 4=2560$ GB/s，这明显大于测量的带宽。CPU 使用 cache 来填补这一巨大的带宽缺口。让我们检查一下 CPU 的 cache。"
+    "注意，我们的 CPU 每秒可以对 float32 执行 $5740\\times 10^9$ 运算。这要求带宽至少为 $5740\\times 4=22960$ GB/s，这明显大于测量的带宽。CPU 使用 cache 来填补这一巨大的带宽缺口。让我们检查一下 CPU 的 cache。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 20,
+   "execution_count": 11,
    "metadata": {
     "origin_pos": 21,
     "tab": [
@@ -434,27 +440,19 @@
     "\n",
     "```{figure} ../img/cpu_memory.svg\n",
     "The layout of main memory and caches.\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 22
-   },
-   "source": [
-    "A brief memory subsystem layout is illustrated in :numref:`fig_cpu_memory`.\n",
-    "L1 and L2 caches are exclusive to each CPU core, and L3 cache is shared across the cores of the same CPU processor\n",
-    "To processing on some data, a CPU will first check if the data exist at L1 cache, if not check L2 cache, if not check L3 cache, if not go to the main memory to retrieve the data and bring it all the way through L3 cache, L2 cache, and L1 cache, finally to the CPU registers.\n",
-    "This looks very expensive but luckily in practice, the programs have the [data locality patterns](https://en.wikipedia.org/wiki/Locality_of_reference) which will accelerate the data retrieving procedure. There are two types of locality: temporal locality and spatial locality.\n",
-    "Temporal locality means that the data we just used usually would be used in the near future so that they may be still in cache. Spatial locality means that the adjacent data of the ones we just used are likely to be used in the near future. As the system always brings a block of values to the cache each time (see the concept of [cache lines](https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES)), those adjacent data may be still in cache when referenced to.\n",
-    "Leveraging the advantage brought by data locality is one of the most important performance optimization principles we will describe in detail later.\n",
+    "```\n",
+    "\n",
+    "L1 和 L2 缓存是独家的 CPU core，而 L3 缓存共享相同的 CPU 处理器来处理一些数据，CPU 将首先检查是否存在 L1 缓存的数据，如果没有，再检查 L2 高速缓存，如果没有，再检查 L3 缓存。如果不去主内存检索数据并把它所有的方式通过 L3 缓存，L2 缓存和 L1 缓存，最后到 CPU 寄存器。\n",
+    "\n",
+    "这看起来非常昂贵，但幸运的是，在实践中，程序有[数据本地模式](https://en.wikipedia.org/wiki/Locality_of_reference)，这将加快数据检索过程。有两种类型的地方性：temporal locality 和 spatial locality。时间局部性（temporal locality）意味着我们刚刚使用的数据通常将在不久的将来使用，因此它们可能仍然在缓存中。空间局部性（spatial locality）是指我们刚刚使用的相邻数据在不久的将来可能会被使用。\n",
+    "\n",
+    "由于系统每次都会将一个值块带到缓存中（参见 [缓存线](https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES) 的概念），当引用这些相邻的数据时，这些数据可能仍然在缓存中。利用数据局部性带来的优势是最重要的性能优化原则之一，我们将在后面详细描述。\n",
     "\n",
     "## 小结\n",
     "\n",
-    "- CPUs have dedicated units to handle computations on various data types. A CPU's peak performance is determined by the clock rate, the number of cores, and the instruction sets.\n",
-    "- CPUs use multi-level caches to bridge the gap between CPU computational power and main memory bandwidth.\n",
-    "- An efficient program should be effectively parallelized and access data with good temporal and spatial localities.\n"
+    "- CPU 有专门的单元来处理各种数据类型的计算。CPU 的峰值性能是由时钟速率、内核数和指令集决定的。\n",
+    "- CPU 使用多级缓存来弥补 CPU 计算能力和主存带宽之间的差距。\n",
+    "- 高效的程序应该有效地并行化，并以良好的时间和空间本地化访问数据。\n"
    ]
   }
  ],
