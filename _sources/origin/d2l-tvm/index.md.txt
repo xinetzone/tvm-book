@@ -24,7 +24,5 @@ expressions/index
 common_operators/index
 cpu_schedules/index
 gpu_schedules/index
-neural_networks/index
-deployment/index
 zreferences
 ```

@@ -490,16 +490,6 @@ function checkPageExistsAndRedirect(event) {
     </ul>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../neural_networks/index.html">
-     神经网络
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../deployment/index.html">
-     部署
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="../zreferences.html">
      参考文献
     </a>
@@ -1125,8 +1115,29 @@ function checkPageExistsAndRedirect(event) {
 <h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
-<span class="kn">import</span> <span class="nn">d2ltvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
+    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
+
+<span class="n">set_env</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
+TVM: 0.9.dev0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -1141,7 +1152,7 @@ function checkPageExistsAndRedirect(event) {
 <p>We first define reusable plot functions to draw multiple lines, which generalize the plot function defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_call_overhead</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 保存到 d2ltvm</span>
 <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="p">[],</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">fmts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)):</span>
@@ -1175,9 +1186,9 @@ function checkPageExistsAndRedirect(event) {
 <p>Then we benchmark the performance of NumPy as our baseline. We show the vector size vs measured <a class="reference external" href="https://en.wikipedia.org/wiki/FLOPS">GFLOPS</a>, giga-floating point operations per second, in the following diagram.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="n">np_add</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">setup</span><span class="o">=</span><span class="s1">&#39;import numpy as np</span><span class="se">\n</span><span class="s1">&#39;</span>
-                                <span class="s1">&#39;import d2ltvm</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;from tvm_book.contrib import d2ltvm</span><span class="se">\n</span><span class="s1">&#39;</span>
                                 <span class="s1">&#39;a, b, c = d2ltvm.get_abc(</span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">n</span><span class="p">,</span>
                                 <span class="n">stmt</span><span class="o">=</span><span class="s1">&#39;np.add(a, b, out=c)&#39;</span><span class="p">)</span>
 <span class="n">exe_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">np_add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">timeit</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
@@ -1187,7 +1198,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/vector_add_5_0.svg" src="../../../_images/vector_add_5_0.svg" /></div>
+<img alt="../../../_images/vector_add_6_0.svg" src="../../../_images/vector_add_6_0.svg" /></div>
 </div>
 <p>As we can see that the performance first increases with the vector length, which is due to the system overhead domination when the workload is small. The performance then decreases when we cannot fit all data into the cache.</p>
 </section>
@@ -1196,17 +1207,17 @@ function checkPageExistsAndRedirect(event) {
 <p>In the following code block, we define a reusable method to benchmark TVM performance. It accepts three arguments: 1) a <code class="docutils literal notranslate"><span class="pre">func</span></code> which returns the schedule and its corresponding symbolic tensor arguments; 2) the size list specifying a number of the vector lengths; and 3) the machine target which is CPU-related for this chapter and will be GPU-related in the next chapter.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
 <span class="k">def</span> <span class="nf">bench_vector_add_tvm</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">workload</span><span class="p">(</span><span class="n">nrepeats</span><span class="p">):</span>
-        <span class="n">timer</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">time_evaluator</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">entry_name</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">nrepeats</span><span class="p">)</span>
+        <span class="n">timer</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">time_evaluator</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">entry_name</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">nrepeats</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">timer</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span> <span class="o">*</span> <span class="n">nrepeats</span>
     <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
         <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">target</span><span class="p">)</span>
-        <span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
         <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">sizes</span> <span class="o">/</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
 </pre></div>
@@ -1216,7 +1227,7 @@ function checkPageExistsAndRedirect(event) {
 <p>The default schedule is a plain one-level for-loop program.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
@@ -1227,8 +1238,14 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce c {
-  for (i, 0, 64) {
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(a_1: handle, b_1: handle, c_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {a: Buffer(a_2: Pointer(float32), float32, [64], []),
+             b: Buffer(b_2: Pointer(float32), float32, [64], []),
+             c: Buffer(c_2: Pointer(float32), float32, [64], [])}
+  buffer_map = {a_1: a, b_1: b, c_1: c}
+  preflattened_buffer_map = {a_1: a_3: Buffer(a_2, float32, [64], []), b_1: b_3: Buffer(b_2, float32, [64], []), c_1: c_3: Buffer(c_2, float32, [64], [])} {
+  for (i: int32, 0, 64) {
     c[i] = (a[i] + b[i])
   }
 }
@@ -1239,7 +1256,7 @@ function checkPageExistsAndRedirect(event) {
 <p>Remember in :numref:<code class="docutils literal notranslate"><span class="pre">ch_cpu_arch</span></code> we found that our CPU supports AVX-512, we pass <code class="docutils literal notranslate"><span class="pre">-mcpu=skylake-avx512</span></code> to LLVM so that it can generate AVX-512 instructions if possible. In the following codes, we print a few lines of generated LLVM code.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -mcpu=skylake-avx512&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -mcpu=skylake-avx512&#39;</span>
 <span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">get_source</span><span class="p">()[:</span><span class="mi">500</span><span class="p">])</span>
 </pre></div>
@@ -1248,7 +1265,7 @@ function checkPageExistsAndRedirect(event) {
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>; ModuleID = &#39;TVMMod&#39;
 source_filename = &quot;TVMMod&quot;
-target datalayout = &quot;e-m:e-i64:64-f80:128-n8:16:32:64-S128&quot;
+target datalayout = &quot;e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128&quot;
 target triple = &quot;x86_64-pc-linux-gnu&quot;
 
 %0 = type { i8*, %1, i32, %2, i64*, i64*, i64 }
@@ -1257,7 +1274,7 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 
 @__TVMAPISetLastError = linkonce dllexport local_unnamed_addr global void (i8*)* null, align 8
 @.str = private constant [69 x i8] c&quot;Assert fail: (num_args == 3), default_function: num_args should be 3\00&quot;, align 1
-@.str.1 = private constant [144 x i8] c&quot;
+@.str.1
 </pre></div>
 </div>
 </div>
@@ -1265,13 +1282,44 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 <p>You may find it not quite readable if you are not familiar with LLVM IR. But you don’t need to worry much as in most cases, only reading the C-like pseudo code is sufficient to study the performance. Now let’s benchmark the default schedule.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">default_gflops</span> <span class="o">=</span> <span class="n">bench_vector_add_tvm</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">default_gflops</span> <span class="o">=</span> <span class="n">bench_vector_add_tvm</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="n">plot_gflops</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="p">[</span><span class="n">np_gflops</span><span class="p">,</span> <span class="n">default_gflops</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/vector_add_13_0.svg" src="../../../_images/vector_add_13_0.svg" /></div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb Cell 15&#39;</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
+<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000013vscode-remote?line=0&#39;</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">default_gflops</span> <span class="o">=</span> <span class="n">bench_vector_add_tvm</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000013vscode-remote?line=1&#39;</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">plot_gflops</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="p">[</span><span class="n">np_gflops</span><span class="p">,</span> <span class="n">default_gflops</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">])</span>
+
+<span class="nn">/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb Cell 9&#39;</span> in <span class="ni">bench_vector_add_tvm</span><span class="nt">(func, sizes, target)</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000007vscode-remote?line=9&#39;</span><span class="o">&gt;</span><span class="mi">10</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000007vscode-remote?line=10&#39;</span><span class="o">&gt;</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+<span class="o">---&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000007vscode-remote?line=11&#39;</span><span class="o">&gt;</span><span class="mi">12</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">))</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000007vscode-remote?line=12&#39;</span><span class="o">&gt;</span><span class="mi">13</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">return</span> <span class="n">sizes</span> <span class="o">/</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+
+<span class="nn">File /media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py:375,</span> in <span class="ni">bench_workload</span><span class="nt">(workload)</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=368&#39;</span><span class="o">&gt;</span><span class="mi">369</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">def</span> <span class="nf">bench_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">):</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=369&#39;</span><span class="o">&gt;</span><span class="mi">370</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="s2">&quot;&quot;&quot;Benchmark a workload</span>
+<span class="s2">    &lt;a href=&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=370&#39;&gt;371&lt;/a&gt; </span>
+<span class="s2">    &lt;a href=&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=371&#39;&gt;372&lt;/a&gt;     workload: a method that accept a num_repeat argument</span>
+<span class="s2">    &lt;a href=&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=372&#39;&gt;373&lt;/a&gt;     and return its total execution time</span>
+<span class="s2">    &lt;a href=&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=373&#39;&gt;374&lt;/a&gt;     &quot;&quot;&quot;</span>
+<span class="o">--&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=374&#39;</span><span class="o">&gt;</span><span class="mi">375</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">workload</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># warmup</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=375&#39;</span><span class="o">&gt;</span><span class="mi">376</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">time</span> <span class="o">=</span> <span class="n">workload</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># the time to run once</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/study/tvm-book/src/tvm_book/contrib/d2ltvm/d2ltvm.py?line=376&#39;</span><span class="o">&gt;</span><span class="mi">377</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="n">time</span>
+
+<span class="nn">/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb Cell 9&#39;</span> in <span class="ni">bench_vector_add_tvm.&lt;locals&gt;.workload</span><span class="nt">(nrepeats)</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000007vscode-remote?line=2&#39;</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">def</span> <span class="nf">workload</span><span class="p">(</span><span class="n">nrepeats</span><span class="p">):</span>
+<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000007vscode-remote?line=3&#39;</span><span class="o">&gt;</span><span class="mi">4</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">timer</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">time_evaluator</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">entry_name</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">nrepeats</span><span class="p">)</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/d2l-tvm/cpu_schedules/vector_add.ipynb#ch0000007vscode-remote?line=4&#39;</span><span class="o">&gt;</span><span class="mi">5</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="k">return</span> <span class="n">timer</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span> <span class="o">*</span> <span class="n">nrepeats</span>
+
+<span class="ne">TypeError</span>: Module.time_evaluator() got an unexpected keyword argument &#39;device&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <p>When the vector size is small, the default scheduling outperforms NumPy, which means that in this method the function call overhead of TVM is smaller than NumPy. It’s not surprising to find the performance degrades when increasing the vector size as the data cannot fit into the last level cache.</p>
 </section>
@@ -1280,7 +1328,7 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 <p>One important optimization that is not enabled by default is thread-level parallelization. The vector add operator is an <a class="reference external" href="https://en.wikipedia.org/wiki/Embarrassingly_parallel">embarrassingly parallel workload</a>, we can just change the for-loop into a parallel for-loop. In TVM, we first obtain the scheduler for the output symbol <code class="docutils literal notranslate"><span class="pre">C</span></code> by <code class="docutils literal notranslate"><span class="pre">s[C]</span></code>, and then impose the parallelization of the computation to its first axis, which is <code class="docutils literal notranslate"><span class="pre">C.op.axis[0]</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parallel</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parallel</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span> <span class="o">=</span> <span class="n">default</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="c1"># add thread-level parallelism</span>
     <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -1288,15 +1336,6 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 
 <span class="n">s</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parallel</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce c {
-  parallel (i, 0, 64) {
-    c[i] = (a[i] + b[i])
-  }
-}
 </pre></div>
 </div>
 </div>
@@ -1308,14 +1347,12 @@ There are other thread-level parallelization schemes such as the more dynamic <a
 <p>Then we check the parallelization of vectorization and plot the comparison diagram via the following code block.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_gflops</span> <span class="o">=</span> <span class="n">bench_vector_add_tvm</span><span class="p">(</span><span class="n">parallel</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parallel_gflops</span> <span class="o">=</span> <span class="n">bench_vector_add_tvm</span><span class="p">(</span><span class="n">parallel</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="n">plot_gflops</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="p">[</span><span class="n">np_gflops</span><span class="p">,</span> <span class="n">default_gflops</span><span class="p">,</span> <span class="n">parallel_gflops</span><span class="p">],</span>
      <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;parallel&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/vector_add_17_0.svg" src="../../../_images/vector_add_17_0.svg" /></div>
 </div>
 <p>Comparing the results we obtained before, parallelization significantly improves the performance when the workloads are large, e.g. vector lengths beyond <span class="math notranslate nohighlight">\(10^4\)</span>. However, the parallelization overhead impact the performance for small workloads, where single thread is even faster. The performance drops at a larger size as multi-core comes in play, leading to a larger amount of L2 cache in total.</p>
 </section>
@@ -1325,7 +1362,7 @@ There are other thread-level parallelization schemes such as the more dynamic <a
 <p>The way to do it is first splitting the one-level for-loop into a two-level nested for-loop using a <code class="docutils literal notranslate"><span class="pre">factor</span></code>. The inner loop consists of <code class="docutils literal notranslate"><span class="pre">factor</span></code> original iterations that will be grouped together accordingly to execute in SIMD instructions on a core. And iterations in the outer loop still run in parallel.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vectorized</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vectorized</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span> <span class="o">=</span> <span class="n">default</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">outer</span><span class="p">,</span> <span class="n">inner</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">factor</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
     <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span><span class="n">outer</span><span class="p">)</span>
@@ -1337,28 +1374,17 @@ There are other thread-level parallelization schemes such as the more dynamic <a
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce c {
-  parallel (i.outer, 0, 8) {
-    c[ramp((i.outer*8), 1, 8)] = (a[ramp((i.outer*8), 1, 8)] + b[ramp((i.outer*8), 1, 8)])
-  }
-}
-</pre></div>
-</div>
-</div>
 </div>
 <p>We can see that the outer for-loop is reduced to 8 iterations, while the inner for-loop is vectorized by <code class="docutils literal notranslate"><span class="pre">ramp</span></code> with a stride of 1 and width of 8. The definition of <code class="docutils literal notranslate"><span class="pre">ramp</span></code> is inherited from <a class="reference external" href="https://halide-lang.org/docs/struct_halide_1_1_internal_1_1_ramp.html">Halide</a>.</p>
 <p>Again, we check the performance of vectorization and plot the comparison diagram via the following code block.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vectorized_gflops</span> <span class="o">=</span> <span class="n">bench_vector_add_tvm</span><span class="p">(</span><span class="n">vectorized</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vectorized_gflops</span> <span class="o">=</span> <span class="n">bench_vector_add_tvm</span><span class="p">(</span><span class="n">vectorized</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="n">plot_gflops</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="p">[</span><span class="n">np_gflops</span><span class="p">,</span> <span class="n">default_gflops</span><span class="p">,</span> <span class="n">parallel_gflops</span><span class="p">,</span> <span class="n">vectorized_gflops</span><span class="p">],</span>
      <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;parallel&#39;</span><span class="p">,</span> <span class="s1">&#39;vectorized&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/vector_add_21_0.svg" src="../../../_images/vector_add_21_0.svg" /></div>
 </div>
 <p>The performance of the vectorized version is almost as the plain parallelization version. It’s partially because the vector add is bottlenecked by memory bandwidth instead of computation, while SIMD only helps the latter. We will see it helps more on computation intensive workloads such as matrix multiplication later.</p>
 </section>
@@ -1399,7 +1425,7 @@ There are other thread-level parallelization schemes such as the more dynamic <a
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-24, 12:42:30.<br>
+最后更新于 2022-04-25, 00:54:57.<br>
 </p>
     </div>
     

@@ -4,5 +4,6 @@
 :maxdepth: 3
 
 ../origin/index
+neural_networks/index
 test
 ```
