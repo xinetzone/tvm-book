@@ -47,6 +47,8 @@
     <link rel="shortcut icon" href="../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="领域专用语言" href="dsl.html" />
+    <link rel="prev" title="TVM 操练场" href="demo.html" />
     <link rel="stylesheet" href="../_static/css/default.css"/>
     <link rel="stylesheet" href="../_static/css/custom.css"/>
 
@@ -81,6 +83,12 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../tutorials/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="index.html">
   测试
  </a>
@@ -225,7 +233,44 @@ function checkPageExistsAndRedirect(event) {
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   TVM 简介
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nn.html">
+   神经网络
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="config.html">
+   配置
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="demo.html">
+   TVM 操练场
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   VTA 仿真
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="dsl.html">
+   领域专用语言
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="refs.html">
+   参考
+  </a>
+ </li>
+</ul>
+
   </div>
 </nav>
               </div>
@@ -374,6 +419,20 @@ function checkPageExistsAndRedirect(event) {
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="demo.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">TVM 操练场</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="dsl.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">领域专用语言</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
               
           </main>
@@ -395,7 +454,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-25, 00:54:57.<br>
+最后更新于 2022-04-26, 10:15:36.<br>
 </p>
     </div>
     

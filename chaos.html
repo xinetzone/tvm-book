@@ -47,7 +47,7 @@
     <link rel="shortcut icon" href="_static/favicon.jpg"/>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="项目解读" href="interpret/index.html" />
+    <link rel="next" title="可解释性" href="interpret/index.html" />
     <link rel="prev" title="参考" href="tests/refs.html" />
     <link rel="stylesheet" href="_static/css/default.css"/>
     <link rel="stylesheet" href="_static/css/custom.css"/>
@@ -83,6 +83,12 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="tutorials/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="tests/index.html">
   测试
  </a>
@@ -228,17 +234,34 @@ function checkPageExistsAndRedirect(event) {
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="nav bd-sidenav">
- <li class="toctree-l1">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="interpret/index.html">
-   项目解读
+   可解释性
   </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="interpret/tvm.html">
+     TVM 项目解读
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="interpret/glossary/index.html">
+     术语表
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="paper/index.html">
    论文解读
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -310,7 +333,11 @@ function checkPageExistsAndRedirect(event) {
 <h1>混沌<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="interpret/index.html">项目解读</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpret/index.html">可解释性</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="interpret/tvm.html">TVM 项目解读</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interpret/glossary/index.html">术语表</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="paper/index.html">论文解读</a></li>
 </ul>
 </div>
@@ -338,7 +365,7 @@ function checkPageExistsAndRedirect(event) {
     <a class='right-next' id="next-link" href="interpret/index.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">项目解读</p>
+        <p class="prev-next-title">可解释性</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -363,7 +390,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-25, 00:54:57.<br>
+最后更新于 2022-04-26, 10:15:36.<br>
 </p>
     </div>
     

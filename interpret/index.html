@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>项目解读 &#8212; tvm-book 0.0.2 文档</title>
+    <title>可解释性 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -47,7 +47,7 @@
     <link rel="shortcut icon" href="../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="论文解读" href="../paper/index.html" />
+    <link rel="next" title="TVM 项目解读" href="tvm.html" />
     <link rel="prev" title="混沌" href="../chaos.html" />
     <link rel="stylesheet" href="../_static/css/default.css"/>
     <link rel="stylesheet" href="../_static/css/custom.css"/>
@@ -83,6 +83,12 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../tutorials/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../tests/index.html">
   测试
  </a>
@@ -228,17 +234,34 @@ function checkPageExistsAndRedirect(event) {
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
+ <li class="toctree-l1 current active has-children">
   <a class="current reference internal" href="#">
-   项目解读
+   可解释性
   </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tvm.html">
+     TVM 项目解读
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="glossary/index.html">
+     术语表
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../paper/index.html">
    论文解读
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -297,23 +320,12 @@ function checkPageExistsAndRedirect(event) {
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>项目解读<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
-<p>本篇关注 TVM 资源库的根部的部分文件夹：</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">/src/</span></code>：用于算子编译和运行时部署的 C++ 代码。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">/src/relay/</span></code>：Relay 实现。一种新深度学习框架的函数式 IR（中间表示）。它管理计算图的组件，计算图中的节点使用 <code class="docutils literal notranslate"><span class="pre">/src/</span></code> 其他实现的基础设施进行编译和执行。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">/python</span></code>：Python 前端，包装 <code class="docutils literal notranslate"><span class="pre">/src/</span></code> 中实现的 C++ 函数和对象。为 C++ API 和 <code class="docutils literal notranslate"><span class="pre">/src/driver/</span></code> 代码提供 Python 绑定，用户可以用它来执行编译。与每个节点对应的算子在 <code class="docutils literal notranslate"><span class="pre">/src/relay/op</span></code> 中注册。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">/src/topi</span></code>：计算标准神经网络算子的定义和后端调度。它们是用 C++ 或 Python 编码的算子实现。</p></li>
+<h1>可解释性<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tvm.html">TVM 项目解读</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary/index.html">术语表</a></li>
 </ul>
-<p>当用户通过 <code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.relay.build()</span></code> 调用计算图的编译时，对图中的每个节点都会发生以下一系列动作：</p>
-<ul class="simple">
-<li><p>通过查询算子注册表查找算子实现</p></li>
-<li><p>为算子生成计算（<code class="docutils literal notranslate"><span class="pre">compute</span></code>）表达式和调度</p></li>
-<li><p>将算子编译成目标代码（object code）</p></li>
-</ul>
-<div class="admonition hint">
-<p class="admonition-title">提示</p>
-<p>TVM 中 Python 和 C++ 可以相互调用。</p>
 </div>
 </section>
 
@@ -330,10 +342,10 @@ function checkPageExistsAndRedirect(event) {
             <p class="prev-next-title">混沌</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="../paper/index.html" title="下一页 页">
+    <a class='right-next' id="next-link" href="tvm.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">论文解读</p>
+        <p class="prev-next-title">TVM 项目解读</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -358,7 +370,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-25, 00:54:57.<br>
+最后更新于 2022-04-26, 10:15:36.<br>
 </p>
     </div>
     

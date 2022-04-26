@@ -33,7 +33,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -54,7 +54,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -91,17 +91,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "input_name = \"data\"\n",
     "target = \"llvm\"\n",
@@ -160,6 +152,13 @@
     "\n",
     "print(unoptimized)"
    ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {

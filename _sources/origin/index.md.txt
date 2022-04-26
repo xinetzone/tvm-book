@@ -1,10 +1,5 @@
 # TVM 官方教程
 
-参考自：
-
-1. [How To](https://tvm.apache.org/docs/how_to/index.html)
-2. 
-
 ```{toctree}
 :maxdepth: 3
 :hidden:
@@ -13,6 +8,5 @@ d2l-tvm/index
 tutorial/index
 how_to/index
 topic/vta/tutorials/index
-vta/index
 test
 ```

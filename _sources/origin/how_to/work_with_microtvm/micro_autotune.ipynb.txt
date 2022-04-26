@@ -1,0 +1,370 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# 使用 microTVM Autotuning\n",
+        "\n",
+        "**原作者**:\n",
+        "- [Andrew Reusch](https://github.com/areusch)\n",
+        "- [Mehrdad Hessar](https://github.com/mehrdadh)\n",
+        "\n",
+        "本教程解释如何使用 C 运行时自动调优模型。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import os\n",
+        "import json\n",
+        "import numpy as np\n",
+        "import pathlib\n",
+        "\n",
+        "import tvm\n",
+        "from tvm.relay.backend import Runtime\n",
+        "\n",
+        "use_physical_hw = bool(os.getenv(\"TVM_MICRO_USE_HW\"))"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 定义模型\n",
+        "\n",
+        "首先，在 Relay 中定义要在设备上执行的模型。然后从 Relay 模型创建 IRModule，并用随机数填充参数。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "data_shape = (1, 3, 10, 10)\n",
+        "weight_shape = (6, 3, 5, 5)\n",
+        "\n",
+        "data = tvm.relay.var(\"data\", tvm.relay.TensorType(data_shape, \"float32\"))\n",
+        "weight = tvm.relay.var(\"weight\", tvm.relay.TensorType(weight_shape, \"float32\"))\n",
+        "\n",
+        "y = tvm.relay.nn.conv2d(\n",
+        "    data,\n",
+        "    weight,\n",
+        "    padding=(2, 2),\n",
+        "    kernel_size=(5, 5),\n",
+        "    kernel_layout=\"OIHW\",\n",
+        "    out_dtype=\"float32\",\n",
+        ")\n",
+        "f = tvm.relay.Function([data, weight], y)\n",
+        "\n",
+        "relay_mod = tvm.IRModule.from_expr(f)\n",
+        "relay_mod = tvm.relay.transform.InferType()(relay_mod)\n",
+        "\n",
+        "weight_sample = np.random.rand(\n",
+        "    weight_shape[0], weight_shape[1], weight_shape[2], weight_shape[3]\n",
+        ").astype(\"float32\")\n",
+        "params = {\"weight\": weight_sample}"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 定义目标\n",
+        "\n",
+        "现在我们定义描述执行环境的 TVM 目标。这看起来与其他 microTVM 教程中的目标定义非常相似。与此同时，选择 C 运行时来代码生成我们的模型。\n",
+        "\n",
+        "在物理硬件上运行时，选择描述该硬件的 target 和 board。本教程中可以从 PLATFORM 列表中选择多个硬件目标。在运行本教程时，您可以通过传递 --platform 参数来选择平台。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "RUNTIME = Runtime(\"crt\", {\"system-lib\": True})\n",
+        "TARGET = tvm.target.target.micro(\"host\")\n",
+        "\n",
+        "# Compiling for physical hardware\n",
+        "# --------------------------------------------------------------------------\n",
+        "#  When running on physical hardware, choose a TARGET and a BOARD that describe the hardware. The\n",
+        "#  STM32L4R5ZI Nucleo target and board is chosen in the example below.\n",
+        "if use_physical_hw:\n",
+        "    boards_file = pathlib.Path(tvm.micro.get_microtvm_template_projects(\"zephyr\")) / \"boards.json\"\n",
+        "    with open(boards_file) as f:\n",
+        "        boards = json.load(f)\n",
+        "\n",
+        "    BOARD = os.getenv(\"TVM_MICRO_BOARD\", default=\"nucleo_l4r5zi\")\n",
+        "    TARGET = tvm.target.target.micro(boards[BOARD][\"model\"])"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 提取优化任务\n",
+        "\n",
+        "不是所有的算子在上面打印的 Relay 程序可以调谐。有些非常简单，只定义了单个实现；其他任务作为调优任务没有意义。使用 `extract_from_program`，可以生成可调任务列表。\n",
+        "\n",
+        "因为任务提取涉及到运行编译器，所以首先需要配置编译器的 transformation passes；将在稍后的自动调优期间应用相同的配置。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "pass_context = tvm.transform.PassContext(opt_level=3, config={\"tir.disable_vectorize\": True})\n",
+        "with pass_context:\n",
+        "    tasks = tvm.autotvm.task.extract_from_program(relay_mod[\"main\"], {}, TARGET)\n",
+        "assert len(tasks) > 0"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 配置 microTVM\n",
+        "\n",
+        "在进行自动调优之前，需要定义模块加载器，并将其传递给 `tvm.autotvm.LocalBuilder`。然后创建 `tvm.autotvm.LocalRunner`，并使用构建器和运行器为自动调谐器生成多个度量值。\n",
+        "\n",
+        "在本教程中，可以选择使用 x86 主机作为示例，或者使用来自 Zephyr RTOS 的不同目标。如果您选择 pass `--platform=host` 到本教程，它将使用 x86。您可以从 `PLATFORM` 列表中选择其他选项。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import tvm.micro\n",
+        "module_loader = tvm.micro.AutoTvmModuleLoader(\n",
+        "    template_project_dir=pathlib.Path(tvm.micro.get_microtvm_template_projects(\"crt\")),\n",
+        "    project_options={\"verbose\": False},\n",
+        ")\n",
+        "builder = tvm.autotvm.LocalBuilder(\n",
+        "    n_parallel=1,\n",
+        "    build_kwargs={\"build_option\": {\"tir.disable_vectorize\": True}},\n",
+        "    do_fork=True,\n",
+        "    build_func=tvm.micro.autotvm_build_func,\n",
+        "    runtime=RUNTIME,\n",
+        ")\n",
+        "runner = tvm.autotvm.LocalRunner(number=1, repeat=1, timeout=100, module_loader=module_loader)\n",
+        "\n",
+        "measure_option = tvm.autotvm.measure_option(builder=builder, runner=runner)\n",
+        "\n",
+        "# Compiling for physical hardware\n",
+        "if use_physical_hw:\n",
+        "    module_loader = tvm.micro.AutoTvmModuleLoader(\n",
+        "        template_project_dir=pathlib.Path(tvm.micro.get_microtvm_template_projects(\"zephyr\")),\n",
+        "        project_options={\n",
+        "            \"zephyr_board\": BOARD,\n",
+        "            \"west_cmd\": \"west\",\n",
+        "            \"verbose\": False,\n",
+        "            \"project_type\": \"host_driven\",\n",
+        "        },\n",
+        "    )\n",
+        "    builder = tvm.autotvm.LocalBuilder(\n",
+        "        n_parallel=1,\n",
+        "        build_kwargs={\"build_option\": {\"tir.disable_vectorize\": True}},\n",
+        "        do_fork=False,\n",
+        "        build_func=tvm.micro.autotvm_build_func,\n",
+        "        runtime=RUNTIME,\n",
+        "    )\n",
+        "    runner = tvm.autotvm.LocalRunner(number=1, repeat=1, timeout=100, module_loader=module_loader)\n",
+        "\n",
+        "    measure_option = tvm.autotvm.measure_option(builder=builder, runner=runner)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 运行 Autotuning\n",
+        "\n",
+        "现在可以在 microTVM 设备上分别对每个提取任务进行自动调优。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "autotune_log_file = pathlib.Path(\"build/microtvm_autotune.log.txt\")\n",
+        "if os.path.exists(autotune_log_file):\n",
+        "    os.remove(autotune_log_file)\n",
+        "\n",
+        "num_trials = 10\n",
+        "for task in tasks:\n",
+        "    tuner = tvm.autotvm.tuner.GATuner(task)\n",
+        "    tuner.tune(\n",
+        "        n_trial=num_trials,\n",
+        "        measure_option=measure_option,\n",
+        "        callbacks=[\n",
+        "            tvm.autotvm.callback.log_to_file(str(autotune_log_file)),\n",
+        "            tvm.autotvm.callback.progress_bar(num_trials, si_prefix=\"M\"),\n",
+        "        ],\n",
+        "        si_prefix=\"M\",\n",
+        "    )"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 为未调优的程序计时\n",
+        "\n",
+        "为了进行比较，让我们在不施加任何自动调优调度的情况下编译和运行 graph。TVM 将为每个算子随机选择调优的实现，它的性能应该不如调优后的算子。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "with pass_context:\n",
+        "    lowered = tvm.relay.build(relay_mod, target=TARGET, runtime=RUNTIME, params=params)\n",
+        "\n",
+        "temp_dir = tvm.contrib.utils.tempdir()\n",
+        "project = tvm.micro.generate_project(\n",
+        "    str(tvm.micro.get_microtvm_template_projects(\"crt\")),\n",
+        "    lowered,\n",
+        "    temp_dir / \"project\",\n",
+        "    {\"verbose\": False},\n",
+        ")\n",
+        "\n",
+        "# Compiling for physical hardware\n",
+        "if use_physical_hw:\n",
+        "    temp_dir = tvm.contrib.utils.tempdir()\n",
+        "    project = tvm.micro.generate_project(\n",
+        "        str(tvm.micro.get_microtvm_template_projects(\"zephyr\")),\n",
+        "        lowered,\n",
+        "        temp_dir / \"project\",\n",
+        "        {\n",
+        "            \"zephyr_board\": BOARD,\n",
+        "            \"west_cmd\": \"west\",\n",
+        "            \"verbose\": False,\n",
+        "            \"project_type\": \"host_driven\",\n",
+        "        },\n",
+        "    )\n",
+        "\n",
+        "project.build()\n",
+        "project.flash()\n",
+        "with tvm.micro.Session(project.transport()) as session:\n",
+        "    debug_module = tvm.micro.create_local_debug_executor(\n",
+        "        lowered.get_graph_json(), session.get_system_lib(), session.device\n",
+        "    )\n",
+        "    debug_module.set_input(**lowered.get_params())\n",
+        "    print(\"########## Build without Autotuning ##########\")\n",
+        "    debug_module.run()\n",
+        "    del debug_module"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 为调优后的程序计时\n",
+        "\n",
+        "一旦自动调优完成，您可以使用调试运行时对整个程序的执行进行计时："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "with tvm.autotvm.apply_history_best(str(autotune_log_file)):\n",
+        "    with pass_context:\n",
+        "        lowered_tuned = tvm.relay.build(relay_mod, target=TARGET, runtime=RUNTIME, params=params)\n",
+        "\n",
+        "temp_dir = tvm.contrib.utils.tempdir()\n",
+        "project = tvm.micro.generate_project(\n",
+        "    str(tvm.micro.get_microtvm_template_projects(\"crt\")),\n",
+        "    lowered_tuned,\n",
+        "    temp_dir / \"project\",\n",
+        "    {\"verbose\": False},\n",
+        ")\n",
+        "\n",
+        "# Compiling for physical hardware\n",
+        "if use_physical_hw:\n",
+        "    temp_dir = tvm.contrib.utils.tempdir()\n",
+        "    project = tvm.micro.generate_project(\n",
+        "        str(tvm.micro.get_microtvm_template_projects(\"zephyr\")),\n",
+        "        lowered_tuned,\n",
+        "        temp_dir / \"project\",\n",
+        "        {\n",
+        "            \"zephyr_board\": BOARD,\n",
+        "            \"west_cmd\": \"west\",\n",
+        "            \"verbose\": False,\n",
+        "            \"project_type\": \"host_driven\",\n",
+        "        },\n",
+        "    )\n",
+        "\n",
+        "project.build()\n",
+        "project.flash()\n",
+        "with tvm.micro.Session(project.transport()) as session:\n",
+        "    debug_module = tvm.micro.create_local_debug_executor(\n",
+        "        lowered_tuned.get_graph_json(), session.get_system_lib(), session.device\n",
+        "    )\n",
+        "    debug_module.set_input(**lowered_tuned.get_params())\n",
+        "    print(\"########## Build with Autotuning ##########\")\n",
+        "    debug_module.run()\n",
+        "    del debug_module"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.4"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

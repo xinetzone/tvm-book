@@ -47,6 +47,8 @@
     <link rel="shortcut icon" href="../../../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../../../search.html" />
+    <link rel="next" title="Matrix Multiply Blocking" href="matrix_multiply_opt.html" />
+    <link rel="prev" title="Optimize Tensor Operators" href="index.html" />
     <link rel="stylesheet" href="../../../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../../../_static/css/custom.css"/>
 
@@ -80,7 +82,13 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../../../../tutorials/index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../../../../tests/index.html">
   测试
  </a>
@@ -226,19 +234,19 @@ function checkPageExistsAndRedirect(event) {
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../../../d2l-tvm/index.html">
-   d2l-tvm 教程
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../../../index.html">
+   TVM 官方教程
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
+  <ul class="current">
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../d2l-tvm/getting_started/index.html">
-     入门
+    <a class="reference internal" href="../../../../d2l-tvm/index.html">
+     d2l-tvm 教程
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
     <label for="toctree-checkbox-2">
@@ -246,334 +254,334 @@ function checkPageExistsAndRedirect(event) {
      </i>
     </label>
     <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/getting_started/install.html">
-       安装
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../d2l-tvm/getting_started/index.html">
+       入门
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/getting_started/install.html">
+         安装
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/getting_started/vector_add.html">
+         向量加法
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/getting_started/from_mxnet.html">
+         神经网络推理
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/getting_started/remote.html">
+         在远程计算机上运行
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../d2l-tvm/expressions/index.html">
+       表达式算子
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/expressions/data_types.html">
+         数据类型
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/expressions/shapes.html">
+         形状
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/expressions/index_shape_expressions.html">
+         Index and Shape Expressions
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/expressions/reductions.html">
+         Reduction Operations
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/expressions/if_then_else.html">
+         Conditional Expression:
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           if-then-else
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/expressions/all_any.html">
+         Truth Value Testing:
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           all
+          </span>
+         </code>
+         and
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           any
+          </span>
+         </code>
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../d2l-tvm/common_operators/index.html">
+       常见的算子
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/common_operators/broadcast_add.html">
+         Broadcast Add
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/common_operators/matmul.html">
+         Matrix Multiplication
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/common_operators/conv.html">
+         Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/common_operators/depthwise_conv.html">
+         Depthwise Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/common_operators/pooling.html">
+         Pooling
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/common_operators/batch_norm.html">
+         Batch Normalization
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/index.html">
+       CPU 上的算子优化
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/arch.html">
+         CPU 架构
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/call_overhead.html">
+         函数调用的开销
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/vector_add.html">
+         Vector Add
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/broadcast_add.html">
+         Broadcast Add
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/matmul.html">
+         Matrix Multiplication
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/block_matmul.html">
+         Improve Cache Efficiency by Blocking
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/conv.html">
+         Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/packed_conv.html">
+         Packed Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/depthwise_conv.html">
+         Depthwise Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/pooling.html">
+         Pooling
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/batch_norm.html">
+         Batch Normalization
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/index.html">
+       Operator Optimizations on GPUs
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/arch.html">
+         GPU 架构
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/vector_add.html">
+         Vector Add
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/broadcast_add.html">
+         Broadcast Add
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/matmul.html">
+         Matrix Multiplication
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/conv.html">
+         Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/depthwise_conv.html">
+         Depthwise Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/pooling.html">
+         Pooling
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/batch_norm.html">
+         Batch Norm
+        </a>
+       </li>
+      </ul>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/getting_started/vector_add.html">
-       向量加法
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/getting_started/from_mxnet.html">
-       神经网络推理
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/getting_started/remote.html">
-       在远程计算机上运行
+      <a class="reference internal" href="../../../../d2l-tvm/zreferences.html">
+       参考文献
       </a>
      </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../d2l-tvm/expressions/index.html">
-     表达式算子
+    <a class="reference internal" href="../../../../tutorial/index.html">
+     用户指南
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-    <label for="toctree-checkbox-3">
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/expressions/data_types.html">
-       数据类型
+      <a class="reference internal" href="../../../../tutorial/introduction.html">
+       TVM 和模型优化的概述
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/expressions/shapes.html">
-       形状
+      <a class="reference internal" href="../../../../tutorial/tvmc_command_line_driver.html">
+       用 TVMC 编译和优化模型
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/expressions/index_shape_expressions.html">
-       Index and Shape Expressions
+      <a class="reference internal" href="../../../../tutorial/tvmc_python.html">
+       开始使用 TVMC Python：TVM 的高级 API
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/expressions/reductions.html">
-       Reduction Operations
+      <a class="reference internal" href="../../../../tutorial/autotvm_relay_x86.html">
+       用 Python 接口编译和优化模型（AutoTVM）
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/expressions/if_then_else.html">
-       Conditional Expression:
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         if-then-else
-        </span>
-       </code>
+      <a class="reference internal" href="../../../../tutorial/tensor_expr_get_started.html">
+       使用张量表达式处理算子
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/expressions/all_any.html">
-       Truth Value Testing:
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         all
-        </span>
-       </code>
-       and
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         any
-        </span>
-       </code>
+      <a class="reference internal" href="../../../../tutorial/autotvm_matmul_x86.html">
+       用调度模板和 AutoTVM 优化算子
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../tutorial/auto_scheduler_matmul_x86.html">
+       使用自动调度优化运算
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../tutorial/tensor_ir_blitz_course.html">
+       TensorIR 的突击课程
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../tutorial/cross_compilation_and_rpc.html">
+       交叉编译和RPC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../tutorial/relay_quick_start.html">
+       编译深度学习模型的快速入门教程
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../../../tutorial/intro_topi.html">
+       TOPI 简介
       </a>
      </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../d2l-tvm/common_operators/index.html">
-     常见的算子
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-    <label for="toctree-checkbox-4">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/common_operators/broadcast_add.html">
-       Broadcast Add
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/common_operators/matmul.html">
-       Matrix Multiplication
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/common_operators/conv.html">
-       Convolution
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/common_operators/depthwise_conv.html">
-       Depthwise Convolution
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/common_operators/pooling.html">
-       Pooling
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/common_operators/batch_norm.html">
-       Batch Normalization
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/index.html">
-     CPU 上的算子优化
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-    <label for="toctree-checkbox-5">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/arch.html">
-       CPU 架构
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/call_overhead.html">
-       函数调用的开销
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/vector_add.html">
-       Vector Add
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/broadcast_add.html">
-       Broadcast Add
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/matmul.html">
-       Matrix Multiplication
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/block_matmul.html">
-       Improve Cache Efficiency by Blocking
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/conv.html">
-       Convolution
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/packed_conv.html">
-       Packed Convolution
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/depthwise_conv.html">
-       Depthwise Convolution
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/pooling.html">
-       Pooling
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/cpu_schedules/batch_norm.html">
-       Batch Normalization
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/index.html">
-     Operator Optimizations on GPUs
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-    <label for="toctree-checkbox-6">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/arch.html">
-       GPU Architecture
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/vector_add.html">
-       Vector Add
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/broadcast_add.html">
-       Broadcast Add
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/matmul.html">
-       Matrix Multiplication
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/conv.html">
-       Convolution
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/depthwise_conv.html">
-       Depthwise Convolution
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/pooling.html">
-       Pooling
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/batch_norm.html">
-       Batch Norm
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../d2l-tvm/zreferences.html">
-     参考文献
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../../../tutorial/index.html">
-   用户指南
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
-  <label for="toctree-checkbox-7">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/introduction.html">
-     TVM 和模型优化的概述
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/tvmc_command_line_driver.html">
-     用 TVMC 编译和优化模型
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/tvmc_python.html">
-     开始使用 TVMC Python：TVM 的高级 API
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/autotvm_relay_x86.html">
-     用 Python 接口编译和优化模型（AutoTVM）
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/tensor_expr_get_started.html">
-     使用张量表达式处理算子
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/autotvm_matmul_x86.html">
-     用调度模板和 AutoTVM 优化算子
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/auto_scheduler_matmul_x86.html">
-     使用自动调度优化运算
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/tensor_ir_blitz_course.html">
-     TensorIR 的突击课程
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/cross_compilation_and_rpc.html">
-     交叉编译和RPC
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/relay_quick_start.html">
-     编译深度学习模型的快速入门教程
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../../tutorial/intro_topi.html">
-     TOPI 简介
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../../../how_to/index.html">
-   How To 指南
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-  <label for="toctree-checkbox-8">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/compile_models/index.html">
-     编译深度学习模型
+    <a class="reference internal" href="../../../../how_to/index.html">
+     How To 指南
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
     <label for="toctree-checkbox-9">
@@ -581,401 +589,391 @@ function checkPageExistsAndRedirect(event) {
      </i>
     </label>
     <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_pytorch.html">
-       编译 PyTorch 模型
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/compile_models/index.html">
+       编译深度学习模型
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+      <label for="toctree-checkbox-10">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_pytorch.html">
+         编译 PyTorch 模型
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_tensorflow.html">
+         Compile Tensorflow Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_mxnet.html">
+         Compile MXNet Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_onnx.html">
+         Compile ONNX Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_keras.html">
+         Compile Keras Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_tflite.html">
+         Compile TFLite Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_coreml.html">
+         Compile CoreML Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_darknet.html">
+         Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_caffe2.html">
+         Compile Caffe2 Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/compile_models/from_paddle.html">
+         Compile PaddlePaddle Models
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_tensorflow.html">
-       Compile Tensorflow Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/deploy_models/index.html">
+       部署深度学习模型
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+      <label for="toctree-checkbox-11">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_model_on_android.html">
+         Deploy the Pretrained Model on Android
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_model_on_rasp.html">
+         Deploy the Pretrained Model on Raspberry Pi
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_object_detection_pytorch.html">
+         Compile PyTorch Object Detection Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_prequantized.html">
+         使用 TVM 部署框架预量化模型
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_prequantized_tflite.html">
+         Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_quantized.html">
+         在 CUDA 上部署已量化模型
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_sparse.html">
+         Deploy a Hugging Face Pruned Model on CPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/deploy_models/deploy_ssd_gluoncv.html">
+         Deploy Single Shot Multibox Detector(SSD) model
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_mxnet.html">
-       Compile MXNet Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/work_with_relay/index.html">
+       Work With Relay
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+      <label for="toctree-checkbox-12">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_relay/build_gcn.html">
+         Building a Graph Convolutional Network
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_relay/using_external_lib.html">
+         Using External Libraries in Relay
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_onnx.html">
-       Compile ONNX Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/work_with_schedules/index.html">
+       Work With Tensor Expression and Schedules
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+      <label for="toctree-checkbox-13">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/schedule_primitives.html">
+         Schedule Primitives in TVM
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/reduction.html">
+         Reduction
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/intrin_math.html">
+         Intrinsics and Math Functions
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/scan.html">
+         Scan and Recurrent Kernel
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/extern_op.html">
+         External Tensor Functions
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/tensorize.html">
+         Use Tensorize to Leverage Hardware Intrinsics
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/tuple_inputs.html">
+         Compute and Reduce with Tuple Inputs
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_schedules/tedd.html">
+         Use Tensor Expression Debug Display (TEDD) for Visualization
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_keras.html">
-       Compile Keras Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/optimize_operators/index.html">
+       Optimize Tensor Operators
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+      <label for="toctree-checkbox-14">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/optimize_operators/opt_gemm.html">
+         How to optimize GEMM on CPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/optimize_operators/opt_conv_cuda.html">
+         How to optimize convolution on GPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/optimize_operators/opt_conv_tensorcore.html">
+         How to optimize convolution using TensorCores
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_tflite.html">
-       Compile TFLite Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/index.html">
+       Auto-Tune with Templates and AutoTVM
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+      <label for="toctree-checkbox-15">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_conv2d_cuda.html">
+         Tuning High Performance Convolution on NVIDIA GPUs
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_cuda.html">
+         Auto-tuning a Convolutional Network for NVIDIA GPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_x86.html">
+         Auto-tuning a Convolutional Network for x86 CPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_arm.html">
+         Auto-tuning a Convolutional Network for ARM CPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_mobile_gpu.html">
+         Auto-tuning a Convolutional Network for Mobile GPU
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_coreml.html">
-       Compile CoreML Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/index.html">
+       Use AutoScheduler for Template-Free Scheduling
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
+      <label for="toctree-checkbox-16">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
+         Auto-scheduling a Convolution Layer for GPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_x86.html">
+         Auto-scheduling a Neural Network for x86 CPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_cuda.html">
+         Auto-scheduling a Neural Network for NVIDIA GPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_arm.html">
+         Auto-scheduling a Neural Network for ARM CPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_mali.html">
+         Auto-scheduling a Neural Network for mali GPU
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_sparse_x86.html">
+         Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_darknet.html">
-       Compile YOLO-V2 and YOLO-V3 in DarkNet Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/work_with_microtvm/index.html">
+       使用 microTVM
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
+      <label for="toctree-checkbox-17">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_autotune.html">
+         使用 microTVM Autotuning
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_ethosu.html">
+         在 bare metal Arm(R) Cortex(R)-M55 CPU 和 Ethos(TM)-U55 NPU 上运行 TVM
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_reference_vm.html">
+         microTVM 参考虚拟机
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_tflite.html">
+         microTVM with TFLite Models
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_tvmc.html">
+         Executing a Tiny Model with TVMC Micro
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_caffe2.html">
-       Compile Caffe2 Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/extend_tvm/index.html">
+       Extend TVM
       </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
+      <label for="toctree-checkbox-18">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/extend_tvm/low_level_custom_pass.html">
+         Writing a Customized Pass
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/extend_tvm/use_pass_infra.html">
+         How to Use TVM Pass Infra
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/extend_tvm/use_pass_instrument.html">
+         How to Use TVM Pass Instrument
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/extend_tvm/bring_your_own_datatypes.html">
+         Bring Your Own Datatypes to TVM
+        </a>
+       </li>
+      </ul>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/compile_models/from_paddle.html">
-       Compile PaddlePaddle Models
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../../../how_to/profile/index.html">
+       Profile Models
       </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/deploy_models/index.html">
-     部署深度学习模型
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
-    <label for="toctree-checkbox-10">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_model_on_android.html">
-       Deploy the Pretrained Model on Android
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_model_on_rasp.html">
-       Deploy the Pretrained Model on Raspberry Pi
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_object_detection_pytorch.html">
-       Compile PyTorch Object Detection Models
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_prequantized.html">
-       使用 TVM 部署框架预量化模型
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_prequantized_tflite.html">
-       Deploy a Framework-prequantized Model with TVM - Part 3 (TFLite)
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_quantized.html">
-       在 CUDA 上部署已量化模型
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_sparse.html">
-       Deploy a Hugging Face Pruned Model on CPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/deploy_models/deploy_ssd_gluoncv.html">
-       Deploy Single Shot Multibox Detector(SSD) model
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/work_with_relay/index.html">
-     Work With Relay
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
-    <label for="toctree-checkbox-11">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_relay/build_gcn.html">
-       Building a Graph Convolutional Network
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_relay/using_external_lib.html">
-       Using External Libraries in Relay
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/work_with_schedules/index.html">
-     Work With Tensor Expression and Schedules
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
-    <label for="toctree-checkbox-12">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/schedule_primitives.html">
-       Schedule Primitives in TVM
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/reduction.html">
-       Reduction
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/intrin_math.html">
-       Intrinsics and Math Functions
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/scan.html">
-       Scan and Recurrent Kernel
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/extern_op.html">
-       External Tensor Functions
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/tensorize.html">
-       Use Tensorize to Leverage Hardware Intrinsics
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/tuple_inputs.html">
-       Compute and Reduce with Tuple Inputs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_schedules/tedd.html">
-       Use Tensor Expression Debug Display (TEDD) for Visualization
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/optimize_operators/index.html">
-     Optimize Tensor Operators
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
-    <label for="toctree-checkbox-13">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/optimize_operators/opt_gemm.html">
-       How to optimize GEMM on CPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/optimize_operators/opt_conv_cuda.html">
-       How to optimize convolution on GPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/optimize_operators/opt_conv_tensorcore.html">
-       How to optimize convolution using TensorCores
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/tune_with_autotvm/index.html">
-     Auto-Tune with Templates and AutoTVM
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
-    <label for="toctree-checkbox-14">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_conv2d_cuda.html">
-       Tuning High Performance Convolution on NVIDIA GPUs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_cuda.html">
-       Auto-tuning a Convolutional Network for NVIDIA GPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_x86.html">
-       Auto-tuning a Convolutional Network for x86 CPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_arm.html">
-       Auto-tuning a Convolutional Network for ARM CPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autotvm/tune_relay_mobile_gpu.html">
-       Auto-tuning a Convolutional Network for Mobile GPU
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/index.html">
-     Use AutoScheduler for Template-Free Scheduling
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
-    <label for="toctree-checkbox-15">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_conv2d_layer_cuda.html">
-       Auto-scheduling a Convolution Layer for GPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_x86.html">
-       Auto-scheduling a Neural Network for x86 CPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_cuda.html">
-       Auto-scheduling a Neural Network for NVIDIA GPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_arm.html">
-       Auto-scheduling a Neural Network for ARM CPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_network_mali.html">
-       Auto-scheduling a Neural Network for mali GPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/tune_with_autoscheduler/tune_sparse_x86.html">
-       Auto-scheduling Sparse Matrix Multiplication on CPU with Custom Sketch Rule
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/work_with_microtvm/index.html">
-     Work With microTVM
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
-    <label for="toctree-checkbox-16">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_autotune.html">
-       Autotuning with micro TVM
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_ethosu.html">
-       Running TVM on bare metal Arm(R) Cortex(R)-M55 CPU and Ethos(TM)-U55 NPU
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_reference_vm.html">
-       microTVM Reference Virtual Machines
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/work_with_microtvm/micro_tflite.html">
-       microTVM with TFLite Models
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../../../../how_to/extend_tvm/index.html">
-     Extend TVM
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
-    <label for="toctree-checkbox-17">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/extend_tvm/low_level_custom_pass.html">
-       Writing a Customized Pass
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/extend_tvm/use_pass_infra.html">
-       How to Use TVM Pass Infra
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/extend_tvm/use_pass_instrument.html">
-       How to Use TVM Pass Instrument
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../../../how_to/extend_tvm/bring_your_own_datatypes.html">
-       Bring Your Own Datatypes to TVM
-      </a>
-     </li>
-    </ul>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="../index.html">
-   VTA 教程
-  </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
-  <label for="toctree-checkbox-18">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="../vta_get_started.html">
-     Get Started with VTA
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../matrix_multiply.html">
-     Simple Matrix Multiply
-    </a>
-   </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../frontend/index.html">
-     编译深度学习模型
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
-    <label for="toctree-checkbox-19">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../frontend/deploy_classification.html">
-       在 VTA 上从 MxNet 部署预先训练的视觉模型
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../frontend/deploy_detection.html">
-       Deploy Pretrained Vision Detection Model from Darknet on VTA
-      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
+      <label for="toctree-checkbox-19">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../../../how_to/profile/papi.html">
+         Getting Started With PAPI
+        </a>
+       </li>
+      </ul>
      </li>
     </ul>
    </li>
    <li class="toctree-l2 current active has-children">
-    <a class="reference internal" href="index.html">
-     Optimize Tensor Operators
+    <a class="reference internal" href="../index.html">
+     VTA 教程
     </a>
     <input checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/>
     <label for="toctree-checkbox-20">
@@ -983,50 +981,104 @@ function checkPageExistsAndRedirect(event) {
      </i>
     </label>
     <ul class="current">
-     <li class="toctree-l3 current active">
-      <a class="current reference internal" href="#">
-       2D Convolution Optimization
+     <li class="toctree-l3">
+      <a class="reference internal" href="../vta_get_started.html">
+       VTA 入门
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="matrix_multiply_opt.html">
-       Matrix Multiply Blocking
+      <a class="reference internal" href="../matrix_multiply.html">
+       简单的矩阵乘法
       </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../frontend/index.html">
+       编译深度学习模型
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/>
+      <label for="toctree-checkbox-21">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../frontend/deploy_classification.html">
+         在 VTA 上从 MxNet 部署预训练的视觉模型
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../frontend/deploy_detection.html">
+         在 VTA 上部署预训练的 Darknet 视觉检测模型
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 current active has-children">
+      <a class="reference internal" href="index.html">
+       Optimize Tensor Operators
+      </a>
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
+      <label for="toctree-checkbox-22">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul class="current">
+       <li class="toctree-l4 current active">
+        <a class="current reference internal" href="#">
+         2D Convolution Optimization
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="matrix_multiply_opt.html">
+         Matrix Multiply Blocking
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../autotvm/index.html">
+       Auto tuning
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
+      <label for="toctree-checkbox-23">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../autotvm/tune_alu_vta.html">
+         Auto-tuning a ALU fused op on VTA
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../autotvm/tune_relay_vta.html">
+         Auto-tuning a convolutional network on VTA
+        </a>
+       </li>
+      </ul>
      </li>
     </ul>
    </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../autotvm/index.html">
-     Auto tuning
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../../test.html">
+     草稿
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/>
-    <label for="toctree-checkbox-21">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../autotvm/tune_alu_vta.html">
-       Auto-tuning a ALU fused op on VTA
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../autotvm/tune_relay_vta.html">
-       Auto-tuning a convolutional network on VTA
-      </a>
-     </li>
-    </ul>
    </li>
   </ul>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../../../vta/index.html">
-   VTA 指南
+  <a class="reference internal" href="../../../../../tutorials/neural_networks/index.html">
+   神经网络
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../../../test.html">
-   草稿
+  <a class="reference internal" href="../../../../../tutorials/test.html">
+   测试
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../../../tutorials/vta.html">
+   VTA 测试
   </a>
  </li>
 </ul>
@@ -1066,28 +1118,6 @@ function checkPageExistsAndRedirect(event) {
   <a class="reference internal nav-link" href="#scheduling-the-computation">
    Scheduling the Computation
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#blocking-the-computation">
-     Blocking the Computation
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#virtual-threading">
-     Virtual Threading
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#lowering-copies-to-dma-transfers">
-     Lowering Copies to DMA Transfers
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#lowering-computation-to-vta-compute-intrinsics">
-     Lowering Computation to VTA Compute Intrinsics
-    </a>
-   </li>
-  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#tvm-compilation-and-verification">
@@ -1108,7 +1138,7 @@ function checkPageExistsAndRedirect(event) {
                 
 
 <div class="tocsection editthispage">
-    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/topic/vta/tutorials/optimize/convolution_opt.rst">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/topic/vta/tutorials/optimize/convolution_opt.ipynb">
         <i class="fas fa-pencil-alt"></i> Edit this page
     </a>
 </div>
@@ -1127,17 +1157,19 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <div class="sphx-glr-download-link-note admonition note">
-<p class="admonition-title">备注</p>
-<p>Click <span class="xref std std-ref">here</span>
-to download the full example code</p>
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
 </div>
-<section class="sphx-glr-example-title" id="d-convolution-optimization">
-<span id="sphx-glr-topic-vta-tutorials-optimize-convolution-opt-py"></span><h1>2D Convolution Optimization<a class="headerlink" href="#d-convolution-optimization" title="永久链接至标题">#</a></h1>
-<p><strong>Author</strong>: <a class="reference external" href="https://homes.cs.washington.edu/~moreau/">Thierry Moreau</a></p>
+</div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="d-convolution-optimization">
+<h1>2D Convolution Optimization<a class="headerlink" href="#d-convolution-optimization" title="永久链接至标题">#</a></h1>
+<p><strong>Author</strong>: <code class="docutils literal notranslate"><span class="pre">Thierry</span> <span class="pre">Moreau</span> <span class="pre">&lt;https://homes.cs.washington.edu/~moreau/&gt;</span></code>_</p>
 <p>This tutorial provides an overview on how to use TVM to map a 2D convolution
 workload efficiently on the VTA design.
-We recommend covering the <a class="reference internal" href="matrix_multiply_opt.html#vta-mat-mult-opt"><span class="std std-ref">Matrix Multiply Blocking</span></a> tutorial first.</p>
+We recommend covering the <code class="docutils literal notranslate"><span class="pre">vta-mat-mult-opt</span></code> tutorial first.</p>
 <p>2D convolution is dominant in most computer vision deep neural networks.
 In this tutorial, we will demonstrate TVM schedule optimizations to map
 2D convolution operators in NCHW layout onto VTA.
@@ -1146,7 +1178,9 @@ maximize VTA’s compute and memory resource utilization.</p>
 <section id="rpc-setup">
 <h2>RPC Setup<a class="headerlink" href="#rpc-setup" title="永久链接至标题">#</a></h2>
 <p>We start by programming the Pynq’s FPGA and building its RPC runtime.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
@@ -1187,6 +1221,8 @@ maximize VTA’s compute and memory resource utilization.</p>
     <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">LocalSession</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+</div>
 </section>
 <section id="computation-declaration">
 <h2>Computation Declaration<a class="headerlink" href="#computation-declaration" title="永久链接至标题">#</a></h2>
@@ -1201,14 +1237,15 @@ architecture as our convolution workload parameters.</p>
 shifting and clipping to the output in order to mimic a fixed-point
 convolution followed by a rectified linear activation.
 We describe the TVM dataflow graph of the 2D convolution layer below:</p>
-<img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/conv2d_dataflow.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/conv2d_dataflow.png" />
+<p><img alt="" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/conv2d_dataflow.png" /></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> :align: center
+</pre></div>
+</div>
 <p>This computation is intentionally too large to fit onto VTA’s on-chip
 buffers all at once. Therefore in the scheduling phase we’ll
 rely on computation blocking strategies to break the computation down into
 manageable chunks.</p>
-<div class="admonition note">
-<p class="admonition-title">备注</p>
-<p><em>Spatial padding</em></p>
+<div class="alert alert-info"><h4>Note</h4><p>*Spatial padding*
 <p>Note that we’ll need to import the TOPI library to apply spatial padding
 on the input feature map tensor.
 Spatial padding facilitates blocking in the context of 2D convolutions
@@ -1222,9 +1259,12 @@ input feature map does not have to be re-packed in memory.</p>
 <p>We show the effect of VTA’s on the fly spatial padding when data is being
 loaded from DRAM into VTA’s SRAM, following a 2D strided and padded memory
 read.</p>
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/padding.png"><img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/padding.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/padding.png" style="width: 480px;" /></a>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">topi</span>
+<p>.. image:: https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/padding.png
+:align: center
+:width: 480px</p></div></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">topi</span>
 
 <span class="c1"># 2D convolution layer dimensions taken from ResNet-18 architecture</span>
 <span class="c1"># (9th convolutional layer)</span>
@@ -1312,6 +1352,8 @@ read.</p>
 <span class="n">res</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">output_shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">res_min</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;res&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+</div>
 </section>
 <section id="scheduling-the-computation">
 <h2>Scheduling the Computation<a class="headerlink" href="#scheduling-the-computation" title="永久链接至标题">#</a></h2>
@@ -1323,22 +1365,30 @@ Those include:</p>
 <li><p>Virtual threading to increase compute utilization</p></li>
 <li><p>Lowering to VTA hardware intrinsics</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create TVM schedule</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create TVM schedule</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
 <span class="c1"># Let&#39;s look at the default TVM schedule</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-<section id="blocking-the-computation">
-<h3>Blocking the Computation<a class="headerlink" href="#blocking-the-computation" title="永久链接至标题">#</a></h3>
-<p>The 2D convolution is by default too large for activations or kernel weights
-to fit on VTA’s on-chip buffers all at once.
-We apply blocking along input channels, output channels, and along
-the height spatial dimensions.
-We don’t apply blocking along the width spatial dimension since it’s
-the innermost dimension in the NCHW layout (and consequently to increase
-locality, it’s best not to block along the innermost dimension).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s define tiling sizes</span>
+</div>
+</div>
+<p>Blocking the Computation</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="mi">2</span><span class="n">D</span> <span class="n">convolution</span> <span class="ow">is</span> <span class="n">by</span> <span class="n">default</span> <span class="n">too</span> <span class="n">large</span> <span class="k">for</span> <span class="n">activations</span> <span class="ow">or</span> <span class="n">kernel</span> <span class="n">weights</span>
+<span class="n">to</span> <span class="n">fit</span> <span class="n">on</span> <span class="n">VTA</span><span class="s1">&#39;s on-chip buffers all at once.</span>
+<span class="n">We</span> <span class="n">apply</span> <span class="n">blocking</span> <span class="n">along</span> <span class="nb">input</span> <span class="n">channels</span><span class="p">,</span> <span class="n">output</span> <span class="n">channels</span><span class="p">,</span> <span class="ow">and</span> <span class="n">along</span>
+<span class="n">the</span> <span class="n">height</span> <span class="n">spatial</span> <span class="n">dimensions</span><span class="o">.</span>
+<span class="n">We</span> <span class="n">don</span><span class="s1">&#39;t apply blocking along the width spatial dimension since it&#39;</span><span class="n">s</span>
+<span class="n">the</span> <span class="n">innermost</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">NCHW</span> <span class="n">layout</span> <span class="p">(</span><span class="ow">and</span> <span class="n">consequently</span> <span class="n">to</span> <span class="n">increase</span>
+<span class="n">locality</span><span class="p">,</span> <span class="n">it</span><span class="s1">&#39;s best not to block along the innermost dimension).</span>
+
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s define tiling sizes</span>
 <span class="n">b_block</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span>
 <span class="n">oc_block</span> <span class="o">=</span> <span class="mi">128</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span>
 <span class="n">ic_block</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">//</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span>
@@ -1379,19 +1429,29 @@ locality, it’s best not to block along the innermost dimension).</p>
 <span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">ic_out</span><span class="p">,</span> <span class="n">b_inn</span><span class="p">,</span> <span class="n">oc_inn</span><span class="p">,</span> <span class="n">y_inn</span><span class="p">,</span> <span class="n">ic_inn</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">x_inn</span><span class="p">,</span> <span class="n">b_tns</span><span class="p">,</span> <span class="n">oc_tns</span><span class="p">,</span> <span class="n">ic_tns</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="virtual-threading">
-<h3>Virtual Threading<a class="headerlink" href="#virtual-threading" title="永久链接至标题">#</a></h3>
-<p>Virtual threading is a mechanism that increases task-level pipeline
+</div>
+</div>
+<p>Virtual Threading</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Virtual threading is a mechanism that increases task-level pipeline
 parallelism in the VTA hardware design.
 Put it another way, it increases compute resource utilization by hiding
-memory access latency.</p>
-<p>In the implementation below, virtual threading distributes work across two
+memory access latency.
+
+In the implementation below, virtual threading distributes work across two
 threads split along the output channel axis.
 We show how work is split when computing the 2D convolution in the figure
-below.</p>
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/virtual_threading.png"><img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/virtual_threading.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/virtual_threading.png" style="width: 480px;" /></a>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># VTA only supports 2 virtual threads</span>
+below.
+
+![](https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/virtual_threading.png)
+
+     :align: center
+     :width: 480px
+
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># VTA only supports 2 virtual threads</span>
 <span class="n">v_threads</span> <span class="o">=</span> <span class="mi">2</span>
 
 <span class="c1"># Perform virtual thread split along output channel outer axis</span>
@@ -1403,15 +1463,20 @@ below.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-</section>
-<section id="lowering-copies-to-dma-transfers">
-<h3>Lowering Copies to DMA Transfers<a class="headerlink" href="#lowering-copies-to-dma-transfers" title="永久链接至标题">#</a></h3>
-<p>Next we set the buffer scopes to the corresponding on-chip VTA SRAM buffers.
-We move the load loops into the 2D convolution computation loop to stage
-memory loads such that they fit in the on-chip SRAM buffers.
-Finally we annotate the load/store loop outer axes with the DMA copy pragma
-to perform bulk memory transfers on VTA.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set scope of SRAM buffers</span>
+</div>
+</div>
+<p>Lowering Copies to DMA Transfers</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Next</span> <span class="n">we</span> <span class="nb">set</span> <span class="n">the</span> <span class="n">buffer</span> <span class="n">scopes</span> <span class="n">to</span> <span class="n">the</span> <span class="n">corresponding</span> <span class="n">on</span><span class="o">-</span><span class="n">chip</span> <span class="n">VTA</span> <span class="n">SRAM</span> <span class="n">buffers</span><span class="o">.</span>
+<span class="n">We</span> <span class="n">move</span> <span class="n">the</span> <span class="n">load</span> <span class="n">loops</span> <span class="n">into</span> <span class="n">the</span> <span class="mi">2</span><span class="n">D</span> <span class="n">convolution</span> <span class="n">computation</span> <span class="n">loop</span> <span class="n">to</span> <span class="n">stage</span>
+<span class="n">memory</span> <span class="n">loads</span> <span class="n">such</span> <span class="n">that</span> <span class="n">they</span> <span class="n">fit</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">on</span><span class="o">-</span><span class="n">chip</span> <span class="n">SRAM</span> <span class="n">buffers</span><span class="o">.</span>
+<span class="n">Finally</span> <span class="n">we</span> <span class="n">annotate</span> <span class="n">the</span> <span class="n">load</span><span class="o">/</span><span class="n">store</span> <span class="n">loop</span> <span class="n">outer</span> <span class="n">axes</span> <span class="k">with</span> <span class="n">the</span> <span class="n">DMA</span> <span class="n">copy</span> <span class="n">pragma</span>
+<span class="n">to</span> <span class="n">perform</span> <span class="n">bulk</span> <span class="n">memory</span> <span class="n">transfers</span> <span class="n">on</span> <span class="n">VTA</span><span class="o">.</span>
+
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set scope of SRAM buffers</span>
 <span class="n">s</span><span class="p">[</span><span class="n">data_buf</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_scope</span><span class="p">)</span>
 <span class="n">s</span><span class="p">[</span><span class="n">kernel_buf</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">wgt_scope</span><span class="p">)</span>
 <span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">set_scope</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_scope</span><span class="p">)</span>
@@ -1433,13 +1498,18 @@ to perform bulk memory transfers on VTA.</p>
 <span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="lowering-computation-to-vta-compute-intrinsics">
-<h3>Lowering Computation to VTA Compute Intrinsics<a class="headerlink" href="#lowering-computation-to-vta-compute-intrinsics" title="永久链接至标题">#</a></h3>
-<p>The last phase is to lower the computation loops down to VTA hardware
-intrinsics by mapping the 2D convolution to tensor intrinsics,
-and mapping the shift, and clipping computation to the vector ALU.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply tensorization over the batch tensor tile axis</span>
+</div>
+</div>
+<p>Lowering Computation to VTA Compute Intrinsics</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">last</span> <span class="n">phase</span> <span class="ow">is</span> <span class="n">to</span> <span class="n">lower</span> <span class="n">the</span> <span class="n">computation</span> <span class="n">loops</span> <span class="n">down</span> <span class="n">to</span> <span class="n">VTA</span> <span class="n">hardware</span>
+<span class="n">intrinsics</span> <span class="n">by</span> <span class="n">mapping</span> <span class="n">the</span> <span class="mi">2</span><span class="n">D</span> <span class="n">convolution</span> <span class="n">to</span> <span class="n">tensor</span> <span class="n">intrinsics</span><span class="p">,</span>
+<span class="ow">and</span> <span class="n">mapping</span> <span class="n">the</span> <span class="n">shift</span><span class="p">,</span> <span class="ow">and</span> <span class="n">clipping</span> <span class="n">computation</span> <span class="n">to</span> <span class="n">the</span> <span class="n">vector</span> <span class="n">ALU</span><span class="o">.</span>
+
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply tensorization over the batch tensor tile axis</span>
 <span class="n">s</span><span class="p">[</span><span class="n">res_conv</span><span class="p">]</span><span class="o">.</span><span class="n">tensorize</span><span class="p">(</span><span class="n">b_tns</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">gemm</span><span class="p">)</span>
 
 <span class="c1"># Add an ALU pragma over the shift and clipping operations</span>
@@ -1453,7 +1523,8 @@ and mapping the shift, and clipping computation to the vector ALU.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">vta</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-</section>
+</div>
+</div>
 </section>
 <section id="tvm-compilation-and-verification">
 <h2>TVM Compilation and Verification<a class="headerlink" href="#tvm-compilation-and-verification" title="永久链接至标题">#</a></h2>
@@ -1461,13 +1532,16 @@ and mapping the shift, and clipping computation to the vector ALU.</p>
 We save the module so we can send it over RPC.
 We run the function and verify it against a numpy implementation to
 ensure correctness.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># This library facilitates 2D convolution testing</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This library facilitates 2D convolution testing</span>
 <span class="kn">from</span> <span class="nn">tvm.topi.testing</span> <span class="kn">import</span> <span class="n">conv2d_nchw_python</span>
 
 <span class="c1"># Compile the TVM module</span>
-<span class="n">my_conv</span> <span class="o">=</span> <span class="n">vta</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
-    <span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Target</span><span class="p">(</span><span class="s2">&quot;ext_dev&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">target_host</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_conv&quot;</span>
-<span class="p">)</span>
+<span class="k">with</span> <span class="n">vta</span><span class="o">.</span><span class="n">build_config</span><span class="p">(</span><span class="n">disabled_pass</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tir.CommonSubexprElimTIR&quot;</span><span class="p">}):</span>
+    <span class="n">my_conv</span> <span class="o">=</span> <span class="n">vta</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+        <span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Target</span><span class="p">(</span><span class="s2">&quot;ext_dev&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">target_host</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_conv&quot;</span>
+    <span class="p">)</span>
 <span class="n">temp</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">tempdir</span><span class="p">()</span>
 <span class="n">my_conv</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;conv2d.o&quot;</span><span class="p">))</span>
 <span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;conv2d.o&quot;</span><span class="p">))</span>
@@ -1544,6 +1618,8 @@ ensure correctness.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successful 2D convolution test!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+</div>
 </section>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
@@ -1560,6 +1636,20 @@ virtual threading.</p>
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="index.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">Optimize Tensor Operators</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="matrix_multiply_opt.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">Matrix Multiply Blocking</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
               
           </main>
@@ -1581,7 +1671,7 @@ virtual threading.</p>
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-25, 00:54:57.<br>
+最后更新于 2022-04-26, 10:15:36.<br>
 </p>
     </div>
     

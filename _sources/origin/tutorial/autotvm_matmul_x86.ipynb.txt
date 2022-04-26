@@ -29,6 +29,7 @@
     "\n",
     "```{note}\n",
     ":class: alert alert-info\n",
+    "\n",
     "本教程不能在 Windows 或最近版本的 MacOS 上运行。为了让它运行，你需要将本教程的主体包裹在一个 `if __name__ == \"__main__\":` 块中。\n",
     "```\n",
     "\n",

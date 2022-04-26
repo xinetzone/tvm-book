@@ -4,7 +4,7 @@
 ```{toctree}
 :maxdepth: 3
 
-tutorials
+tutorials/index
 tests/index
 chaos
 api/index
