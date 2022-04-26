@@ -17,6 +17,13 @@
     },
     {
       "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": []
+    },
+    {
+      "cell_type": "code",
       "execution_count": 1,
       "metadata": {
         "collapsed": false
@@ -32,30 +39,29 @@
         "from tvm.contrib import utils\n",
         "from vta.testing import simulator\n",
         "\n",
-        "# Load VTA parameters from the 3rdparty/vta-hw/config/vta_config.json file\n",
+        "# 从 3rdparty/vta-hw/config/vta_config.json 文件载入 VTA 参数\n",
         "env = vta.get_env()\n",
         "\n",
-        "# We read the Pynq RPC host IP address and port number from the OS environment\n",
+        "# 从操作系统环境中读取 Pynq RPC 主机 IP 地址和端口号\n",
         "host = os.environ.get(\"VTA_RPC_HOST\", \"192.168.2.99\")\n",
         "port = int(os.environ.get(\"VTA_RPC_PORT\", \"9091\"))\n",
         "\n",
-        "# We configure both the bitstream and the runtime system on the Pynq\n",
-        "# to match the VTA configuration specified by the vta_config.json file.\n",
+        "# 在 Pynq 上配置 bitstream 和运行时系统，\n",
+        "# 以匹配 vta_config.json 文件指定的 VTA 配置。\n",
         "if env.TARGET == \"pynq\" or env.TARGET == \"de10nano\":\n",
-        "\n",
-        "    # Make sure that TVM was compiled with RPC=1\n",
+        "    # 确保使用 RPC=1 编译 TVM\n",
         "    assert tvm.runtime.enabled(\"rpc\")\n",
         "    remote = rpc.connect(host, port)\n",
         "\n",
-        "    # Reconfigure the JIT runtime\n",
+        "    # 重新配置 JIT runtime\n",
         "    vta.reconfig_runtime(remote)\n",
         "\n",
-        "    # Program the FPGA with a pre-compiled VTA bitstream.\n",
-        "    # You can program the FPGA with your own custom bitstream\n",
-        "    # by passing the path to the bitstream file instead of None.\n",
+        "    # 用预编译的 VTA bitstream 程序编程 FPGA。\n",
+        "    # 通过将路径传递给 bitstream 文件而不是 None，\n",
+        "    # 您可以使用自定义 bitstream 编程 FPGA。\n",
         "    vta.program_fpga(remote, bitstream=None)\n",
         "\n",
-        "# In simulation mode, host the RPC server locally.\n",
+        "# 在仿真模式下，在本地托管 RPC 服务器。\n",
         "elif env.TARGET in [\"sim\", \"tsim\"]:\n",
         "    remote = rpc.LocalSession()"
       ]
@@ -126,15 +132,15 @@
       },
       "outputs": [],
       "source": [
-        "# Output channel factor m - total 16x16=256 output channels\n",
+        "# 输出通道因子 m - 总共 16 x 16 = 256 输出通道\n",
         "m = 16\n",
-        "# Input channel factor n - total 16x16=256 input channels\n",
+        "# 输入通道因子 n -总计 16x16=256 个输入通道\n",
         "n = 16\n",
-        "# Batch factor o (we use single batch inference)\n",
+        "# Batch 因子 o （使用单个 batch 推理）\n",
         "o = 1\n",
-        "# A placeholder tensor in tiled data format\n",
+        "# tiled 据格式的 A 占位符张量\n",
         "A = te.placeholder((o, n, env.BATCH, env.BLOCK_IN), name=\"A\", dtype=env.inp_dtype)\n",
-        "# B placeholder tensor in tiled data format\n",
+        "# tiled 据格式的 B 占位符张量\n",
         "B = te.placeholder((m, n, env.BLOCK_OUT, env.BLOCK_IN), name=\"B\", dtype=env.wgt_dtype)\n",
         "# A copy buffer\n",
         "A_buf = te.compute((o, n, env.BATCH, env.BLOCK_IN), lambda *i: A(*i), \"A_buf\")\n",
@@ -573,7 +579,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[10:11:39] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[21:44:08] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],
@@ -617,7 +623,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[10:11:39] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[21:44:08] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],

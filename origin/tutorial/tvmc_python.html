@@ -455,7 +455,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../d2l-tvm/gpu_schedules/index.html">
-       Operator Optimizations on GPUs
+       GPU 上的算子优化
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -727,7 +727,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../how_to/work_with_schedules/index.html">
-       Work With Tensor Expression and Schedules
+       使用 Tensor Expression 和 Schedules
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
       <label for="toctree-checkbox-13">
@@ -1015,7 +1015,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../topic/vta/tutorials/optimize/index.html">
-       Optimize Tensor Operators
+       优化 Tensor 算子
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
       <label for="toctree-checkbox-22">
@@ -8434,6 +8434,1877 @@ Time elapsed for measurement: 18.20 s
 ----------------------------------------------------------------------
 ------------------------------  [ Train cost model ]
 ----------------------------------------------------------------------
+Time elapsed for training: 7.02 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.935 |         220.13 |    256 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.656 |         352.61 |    832 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    576 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    384 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    128 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.995 |         232.57 |    256 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    192 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 27.083 ms	Trials: 7872	Used time : 8573 s	Next ID: 23	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1735	fail_ct: 0	Time elapsed: 1.15
+GA Iter: 0	Max score: 0.6487	Min score: 0.4196	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9028	Min score: 0.6764	#Pop: 128	#M+: 1380	#M-: 25
+EvolutionarySearch		#s: 128	Time elapsed: 6.02
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.51 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 7.26 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.935 |         220.13 |    256 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.656 |         352.61 |    832 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    576 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    128 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.995 |         232.57 |    256 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    192 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 27.083 ms	Trials: 7936	Used time : 8609 s	Next ID: 25	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1802	fail_ct: 0	Time elapsed: 1.36
+GA Iter: 0	Max score: 0.5937	Min score: 0.3727	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9429	Min score: 0.6520	#Pop: 128	#M+: 1384	#M-: 34
+EvolutionarySearch		#s: 128	Time elapsed: 6.71
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.15 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.30 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.935 |         220.13 |    256 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.656 |         352.61 |    832 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    576 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    128 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    192 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.855 ms	Trials: 8000	Used time : 8645 s	Next ID: 5	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2021	fail_ct: 0	Time elapsed: 1.02
+GA Iter: 0	Max score: 0.6364	Min score: 0.4365	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8807	Min score: 0.6778	#Pop: 128	#M+: 1389	#M-: 75
+EvolutionarySearch		#s: 128	Time elapsed: 4.68
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 21.10 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 7.70 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.656 |         352.61 |    832 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    576 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    128 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    192 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.549 ms	Trials: 8064	Used time : 8680 s	Next ID: 11	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1792	fail_ct: 0	Time elapsed: 1.29
+GA Iter: 0	Max score: 0.5377	Min score: 0.3514	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.6809	Min score: 0.5616	#Pop: 128	#M+: 1381	#M-: 14
+EvolutionarySearch		#s: 128	Time elapsed: 6.65
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.39 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 6.14 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    576 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    128 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    192 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.312 ms	Trials: 8128	Used time : 8712 s	Next ID: 17	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1739	fail_ct: 0	Time elapsed: 1.27
+GA Iter: 0	Max score: 0.5804	Min score: 0.3801	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7854	Min score: 0.6457	#Pop: 128	#M+: 1394	#M-: 35
+EvolutionarySearch		#s: 128	Time elapsed: 6.76
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 17.90 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 7.74 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    128 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    192 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.312 ms	Trials: 8192	Used time : 8746 s	Next ID: 24	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1995	fail_ct: 3	Time elapsed: 0.82
+GA Iter: 0	Max score: 0.5425	Min score: 0.2910	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9004	Min score: 0.4887	#Pop: 128	#M+: 1397	#M-: 74
+EvolutionarySearch		#s: 128	Time elapsed: 3.77
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.37 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.61 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    192 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.312 ms	Trials: 8256	Used time : 8780 s	Next ID: 28	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2029	fail_ct: 0	Time elapsed: 1.01
+GA Iter: 0	Max score: 0.5528	Min score: 0.3813	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8882	Min score: 0.5343	#Pop: 128	#M+: 1377	#M-: 72
+EvolutionarySearch		#s: 128	Time elapsed: 4.32
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................T***************************************************************
+Time elapsed for measurement: 30.73 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 7.77 s
+----------------------------------------------------------------------
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.906 |         227.16 |    256 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.312 ms	Trials: 8320	Used time : 8824 s	Next ID: 14	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2018	fail_ct: 1	Time elapsed: 0.99
+GA Iter: 0	Max score: 0.7254	Min score: 0.4270	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8955	Min score: 0.6534	#Pop: 128	#M+: 1389	#M-: 71
+EvolutionarySearch		#s: 128	Time elapsed: 4.48
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.21 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.37 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    128 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8384	Used time : 8858 s	Next ID: 15	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2029	fail_ct: 0	Time elapsed: 1.20
+GA Iter: 0	Max score: 0.7062	Min score: 0.5649	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8475	Min score: 0.6749	#Pop: 128	#M+: 1380	#M-: 72
+EvolutionarySearch		#s: 128	Time elapsed: 4.99
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 24.17 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 7.62 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    320 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8448	Used time : 8896 s	Next ID: 19	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2013	fail_ct: 1	Time elapsed: 1.03
+GA Iter: 0	Max score: 0.5737	Min score: 0.3814	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.6998	Min score: 0.4789	#Pop: 128	#M+: 1373	#M-: 70
+EvolutionarySearch		#s: 128	Time elapsed: 4.45
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.69 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 9.18 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    256 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8512	Used time : 8930 s	Next ID: 13	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1787	fail_ct: 0	Time elapsed: 1.26
+GA Iter: 0	Max score: 0.6439	Min score: 0.3917	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8329	Min score: 0.6874	#Pop: 128	#M+: 1386	#M-: 43
+EvolutionarySearch		#s: 128	Time elapsed: 5.95
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 22.40 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.61 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    192 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8576	Used time : 8968 s	Next ID: 2	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1785	fail_ct: 0	Time elapsed: 1.31
+GA Iter: 0	Max score: 0.6189	Min score: 0.4401	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8147	Min score: 0.5946	#Pop: 128	#M+: 1397	#M-: 39
+EvolutionarySearch		#s: 128	Time elapsed: 6.51
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.03 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 7.33 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    448 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8640	Used time : 9003 s	Next ID: 21	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1756	fail_ct: 0	Time elapsed: 1.27
+GA Iter: 0	Max score: 0.5421	Min score: 0.3569	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7499	Min score: 0.4921	#Pop: 128	#M+: 1385	#M-: 31
+EvolutionarySearch		#s: 128	Time elapsed: 6.64
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.69 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.06 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    896 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8704	Used time : 9038 s	Next ID: 11	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1824	fail_ct: 0	Time elapsed: 1.31
+GA Iter: 0	Max score: 0.5017	Min score: 0.3339	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7050	Min score: 0.5326	#Pop: 128	#M+: 1392	#M-: 17
+EvolutionarySearch		#s: 128	Time elapsed: 6.87
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.25 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.92 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    448 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8768	Used time : 9076 s	Next ID: 27	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2008	fail_ct: 2	Time elapsed: 1.04
+GA Iter: 0	Max score: 0.5770	Min score: 0.3619	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8289	Min score: 0.4874	#Pop: 128	#M+: 1381	#M-: 76
+EvolutionarySearch		#s: 128	Time elapsed: 4.59
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.35 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 9.12 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.350 |         293.76 |    512 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.273 ms	Trials: 8832	Used time : 9109 s	Next ID: 30	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2017	fail_ct: 1	Time elapsed: 1.00
+GA Iter: 0	Max score: 0.5670	Min score: 0.4052	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8352	Min score: 0.5331	#Pop: 128	#M+: 1367	#M-: 76
+EvolutionarySearch		#s: 128	Time elapsed: 4.77
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 26.29 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.46 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    128 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.042 ms	Trials: 8896	Used time : 9150 s	Next ID: 29	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1979	fail_ct: 3	Time elapsed: 0.97
+GA Iter: 0	Max score: 0.4807	Min score: 0.2417	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7631	Min score: 0.3213	#Pop: 128	#M+: 1386	#M-: 74
+EvolutionarySearch		#s: 128	Time elapsed: 4.08
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.01 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.30 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    448 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.042 ms	Trials: 8960	Used time : 9181 s	Next ID: 23	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1727	fail_ct: 0	Time elapsed: 1.16
+GA Iter: 0	Max score: 0.6776	Min score: 0.4225	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8152	Min score: 0.6662	#Pop: 128	#M+: 1396	#M-: 24
+EvolutionarySearch		#s: 128	Time elapsed: 5.93
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.23 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.80 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    192 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.042 ms	Trials: 9024	Used time : 9217 s	Next ID: 1	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1981	fail_ct: 7	Time elapsed: 0.93
+GA Iter: 0	Max score: 0.6488	Min score: 0.3260	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7697	Min score: 0.4432	#Pop: 128	#M+: 1378	#M-: 74
+EvolutionarySearch		#s: 128	Time elapsed: 4.14
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.79 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 10.61 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    256 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.524 |         197.46 |    320 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 26.042 ms	Trials: 9088	Used time : 9252 s	Next ID: 16	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2027	fail_ct: 0	Time elapsed: 1.06
+GA Iter: 0	Max score: 0.8058	Min score: 0.5175	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9192	Min score: 0.7524	#Pop: 128	#M+: 1363	#M-: 75
+EvolutionarySearch		#s: 128	Time elapsed: 4.91
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 22.57 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 10.98 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    256 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.749 |         308.83 |    640 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.869 ms	Trials: 9152	Used time : 9292 s	Next ID: 17	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1763	fail_ct: 0	Time elapsed: 1.31
+GA Iter: 0	Max score: 0.5906	Min score: 0.3903	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9726	Min score: 0.6573	#Pop: 128	#M+: 1385	#M-: 33
+EvolutionarySearch		#s: 128	Time elapsed: 6.85
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 19.25 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.72 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    256 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.370 |         278.98 |    256 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.787 ms	Trials: 9216	Used time : 9328 s	Next ID: 28	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2016	fail_ct: 0	Time elapsed: 1.01
+GA Iter: 0	Max score: 0.6162	Min score: 0.3723	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8389	Min score: 0.5468	#Pop: 128	#M+: 1384	#M-: 77
+EvolutionarySearch		#s: 128	Time elapsed: 4.24
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 26.19 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.92 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    256 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.609 |         380.06 |    960 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.751 ms	Trials: 9280	Used time : 9368 s	Next ID: 11	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1754	fail_ct: 0	Time elapsed: 1.25
+GA Iter: 0	Max score: 0.4881	Min score: 0.3224	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.6308	Min score: 0.5267	#Pop: 128	#M+: 1392	#M-: 20
+EvolutionarySearch		#s: 128	Time elapsed: 6.70
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.46 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.43 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.346 |         296.96 |    256 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1024 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.731 ms	Trials: 9344	Used time : 9403 s	Next ID: 1	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1977	fail_ct: 6	Time elapsed: 0.91
+GA Iter: 0	Max score: 0.5128	Min score: 0.3165	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9108	Min score: 0.4507	#Pop: 128	#M+: 1373	#M-: 72
+EvolutionarySearch		#s: 128	Time elapsed: 4.15
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.60 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 9.54 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    128 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1024 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.710 ms	Trials: 9408	Used time : 9437 s	Next ID: 9	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2023	fail_ct: 0	Time elapsed: 1.13
+GA Iter: 0	Max score: 0.6069	Min score: 0.4029	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9483	Min score: 0.4925	#Pop: 128	#M+: 1380	#M-: 71
+EvolutionarySearch		#s: 128	Time elapsed: 4.99
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 18.97 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 9.67 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.920 |         251.30 |    320 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1024 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.710 ms	Trials: 9472	Used time : 9471 s	Next ID: 3	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1764	fail_ct: 0	Time elapsed: 1.13
+GA Iter: 0	Max score: 0.6448	Min score: 0.3481	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8123	Min score: 0.6143	#Pop: 128	#M+: 1388	#M-: 26
+EvolutionarySearch		#s: 128	Time elapsed: 5.78
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 21.54 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 11.01 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1024 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.555 ms	Trials: 9536	Used time : 9511 s	Next ID: 11	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1779	fail_ct: 0	Time elapsed: 1.34
+GA Iter: 0	Max score: 0.5151	Min score: 0.3246	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7694	Min score: 0.5522	#Pop: 128	#M+: 1391	#M-: 15
+EvolutionarySearch		#s: 128	Time elapsed: 6.86
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.29 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 9.59 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    192 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1088 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.555 ms	Trials: 9600	Used time : 9549 s	Next ID: 10	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2012	fail_ct: 1	Time elapsed: 0.95
+GA Iter: 0	Max score: 0.6863	Min score: 0.4292	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7793	Min score: 0.5507	#Pop: 128	#M+: 1370	#M-: 68
+EvolutionarySearch		#s: 128	Time elapsed: 4.52
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 22.43 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 10.23 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    256 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1088 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.339 |         303.95 |    384 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.555 ms	Trials: 9664	Used time : 9588 s	Next ID: 19	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2007	fail_ct: 1	Time elapsed: 0.99
+GA Iter: 0	Max score: 0.5172	Min score: 0.3739	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8010	Min score: 0.4922	#Pop: 128	#M+: 1386	#M-: 71
+EvolutionarySearch		#s: 128	Time elapsed: 4.43
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 19.66 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.62 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    256 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1088 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.267 |         385.76 |    448 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    192 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.340 ms	Trials: 9728	Used time : 9621 s	Next ID: 22	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 2018	fail_ct: 0	Time elapsed: 0.92
+GA Iter: 0	Max score: 0.6095	Min score: 0.3873	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7306	Min score: 0.5048	#Pop: 128	#M+: 1377	#M-: 73
+EvolutionarySearch		#s: 128	Time elapsed: 4.25
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 22.05 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 9.69 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    256 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1088 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.267 |         385.76 |    448 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    512 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    256 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.340 ms	Trials: 9792	Used time : 9658 s	Next ID: 21	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1743	fail_ct: 0	Time elapsed: 1.33
+GA Iter: 0	Max score: 0.5215	Min score: 0.3501	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.8877	Min score: 0.4997	#Pop: 128	#M+: 1385	#M-: 33
+EvolutionarySearch		#s: 128	Time elapsed: 6.75
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 21.58 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 10.42 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    256 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1088 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.267 |         385.76 |    448 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    576 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    256 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    512 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.340 ms	Trials: 9856	Used time : 9699 s	Next ID: 27	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1998	fail_ct: 1	Time elapsed: 0.95
+GA Iter: 0	Max score: 0.5975	Min score: 0.3717	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7337	Min score: 0.4927	#Pop: 128	#M+: 1379	#M-: 77
+EvolutionarySearch		#s: 128	Time elapsed: 4.45
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 20.28 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 10.87 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    256 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1088 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.722 |         320.53 |    704 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.267 |         385.76 |    448 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    576 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    256 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    576 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.340 ms	Trials: 9920	Used time : 9735 s	Next ID: 17	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1783	fail_ct: 0	Time elapsed: 1.31
+GA Iter: 0	Max score: 0.5868	Min score: 0.3578	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.9603	Min score: 0.6352	#Pop: 128	#M+: 1392	#M-: 33
+EvolutionarySearch		#s: 128	Time elapsed: 6.94
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 22.88 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 9.76 s
+|  ID  |                       Task Description                        | Latency (ms) | Speed (GFLOPS) | Trials |
+-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------
+------------------------------  [ Task Scheduler ]
+----------------------------------------------------------------------
+|    0 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_4 |        0.598 |         344.93 |    192 |
+|    1 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_14 |        0.336 |         306.35 |    320 |
+|    2 |              vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu |        0.714 |         332.95 |    256 |
+|    3 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_13 |        0.765 |         302.20 |    384 |
+|    4 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_2 |        0.316 |         326.67 |    128 |
+|    5 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_8 |        0.629 |         327.13 |    320 |
+|    6 | vm_mod_fused_nn_contrib_conv2d_NCHWc_add_multiply_add_nn_relu |        0.390 |         264.65 |    192 |
+|    7 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_1 |        0.165 |         157.75 |     64 |
+|    8 |                             vm_mod_fused_nn_global_avg_pool2d |        0.007 |          -0.00 |     64 |
+|    9 |        vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu_1 |        0.435 |         239.07 |    192 |
+|   10 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_1 |        0.629 |         326.50 |    256 |
+|   11 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_11 |        0.605 |         382.55 |   1088 |
+|   12 |                          vm_mod_fused_nn_contrib_conv2d_NCHWc |        0.346 |         297.09 |    128 |
+|   13 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_9 |        0.896 |         258.02 |    320 |
+|   14 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_12 |        0.867 |         237.21 |    320 |
+|   15 |          vm_mod_fused_nn_contrib_conv2d_NCHWc_add_add_nn_relu |        0.493 |         213.36 |    192 |
+|   16 |                      vm_mod_fused_nn_contrib_conv2d_NCHWc_add |        0.438 |         236.47 |    384 |
+|   17 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_7 |        0.643 |         359.75 |    768 |
+|   18 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_1 |        0.327 |         315.44 |    320 |
+|   19 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_6 |        0.267 |         385.76 |    448 |
+|   20 |               vm_mod_fused_nn_max_pool2d_multiply_add_nn_relu |        0.038 |          62.97 |     64 |
+|   21 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_2 |        0.554 |         418.26 |    576 |
+|   22 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_2 |        0.626 |         328.48 |    256 |
+|   23 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_15 |        0.808 |         286.26 |    512 |
+|   24 |                        vm_mod_fused_nn_contrib_conv2d_NCHWc_3 |        0.496 |         414.59 |    192 |
+|   25 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_5 |        0.767 |         301.90 |    320 |
+|   26 |                                     vm_mod_fused_nn_dense_add |        0.046 |          90.02 |     64 |
+|   27 |           vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_10 |        0.326 |         315.09 |    576 |
+|   28 |            vm_mod_fused_nn_contrib_conv2d_NCHWc_add_nn_relu_3 |        0.352 |         293.14 |    320 |
+|   29 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_3 |        0.232 |         443.72 |    192 |
+|   30 |                    vm_mod_fused_nn_contrib_conv2d_NCHWc_add_2 |        0.304 |         338.44 |    576 |
+-----------------------------------------------------------------------------------------------------------------
+Estimated total latency: 25.104 ms	Trials: 9984	Used time : 9776 s	Next ID: 23	
+----------------------------------------------------------------------
+------------------------------  [ Search ]
+----------------------------------------------------------------------
+Sample Initial Population	#s: 1712	fail_ct: 0	Time elapsed: 1.19
+GA Iter: 0	Max score: 0.6468	Min score: 0.4258	#Pop: 128	#M+: 0	#M-: 0
+GA Iter: 4	Max score: 0.7873	Min score: 0.6713	#Pop: 128	#M+: 1393	#M-: 22
+EvolutionarySearch		#s: 128	Time elapsed: 6.00
+----------------------------------------------------------------------
+------------------------------  [ Measure ]
+----------------------------------------------------------------------
+Get 64 programs to measure:
+................................................................****************************************************************
+Time elapsed for measurement: 23.63 s
+----------------------------------------------------------------------
+------------------------------  [ Train cost model ]
+----------------------------------------------------------------------
+Time elapsed for training: 8.43 s
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/pc/data/4tb/lxw/anaconda3/envs/mx39/lib/python3.9/site-packages/xgboost/training.py:17: UserWarning: Old style callback is deprecated.  See: https://xgboost.readthedocs.io/en/latest/python/callbacks.html
@@ -8486,6 +10357,9 @@ Stack trace:
   12: 0xffffffffffffffff
 </pre></div>
 </div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;/tmp/tmp4pvx1bud/tuning_records&#39;
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -8493,8 +10367,8 @@ Stack trace:
 <h3>保存调优结果<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h3>
 <p>调优结果可以保存在文件中，以便以后重用。</p>
 <div class="tabbed-set docutils">
-<input checked="checked" id="46e84c31-ba59-42ba-9c91-7c778913ccb5" name="7fc712cb-81d3-4e83-9b68-55ecf3a3298c" type="radio">
-</input><label class="tabbed-label" for="46e84c31-ba59-42ba-9c91-7c778913ccb5">
+<input checked="checked" id="62819ed9-4113-49ea-b28d-25ff843620e8" name="3763c469-10f1-4dea-9ca6-9b38f455298c" type="radio">
+</input><label class="tabbed-label" for="62819ed9-4113-49ea-b28d-25ff843620e8">
 方式1</label><div class="tabbed-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">log_file</span> <span class="o">=</span> <span class="s2">&quot;hello.json&quot;</span>
 
@@ -8508,8 +10382,8 @@ Stack trace:
 </pre></div>
 </div>
 </div>
-<input id="ca983727-c9b4-40c4-9042-800007b7e637" name="7fc712cb-81d3-4e83-9b68-55ecf3a3298c" type="radio">
-</input><label class="tabbed-label" for="ca983727-c9b4-40c4-9042-800007b7e637">
+<input id="8512c479-3a62-49ea-83ab-e9064f45a5c2" name="3763c469-10f1-4dea-9ca6-9b38f455298c" type="radio">
+</input><label class="tabbed-label" for="8512c479-3a62-49ea-83ab-e9064f45a5c2">
 方式2</label><div class="tabbed-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run tuning</span>
 <span class="n">tuning_records</span> <span class="o">=</span> <span class="n">tvmc</span><span class="o">.</span><span class="n">tune</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;llvm&quot;</span><span class="p">)</span>
@@ -8528,7 +10402,7 @@ Stack trace:
 <p>你可能注意到 T 的打印像 <code class="docutils literal notranslate"><span class="pre">.........T.T..T..T..T.T.T.T.T.T.</span></code> 增加了搜索时间范围：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tvmc</span><span class="o">.</span><span class="n">tune</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">trials</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tvmc</span><span class="o">.</span><span class="n">tune</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">trials</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8593,7 +10467,7 @@ Stack trace:
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 10:15:36.<br>
+最后更新于 2022-04-26, 13:55:41.<br>
 </p>
     </div>
     

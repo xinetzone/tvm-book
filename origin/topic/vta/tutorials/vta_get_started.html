@@ -44,6 +44,8 @@
     <script src="../../../../_static/togglebutton.js"></script>
     <script src="../../../../_static/translations.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="shortcut icon" href="../../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../../search.html" />
@@ -455,7 +457,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../d2l-tvm/gpu_schedules/index.html">
-       Operator Optimizations on GPUs
+       GPU 上的算子优化
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -727,7 +729,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../how_to/work_with_schedules/index.html">
-       Work With Tensor Expression and Schedules
+       使用 Tensor Expression 和 Schedules
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
       <label for="toctree-checkbox-13">
@@ -1015,7 +1017,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="optimize/index.html">
-       Optimize Tensor Operators
+       优化 Tensor 算子
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
       <label for="toctree-checkbox-22">
@@ -1229,7 +1231,7 @@ function checkPageExistsAndRedirect(event) {
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="vta">
-<h1>VTA 入门<a class="headerlink" href="#vta" title="永久链接至标题">#</a></h1>
+<span id="vta-get-started"></span><h1>VTA 入门<a class="headerlink" href="#vta" title="永久链接至标题">#</a></h1>
 <p><strong>原作者</strong>: <a class="reference external" href="https://homes.cs.washington.edu/~moreau/">Thierry Moreau</a></p>
 <p>这是关于如何使用 TVM 编程 VTA 设计的入门教程。</p>
 <p>在本教程中，将演示在 VTA 设计的向量 ALU 上实现向量加法的基本 TVM 工作流。此过程包括将计算 lower 到低级加速器运算所需的特定调度变换。</p>
@@ -1261,15 +1263,24 @@ function checkPageExistsAndRedirect(event) {
 <section id="fpga">
 <h2>FPGA 编程<a class="headerlink" href="#fpga" title="永久链接至标题">#</a></h2>
 <p>当针对 Pynq FPGA 开发板时，需要使用 VTA bitstream 配置该板。</p>
+<p>需要 TVM RPC 模块和 VTA 仿真器模块：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 需要 TVM RPC 模块和 VTA 仿真器模块</span>
-<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">rpc</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">rpc</span>
 <span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="c1"># from vta.testing import simulator</span>
-
-<span class="c1"># 从操作系统环境中读取 Pynq RPC 主机 IP 地址和端口号</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_HOST&quot;</span><span class="p">,</span> <span class="s2">&quot;192.168.2.99&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">vta.testing</span> <span class="kn">import</span> <span class="n">simulator</span> <span class="c1"># 此处一定要有</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>若 vta 是 <code class="docutils literal notranslate"><span class="pre">sim</span></code> 模式，一定要载入 <code class="docutils literal notranslate"><span class="pre">simulator</span></code> 模块，否则会触发异常。</p>
+</div>
+<p>从操作系统环境中读取 Pynq RPC 主机 IP 地址和端口号：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_HOST&quot;</span><span class="p">,</span> <span class="s2">&quot;192.168.2.99&quot;</span><span class="p">)</span>
 <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;9091&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -1285,11 +1296,13 @@ function checkPageExistsAndRedirect(event) {
 
     <span class="c1"># 重新配置 JIT runtime</span>
     <span class="n">vta</span><span class="o">.</span><span class="n">reconfig_runtime</span><span class="p">(</span><span class="n">remote</span><span class="p">)</span>
-    <span class="c1"># 用预编译的 VTA bitstream 程序编程 FPGA。</span>
-    <span class="c1"># 可以通过将 path 传递到 bitstream 文件而不是 None 来编程 FPGA。</span>
+
+    <span class="c1"># 用预编译的 VTA bitstream 编程 FPGA。</span>
+    <span class="c1"># 通过将 path 传递给 bitstream 文件而不是 None，</span>
+    <span class="c1"># 您可以使用自定义 bitstream 编程 FPGA。</span>
     <span class="n">vta</span><span class="o">.</span><span class="n">program_fpga</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">bitstream</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-<span class="c1"># 在仿真模式下，在本地托管 RPC 服务器。</span>
+<span class="c1"># 在仿真模式中，在本地托管 RPC 服务器。</span>
 <span class="k">elif</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">,</span> <span class="s2">&quot;intelfocl&quot;</span><span class="p">):</span>
     <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">LocalSession</span><span class="p">()</span>
 
@@ -1349,7 +1362,7 @@ function checkPageExistsAndRedirect(event) {
 </section>
 <section id="id3">
 <h3>向量加法<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h3>
-<p>现在可以用另一个 compute 运算来描述向量加法结果张量 :code:<code class="docutils literal notranslate"><span class="pre">C</span></code>。compute 函数采用张量的形状，以及描述张量每个位置的计算规则的 lambda 函数。</p>
+<p>现在可以用另一个 <code class="docutils literal notranslate"><span class="pre">compute</span></code> 运算来描述向量加法结果张量 <code class="docutils literal notranslate"><span class="pre">C</span></code>。<code class="docutils literal notranslate"><span class="pre">compute</span></code> 函数采用张量的形状，以及描述张量每个位置的计算规则的 lambda 函数。</p>
 <p>此阶段没有计算发生，因为只是声明了计算应该如何完成。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1368,7 +1381,7 @@ function checkPageExistsAndRedirect(event) {
 <h3>Casting 结果<a class="headerlink" href="#casting" title="永久链接至标题">#</a></h3>
 <p>计算完成后，需要将 VTA 计算的结果发送回主存储器（main memory）</p>
 <div class="alert alert-info admonition">
-<p class="admonition-title">类型转换</p>
+<p class="admonition-title">内存存储限制</p>
 <p>VTA 的特点之一是，它只支持窄化（narrow） <code class="docutils literal notranslate"><span class="pre">env.inp_dtype</span></code> 数据类型格式的 DRAM 存储。这让我们能够减少内存传输的数据 footprint（详见基本矩阵乘法的例子）。</p>
 </div>
 <p>对窄化的输入激活数据格式执行最后一个 typecast 运算。</p>
@@ -1376,8 +1389,7 @@ function checkPageExistsAndRedirect(event) {
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 转换为输出类型，并发送到 main memory</span>
 <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span>
-    <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">C_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
+    <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">C_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1395,10 +1407,48 @@ function checkPageExistsAndRedirect(event) {
 <p>在构造了调度之后，默认情况下，调度会以如下方式计算 <code class="docutils literal notranslate"><span class="pre">C</span></code>：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s take a look at the generated schedule</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+<span class="c1"># 查看生成的调度</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(A_1: handle, B_1: handle, C_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {A: Buffer(A_2: Pointer(int32), int32, [1024], []),
+             B: Buffer(B_2: Pointer(int32), int32, [1024], []),
+             C: Buffer(C_2: Pointer(int8), int8, [1024], [])}
+  buffer_map = {A_1: A, B_1: B, C_1: C}
+  preflattened_buffer_map = {A_1: A_3: Buffer(A_2, int32, [1, 64, 1, 16], []), B_1: B_3: Buffer(B_2, int32, [1, 64, 1, 16], []), C_1: C_3: Buffer(C_2, int8, [1, 64, 1, 16], [])} {
+  allocate(A_buf: Pointer(global int32), int32, [1024]), storage_scope = global;
+  allocate(B_buf: Pointer(global int32), int32, [1024]), storage_scope = global {
+    for (i1: int32, 0, 64) {
+      for (i3: int32, 0, 16) {
+        let cse_var_1: int32 = ((i1*16) + i3)
+        A_buf_1: Buffer(A_buf, int32, [1024], [])[cse_var_1] = A[cse_var_1]
+      }
+    }
+    for (i1_1: int32, 0, 64) {
+      for (i3_1: int32, 0, 16) {
+        let cse_var_2: int32 = ((i1_1*16) + i3_1)
+        B_buf_1: Buffer(B_buf, int32, [1024], [])[cse_var_2] = B[cse_var_2]
+      }
+    }
+    for (i1_2: int32, 0, 64) {
+      for (i3_2: int32, 0, 16) {
+        let cse_var_3: int32 = ((i1_2*16) + i3_2)
+        A_buf_2: Buffer(A_buf, int32, [1024], [])[cse_var_3] = (A_buf_1[cse_var_3] + B_buf_1[cse_var_3])
+      }
+    }
+    for (i1_3: int32, 0, 64) {
+      for (i3_3: int32, 0, 16) {
+        let cse_var_4: int32 = ((i1_3*16) + i3_3)
+        C[cse_var_4] = cast(int8, A_buf_2[cse_var_4])
+      }
+    }
+  }
+}
 </pre></div>
 </div>
 </div>
@@ -1421,16 +1471,20 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stage(C_buf, compute(C_buf, body=[(A_buf[i0, i1, i2, i3] + B_buf[i0, i1, i2, i3])], axis=[iter_var(i0, range(min=0, ext=1)), iter_var(i1, range(min=0, ext=64)), iter_var(i2, range(min=0, ext=1)), iter_var(i3, range(min=0, ext=16))], reduce_axis=[], tag=, attrs={}))
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="dma">
 <h3>DMA 传输<a class="headerlink" href="#dma" title="永久链接至标题">#</a></h3>
 <p>需要调度 DMA 传输，以便将存储在 DRAM 中的数据在 VTA 片上 buffer 之间来回移动。插入 <code class="docutils literal notranslate"><span class="pre">dma_copy</span></code> pragmas 来告诉编译器，复制运算将通过 DMA 批量执行，这在硬件加速器中很常见。</p>
+<p>使用 DMA pragma 标记 buffer 副本，将复制循环映射到 DMA transfer 运算：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tag the buffer copies with the DMA pragma to map a copy loop to a</span>
-<span class="c1"># DMA transfer operation</span>
-<span class="n">s</span><span class="p">[</span><span class="n">A_buf</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">A_buf</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">[</span><span class="n">A_buf</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">A_buf</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
 <span class="n">s</span><span class="p">[</span><span class="n">B_buf</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">B_buf</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
 <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">dma_copy</span><span class="p">)</span>
 </pre></div>
@@ -1441,14 +1495,40 @@ function checkPageExistsAndRedirect(event) {
 <section id="alu">
 <h3>ALU 运算<a class="headerlink" href="#alu" title="永久链接至标题">#</a></h3>
 <p>VTA 有向量 ALU，可以在累加器 buffer 中对张量执行向量运算。为了告诉 TVM 给定的运算需要映射到 VTA 的 vector ALU，需要显式地用 <code class="docutils literal notranslate"><span class="pre">env.alu</span></code> pragma 标记 vector 加法循环。</p>
+<p>告诉 TVM 计算需要在 VTA 的向量 ALU 上执行：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tell TVM that the computation needs to be performed</span>
-<span class="c1"># on VTA&#39;s vector ALU</span>
-<span class="n">s</span><span class="p">[</span><span class="n">C_buf</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">C_buf</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">alu</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">[</span><span class="n">C_buf</span><span class="p">]</span><span class="o">.</span><span class="n">pragma</span><span class="p">(</span><span class="n">C_buf</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">env</span><span class="o">.</span><span class="n">alu</span><span class="p">)</span>
 
-<span class="c1"># Let&#39;s take a look at the finalized schedule</span>
+<span class="c1"># 查看最终的 schedule</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">vta</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(A_1: handle, B_1: handle, C_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {A: Buffer(A_2: Pointer(int32), int32, [1024], []),
+             B: Buffer(B_2: Pointer(int32), int32, [1024], []),
+             C: Buffer(C_2: Pointer(int8), int8, [1024], [])}
+  buffer_map = {A_1: A, B_1: B, C_1: C}
+  preflattened_buffer_map = {A_1: A_3: Buffer(A_2, int32, [1, 64, 1, 16], []), B_1: B_3: Buffer(B_2, int32, [1, 64, 1, 16], []), C_1: C_3: Buffer(C_2, int8, [1, 64, 1, 16], [])} {
+  attr [IterVar(vta: int32, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_scope&quot; = 2 {
+    @tir.call_extern(&quot;VTALoadBuffer2D&quot;, @tir.tvm_thread_context(@tir.vta.command_handle(, dtype=handle), dtype=handle), A_2, 0, 64, 1, 64, 0, 0, 0, 0, 0, 3, dtype=int32)
+    @tir.call_extern(&quot;VTALoadBuffer2D&quot;, @tir.tvm_thread_context(@tir.vta.command_handle(, dtype=handle), dtype=handle), B_2, 0, 64, 1, 64, 0, 0, 0, 0, 64, 3, dtype=int32)
+    attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_uop_scope&quot; = &quot;VTAPushALUOp&quot; {
+      @tir.call_extern(&quot;VTAUopLoopBegin&quot;, 64, 1, 1, 0, dtype=int32)
+      @tir.vta.uop_push(1, 0, 0, 64, 0, 2, 0, 0, dtype=int32)
+      @tir.call_extern(&quot;VTAUopLoopEnd&quot;, dtype=int32)
+    }
+    @tir.vta.coproc_dep_push(2, 3, dtype=int32)
+  }
+  attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_scope&quot; = 3 {
+    @tir.vta.coproc_dep_pop(2, 3, dtype=int32)
+    @tir.call_extern(&quot;VTAStoreBuffer2D&quot;, @tir.tvm_thread_context(@tir.vta.command_handle(, dtype=handle), dtype=handle), 0, 4, C_2, 0, 64, 1, 64, dtype=int32)
+  }
+  @tir.vta.coproc_sync(, dtype=int32)
+}
 </pre></div>
 </div>
 </div>
@@ -1459,7 +1539,7 @@ function checkPageExistsAndRedirect(event) {
 <section id="tvm">
 <h2>TVM 计算<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h2>
 <p>在完成指定调度之后，可以将它编译成 TVM 函数。默认情况下，TVM 编译成可以直接从 python 调用的类型消除（type-erased）函数。</p>
-<p>在下面一行中，使用 <code class="docutils literal notranslate"><span class="pre">tvm.build</span></code> 来创建函数。build 函数接受调度、函数的期望签名（包括输入和输出）以及想要编译的目标语言。</p>
+<p>在下面一行中，使用 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/driver.html#tvm.build" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.build()</span></code></a> 来创建函数。<code class="docutils literal notranslate"><span class="pre">build</span></code> 函数接受调度、函数的期望签名（包括输入和输出）以及想要编译的目标语言。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_vadd</span> <span class="o">=</span> <span class="n">vta</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
@@ -1473,14 +1553,19 @@ function checkPageExistsAndRedirect(event) {
 <h3>保存 Module<a class="headerlink" href="#module" title="永久链接至标题">#</a></h3>
 <p>TVM 把模块保存到文件中，这样以后就可以加载回来了。这被称为提前编译（ahead-of-time compilation），可以节省一些编译时间。</p>
 <p>更重要的是，这允许在开发机器上交叉编译可执行文件，并通过 RPC 将其发送到 Pynq FPGA 板上执行。</p>
+<p>将编译后的模块写入 object 文件。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write the compiled module into an object file.</span>
-<span class="n">temp</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">tempdir</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">temp</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">tempdir</span><span class="p">()</span>
 <span class="n">my_vadd</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;vadd.o&quot;</span><span class="p">))</span>
-
-<span class="c1"># Send the executable over RPC</span>
-<span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;vadd.o&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>通过 RPC 发送可执行文件：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;vadd.o&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1508,26 +1593,46 @@ function checkPageExistsAndRedirect(event) {
 <li><p><code class="docutils literal notranslate"><span class="pre">f()</span></code> 运行实际的计算。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy()</span></code> 将结果数组以可解释的格式复制回来。</p></li>
 </ul>
+<p>随机初始化 A 和 B 数组，int 范围为 <span class="math notranslate nohighlight">\((-128, 128]\)</span>：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the remote device context</span>
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">ext_dev</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="c1"># Initialize the A and B arrays randomly in the int range of (-128, 128]</span>
-<span class="n">A_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">o</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">o</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 <span class="n">B_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">o</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-
-<span class="c1"># Apply packing to the A and B arrays from a 2D to a 4D packed layout</span>
-<span class="n">A_packed</span> <span class="o">=</span> <span class="n">A_orig</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>应用 packing 到 A 和 B 数组从 2D 到 4D packed layout：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A_packed</span> <span class="o">=</span> <span class="n">A_orig</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="n">B_packed</span> <span class="o">=</span> <span class="n">B_orig</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-
-<span class="c1"># Format the input/output arrays with tvm.nd.array to the DLPack standard</span>
-<span class="n">A_nd</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A_packed</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>获取远程设备的上下文：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">ext_dev</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>使用 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/ndarray.html#tvm.nd.array" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.nd.array()</span></code></a> 将输入/输出数组格式化为 DLPack 标准：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A_nd</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A_packed</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
 <span class="n">B_nd</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">B_packed</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
 <span class="n">C_nd</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">ctx</span><span class="p">)</span>
-
-<span class="c1"># Invoke the module to perform the computation</span>
-<span class="n">f</span><span class="p">(</span><span class="n">A_nd</span><span class="p">,</span> <span class="n">B_nd</span><span class="p">,</span> <span class="n">C_nd</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>调用模块来执行计算：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">A_nd</span><span class="p">,</span> <span class="n">B_nd</span><span class="p">,</span> <span class="n">C_nd</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1538,11 +1643,15 @@ function checkPageExistsAndRedirect(event) {
 <p>使用 <code class="docutils literal notranslate"><span class="pre">numpy</span></code> 计算引用的结果，并断言矩阵乘法的输出确实是正确的：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute reference result with numpy</span>
-<span class="n">C_ref</span> <span class="o">=</span> <span class="p">(</span><span class="n">A_orig</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span> <span class="o">+</span> <span class="n">B_orig</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">C_ref</span> <span class="o">=</span> <span class="p">(</span><span class="n">A_orig</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span> <span class="o">+</span> <span class="n">B_orig</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 <span class="n">C_ref</span> <span class="o">=</span> <span class="n">C_ref</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">C_ref</span><span class="p">,</span> <span class="n">C_nd</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successful vector add test!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;向量加法测试成功！&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>向量加法测试成功！
 </pre></div>
 </div>
 </div>
@@ -1603,7 +1712,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 10:15:36.<br>
+最后更新于 2022-04-26, 13:55:41.<br>
 </p>
     </div>
     

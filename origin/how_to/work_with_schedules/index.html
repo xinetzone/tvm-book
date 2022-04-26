@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Work With Tensor Expression and Schedules &#8212; tvm-book 0.0.2 文档</title>
+    <title>使用 Tensor Expression 和 Schedules &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -455,7 +455,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../d2l-tvm/gpu_schedules/index.html">
-       Operator Optimizations on GPUs
+       GPU 上的算子优化
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -727,7 +727,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 current active has-children">
       <a class="current reference internal" href="#">
-       Work With Tensor Expression and Schedules
+       使用 Tensor Expression 和 Schedules
       </a>
       <input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
       <label for="toctree-checkbox-13">
@@ -1015,7 +1015,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../topic/vta/tutorials/optimize/index.html">
-       Optimize Tensor Operators
+       优化 Tensor 算子
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
       <label for="toctree-checkbox-22">
@@ -1108,7 +1108,7 @@ function checkPageExistsAndRedirect(event) {
                 
 
 <div class="tocsection editthispage">
-    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/how_to/work_with_schedules/index.rst">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/origin/how_to/work_with_schedules/index.md">
         <i class="fas fa-pencil-alt"></i> Edit this page
     </a>
 </div>
@@ -1127,73 +1127,10 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section id="work-with-tensor-expression-and-schedules">
-<span id="sphx-glr-how-to-work-with-schedules"></span><h1>Work With Tensor Expression and Schedules<a class="headerlink" href="#work-with-tensor-expression-and-schedules" title="永久链接至标题">#</a></h1>
-<div class="sphx-glr-thumbcontainer" tooltip="TVM is a domain specific language for efficient kernel construction."><figure class="align-default" id="id1">
-<img alt="Schedule Primitives in TVM" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_schedule_primitives_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="schedule_primitives.html#sphx-glr-how-to-work-with-schedules-schedule-primitives-py"><span class="std std-ref">Schedule Primitives in TVM</span></a></span><a class="headerlink" href="#id1" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
+  <section class="tex2jax_ignore mathjax_ignore" id="tensor-expression-schedules">
+<span id="sphx-glr-how-to-work-with-schedules"></span><h1>使用 Tensor Expression 和 Schedules<a class="headerlink" href="#tensor-expression-schedules" title="永久链接至标题">#</a></h1>
+<div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="This is an introduction material on how to do reduction in TVM. Associative reduction operators..."><figure class="align-default" id="id2">
-<img alt="Reduction" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_reduction_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="reduction.html#sphx-glr-how-to-work-with-schedules-reduction-py"><span class="std std-ref">Reduction</span></a></span><a class="headerlink" href="#id2" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="While TVM supports basic arithmetic operations. In many cases usually we will need more complic..."><figure class="align-default" id="id3">
-<img alt="Intrinsics and Math Functions" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_intrin_math_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="intrin_math.html#sphx-glr-how-to-work-with-schedules-intrin-math-py"><span class="std std-ref">Intrinsics and Math Functions</span></a></span><a class="headerlink" href="#id3" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="This is an introduction material on how to do recurrent computing in TVM. Recurrent computing i..."><figure class="align-default" id="id4">
-<img alt="Scan and Recurrent Kernel" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_scan_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="scan.html#sphx-glr-how-to-work-with-schedules-scan-py"><span class="std std-ref">Scan and Recurrent Kernel</span></a></span><a class="headerlink" href="#id4" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="While TVM supports transparent code generation, sometimes it is also helpful to incorporate man..."><figure class="align-default" id="id5">
-<img alt="External Tensor Functions" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_extern_op_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="extern_op.html#sphx-glr-how-to-work-with-schedules-extern-op-py"><span class="std std-ref">External Tensor Functions</span></a></span><a class="headerlink" href="#id5" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="This is an introduction material on how to perform tensorization in TVM."><figure class="align-default" id="id6">
-<img alt="Use Tensorize to Leverage Hardware Intrinsics" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_tensorize_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="tensorize.html#sphx-glr-how-to-work-with-schedules-tensorize-py"><span class="std std-ref">Use Tensorize to Leverage Hardware Intrinsics</span></a></span><a class="headerlink" href="#id6" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Often we want to compute multiple outputs with the same shape within a single loop or perform r..."><figure class="align-default" id="id7">
-<img alt="Compute and Reduce with Tuple Inputs" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_tuple_inputs_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="tuple_inputs.html#sphx-glr-how-to-work-with-schedules-tuple-inputs-py"><span class="std std-ref">Compute and Reduce with Tuple Inputs</span></a></span><a class="headerlink" href="#id7" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="This is an introduction about using TEDD to visualize tensor expressions."><figure class="align-default" id="id8">
-<img alt="Use Tensor Expression Debug Display (TEDD) for Visualization" src="origin/how_to/work_with_schedules/images/thumb/sphx_glr_tedd_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="tedd.html#sphx-glr-how-to-work-with-schedules-tedd-py"><span class="std std-ref">Use Tensor Expression Debug Display (TEDD) for Visualization</span></a></span><a class="headerlink" href="#id8" title="永久链接至图片">#</a></p>
-</figcaption>
-</figure>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-clear"></div><p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </section>
 
 
@@ -1237,7 +1174,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 10:15:36.<br>
+最后更新于 2022-04-26, 13:55:41.<br>
 </p>
     </div>
     

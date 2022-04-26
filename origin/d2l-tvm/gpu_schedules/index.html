@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Operator Optimizations on GPUs &#8212; tvm-book 0.0.2 文档</title>
+    <title>GPU 上的算子优化 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -455,7 +455,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 current active has-children">
       <a class="current reference internal" href="#">
-       Operator Optimizations on GPUs
+       GPU 上的算子优化
       </a>
       <input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -727,7 +727,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../how_to/work_with_schedules/index.html">
-       Work With Tensor Expression and Schedules
+       使用 Tensor Expression 和 Schedules
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
       <label for="toctree-checkbox-13">
@@ -1015,7 +1015,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../topic/vta/tutorials/optimize/index.html">
-       Optimize Tensor Operators
+       优化 Tensor 算子
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
       <label for="toctree-checkbox-22">
@@ -1127,16 +1127,15 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="operator-optimizations-on-gpus">
-<h1>Operator Optimizations on GPUs<a class="headerlink" href="#operator-optimizations-on-gpus" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_gpu_schedules</span></code></p>
-<p>The chapter talks about the operator optimization on Nvidia GPUs. Basically, we follow the some logic of last chapter, starting from introducing the architecture of GPUs, followed by the optimization of some typical operators.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="gpu">
+<span id="ch-gpu-schedules"></span><h1>GPU 上的算子优化<a class="headerlink" href="#gpu" title="永久链接至标题">#</a></h1>
+<p>这一章讨论了在 Nvidia GPU 上的算子优化。基本上，遵循上一章的一些逻辑，从介绍 GPU 的架构开始，然后对一些典型的算子进行优化。</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="arch.html">GPU 架构</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="arch.html#streaming-multiprocessor">Streaming Multiprocessor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arch.html#gpu-architecture">GPU Architecture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arch.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arch.html#id1">流式多核处理器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arch.html#id2">GPU 架构简介</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arch.html#id3">小结</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="vector_add.html">Vector Add</a><ul>
@@ -1250,7 +1249,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 10:15:36.<br>
+最后更新于 2022-04-26, 13:55:41.<br>
 </p>
     </div>
     

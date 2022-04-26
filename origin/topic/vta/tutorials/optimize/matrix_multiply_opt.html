@@ -455,7 +455,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../../d2l-tvm/gpu_schedules/index.html">
-       Operator Optimizations on GPUs
+       GPU 上的算子优化
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -727,7 +727,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../../how_to/work_with_schedules/index.html">
-       Work With Tensor Expression and Schedules
+       使用 Tensor Expression 和 Schedules
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
       <label for="toctree-checkbox-13">
@@ -1015,7 +1015,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 current active has-children">
       <a class="reference internal" href="index.html">
-       Optimize Tensor Operators
+       优化 Tensor 算子
       </a>
       <input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
       <label for="toctree-checkbox-22">
@@ -1178,9 +1178,7 @@ limited hardware accelerator resources.</p>
 <p>We start by programming the Pynq’s FPGA and building its RPC runtime.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
 <span class="kn">import</span> <span class="nn">vta</span>
@@ -1317,6 +1315,73 @@ Those include:</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(data_1: handle, weight_1: handle, res_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {data: Buffer(data_2: Pointer(int8), int8, [1024], []),
+             weight: Buffer(weight_2: Pointer(int8), int8, [1048576], []),
+             res: Buffer(res_2: Pointer(int8), int8, [1024], [])}
+  buffer_map = {data_1: data, weight_1: weight, res_1: res}
+  preflattened_buffer_map = {data_1: data_3: Buffer(data_2, int8, [1, 64, 1, 16], []), weight_1: weight_3: Buffer(weight_2, int8, [64, 64, 16, 16], []), res_1: res_3: Buffer(res_2, int8, [1, 64, 1, 16], [])} {
+  allocate(data_buf: Pointer(global int8), int8, [1024]), storage_scope = global;
+  allocate(weight_buf: Pointer(global int8), int8, [1048576]), storage_scope = global;
+  allocate(res_gem: Pointer(global int32), int32, [1024]), storage_scope = global {
+    for (i1: int32, 0, 64) {
+      for (i3: int32, 0, 16) {
+        let cse_var_1: int32 = ((i1*16) + i3)
+        data_buf_1: Buffer(data_buf, int8, [1024], [])[cse_var_1] = data[cse_var_1]
+      }
+    }
+    for (i0: int32, 0, 64) {
+      for (i1_1: int32, 0, 64) {
+        for (i2: int32, 0, 16) {
+          for (i3_1: int32, 0, 16) {
+            let cse_var_2: int32 = ((((i0*16384) + (i1_1*256)) + (i2*16)) + i3_1)
+            weight_buf_1: Buffer(weight_buf, int8, [1048576], [])[cse_var_2] = weight[cse_var_2]
+          }
+        }
+      }
+    }
+    for (co: int32, 0, 64) {
+      for (ci: int32, 0, 16) {
+        res_gem_1: Buffer(res_gem, int32, [1024], [])[((co*16) + ci)] = 0
+        for (ic: int32, 0, 64) {
+          for (ic_tns: int32, 0, 16) {
+            let cse_var_3: int32 = ((co*16) + ci)
+            res_gem_1[cse_var_3] = (res_gem_1[cse_var_3] + (cast(int32, data_buf_1[((ic*16) + ic_tns)])*cast(int32, weight_buf_1[((((co*16384) + (ic*256)) + (ci*16)) + ic_tns)])))
+          }
+        }
+      }
+    }
+    for (i1_2: int32, 0, 64) {
+      for (i3_2: int32, 0, 16) {
+        let cse_var_4: int32 = ((i1_2*16) + i3_2)
+        res_gem_2: Buffer(res_gem, int32, [1024], [])[cse_var_4] = @tir.shift_right(res_gem_1[cse_var_4], 8, dtype=int32)
+      }
+    }
+    for (i1_3: int32, 0, 64) {
+      for (i3_3: int32, 0, 16) {
+        let cse_var_5: int32 = ((i1_3*16) + i3_3)
+        res_gem_3: Buffer(res_gem, int32, [1024], [])[cse_var_5] = max(res_gem_2[cse_var_5], 0)
+      }
+    }
+    for (i1_4: int32, 0, 64) {
+      for (i3_4: int32, 0, 16) {
+        let cse_var_6: int32 = ((i1_4*16) + i3_4)
+        res_gem_4: Buffer(res_gem, int32, [1024], [])[cse_var_6] = min(res_gem_3[cse_var_6], 127)
+      }
+    }
+    for (i1_5: int32, 0, 64) {
+      for (i3_5: int32, 0, 16) {
+        let cse_var_7: int32 = ((i1_5*16) + i3_5)
+        res[cse_var_7] = cast(int8, res_gem_4[cse_var_7])
+      }
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
 </div>
 <p>Blocking the Computation</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>The matrix multiplication is by default too large for activations or weights
@@ -1407,6 +1472,81 @@ below:
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(data_1: handle, weight_1: handle, res_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {data: Buffer(data_2: Pointer(int8), int8, [1024], []),
+             weight: Buffer(weight_2: Pointer(int8), int8, [1048576], []),
+             res: Buffer(res_2: Pointer(int8), int8, [1024], [])}
+  buffer_map = {data_1: data, weight_1: weight, res_1: res}
+  preflattened_buffer_map = {data_1: data_3: Buffer(data_2, int8, [1, 64, 1, 16], []), weight_1: weight_3: Buffer(weight_2, int8, [64, 64, 16, 16], []), res_1: res_3: Buffer(res_2, int8, [1, 64, 1, 16], [])} {
+  allocate(data_buf: Pointer(global int8), int8, [1024]), storage_scope = global;
+  allocate(weight_buf: Pointer(global int8), int8, [1048576]), storage_scope = global;
+  allocate(res_gem: Pointer(global int32), int32, [256]), storage_scope = global {
+    for (i1: int32, 0, 64) {
+      for (i3: int32, 0, 16) {
+        let cse_var_1: int32 = ((i1*16) + i3)
+        data_buf_1: Buffer(data_buf, int8, [1024], [])[cse_var_1] = data[cse_var_1]
+      }
+    }
+    for (i0: int32, 0, 64) {
+      for (i1_1: int32, 0, 64) {
+        for (i2: int32, 0, 16) {
+          for (i3_1: int32, 0, 16) {
+            let cse_var_2: int32 = ((((i0*16384) + (i1_1*256)) + (i2*16)) + i3_1)
+            weight_buf_1: Buffer(weight_buf, int8, [1048576], [])[cse_var_2] = weight[cse_var_2]
+          }
+        }
+      }
+    }
+    for (i1.outer: int32, 0, 4) {
+      for (co.init: int32, 0, 16) {
+        for (ci.init: int32, 0, 16) {
+          res_gem_1: Buffer(res_gem, int32, [256], [])[((co.init*16) + ci.init)] = 0
+        }
+      }
+      for (ic.outer: int32, 0, 4) {
+        for (co: int32, 0, 16) {
+          for (ic.inner: int32, 0, 16) {
+            for (ci: int32, 0, 16) {
+              for (ic_tns: int32, 0, 16) {
+                let cse_var_3: int32 = ((co*16) + ci)
+                res_gem_1[cse_var_3] = (res_gem_1[cse_var_3] + (cast(int32, data_buf_1[(((ic.outer*256) + (ic.inner*16)) + ic_tns)])*cast(int32, weight_buf_1[((((((i1.outer*262144) + (co*16384)) + (ic.outer*4096)) + (ic.inner*256)) + (ci*16)) + ic_tns)])))
+              }
+            }
+          }
+        }
+      }
+      for (i1_2: int32, 0, 16) {
+        for (i3_2: int32, 0, 16) {
+          let cse_var_4: int32 = ((i1_2*16) + i3_2)
+          res_gem_2: Buffer(res_gem, int32, [256], [])[cse_var_4] = @tir.shift_right(res_gem_1[cse_var_4], 8, dtype=int32)
+        }
+      }
+      for (i1_3: int32, 0, 16) {
+        for (i3_3: int32, 0, 16) {
+          let cse_var_5: int32 = ((i1_3*16) + i3_3)
+          res_gem_3: Buffer(res_gem, int32, [256], [])[cse_var_5] = max(res_gem_2[cse_var_5], 0)
+        }
+      }
+      for (i1_4: int32, 0, 16) {
+        for (i3_4: int32, 0, 16) {
+          let cse_var_6: int32 = ((i1_4*16) + i3_4)
+          res_gem_4: Buffer(res_gem, int32, [256], [])[cse_var_6] = min(res_gem_3[cse_var_6], 127)
+        }
+      }
+      for (i1.inner: int32, 0, 16) {
+        for (i3_5: int32, 0, 16) {
+          let cse_var_7: int32 = (i1.inner*16)
+          res[(((i1.outer*256) + cse_var_7) + i3_5)] = cast(int8, res_gem_4[(cse_var_7 + i3_5)])
+        }
+      }
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
 </div>
 <p>Lowering Copies to DMA Transfers</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Next</span> <span class="n">we</span> <span class="nb">set</span> <span class="n">the</span> <span class="n">buffer</span> <span class="n">scopes</span> <span class="n">to</span> <span class="n">the</span> <span class="n">corresponding</span> <span class="n">on</span><span class="o">-</span><span class="n">chip</span> <span class="n">VTA</span> <span class="n">SRAM</span> <span class="n">buffers</span><span class="o">.</span>
@@ -1464,6 +1604,83 @@ below:
 <span class="c1"># loads/stores down to DMA copy intrinsics, and the computation down to</span>
 <span class="c1"># VTA compute intrinsics.</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">vta</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">res</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(data_1: handle, weight_1: handle, res_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {data: Buffer(data_2: Pointer(int8), int8, [1024], []),
+             weight: Buffer(weight_2: Pointer(int8), int8, [1048576], []),
+             res: Buffer(res_2: Pointer(int8), int8, [1024], [])}
+  buffer_map = {data_1: data, weight_1: weight, res_1: res}
+  preflattened_buffer_map = {data_1: data_3: Buffer(data_2, int8, [1, 64, 1, 16], []), weight_1: weight_3: Buffer(weight_2, int8, [64, 64, 16, 16], []), res_1: res_3: Buffer(res_2, int8, [1, 64, 1, 16], [])} {
+  @tir.vta.coproc_dep_push(3, 2, dtype=int32)
+  for (i1.outer: int32, 0, 4) {
+    attr [IterVar(vta: int32, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_scope&quot; = 2 {
+      @tir.vta.coproc_dep_pop(3, 2, dtype=int32)
+      attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_uop_scope&quot; = &quot;VTAPushGEMMOp&quot; {
+        @tir.call_extern(&quot;VTAUopLoopBegin&quot;, 16, 1, 0, 0, dtype=int32)
+        @tir.vta.uop_push(0, 1, 0, 0, 0, 0, 0, 0, dtype=int32)
+        @tir.call_extern(&quot;VTAUopLoopEnd&quot;, dtype=int32)
+      }
+      @tir.vta.coproc_dep_push(2, 1, dtype=int32)
+    }
+    for (ic.outer: int32, 0, 4) {
+      let cse_var_1: int32 = (ic.outer*16)
+       {
+        attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_scope&quot; = 1 {
+          @tir.vta.coproc_dep_pop(2, 1, dtype=int32)
+          @tir.call_extern(&quot;VTALoadBuffer2D&quot;, @tir.tvm_thread_context(@tir.vta.command_handle(, dtype=handle), dtype=handle), data_2, cse_var_1, 16, 1, 16, 0, 0, 0, 0, 0, 2, dtype=int32)
+          @tir.call_extern(&quot;VTALoadBuffer2D&quot;, @tir.tvm_thread_context(@tir.vta.command_handle(, dtype=handle), dtype=handle), weight_2, ((i1.outer*1024) + cse_var_1), 16, 16, 64, 0, 0, 0, 0, 0, 1, dtype=int32)
+          @tir.vta.coproc_dep_push(1, 2, dtype=int32)
+        }
+        attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_scope&quot; = 2 {
+          @tir.vta.coproc_dep_pop(1, 2, dtype=int32)
+          attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_uop_scope&quot; = &quot;VTAPushGEMMOp&quot; {
+            @tir.call_extern(&quot;VTAUopLoopBegin&quot;, 16, 1, 0, 16, dtype=int32)
+            @tir.call_extern(&quot;VTAUopLoopBegin&quot;, 16, 0, 1, 1, dtype=int32)
+            @tir.vta.uop_push(0, 0, 0, 0, 0, 0, 0, 0, dtype=int32)
+            @tir.call_extern(&quot;VTAUopLoopEnd&quot;, dtype=int32)
+            @tir.call_extern(&quot;VTAUopLoopEnd&quot;, dtype=int32)
+          }
+          @tir.vta.coproc_dep_push(2, 1, dtype=int32)
+        }
+      }
+    }
+    @tir.vta.coproc_dep_pop(2, 1, dtype=int32)
+    attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_scope&quot; = 2 {
+      attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_uop_scope&quot; = &quot;VTAPushALUOp&quot; {
+        @tir.call_extern(&quot;VTAUopLoopBegin&quot;, 16, 1, 1, 0, dtype=int32)
+        @tir.vta.uop_push(1, 0, 0, 0, 0, 3, 1, 8, dtype=int32)
+        @tir.call_extern(&quot;VTAUopLoopEnd&quot;, dtype=int32)
+      }
+      attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_uop_scope&quot; = &quot;VTAPushALUOp&quot; {
+        @tir.call_extern(&quot;VTAUopLoopBegin&quot;, 16, 1, 1, 0, dtype=int32)
+        @tir.vta.uop_push(1, 0, 0, 0, 0, 1, 1, 0, dtype=int32)
+        @tir.call_extern(&quot;VTAUopLoopEnd&quot;, dtype=int32)
+      }
+      attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_uop_scope&quot; = &quot;VTAPushALUOp&quot; {
+        @tir.call_extern(&quot;VTAUopLoopBegin&quot;, 16, 1, 1, 0, dtype=int32)
+        @tir.vta.uop_push(1, 0, 0, 0, 0, 0, 1, 127, dtype=int32)
+        @tir.call_extern(&quot;VTAUopLoopEnd&quot;, dtype=int32)
+      }
+      @tir.vta.coproc_dep_push(2, 3, dtype=int32)
+    }
+    attr [IterVar(vta, (nullptr), &quot;ThreadIndex&quot;, &quot;vta&quot;)] &quot;coproc_scope&quot; = 3 {
+      @tir.vta.coproc_dep_pop(2, 3, dtype=int32)
+      for (i1.inner: int32, 0, 16) {
+        @tir.call_extern(&quot;VTAStoreBuffer2D&quot;, @tir.tvm_thread_context(@tir.vta.command_handle(, dtype=handle), dtype=handle), i1.inner, 4, res_2, ((i1.outer*16) + i1.inner), 1, 1, 1, dtype=int32)
+      }
+      @tir.vta.coproc_dep_push(3, 2, dtype=int32)
+    }
+  }
+  @tir.vta.coproc_sync(, dtype=int32)
+  @tir.vta.coproc_dep_pop(3, 2, dtype=int32)
+}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:46:23] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
 </pre></div>
 </div>
 </div>
@@ -1534,6 +1751,22 @@ ensure correctness.</p>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Execution statistics:
+	inp_load_nbytes :             4096
+	wgt_load_nbytes :          1048576
+	acc_load_nbytes :                0
+	uop_load_nbytes :               20
+	out_store_nbytes:             1024
+	gemm_counter    :             4096
+	alu_counter     :              192
+Successful blocked matrix multiply test!
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:46:23] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="summary">
@@ -1586,7 +1819,7 @@ hardware accelerator resources.</p>
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 10:15:36.<br>
+最后更新于 2022-04-26, 13:55:41.<br>
 </p>
     </div>
     

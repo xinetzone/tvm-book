@@ -9,12 +9,13 @@
     "(ch_gpu_arch)=\n",
     "# GPU 架构\n",
     "\n",
-    "\n",
-    "High-end GPUs often provide a significantly better performance over high-end CPUs. Although the terminologies and programming paradigms are different between GPUs and CPUs, their architectures are similar to each other, with GPU having a wider SIMD width and more cores. In this section, we will brief review the GPU architecture in comparison to the CPU architecture presented in :numref:`ch_cpu_arch`.\n",
+    "高端 GPU 通常比高端 CPU 提供更好的性能。尽管 GPU 和 CPU 之间的术语和编程范式有所不同，但它们的架构是相似的，GPU 拥有更宽的 SIMD 宽度和更多的核。在本节中，将简要回顾 GPU 架构与 {ref}`ch_cpu_arch` 中介绍的 CPU 架构的比较。\n",
     "\n",
     "(FIXME, changed from V100 to T4 in CI..., also changed cpu...)\n",
     "\n",
-    "The system we are using has a [Tesla T4](https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf) GPU, which is based on Turing architecture. Tesla T4 is a GPU card based on the Turing architecture and targeted at deep learning model inference acceleration.\n"
+    "使用的系统有 [Tesla T4](https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf) GPU，是基于图灵架构的。Tesla T4 是基于图灵架构的 GPU 卡，用于深度学习模型推理加速。\n",
+    "\n",
+    "本教程使用："
    ]
   },
   {
@@ -31,7 +32,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "    Product Name                    : Tesla T4\r\n"
+      "    Product Name                          : NVIDIA GeForce RTX 2080 Ti\n"
      ]
     }
    ],
@@ -45,32 +46,27 @@
     "origin_pos": 2
    },
    "source": [
-    "## Streaming Multiprocessor\n",
+    "## 流式多核处理器\n",
     "\n",
-    "A streaming multiprocessor (SM) roughly equals a CPU core. The SM used by T4 is illustrated in :numref:`fig_gpu_sm`.\n",
+    "流式多核处理器（streaming multiprocessor，简称 SM）大致相当于 CPU 核心。T4 使用的 SM 如下所示:numref: ' fig_gpu_sm '。\n",
     "\n",
-    "![A streaming multiprocessor in Tesla T4](../img/gpu_sm.svg)\n",
-    ":label:`fig_gpu_sm`\n",
+    "```{figure} ../img/gpu_sm.svg\n",
+    "A streaming multiprocessor in Tesla T4\n",
+    "```\n",
     "\n",
-    "As can be seen, an SM is partitioned into 4 processing blocks. In each block, there are 16 arithmetic units (AU) for processing float32 numbers, which are also called FP32 CUDA cores.\n",
-    "In total, an SM has 64 FP32 AUs, which are able to execute 64 float32 operators (e.g. FMA) in each time. Besides the register files and the instruction loader/decoders, an SM has 8 tensor cores. Each tensor core is able to execute a $4\\times 4$ float16 (or int8/int4) matrix product in each time. So each one, we can call it FP16 AU, counts for $2\\times 4^3=128$ operators per clock. It is worth noting that in this chapter we won't use the tensor core. We will talk about utilizing it in the later chapter.\n",
+    "可以看到，SM 被划分为 4 个处理块。在每个块中，有 16 个算术单元（AU）用于处理 float32 数字，也称为 FP32 CUDA 核。总的来说，SM 有 64 个 FP32 AUs，它们每次能够执行 64 个 float32 算子（例如 FMA）。除了寄存器文件和指令加载/解码器，SM 有 8 个张量 core。每个张量核都能够在每次执行 $4\\times 4$  float16（或 int8/int4）矩阵乘法。所以每个，可以称之为 FP16 AU，每个时钟计算 $2\\times 4^3=128$ 个算子。值得注意的是，在本章中不会使用张量核。将在后面的章节讨论如何使用它。\n",
     "\n",
-    "Another difference is that the SM only has an L1 cache, which is similar to CPU's L1 cache. However, we can use this storage as a shared memory for all threads running on the SM. We know that the cache is controlled by both hardware and operating system, while we can explicitly allocate and reclaim space on the shared memory, which gives us more flexibility to do performance optimization.\n",
+    "另外，SM 只有与 CPU 相似的 L1 cache。但是，可以将此存储作为在 SM 上运行的所有线程的共享内存。我们知道缓存由硬件和操作系统控制，而我们可以显式地分配和回收共享内存上的空间，这为我们进行性能优化提供了更大的灵活性。\n",
     "\n",
-    "## GPU Architecture\n",
+    "## GPU 架构简介\n",
     "\n",
-    "Our Tesla T4 card contains 40 SMs with a 6MB L2 cache shared by all SMs. It also ships with 16GB high-bandwidth memory (GDDR6) that is connected to the processor. The overall architecture is illustrated in :numref:`fig_gpu_t4`.\n",
+    "特斯拉 T4 卡包含 40 条 SMs，所有 SM 共享 6MB 的 L2 缓存。它还附带了连接到处理器的 16GB 高带宽内存（GDDR6）。\n",
     "\n",
-    "![The Tesla T4 Architecture](../img/gpu_t4.svg)\n",
-    ":label:`fig_gpu_t4`\n",
+    "```{figure} ../img/gpu_t4.svg\n",
+    "The Tesla T4 Architecture\n",
+    "```\n",
     "\n",
-    "More broadly, we compare the specification difference between the CPU and GPUs used in this book in :numref:`tab_cpu_gpu_compare`, where GPUs includes\n",
-    "[Tesla P100](https://images.nvidia.com/content/pdf/tesla/whitepaper/pascal-architecture-whitepaper.pdf) (used in Colab),\n",
-    "[Tesla V100](https://images.nvidia.com/content/volta-architecture/pdf/volta-architecture-whitepaper.pdf) (equipped in Amazon EC2 P3 instance),\n",
-    "and [Tesla T4](https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf) (equipped in Amazon EC2 G4 instance).\n",
-    "\n",
-    ":Compare the commonly used CPUs and GPUs, `x` means not supported. \\ $^*$: Tesla P100 processes FP16 using FP32 CUDA cores.\n",
-    "\n",
+    "(tab_cpu_gpu_compare)=\n",
     "|Hardware | Intel E5-2686 v4 | Tesla P100 | Tesla V100 | Tesla T4 |\n",
     "|------|------|------|------|------|\n",
     "| Clock rate (GHz) | **3** | 1.48 | 1.53 | 1.59 |\n",
@@ -85,11 +81,10 @@
     "| FP64 TFLOPS | 0.38 | 4.7 | **7.8** | x |\n",
     "| FP32 TFLOPS | 0.77 | 9.3 | **15.7** | 8.1 |\n",
     "| FP16 TFLOPS | x | 18.7 | **125.3** | 65 |\n",
-    ":label:`tab_cpu_gpu_compare`\n",
     "\n",
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "- GPUs have conceptually similar architecture as CPUs, but are much faster.\n"
+    "- GPU 在概念上与 CPU 的架构类似，但速度要快得多。\n"
    ]
   }
  ],
@@ -103,7 +98,15 @@
    "name": "python3"
   },
   "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
    "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
    "version": "3.10.4"
   }
  },

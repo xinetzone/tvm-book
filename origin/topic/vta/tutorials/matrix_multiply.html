@@ -455,7 +455,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../d2l-tvm/gpu_schedules/index.html">
-       Operator Optimizations on GPUs
+       GPU 上的算子优化
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -727,7 +727,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../../how_to/work_with_schedules/index.html">
-       Work With Tensor Expression and Schedules
+       使用 Tensor Expression 和 Schedules
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
       <label for="toctree-checkbox-13">
@@ -1015,7 +1015,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="optimize/index.html">
-       Optimize Tensor Operators
+       优化 Tensor 算子
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
       <label for="toctree-checkbox-22">
@@ -1209,7 +1209,7 @@ function checkPageExistsAndRedirect(event) {
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>简单的矩阵乘法<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
 <p><strong>原作者</strong>: <a class="reference external" href="https://homes.cs.washington.edu/~moreau/">Thierry Moreau</a></p>
-<p>在本教程构建在 <span class="xref std std-ref">vta-get-started</span> 教程的基础上，并介绍在 VTA 上使用 TVM 工作流实现矩阵乘法所需的额外概念。</p>
+<p>在本教程构建在 <a class="reference internal" href="vta_get_started.html#vta-get-started"><span class="std std-ref">VTA 入门</span></a> 教程的基础上，并介绍在 VTA 上使用 TVM 工作流实现矩阵乘法所需的额外概念。</p>
 <section id="rpc">
 <h2>RPC 设置<a class="headerlink" href="#rpc" title="永久链接至标题">#</a></h2>
 <p>从编程 Pynq 的 FPGA 和构建它的 RPC 运行时开始，就像在 VTA 介绍性教程中做的那样。</p>
@@ -1224,30 +1224,29 @@ function checkPageExistsAndRedirect(event) {
 <span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">vta.testing</span> <span class="kn">import</span> <span class="n">simulator</span>
 
-<span class="c1"># Load VTA parameters from the 3rdparty/vta-hw/config/vta_config.json file</span>
+<span class="c1"># 从 3rdparty/vta-hw/config/vta_config.json 文件载入 VTA 参数</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">vta</span><span class="o">.</span><span class="n">get_env</span><span class="p">()</span>
 
-<span class="c1"># We read the Pynq RPC host IP address and port number from the OS environment</span>
+<span class="c1"># 从操作系统环境中读取 Pynq RPC 主机 IP 地址和端口号</span>
 <span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_HOST&quot;</span><span class="p">,</span> <span class="s2">&quot;192.168.2.99&quot;</span><span class="p">)</span>
 <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;9091&quot;</span><span class="p">))</span>
 
-<span class="c1"># We configure both the bitstream and the runtime system on the Pynq</span>
-<span class="c1"># to match the VTA configuration specified by the vta_config.json file.</span>
+<span class="c1"># 在 Pynq 上配置 bitstream 和运行时系统，</span>
+<span class="c1"># 以匹配 vta_config.json 文件指定的 VTA 配置。</span>
 <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="o">==</span> <span class="s2">&quot;pynq&quot;</span> <span class="ow">or</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="o">==</span> <span class="s2">&quot;de10nano&quot;</span><span class="p">:</span>
-
-    <span class="c1"># Make sure that TVM was compiled with RPC=1</span>
+    <span class="c1"># 确保使用 RPC=1 编译 TVM</span>
     <span class="k">assert</span> <span class="n">tvm</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">enabled</span><span class="p">(</span><span class="s2">&quot;rpc&quot;</span><span class="p">)</span>
     <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
 
-    <span class="c1"># Reconfigure the JIT runtime</span>
+    <span class="c1"># 重新配置 JIT runtime</span>
     <span class="n">vta</span><span class="o">.</span><span class="n">reconfig_runtime</span><span class="p">(</span><span class="n">remote</span><span class="p">)</span>
 
-    <span class="c1"># Program the FPGA with a pre-compiled VTA bitstream.</span>
-    <span class="c1"># You can program the FPGA with your own custom bitstream</span>
-    <span class="c1"># by passing the path to the bitstream file instead of None.</span>
+    <span class="c1"># 用预编译的 VTA bitstream 程序编程 FPGA。</span>
+    <span class="c1"># 通过将路径传递给 bitstream 文件而不是 None，</span>
+    <span class="c1"># 您可以使用自定义 bitstream 编程 FPGA。</span>
     <span class="n">vta</span><span class="o">.</span><span class="n">program_fpga</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">bitstream</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-<span class="c1"># In simulation mode, host the RPC server locally.</span>
+<span class="c1"># 在仿真模式下，在本地托管 RPC 服务器。</span>
 <span class="k">elif</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">]:</span>
     <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">LocalSession</span><span class="p">()</span>
 </pre></div>
@@ -1284,15 +1283,15 @@ function checkPageExistsAndRedirect(event) {
 <p>默认情况下，配置文件将 <code class="docutils literal notranslate"><span class="pre">INP_WIDTH</span></code> 和 <code class="docutils literal notranslate"><span class="pre">WGT_WIDTH</span></code> 设置为 8。累加器宽度 <code class="docutils literal notranslate"><span class="pre">ACC_WIDTH</span></code> 被设置为 32，以避免累加时溢出。结果是 <code class="docutils literal notranslate"><span class="pre">env.inp_dtype</span></code> 和 <code class="docutils literal notranslate"><span class="pre">env.wgt_dtype</span></code> 都是窄化的 8 位整型，而 <code class="docutils literal notranslate"><span class="pre">env.acc_dtype</span></code> 是标准的 32 位整型。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Output channel factor m - total 16x16=256 output channels</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 输出通道因子 m - 总共 16 x 16 = 256 输出通道</span>
 <span class="n">m</span> <span class="o">=</span> <span class="mi">16</span>
-<span class="c1"># Input channel factor n - total 16x16=256 input channels</span>
+<span class="c1"># 输入通道因子 n -总计 16x16=256 个输入通道</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">16</span>
-<span class="c1"># Batch factor o (we use single batch inference)</span>
+<span class="c1"># Batch 因子 o （使用单个 batch 推理）</span>
 <span class="n">o</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="c1"># A placeholder tensor in tiled data format</span>
+<span class="c1"># tiled 据格式的 A 占位符张量</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">)</span>
-<span class="c1"># B placeholder tensor in tiled data format</span>
+<span class="c1"># tiled 据格式的 B 占位符张量</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">wgt_dtype</span><span class="p">)</span>
 <span class="c1"># A copy buffer</span>
 <span class="n">A_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span><span class="p">),</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;A_buf&quot;</span><span class="p">)</span>
@@ -1625,7 +1624,7 @@ by the VTA runtime JIT compiler.</p>
 }
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[10:11:39] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:44:08] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
 </pre></div>
 </div>
 </div>
@@ -1657,7 +1656,7 @@ into a TVM function.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[10:11:39] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:44:08] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
 </pre></div>
 </div>
 </div>
@@ -1798,7 +1797,7 @@ The general workflow includes:</p>
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 10:15:36.<br>
+最后更新于 2022-04-26, 13:55:41.<br>
 </p>
     </div>
     

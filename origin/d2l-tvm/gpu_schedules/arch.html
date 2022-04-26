@@ -50,7 +50,7 @@
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
     <link rel="next" title="Vector Add" href="vector_add.html" />
-    <link rel="prev" title="Operator Optimizations on GPUs" href="index.html" />
+    <link rel="prev" title="GPU 上的算子优化" href="index.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
 
@@ -457,7 +457,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 current active has-children">
       <a class="reference internal" href="index.html">
-       Operator Optimizations on GPUs
+       GPU 上的算子优化
       </a>
       <input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
       <label for="toctree-checkbox-7">
@@ -729,7 +729,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../how_to/work_with_schedules/index.html">
-       Work With Tensor Expression and Schedules
+       使用 Tensor Expression 和 Schedules
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
       <label for="toctree-checkbox-13">
@@ -1017,7 +1017,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../../topic/vta/tutorials/optimize/index.html">
-       Optimize Tensor Operators
+       优化 Tensor 算子
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
       <label for="toctree-checkbox-22">
@@ -1107,18 +1107,18 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#streaming-multiprocessor">
-   Streaming Multiprocessor
+  <a class="reference internal nav-link" href="#id1">
+   流式多核处理器
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#gpu-architecture">
-   GPU Architecture
+  <a class="reference internal nav-link" href="#id2">
+   GPU 架构简介
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id3">
+   小结
   </a>
  </li>
 </ul>
@@ -1151,41 +1151,42 @@ function checkPageExistsAndRedirect(event) {
                 
   <section class="tex2jax_ignore mathjax_ignore" id="gpu">
 <span id="ch-gpu-arch"></span><h1>GPU 架构<a class="headerlink" href="#gpu" title="永久链接至标题">#</a></h1>
-<p>High-end GPUs often provide a significantly better performance over high-end CPUs. Although the terminologies and programming paradigms are different between GPUs and CPUs, their architectures are similar to each other, with GPU having a wider SIMD width and more cores. In this section, we will brief review the GPU architecture in comparison to the CPU architecture presented in :numref:<code class="docutils literal notranslate"><span class="pre">ch_cpu_arch</span></code>.</p>
+<p>高端 GPU 通常比高端 CPU 提供更好的性能。尽管 GPU 和 CPU 之间的术语和编程范式有所不同，但它们的架构是相似的，GPU 拥有更宽的 SIMD 宽度和更多的核。在本节中，将简要回顾 GPU 架构与 <a class="reference internal" href="../cpu_schedules/arch.html#ch-cpu-arch"><span class="std std-ref">CPU 架构</span></a> 中介绍的 CPU 架构的比较。</p>
 <p>(FIXME, changed from V100 to T4 in CI…, also changed cpu…)</p>
-<p>The system we are using has a <a class="reference external" href="https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf">Tesla T4</a> GPU, which is based on Turing architecture. Tesla T4 is a GPU card based on the Turing architecture and targeted at deep learning model inference acceleration.</p>
+<p>使用的系统有 <a class="reference external" href="https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf">Tesla T4</a> GPU，是基于图灵架构的。Tesla T4 是基于图灵架构的 GPU 卡，用于深度学习模型推理加速。</p>
+<p>本教程使用：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>!nvidia-smi -q -i 0 | grep &quot;Product Name&quot;
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>nvidia-smi -q -i <span class="m">0</span> <span class="p">|</span> grep <span class="s2">&quot;Product Name&quot;</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Product Name                    : Tesla T4
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Product Name                          : NVIDIA GeForce RTX 2080 Ti
 </pre></div>
 </div>
 </div>
 </div>
-<section id="streaming-multiprocessor">
-<h2>Streaming Multiprocessor<a class="headerlink" href="#streaming-multiprocessor" title="永久链接至标题">#</a></h2>
-<p>A streaming multiprocessor (SM) roughly equals a CPU core. The SM used by T4 is illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">fig_gpu_sm</span></code>.</p>
-<p><img alt="A streaming multiprocessor in Tesla T4" src="../../../_images/gpu_sm.svg" />
-:label:<code class="docutils literal notranslate"><span class="pre">fig_gpu_sm</span></code></p>
-<p>As can be seen, an SM is partitioned into 4 processing blocks. In each block, there are 16 arithmetic units (AU) for processing float32 numbers, which are also called FP32 CUDA cores.
-In total, an SM has 64 FP32 AUs, which are able to execute 64 float32 operators (e.g. FMA) in each time. Besides the register files and the instruction loader/decoders, an SM has 8 tensor cores. Each tensor core is able to execute a <span class="math notranslate nohighlight">\(4\times 4\)</span> float16 (or int8/int4) matrix product in each time. So each one, we can call it FP16 AU, counts for <span class="math notranslate nohighlight">\(2\times 4^3=128\)</span> operators per clock. It is worth noting that in this chapter we won’t use the tensor core. We will talk about utilizing it in the later chapter.</p>
-<p>Another difference is that the SM only has an L1 cache, which is similar to CPU’s L1 cache. However, we can use this storage as a shared memory for all threads running on the SM. We know that the cache is controlled by both hardware and operating system, while we can explicitly allocate and reclaim space on the shared memory, which gives us more flexibility to do performance optimization.</p>
+<section id="id1">
+<h2>流式多核处理器<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
+<p>流式多核处理器（streaming multiprocessor，简称 SM）大致相当于 CPU 核心。T4 使用的 SM 如下所示:numref: ‘ fig_gpu_sm ‘。</p>
+<figure class="align-default" id="id4">
+<img alt="../../../_images/gpu_sm.svg" src="../../../_images/gpu_sm.svg" /><figcaption>
+<p><span class="caption-text">A streaming multiprocessor in Tesla T4</span><a class="headerlink" href="#id4" title="永久链接至图片">#</a></p>
+</figcaption>
+</figure>
+<p>可以看到，SM 被划分为 4 个处理块。在每个块中，有 16 个算术单元（AU）用于处理 float32 数字，也称为 FP32 CUDA 核。总的来说，SM 有 64 个 FP32 AUs，它们每次能够执行 64 个 float32 算子（例如 FMA）。除了寄存器文件和指令加载/解码器，SM 有 8 个张量 core。每个张量核都能够在每次执行 <span class="math notranslate nohighlight">\(4\times 4\)</span>  float16（或 int8/int4）矩阵乘法。所以每个，可以称之为 FP16 AU，每个时钟计算 <span class="math notranslate nohighlight">\(2\times 4^3=128\)</span> 个算子。值得注意的是，在本章中不会使用张量核。将在后面的章节讨论如何使用它。</p>
+<p>另外，SM 只有与 CPU 相似的 L1 cache。但是，可以将此存储作为在 SM 上运行的所有线程的共享内存。我们知道缓存由硬件和操作系统控制，而我们可以显式地分配和回收共享内存上的空间，这为我们进行性能优化提供了更大的灵活性。</p>
 </section>
-<section id="gpu-architecture">
-<h2>GPU Architecture<a class="headerlink" href="#gpu-architecture" title="永久链接至标题">#</a></h2>
-<p>Our Tesla T4 card contains 40 SMs with a 6MB L2 cache shared by all SMs. It also ships with 16GB high-bandwidth memory (GDDR6) that is connected to the processor. The overall architecture is illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">fig_gpu_t4</span></code>.</p>
-<p><img alt="The Tesla T4 Architecture" src="../../../_images/gpu_t4.svg" />
-:label:<code class="docutils literal notranslate"><span class="pre">fig_gpu_t4</span></code></p>
-<p>More broadly, we compare the specification difference between the CPU and GPUs used in this book in :numref:<code class="docutils literal notranslate"><span class="pre">tab_cpu_gpu_compare</span></code>, where GPUs includes
-<a class="reference external" href="https://images.nvidia.com/content/pdf/tesla/whitepaper/pascal-architecture-whitepaper.pdf">Tesla P100</a> (used in Colab),
-<a class="reference external" href="https://images.nvidia.com/content/volta-architecture/pdf/volta-architecture-whitepaper.pdf">Tesla V100</a> (equipped in Amazon EC2 P3 instance),
-and <a class="reference external" href="https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf">Tesla T4</a> (equipped in Amazon EC2 G4 instance).</p>
-<p>:Compare the commonly used CPUs and GPUs, <code class="docutils literal notranslate"><span class="pre">x</span></code> means not supported. \ <span class="math notranslate nohighlight">\(^*\)</span>: Tesla P100 processes FP16 using FP32 CUDA cores.</p>
-<table class="colwidths-auto table">
+<section id="id2">
+<h2>GPU 架构简介<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>特斯拉 T4 卡包含 40 条 SMs，所有 SM 共享 6MB 的 L2 缓存。它还附带了连接到处理器的 16GB 高带宽内存（GDDR6）。</p>
+<figure class="align-default" id="id5">
+<img alt="../../../_images/gpu_t4.svg" src="../../../_images/gpu_t4.svg" /><figcaption>
+<p><span class="caption-text">The Tesla T4 Architecture</span><a class="headerlink" href="#id5" title="永久链接至图片">#</a></p>
+</figcaption>
+</figure>
+<table class="colwidths-auto table" id="tab-cpu-gpu-compare">
 <thead>
 <tr class="row-odd"><th class="head"><p>Hardware</p></th>
 <th class="head"><p>Intel E5-2686 v4</p></th>
@@ -1267,19 +1268,13 @@ and <a class="reference external" href="https://www.nvidia.com/content/dam/en-zz
 <td><p><strong>125.3</strong></p></td>
 <td><p>65</p></td>
 </tr>
-<tr class="row-even"><td><p>:label:<code class="docutils literal notranslate"><span class="pre">tab_cpu_gpu_compare</span></code></p></td>
-<td><p></p></td>
-<td><p></p></td>
-<td><p></p></td>
-<td><p></p></td>
-</tr>
 </tbody>
 </table>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<section id="id3">
+<h2>小结<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>GPUs have conceptually similar architecture as CPUs, but are much faster.</p></li>
+<li><p>GPU 在概念上与 CPU 的架构类似，但速度要快得多。</p></li>
 </ul>
 </section>
 </section>
@@ -1294,7 +1289,7 @@ and <a class="reference external" href="https://www.nvidia.com/content/dam/en-zz
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">Operator Optimizations on GPUs</p>
+            <p class="prev-next-title">GPU 上的算子优化</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="vector_add.html" title="下一页 页">
@@ -1325,7 +1320,7 @@ and <a class="reference external" href="https://www.nvidia.com/content/dam/en-zz
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 10:15:36.<br>
+最后更新于 2022-04-26, 13:55:41.<br>
 </p>
     </div>
     

@@ -1,6 +1,6 @@
 .. _sphx_glr_topic_vta_tutorials_optimize:
 
-Optimize Tensor Operators
+优化 Tensor 算子
 -------------------------
 
 .. toctree::
