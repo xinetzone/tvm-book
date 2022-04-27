@@ -17,13 +17,6 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
-      "metadata": {},
-      "outputs": [],
-      "source": []
-    },
-    {
-      "cell_type": "code",
       "execution_count": 1,
       "metadata": {
         "collapsed": false
@@ -579,7 +572,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[21:44:08] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[21:55:48] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],
@@ -623,7 +616,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[21:44:08] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[21:55:49] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],

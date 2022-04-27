@@ -1,6 +1,6 @@
 .. _sphx_glr_topic_vta_tutorials_autotvm:
 
-Auto tuning
+自动调优
 -------------
 
 .. toctree::

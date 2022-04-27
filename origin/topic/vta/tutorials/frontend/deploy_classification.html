@@ -1037,7 +1037,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="../autotvm/index.html">
-       Auto tuning
+       自动调优
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
       <label for="toctree-checkbox-23">
@@ -1047,12 +1047,12 @@ function checkPageExistsAndRedirect(event) {
       <ul>
        <li class="toctree-l4">
         <a class="reference internal" href="../autotvm/tune_alu_vta.html">
-         Auto-tuning a ALU fused op on VTA
+         自动调优 VTA 上的 ALU fused op
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../autotvm/tune_relay_vta.html">
-         Auto-tuning a convolutional network on VTA
+         在 VTA 上调优卷积神经网络
         </a>
        </li>
       </ul>
@@ -1170,8 +1170,12 @@ function checkPageExistsAndRedirect(event) {
 <p>现在回到 python 代码。导入包。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">isfile</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># from __future__ import absolute_import, print_function</span>
+<span class="c1"># import argparse, json, requests, sys</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span>
+<span class="c1"># from io import BytesIO</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="c1"># from os.path import isfile</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
 <span class="kn">from</span> <span class="nn">mxnet.gluon.model_zoo</span> <span class="kn">import</span> <span class="n">vision</span>
@@ -1179,17 +1183,17 @@ function checkPageExistsAndRedirect(event) {
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
 <span class="kn">import</span> <span class="nn">tvm</span>
+<span class="c1"># from tvm import te</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">rpc</span><span class="p">,</span> <span class="n">autotvm</span><span class="p">,</span> <span class="n">relay</span>
 <span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">graph_executor</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">download</span>
-<span class="kn">from</span> <span class="nn">tvm.contrib.debugger</span> <span class="kn">import</span> <span class="n">debug_executor</span>
-<span class="kn">from</span> <span class="nn">tvm.relay</span> <span class="kn">import</span> <span class="n">transform</span>
+<span class="c1"># from tvm.contrib.debugger import debug_executor</span>
+<span class="c1"># from tvm.relay import transform</span>
 
 <span class="kn">import</span> <span class="nn">vta</span>
 <span class="kn">from</span> <span class="nn">vta.testing</span> <span class="kn">import</span> <span class="n">simulator</span>
 <span class="kn">from</span> <span class="nn">vta.top</span> <span class="kn">import</span> <span class="n">graph_pack</span>
 
-
-<span class="c1"># 确保使用 RPC=1 编译 TVM</span>
+<span class="c1"># Make sure that TVM was compiled with RPC=1</span>
 <span class="k">assert</span> <span class="n">tvm</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">enabled</span><span class="p">(</span><span class="s2">&quot;rpc&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1201,15 +1205,15 @@ function checkPageExistsAndRedirect(event) {
 <p>在 CPU 和 VTA 上执行，并定义模型。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 从 3rdparty/vta-hw/config/vta_config.json 文件加载 VTA 参数</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load VTA parameters from the 3rdparty/vta-hw/config/vta_config.json file</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">vta</span><span class="o">.</span><span class="n">get_env</span><span class="p">()</span>
 
-<span class="c1"># 设置 ``device=arm_cpu`` 以在 CPU 运行推理</span>
-<span class="c1"># 或 ``device=vta`` 以在 FPGA 运行推理。</span>
+<span class="c1"># Set ``device=arm_cpu`` to run inference on the CPU</span>
+<span class="c1"># or ``device=vta`` to run inference on the FPGA.</span>
 <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;vta&quot;</span>
 <span class="n">target</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">target</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;vta&quot;</span> <span class="k">else</span> <span class="n">env</span><span class="o">.</span><span class="n">target_vta_cpu</span>
 
-<span class="c1"># 字典查找何时开始/结束 bit packing</span>
+<span class="c1"># Dictionary lookup for when to start/end bit packing</span>
 <span class="n">pack_dict</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;resnet18_v1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;nn.max_pool2d&quot;</span><span class="p">,</span> <span class="s2">&quot;nn.global_avg_pool2d&quot;</span><span class="p">],</span>
     <span class="s2">&quot;resnet34_v1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;nn.max_pool2d&quot;</span><span class="p">,</span> <span class="s2">&quot;nn.global_avg_pool2d&quot;</span><span class="p">],</span>
@@ -1218,7 +1222,11 @@ function checkPageExistsAndRedirect(event) {
     <span class="s2">&quot;resnet50_v2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;nn.max_pool2d&quot;</span><span class="p">,</span> <span class="s2">&quot;nn.global_avg_pool2d&quot;</span><span class="p">],</span>
     <span class="s2">&quot;resnet101_v2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;nn.max_pool2d&quot;</span><span class="p">,</span> <span class="s2">&quot;nn.global_avg_pool2d&quot;</span><span class="p">],</span>
 <span class="p">}</span>
-<span class="c1"># 要编译的 Gluon 模型的名称</span>
+
+<span class="c1"># Name of Gluon model to compile</span>
+<span class="c1"># The ``start_pack`` and ``stop_pack`` labels indicate where</span>
+<span class="c1"># to start and end the graph packing relay pass: in other words</span>
+<span class="c1"># where to start and finish offloading to VTA.</span>
 <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;resnet18_v1&quot;</span>
 <span class="k">assert</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">pack_dict</span>
 </pre></div>
@@ -1235,15 +1243,16 @@ function checkPageExistsAndRedirect(event) {
 <p>当 target 为 ‘pynq’ 时，重新配置 FPGA 和 runtime。否则，如果 target 为 ‘sim’，则在本地执行。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">,</span> <span class="s2">&quot;intelfocl&quot;</span><span class="p">]:</span>
 
-<span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">,</span> <span class="s2">&quot;intelfocl&quot;</span><span class="p">]:</span>
-    <span class="c1"># 如果设置了环境变量，则从 tracker 节点获取远程数据。</span>
-    <span class="c1"># 要设置 tracker，您需要遵循“自动调优 VTA 卷积网络”教程。</span>
+    <span class="c1"># Get remote from tracker node if environment variable is set.</span>
+    <span class="c1"># To set up the tracker, you&#39;ll need to follow the &quot;Auto-tuning</span>
+    <span class="c1"># a convolutional network for VTA&quot; tutorial.</span>
     <span class="n">tracker_host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TVM_TRACKER_HOST&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">tracker_port</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TVM_TRACKER_PORT&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="c1"># 否则，如果您有 device，您想要直接从主机编程，</span>
-    <span class="c1"># 确保您已经将下面的变量设置为您的 board 的 IP。</span>
+    <span class="c1"># Otherwise if you have a device you want to program directly from</span>
+    <span class="c1"># the host, make sure you&#39;ve set the variables below to the IP of</span>
+    <span class="c1"># your board.</span>
     <span class="n">device_host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_HOST&quot;</span><span class="p">,</span> <span class="s2">&quot;192.168.2.99&quot;</span><span class="p">)</span>
     <span class="n">device_port</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VTA_RPC_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;9091&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tracker_host</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">tracker_port</span><span class="p">:</span>
@@ -1252,16 +1261,17 @@ function checkPageExistsAndRedirect(event) {
         <span class="n">remote</span> <span class="o">=</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">measure</span><span class="o">.</span><span class="n">request_remote</span><span class="p">(</span>
             <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span><span class="p">,</span> <span class="n">tracker_host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">tracker_port</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span>
         <span class="p">)</span>
-    <span class="c1"># 重新配置 JIT 运行时和 FPGA。</span>
-    <span class="c1"># 通过将路径传递到 bitstream 文件而不是 None，</span>
-    <span class="c1"># 您可以使用自己的自定义 bitstream 来编程 FPGA。</span>
+
+    <span class="c1"># Reconfigure the JIT runtime and FPGA.</span>
+    <span class="c1"># You can program the FPGA with your own custom bitstream</span>
+    <span class="c1"># by passing the path to the bitstream file instead of None.</span>
     <span class="n">reconfig_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">vta</span><span class="o">.</span><span class="n">reconfig_runtime</span><span class="p">(</span><span class="n">remote</span><span class="p">)</span>
     <span class="n">vta</span><span class="o">.</span><span class="n">program_fpga</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">bitstream</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">reconfig_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">reconfig_start</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reconfigured FPGA and RPC runtime in </span><span class="si">{0:.2f}</span><span class="s2">s!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reconfig_time</span><span class="p">))</span>
 
-<span class="c1"># 在仿真模式下，本地托管 RPC 服务器。</span>
+<span class="c1"># In simulation mode, host the RPC server locally.</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">LocalSession</span><span class="p">()</span>
 
@@ -1269,7 +1279,7 @@ function checkPageExistsAndRedirect(event) {
         <span class="c1"># program intelfocl aocx</span>
         <span class="n">vta</span><span class="o">.</span><span class="n">program_fpga</span><span class="p">(</span><span class="n">remote</span><span class="p">,</span> <span class="n">bitstream</span><span class="o">=</span><span class="s2">&quot;vta.bitstream&quot;</span><span class="p">)</span>
 
-<span class="c1"># 从远程获取执行上下文</span>
+<span class="c1"># Get execution context from remote</span>
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">ext_dev</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;vta&quot;</span> <span class="k">else</span> <span class="n">remote</span><span class="o">.</span><span class="n">cpu</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1290,32 +1300,33 @@ function checkPageExistsAndRedirect(event) {
 </ol>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 加载预配置 AutoTVM 调度</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load pre-configured AutoTVM schedules</span>
 <span class="k">with</span> <span class="n">autotvm</span><span class="o">.</span><span class="n">tophub</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-    <span class="c1"># 为 ImageNet 分类器输入填充形状和数据类型字典</span>
+
+    <span class="c1"># Populate the shape and data type dictionary for ImageNet classifier input</span>
     <span class="n">dtype_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;float32&quot;</span><span class="p">}</span>
     <span class="n">shape_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)}</span>
 
-    <span class="c1"># 取下架子上的 gluon 模型，并转换为 relay</span>
+    <span class="c1"># Get off the shelf gluon model, and convert to relay</span>
     <span class="n">gluon_model</span> <span class="o">=</span> <span class="n">vision</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="c1"># 度量开始构建的时间</span>
+    <span class="c1"># Measure build start time</span>
     <span class="n">build_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    <span class="c1"># 开始前端编译</span>
+    <span class="c1"># Start front end compilation</span>
     <span class="n">mod</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_mxnet</span><span class="p">(</span><span class="n">gluon_model</span><span class="p">,</span> <span class="n">shape_dict</span><span class="p">)</span>
 
-    <span class="c1"># 更新 shape 和 type 字典</span>
+    <span class="c1"># Update shape and type dictionary</span>
     <span class="n">shape_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
     <span class="n">dtype_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
 
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">device_name</span> <span class="o">==</span> <span class="s2">&quot;vta&quot;</span><span class="p">:</span>
-        <span class="c1"># 在 Relay 中执行量化</span>
-        <span class="c1"># 注意：将 opt_level 设置为 3，以便折叠 batch norm</span>
+        <span class="c1"># Perform quantization in Relay</span>
+        <span class="c1"># Note: We set opt_level to 3 in order to fold batch norm</span>
         <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">relay</span><span class="o">.</span><span class="n">quantize</span><span class="o">.</span><span class="n">qconfig</span><span class="p">(</span><span class="n">global_scale</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span> <span class="n">skip_conv_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                 <span class="n">mod</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">quantize</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-            <span class="c1"># 对 VTA target 进行 graph packing 和常数折叠</span>
+            <span class="c1"># Perform graph packing and constant folding for VTA target</span>
             <span class="k">assert</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_IN</span> <span class="o">==</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span>
             <span class="c1"># do device annotation if target is intelfocl or sim</span>
             <span class="n">relay_prog</span> <span class="o">=</span> <span class="n">graph_pack</span><span class="p">(</span>
@@ -1330,7 +1341,7 @@ function checkPageExistsAndRedirect(event) {
     <span class="k">else</span><span class="p">:</span>
         <span class="n">relay_prog</span> <span class="o">=</span> <span class="n">mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
 
-    <span class="c1"># 于 AlterOpLayout 禁用下，编译 Relay 程序</span>
+    <span class="c1"># Compile Relay program with AlterOpLayout disabled</span>
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">device_name</span> <span class="o">!=</span> <span class="s2">&quot;vta&quot;</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">disabled_pass</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;AlterOpLayout&quot;</span><span class="p">}):</span>
             <span class="n">graph</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
@@ -1338,18 +1349,20 @@ function checkPageExistsAndRedirect(event) {
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="o">==</span> <span class="s2">&quot;intelfocl&quot;</span><span class="p">:</span>
-            <span class="c1"># 多 target 运行（cpu 和 vta） </span>
+            <span class="c1"># multiple targets to run both on cpu and vta</span>
             <span class="n">target</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cpu&quot;</span><span class="p">:</span> <span class="n">env</span><span class="o">.</span><span class="n">target_vta_cpu</span><span class="p">,</span> <span class="s2">&quot;ext_dev&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">}</span>
-        <span class="k">with</span> <span class="n">vta</span><span class="o">.</span><span class="n">build_config</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">disabled_pass</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;AlterOpLayout&quot;</span><span class="p">}):</span>
+        <span class="k">with</span> <span class="n">vta</span><span class="o">.</span><span class="n">build_config</span><span class="p">(</span>
+            <span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">disabled_pass</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;AlterOpLayout&quot;</span><span class="p">,</span> <span class="s2">&quot;tir.CommonSubexprElimTIR&quot;</span><span class="p">}</span>
+        <span class="p">):</span>
             <span class="n">graph</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
                 <span class="n">relay_prog</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Target</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">target_host</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
             <span class="p">)</span>
 
-    <span class="c1"># 度量 Relay 构建时间</span>
+    <span class="c1"># Measure Relay build time</span>
     <span class="n">build_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">build_start</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">model</span> <span class="o">+</span> <span class="s2">&quot; inference graph built in </span><span class="si">{0:.2f}</span><span class="s2">s!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">build_time</span><span class="p">))</span>
 
-    <span class="c1"># 将 inference 库发送到远程 RPC 服务器</span>
+    <span class="c1"># Send the inference library over to the remote RPC server</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">tempdir</span><span class="p">()</span>
     <span class="n">lib</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;graphlib.tar&quot;</span><span class="p">))</span>
     <span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">temp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="s2">&quot;graphlib.tar&quot;</span><span class="p">))</span>
@@ -1357,7 +1370,6 @@ function checkPageExistsAndRedirect(event) {
 
     <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="o">==</span> <span class="s2">&quot;intelfocl&quot;</span><span class="p">:</span>
         <span class="n">ctxes</span> <span class="o">=</span> <span class="p">[</span><span class="n">remote</span><span class="o">.</span><span class="n">ext_dev</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">remote</span><span class="o">.</span><span class="n">cpu</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span>
-        <span class="c1"># m = graph_executor.GraphModule()</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">graph_executor</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">lib</span><span class="p">,</span> <span class="n">ctxes</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Graph runtime</span>
@@ -1366,27 +1378,27 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>resnet18_v1 inference graph built in 31.11s!
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>resnet18_v1 inference graph built in 31.05s!
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
-[21:51:44] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:44] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:44] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:44] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:45] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:45] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:45] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:45] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:45] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:45] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:46] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:46] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:46] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:46] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:46] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-[21:51:47] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
-/tmp/ipykernel_2815592/2984134424.py:52: DeprecationWarning: legacy graph executor behavior of producing json / lib / params will be removed in the next release. Please see documents of tvm.contrib.graph_executor.GraphModule for the  new recommended usage.
+[09:22:19] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:19] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:19] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:19] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:20] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:20] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:20] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:20] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:20] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:20] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:21] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:21] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:21] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:21] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:21] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+[09:22:22] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+/tmp/ipykernel_2819967/2132564089.py:55: DeprecationWarning: legacy graph executor behavior of producing json / lib / params will be removed in the next release. Please see documents of tvm.contrib.graph_executor.GraphModule for the  new recommended usage.
   graph, lib, params = relay.build(
 </pre></div>
 </div>
@@ -1395,20 +1407,18 @@ function checkPageExistsAndRedirect(event) {
 </section>
 <section id="id3">
 <h2>进行图像分类推理<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
-<p>只需要下载 category 文件，synset.txt 和输入测试图像。</p>
+<p>只需要下载 category 文件，<code class="docutils literal notranslate"><span class="pre">synset.txt</span></code> 和输入测试图像。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download ImageNet categories</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 下载 ImageNet categories</span>
 <span class="n">categ_url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/uwsampl/web-data/raw/main/vta/models/&quot;</span>
 <span class="n">categ_fn</span> <span class="o">=</span> <span class="s2">&quot;synset.txt&quot;</span>
 <span class="n">download</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">categ_url</span><span class="p">,</span> <span class="n">categ_fn</span><span class="p">),</span> <span class="n">categ_fn</span><span class="p">)</span>
 <span class="n">synset</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">categ_fn</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-
 <span class="c1"># Download test image</span>
 <span class="n">image_url</span> <span class="o">=</span> <span class="s2">&quot;https://homes.cs.washington.edu/~moreau/media/vta/cat.jpg&quot;</span>
 <span class="n">image_fn</span> <span class="o">=</span> <span class="s2">&quot;cat.png&quot;</span>
 <span class="n">download</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">image_url</span><span class="p">,</span> <span class="n">image_fn</span><span class="p">)</span>
-
 <span class="c1"># Prepare test image for inference</span>
 <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image_fn</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
@@ -1472,49 +1482,21 @@ function checkPageExistsAndRedirect(event) {
 </div>
 <div class="cell_output docutils container">
 <img alt="../../../../../_images/deploy_classification_9_0.png" src="../../../../../_images/deploy_classification_9_0.png" />
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TVMError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
-<span class="nn">/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/topic/vta/tutorials/frontend/deploy_classification.ipynb Cell 10&#39;</span> in <span class="ni">&lt;cell line: 32&gt;</span><span class="nt">()</span>
-     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/topic/vta/tutorials/frontend/deploy_classification.ipynb#ch0000009vscode-remote?line=31&#39;</span><span class="o">&gt;</span><span class="mi">32</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">TARGET</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sim&quot;</span><span class="p">,</span> <span class="s2">&quot;tsim&quot;</span><span class="p">]:</span>
-     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/topic/vta/tutorials/frontend/deploy_classification.ipynb#ch0000009vscode-remote?line=32&#39;</span><span class="o">&gt;</span><span class="mi">33</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">simulator</span><span class="o">.</span><span class="n">clear_stats</span><span class="p">()</span>
-<span class="o">---&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/topic/vta/tutorials/frontend/deploy_classification.ipynb#ch0000009vscode-remote?line=33&#39;</span><span class="o">&gt;</span><span class="mi">34</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">timer</span><span class="p">()</span>
-     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/topic/vta/tutorials/frontend/deploy_classification.ipynb#ch0000009vscode-remote?line=34&#39;</span><span class="o">&gt;</span><span class="mi">35</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">sim_stats</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">stats</span><span class="p">()</span>
-     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2B10.16.11.3/media/pc/data/4tb/lxw/study/tvm-book/doc/origin/topic/vta/tutorials/frontend/deploy_classification.ipynb#ch0000009vscode-remote?line=35&#39;</span><span class="o">&gt;</span><span class="mi">36</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Execution statistics:&quot;</span><span class="p">)</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Execution statistics:
+	inp_load_nbytes :          5549568
+	wgt_load_nbytes :         12763136
+	acc_load_nbytes :          6051840
+	uop_load_nbytes :            22864
+	out_store_nbytes:          2433536
+	gemm_counter    :          6623232
+	alu_counter     :           699328
 
-<span class="nn">File /media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/runtime/module.py:297,</span> in <span class="ni">Module.time_evaluator.&lt;locals&gt;.evaluator</span><span class="nt">(*args)</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/runtime/module.py?line=294&#39;</span><span class="o">&gt;</span><span class="mi">295</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="s2">&quot;&quot;&quot;Internal wrapped evaluator.&quot;&quot;&quot;</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/runtime/module.py?line=295&#39;</span><span class="o">&gt;</span><span class="mi">296</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="c1"># Wrap feval so we can add more stats in future.</span>
-<span class="o">--&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/runtime/module.py?line=296&#39;</span><span class="o">&gt;</span><span class="mi">297</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">blob</span> <span class="o">=</span> <span class="n">feval</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/runtime/module.py?line=297&#39;</span><span class="o">&gt;</span><span class="mi">298</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;@&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;d&quot;</span> <span class="o">*</span> <span class="n">repeat</span><span class="p">)</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/runtime/module.py?line=298&#39;</span><span class="o">&gt;</span><span class="mi">299</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">blob</span><span class="p">)</span>
-
-<span class="nn">File /media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py:237,</span> in <span class="ni">PackedFuncBase.__call__</span><span class="nt">(self, *args)</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=224&#39;</span><span class="o">&gt;</span><span class="mi">225</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">ret_tcode</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">()</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=225&#39;</span><span class="o">&gt;</span><span class="mi">226</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">if</span> <span class="p">(</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=226&#39;</span><span class="o">&gt;</span><span class="mi">227</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">_LIB</span><span class="o">.</span><span class="n">TVMFuncCall</span><span class="p">(</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=227&#39;</span><span class="o">&gt;</span><span class="mi">228</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>         <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=234&#39;</span><span class="o">&gt;</span><span class="mi">235</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="o">!=</span> <span class="mi">0</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=235&#39;</span><span class="o">&gt;</span><span class="mi">236</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="p">):</span>
-<span class="o">--&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=236&#39;</span><span class="o">&gt;</span><span class="mi">237</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="k">raise</span> <span class="n">get_last_ffi_error</span><span class="p">()</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=237&#39;</span><span class="o">&gt;</span><span class="mi">238</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">_</span> <span class="o">=</span> <span class="n">temp_args</span>
-    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/pc/data/4tb/lxw/anaconda3/envs/tvm-mxnet/lib/python3.10/site-packages/tvm/_ffi/_ctypes/packed_func.py?line=238&#39;</span><span class="o">&gt;</span><span class="mi">239</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">_</span> <span class="o">=</span> <span class="n">args</span>
-
-<span class="ne">TVMError</span>: Traceback (most recent call last):
-<span class="g g-Whitespace">  </span><span class="mi">11</span><span class="p">:</span> <span class="n">TVMFuncCall</span>
-<span class="g g-Whitespace">  </span><span class="mi">10</span><span class="p">:</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">RPCWrappedFunc</span><span class="p">::</span><span class="n">operator</span><span class="p">()(</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMArgs</span><span class="p">,</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMRetValue</span><span class="o">*</span><span class="p">)</span> <span class="n">const</span>
-<span class="g g-Whitespace">  </span><span class="mi">9</span><span class="p">:</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">LocalSession</span><span class="p">::</span><span class="n">CallFunc</span><span class="p">(</span><span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="n">TVMValue</span> <span class="n">const</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span> <span class="n">const</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">void</span> <span class="p">(</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMArgs</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">const</span><span class="o">&amp;</span><span class="p">)</span>
-<span class="g g-Whitespace">  </span><span class="mi">8</span><span class="p">:</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">WrapTimeEvaluator</span><span class="p">(</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">PackedFunc</span><span class="p">,</span> <span class="n">DLDevice</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">PackedFunc</span><span class="p">)::{</span><span class="k">lambda</span><span class="p">(</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMArgs</span><span class="p">,</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMRetValue</span><span class="o">*</span><span class="p">)</span><span class="c1">#1}::operator()(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*) [clone .isra.0]</span>
-<span class="g g-Whitespace">  </span><span class="mi">7</span><span class="p">:</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">GraphExecutor</span><span class="p">::</span><span class="n">Run</span><span class="p">()</span>
-<span class="g g-Whitespace">  </span><span class="mi">6</span><span class="p">:</span> <span class="n">std</span><span class="p">::</span><span class="n">_Function_handler</span><span class="o">&lt;</span><span class="n">void</span> <span class="p">(),</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">GraphExecutor</span><span class="p">::</span><span class="n">CreateTVMOp</span><span class="p">(</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMOpParam</span> <span class="n">const</span><span class="o">&amp;</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DLTensor</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">allocator</span><span class="o">&lt;</span><span class="n">DLTensor</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">const</span><span class="o">&amp;</span><span class="p">)::{</span><span class="k">lambda</span><span class="p">()</span><span class="c1">#3}&gt;::_M_invoke(std::_Any_data const&amp;)</span>
-<span class="g g-Whitespace">  </span><span class="mi">5</span><span class="p">:</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">PackedFuncObj</span><span class="p">::</span><span class="n">Extractor</span><span class="o">&lt;</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">PackedFuncSubObj</span><span class="o">&lt;</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">WrapPackedFunc</span><span class="p">(</span><span class="nb">int</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">TVMValue</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">TVMValue</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="o">*</span><span class="p">,</span> <span class="n">void</span><span class="o">*</span><span class="p">),</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">ObjectPtr</span><span class="o">&lt;</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">const</span><span class="o">&amp;</span><span class="p">)::{</span><span class="k">lambda</span><span class="p">(</span><span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMArgs</span><span class="p">,</span> <span class="n">tvm</span><span class="p">::</span><span class="n">runtime</span><span class="p">::</span><span class="n">TVMRetValue</span><span class="o">*</span><span class="p">)</span><span class="c1">#1}&gt; &gt;::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)</span>
-<span class="g g-Whitespace">  </span><span class="mi">4</span><span class="p">:</span> <span class="mh">0x00007f89b72b9465</span>
-<span class="g g-Whitespace">  </span><span class="mi">3</span><span class="p">:</span> <span class="mh">0x00007f89b72b9b56</span>
-<span class="g g-Whitespace">  </span><span class="mi">2</span><span class="p">:</span> <span class="n">VTAPushALUOp</span>
-<span class="g g-Whitespace">  </span><span class="mi">1</span><span class="p">:</span> <span class="n">vta</span><span class="p">::</span><span class="n">CommandQueue</span><span class="p">::</span><span class="n">PushALUUop</span><span class="p">(</span><span class="n">void</span><span class="o">**</span><span class="p">,</span> <span class="nb">int</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">void</span><span class="o">*</span><span class="p">),</span> <span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="g g-Whitespace">  </span><span class="mi">0</span><span class="p">:</span> <span class="n">vta</span><span class="p">::</span><span class="n">UopKernelMap</span><span class="p">::</span><span class="n">Get</span><span class="p">(</span><span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="p">[</span><span class="n">clone</span> <span class="o">.</span><span class="n">part</span><span class="mf">.0</span><span class="p">]</span>
-<span class="gt">  File</span><span class="nn"> &quot;/media/pc/data/4tb/lxw/books/tvm/vta/runtime/runtime.cc&quot;</span><span class="gt">, line </span><span class="mi">565</span>
-<span class="ne">TVMError</span>: Check failed: (nbytes == 0 || nbytes == sizeof(int)) is false: 
+resnet18_v1 prediction for sample 0
+	#1: tiger cat
+	#2: Egyptian cat
+	#3: tabby, tabby cat
+	#4: lynx, catamount
+	#5: weasel
 </pre></div>
 </div>
 </div>
@@ -1563,7 +1545,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 13:55:41.<br>
+最后更新于 2022-04-27, 10:52:32.<br>
 </p>
     </div>
     

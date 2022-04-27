@@ -150,7 +150,7 @@
         "- 最后的运算是强制转换并复制回 DRAM，到结果张量 `C` 中。\n",
         "\n",
         "\n",
-        "```{image} https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/vadd_dataflow.png\n",
+        "```{image} images/vadd_dataflow.png\n",
         ":align: center\n",
         "```"
       ]

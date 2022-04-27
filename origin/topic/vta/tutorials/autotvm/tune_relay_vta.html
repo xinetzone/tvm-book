@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Auto-tuning a convolutional network on VTA &#8212; tvm-book 0.0.2 文档</title>
+    <title>在 VTA 上调优卷积神经网络 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -48,7 +48,7 @@
     <link rel="index" title="索引" href="../../../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../../../search.html" />
     <link rel="next" title="草稿" href="../../../../test.html" />
-    <link rel="prev" title="Auto-tuning a ALU fused op on VTA" href="tune_alu_vta.html" />
+    <link rel="prev" title="自动调优 VTA 上的 ALU fused op" href="tune_alu_vta.html" />
     <link rel="stylesheet" href="../../../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../../../_static/css/custom.css"/>
 
@@ -1037,7 +1037,7 @@ function checkPageExistsAndRedirect(event) {
      </li>
      <li class="toctree-l3 current active has-children">
       <a class="reference internal" href="index.html">
-       Auto tuning
+       自动调优
       </a>
       <input checked="" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
       <label for="toctree-checkbox-23">
@@ -1047,12 +1047,12 @@ function checkPageExistsAndRedirect(event) {
       <ul class="current">
        <li class="toctree-l4">
         <a class="reference internal" href="tune_alu_vta.html">
-         Auto-tuning a ALU fused op on VTA
+         自动调优 VTA 上的 ALU fused op
         </a>
        </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Auto-tuning a convolutional network on VTA
+         在 VTA 上调优卷积神经网络
         </a>
        </li>
       </ul>
@@ -1105,54 +1105,38 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#install-dependencies">
-   Install dependencies
+  <a class="reference internal nav-link" href="#id1">
+   安装依赖
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#compile-network">
-   Compile network
+  <a class="reference internal nav-link" href="#id2">
+   编译神经网络
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#start-rpc-tracker">
-   Start RPC Tracker
+  <a class="reference internal nav-link" href="#rpc-tracker">
+   启动 RPC Tracker
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#register-devices-to-rpc-tracker">
-   Register devices to RPC Tracker
+  <a class="reference internal nav-link" href="#id3">
+   注册设备到 RPC Tracker
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#queue-status">
-   Queue Status
+  <a class="reference internal nav-link" href="#id4">
+   设置调优选项
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#key-total-free-pending">
-   key          total  free  pending
+  <a class="reference internal nav-link" href="#id5">
+   开始调优
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#pynq-6-6-0-rpi3b-11-11-0">
-   pynq         6      6     0
-rpi3b        11     11    0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#set-tuning-options">
-   Set Tuning Options
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#begin-tuning">
-   Begin Tuning
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#sample-output">
-   Sample Output
+  <a class="reference internal nav-link" href="#id6">
+   样例输出
   </a>
  </li>
 </ul>
@@ -1183,38 +1167,23 @@ rpi3b        11     11    0
               
               <div>
                 
-  <div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+  <section class="tex2jax_ignore mathjax_ignore" id="vta">
+<h1>在 VTA 上调优卷积神经网络<a class="headerlink" href="#vta" title="永久链接至标题">#</a></h1>
+<p><strong>Author</strong>: <a class="reference external" href="https://github.com/merrymercy">Lianmin Zheng</a>, <a class="reference external" href="https://homes.cs.washington.edu/~moreau/">Thierry Moreau</a></p>
+<p>针对特定加速器设计的自动调优对于任何给定算子获得最佳性能至关重要。此教程，展示了如何在 VTA 上调优整个卷积神经网络。</p>
+<p>TVM 中 VTA 的算子实现是用模板（template）形式编写的。模板有许多可调旋钮（tunable knob）（平铺因子（tile factor）、虚拟线程（virtual threads）等）。下面将调优神经网络中的所有卷积算子。调优之后，生成日志文件，其中存储所有调优算子的最佳调度参数。当 TVM 编译器编译这些算子时，它将查询这个日志文件以获得最佳的 knob 参数。</p>
+<section id="id1">
+<h2>安装依赖<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
+<p>要在 <code class="docutils literal notranslate"><span class="pre">tvm</span></code> 中使用 <code class="docutils literal notranslate"><span class="pre">autotvm</span></code> 包，我们需要安装一些额外的依赖项。（如果你使用 python2，将 “3” 改为 “2”）：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --user psutil xgboost tornado mxnet requests <span class="s2">&quot;Pillow&lt;7&quot;</span> cloudpickle
 </pre></div>
 </div>
+<p>为了使 TVM 在调优期间运行得更快，建议使用 cython 作为 TVM 的 FFI。在 TVM 的根目录下执行（如果使用 python2，则将 “3” 改为 “2”）：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install --user cython
+sudo make cython3
+</pre></div>
 </div>
-</div>
-<section class="tex2jax_ignore mathjax_ignore" id="auto-tuning-a-convolutional-network-on-vta">
-<h1>Auto-tuning a convolutional network on VTA<a class="headerlink" href="#auto-tuning-a-convolutional-network-on-vta" title="永久链接至标题">#</a></h1>
-<p><strong>Author</strong>: <code class="docutils literal notranslate"><span class="pre">Lianmin</span> <span class="pre">Zheng</span> <span class="pre">&lt;https://github.com/merrymercy&gt;</span></code><em>, <code class="docutils literal notranslate"><span class="pre">Thierry</span> <span class="pre">Moreau</span> <span class="pre">&lt;https://homes.cs.washington.edu/~moreau/&gt;</span></code></em></p>
-<p>Auto-tuning for a specific accelerator design is critical for getting the best
-performance for any given operator. This is a tutorial showcases how to tune a
-whole convolutional network on VTA.</p>
-<p>The operator implementation for VTA in TVM is written in template form.
-The template has many tunable knobs (tile factor, virtual threads, etc).
-We will tune all convolution operators in the neural network. After tuning,
-we produce a log file which stores the best schedule parameters for all tuned
-operators. When the TVM compiler compiles these operators, it will query this
-log file to get the best knob parameters.</p>
-<section id="install-dependencies">
-<h2>Install dependencies<a class="headerlink" href="#install-dependencies" title="永久链接至标题">#</a></h2>
-<p>To use the autotvm package in tvm, we need to install some extra dependencies.
-(change “3” to “2” if you use python2):</p>
-<p>.. code-block:: bash</p>
-<p>pip3 install –user psutil xgboost tornado mxnet requests “Pillow&lt;7” cloudpickle</p>
-<p>To make TVM run faster during tuning, it is recommended to use cython
-as FFI of TVM. In the root directory of TVM, execute
-(change “3” to “2” if you use python2):</p>
-<p>.. code-block:: bash</p>
-<p>pip3 install –user cython
-sudo make cython3</p>
-<p>Now return to python code. Import packages.</p>
+<p>现在返回 python 代码。导入包。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -1238,9 +1207,9 @@ sudo make cython3</p>
 </div>
 </div>
 </section>
-<section id="compile-network">
-<h2>Compile network<a class="headerlink" href="#compile-network" title="永久链接至标题">#</a></h2>
-<p>Perform vta-specific compilation with Relay from a Gluon model</p>
+<section id="id2">
+<h2>编译神经网络<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>从 Gluon 模型使用 Relay 执行特定于 VTA 的编译：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compile_network</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">start_pack</span><span class="p">,</span> <span class="n">stop_pack</span><span class="p">):</span>
@@ -1281,55 +1250,46 @@ sudo make cython3</p>
 </div>
 </div>
 </section>
-<section id="start-rpc-tracker">
-<h2>Start RPC Tracker<a class="headerlink" href="#start-rpc-tracker" title="永久链接至标题">#</a></h2>
-<p>TVM uses an RPC session to communicate with Pynq boards.
-During tuning, the tuner will send the generated code to the board and
-measure the speed of code on the board.</p>
-<p>To scale up tuning, TVM uses an RPC Tracker to manage multiple devices.
-The RPC Tracker is a centralized controller node. We can register all devices to
-the tracker. For example, if we have 10 Pynq boards, we can register all of them
-to the tracker, and run 10 measurements in parallel, accelerating the tuning process.</p>
-<p>To start an RPC tracker, run this command on the host machine. The tracker is
-required during the whole tuning process, so we need to open a new terminal for
-this command:</p>
-<p>.. code-block:: bash</p>
-<p>python -m tvm.exec.rpc_tracker –host=0.0.0.0 –port=9190</p>
-<p>The expected output is:</p>
-<p>.. code-block:: bash</p>
-<p>INFO:RPCTracker:bind to 0.0.0.0:9190</p>
+<section id="rpc-tracker">
+<h2>启动 RPC Tracker<a class="headerlink" href="#rpc-tracker" title="永久链接至标题">#</a></h2>
+<p>TVM 使用 RPC 会话与 Pynq 板进行通信。在调优期间，调优器将把生成的代码发送到板上，并度量板上代码的速度。</p>
+<p>为了扩展调优，TVM 使用 RPC Tracker 来管理多个设备。RPC Tracker 是中心化控制节点。可以在 Tracker 上注册所有设备。例如，如果有 10 块 Pynq 板，可以将它们全部注册到 Tracker 中，并并行运行 10 个度量，从而加速优化过程。</p>
+<p>要启动 RPC tracker 程序，请在主机上运行此命令。在整个调优过程中都需要此 tracker，所以需要为这个命令打开新的终端：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m tvm.exec.rpc_tracker --host<span class="o">=</span><span class="m">0</span>.0.0.0 --port<span class="o">=</span><span class="m">9190</span>
+</pre></div>
+</div>
+<p>预期输出为：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>INFO:RPCTracker:bind to <span class="m">0</span>.0.0.0:9190
+</pre></div>
+</div>
 </section>
-<section id="register-devices-to-rpc-tracker">
-<h2>Register devices to RPC Tracker<a class="headerlink" href="#register-devices-to-rpc-tracker" title="永久链接至标题">#</a></h2>
-<p>Now we can register our devices to the tracker. The first step is to
-build the TVM runtime for the Pynq devices.</p>
-<p>Follow <code class="docutils literal notranslate"><span class="pre">vta-index</span></code>
-to build the TVM runtime on the device. Then register the device to the tracker with:</p>
-<p>.. code-block:: bash</p>
-<p>python -m tvm.exec.rpc_server –tracker=[HOST_IP]:9190 –key=pynq</p>
-<p>(replace :code:<code class="docutils literal notranslate"><span class="pre">[HOST_IP]</span></code> with the IP address of your host machine)</p>
-<p>After registering devices, we can confirm it by querying the rpc_tracker:</p>
-<p>.. code-block:: bash</p>
-<p>python -m tvm.exec.query_rpc_tracker –host=0.0.0.0 –port=9190</p>
-<p>For example, if we have 6 Pynq boards and 11 Raspberry Pi 3B,
-the output can be</p>
-<p>.. code-block:: bash</p>
+<section id="id3">
+<h2>注册设备到 RPC Tracker<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>现在可以在 Tracker 上注册设备了。第一步是为 Pynq 设备构建 TVM 运行时。</p>
+<p>遵循 <a class="reference external" href="https://tvm.apache.org/docs/topic/vta/index.html#vta-index">VTA：通用张量加速器</a> 在设备上构建 TVM 运行时。然后将设备注册到 Tracker：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m tvm.exec.rpc_server --tracker<span class="o">=[</span>HOST_IP<span class="o">]</span>:9190 --key<span class="o">=</span>pynq
+</pre></div>
+</div>
+<p>（将 <code class="docutils literal notranslate"><span class="pre">[HOST_IP]</span></code> 替换为主机的 IP 地址）</p>
+<p>注册设备后，可以通过查询 rpc_tracker 来确认：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m tvm.exec.query_rpc_tracker --host<span class="o">=</span><span class="m">0</span>.0.0.0 --port<span class="o">=</span><span class="m">9190</span>
+</pre></div>
+</div>
+<p>例如，如果我们有 6 块 Pynq 板和 11 块树莓派 3B，输出可以是</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Queue Status
+----------------------------------
+key          total  free  pending
+----------------------------------
+pynq         <span class="m">6</span>      <span class="m">6</span>     <span class="m">0</span>
+rpi3b        <span class="m">11</span>     <span class="m">11</span>    <span class="m">0</span>
+----------------------------------
+</pre></div>
+</div>
+<p>您可以向跟踪器注册多个设备以加速优化。</p>
 </section>
-<section id="queue-status">
-<h2>Queue Status<a class="headerlink" href="#queue-status" title="永久链接至标题">#</a></h2>
-</section>
-<section id="key-total-free-pending">
-<h2>key          total  free  pending<a class="headerlink" href="#key-total-free-pending" title="永久链接至标题">#</a></h2>
-</section>
-<section id="pynq-6-6-0-rpi3b-11-11-0">
-<h2>pynq         6      6     0
-rpi3b        11     11    0<a class="headerlink" href="#pynq-6-6-0-rpi3b-11-11-0" title="永久链接至标题">#</a></h2>
-<p>You can register multiple devices to the tracker to accelerate tuning.</p>
-</section>
-<section id="set-tuning-options">
-<h2>Set Tuning Options<a class="headerlink" href="#set-tuning-options" title="永久链接至标题">#</a></h2>
-<p>Before tuning, we should apply some configurations.
-Here we use an Pynq-Z1 board as an example.</p>
+<section id="id4">
+<h2>设置调优选项<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
+<p>在调优之前，应该应用一些配置。这里以 Pynq-Z1 板为例。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tracker host and port can be set by your environment</span>
@@ -1377,21 +1337,15 @@ Here we use an Pynq-Z1 board as an example.</p>
 </div>
 </div>
 </div>
-<div class="alert alert-info"><h4>Note</h4><p>How to set tuning options
-<p>In general, the default values provided here work well.
-If you have enough time budget, you can set :code:<code class="docutils literal notranslate"><span class="pre">n_trial</span></code>, :code:<code class="docutils literal notranslate"><span class="pre">early_stopping</span></code>
-to larger values, makes the tuning run for longer.
-If your device is under-powered or your conv2d operators are large, consider
-setting a longer timeout.</p></div></p>
+<div class="alert alert-info admonition">
+<p class="admonition-title">如何设置调优参数</p>
+<p>通常，这里提供的默认值工作良好。如果有足够的时间预算，可以将 <code class="docutils literal notranslate"><span class="pre">n_trial</span></code>，<code class="docutils literal notranslate"><span class="pre">early_stopping</span></code> 设置为更大的值，使调优运行时间更长。如果您的设备动力不足或 conv2d 算子过大，请考虑设置较长的超时时间。</p>
+</div>
 </section>
-<section id="begin-tuning">
-<h2>Begin Tuning<a class="headerlink" href="#begin-tuning" title="永久链接至标题">#</a></h2>
-<p>Now we can extract tuning tasks from the network and begin tuning.
-Here, we provide a simple utility function to tune a list of tasks.
-This function is just an initial implementation which tunes them in sequential order.
-We will introduce a more sophisticated tuning scheduler in the future.</p>
-<p>Given that the tuning will be done on Pynq FPGA boards, make sure that
-the ```TARGET<code class="docutils literal notranslate"><span class="pre">entry</span> <span class="pre">in</span> <span class="pre">the</span></code>vta_config.json<code class="docutils literal notranslate"><span class="pre">file</span> <span class="pre">is</span> <span class="pre">set</span> <span class="pre">to</span></code>pynq``.</p>
+<section id="id5">
+<h2>开始调优<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
+<p>现在可以从网络中提取调优任务并开始调优。这里，提供了简单的实用函数来调优任务列表。这个函数只是按顺序对它们进行调优的初始实现。我们将在将来引入更复杂的调优调度器。</p>
+<p>假设将在 Pynq FPGA 板上进行调优，请确保 <code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> 文件中的 <code class="docutils literal notranslate"><span class="pre">TARGET</span></code> 条目设置为 <code class="docutils literal notranslate"><span class="pre">pynq</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># You can skip the implementation of this function for this tutorial.</span>
@@ -1450,7 +1404,7 @@ the ```TARGET<code class="docutils literal notranslate"><span class="pre">entry<
 </div>
 </div>
 </div>
-<p>Register VTA-specific tuning tasks</p>
+<p>注册特定于 VTA 的调优任务：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">register_vta_tuning_tasks</span><span class="p">():</span>
@@ -1488,7 +1442,7 @@ the ```TARGET<code class="docutils literal notranslate"><span class="pre">entry<
 </div>
 </div>
 </div>
-<p>Finally, we launch tuning jobs and evaluate the end-to-end performance.</p>
+<p>最后，启动调优作业并评估端到端性能。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">tune_and_evaluate</span><span class="p">(</span><span class="n">tuning_opt</span><span class="p">):</span>
@@ -1609,54 +1563,49 @@ the ```TARGET<code class="docutils literal notranslate"><span class="pre">entry<
 </div>
 </div>
 </section>
-<section id="sample-output">
-<h2>Sample Output<a class="headerlink" href="#sample-output" title="永久链接至标题">#</a></h2>
-<p>The tuning needs to compile many programs and extract feature from them.
-So a high performance CPU is recommended.
-One sample output is listed below.
-It takes about 2 hours on a 16T CPU, and 6 Pynq boards.</p>
-<p>.. code-block:: bash</p>
-<p>Extract tasks…
-[Warning] Invalid shape during AutoTVM task creation
-Extracted 10 conv2d tasks:
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 16, 14, 14, 1, 16), ‘int8’), (‘TENSOR’, (32, 16, 1, 1, 16, 16), ‘int8’), (2, 2), (0, 0), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 16, 14, 14, 1, 16, ‘int8’), (32, 16, 1, 1, 16, 16, ‘int8’), (2, 2), (0, 0), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 8, 28, 28, 1, 16), ‘int8’), (‘TENSOR’, (16, 8, 1, 1, 16, 16), ‘int8’), (2, 2), (0, 0), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 8, 28, 28, 1, 16, ‘int8’), (16, 8, 1, 1, 16, 16, ‘int8’), (2, 2), (0, 0), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 4, 56, 56, 1, 16), ‘int8’), (‘TENSOR’, (8, 4, 1, 1, 16, 16), ‘int8’), (2, 2), (0, 0), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 4, 56, 56, 1, 16, ‘int8’), (8, 4, 1, 1, 16, 16, ‘int8’), (2, 2), (0, 0), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 4, 56, 56, 1, 16), ‘int8’), (‘TENSOR’, (4, 4, 3, 3, 16, 16), ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 4, 56, 56, 1, 16, ‘int8’), (4, 4, 3, 3, 16, 16, ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 8, 28, 28, 1, 16), ‘int8’), (‘TENSOR’, (8, 8, 3, 3, 16, 16), ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 8, 28, 28, 1, 16, ‘int8’), (8, 8, 3, 3, 16, 16, ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 4, 56, 56, 1, 16), ‘int8’), (‘TENSOR’, (8, 4, 3, 3, 16, 16), ‘int8’), (2, 2), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 4, 56, 56, 1, 16, ‘int8’), (8, 4, 3, 3, 16, 16, ‘int8’), (2, 2), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 16, 14, 14, 1, 16), ‘int8’), (‘TENSOR’, (16, 16, 3, 3, 16, 16), ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 16, 14, 14, 1, 16, ‘int8’), (16, 16, 3, 3, 16, 16, ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 8, 28, 28, 1, 16), ‘int8’), (‘TENSOR’, (16, 8, 3, 3, 16, 16), ‘int8’), (2, 2), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 8, 28, 28, 1, 16, ‘int8’), (16, 8, 3, 3, 16, 16, ‘int8’), (2, 2), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 32, 7, 7, 1, 16), ‘int8’), (‘TENSOR’, (32, 32, 3, 3, 16, 16), ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 32, 7, 7, 1, 16, ‘int8’), (32, 32, 3, 3, 16, 16, ‘int8’), (1, 1), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Task(func_name=topi_nn_conv2d, args=((‘TENSOR’, (1, 16, 14, 14, 1, 16), ‘int8’), (‘TENSOR’, (32, 16, 3, 3, 16, 16), ‘int8’), (2, 2), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’), kwargs={}, workload=(‘conv2d’, (1, 16, 14, 14, 1, 16, ‘int8’), (32, 16, 3, 3, 16, 16, ‘int8’), (2, 2), (1, 1), (1, 1), ‘NCHW1n16c’, ‘int32’))
-Tuning…
-[Task  1/10]  Current/Best:    0.72/  23.24 GFLOPS | Progress: (480/1000) | 640.31 s Done.
-[Task  2/10]  Current/Best:    0.00/  27.69 GFLOPS | Progress: (576/1000) | 810.09 s Done.
-[Task  3/10]  Current/Best:    0.00/  22.97 GFLOPS | Progress: (1000/1000) | 1125.37 s Done.
-[Task  4/10]  Current/Best:    0.00/  31.26 GFLOPS | Progress: (1000/1000) | 1025.52 s Done.
-[Task  5/10]  Current/Best:    0.00/  15.15 GFLOPS | Progress: (1000/1000) | 1236.58 s Done.
-[Task  6/10]  Current/Best:    0.00/  22.74 GFLOPS | Progress: (1000/1000) | 906.60 s Done.
-[Task  7/10]  Current/Best:    0.00/  15.27 GFLOPS | Progress: (1000/1000) | 1056.25 s Done.
-[Task  8/10]  Current/Best:    0.00/   2.18 GFLOPS | Progress: (1000/1000) | 2275.29 s Done.
-[Task  9/10]  Current/Best:    2.23/   3.99 GFLOPS | Progress: (1000/1000) | 2527.25 s Done.
-[Task 10/10]  Current/Best:    1.56/   6.32 GFLOPS | Progress: (480/1000) | 1304.84 s Done.
-Compile…
-Upload…
-Evaluate inference time cost…
-Mean inference time (std dev): 621.79 ms (0.14 ms)</p>
-<div class="alert alert-info"><h4>Note</h4><p>**Experiencing Difficulties?**
-<p>The auto tuning module is error-prone. If you always see ” 0.00/ 0.00 GFLOPS”,
-then there must be something wrong.</p>
-<p>First, make sure you set the correct configuration of your device.
-Then, you can print debug information by adding these lines in the beginning
-of the script. It will print every measurement result, where you can find useful
-error messages.</p>
-<p>.. code-block:: python</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> import logging
- logging.getLogger(&#39;autotvm&#39;).setLevel(logging.DEBUG)
+<section id="id6">
+<h2>样例输出<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
+<p>调优需要编译许多程序并从中提取特性。建议配置高性能的 CPU。下面列出了示例输出。16T CPU 选配 6 块 Pynq 单板，大约需要 2 小时。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Extract tasks...
+<span class="o">[</span>Warning<span class="o">]</span> Invalid shape during AutoTVM task creation
+Extracted <span class="m">10</span> conv2d tasks:
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">16</span>, <span class="m">14</span>, <span class="m">14</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">32</span>, <span class="m">16</span>, <span class="m">1</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">0</span>, <span class="m">0</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">16</span>, <span class="m">14</span>, <span class="m">14</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">32</span>, <span class="m">16</span>, <span class="m">1</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">0</span>, <span class="m">0</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">8</span>, <span class="m">28</span>, <span class="m">28</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">16</span>, <span class="m">8</span>, <span class="m">1</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">0</span>, <span class="m">0</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">8</span>, <span class="m">28</span>, <span class="m">28</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">16</span>, <span class="m">8</span>, <span class="m">1</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">0</span>, <span class="m">0</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">4</span>, <span class="m">56</span>, <span class="m">56</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">8</span>, <span class="m">4</span>, <span class="m">1</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">0</span>, <span class="m">0</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">4</span>, <span class="m">56</span>, <span class="m">56</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">8</span>, <span class="m">4</span>, <span class="m">1</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">0</span>, <span class="m">0</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">4</span>, <span class="m">56</span>, <span class="m">56</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">4</span>, <span class="m">4</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">4</span>, <span class="m">56</span>, <span class="m">56</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">4</span>, <span class="m">4</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">8</span>, <span class="m">28</span>, <span class="m">28</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">8</span>, <span class="m">8</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">8</span>, <span class="m">28</span>, <span class="m">28</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">8</span>, <span class="m">8</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">4</span>, <span class="m">56</span>, <span class="m">56</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">8</span>, <span class="m">4</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">4</span>, <span class="m">56</span>, <span class="m">56</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">8</span>, <span class="m">4</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">16</span>, <span class="m">14</span>, <span class="m">14</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">16</span>, <span class="m">16</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">16</span>, <span class="m">14</span>, <span class="m">14</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">16</span>, <span class="m">16</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">8</span>, <span class="m">28</span>, <span class="m">28</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">16</span>, <span class="m">8</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">8</span>, <span class="m">28</span>, <span class="m">28</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">16</span>, <span class="m">8</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">32</span>, <span class="m">7</span>, <span class="m">7</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">32</span>, <span class="m">32</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">32</span>, <span class="m">7</span>, <span class="m">7</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">32</span>, <span class="m">32</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+    Task<span class="o">(</span><span class="nv">func_name</span><span class="o">=</span>topi_nn_conv2d, <span class="nv">args</span><span class="o">=((</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">16</span>, <span class="m">14</span>, <span class="m">14</span>, <span class="m">1</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="s1">&#39;TENSOR&#39;</span>, <span class="o">(</span><span class="m">32</span>, <span class="m">16</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span><span class="o">)</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">)</span>, <span class="nv">kwargs</span><span class="o">={}</span>, <span class="nv">workload</span><span class="o">=(</span><span class="s1">&#39;conv2d&#39;</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">16</span>, <span class="m">14</span>, <span class="m">14</span>, <span class="m">1</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">32</span>, <span class="m">16</span>, <span class="m">3</span>, <span class="m">3</span>, <span class="m">16</span>, <span class="m">16</span>, <span class="s1">&#39;int8&#39;</span><span class="o">)</span>, <span class="o">(</span><span class="m">2</span>, <span class="m">2</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="o">(</span><span class="m">1</span>, <span class="m">1</span><span class="o">)</span>, <span class="s1">&#39;NCHW1n16c&#39;</span>, <span class="s1">&#39;int32&#39;</span><span class="o">))</span>
+Tuning...
+<span class="o">[</span>Task  <span class="m">1</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.72/  <span class="m">23</span>.24 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">480</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">640</span>.31 s Done.
+<span class="o">[</span>Task  <span class="m">2</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.00/  <span class="m">27</span>.69 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">576</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">810</span>.09 s Done.
+<span class="o">[</span>Task  <span class="m">3</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.00/  <span class="m">22</span>.97 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">1000</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">1125</span>.37 s Done.
+<span class="o">[</span>Task  <span class="m">4</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.00/  <span class="m">31</span>.26 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">1000</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">1025</span>.52 s Done.
+<span class="o">[</span>Task  <span class="m">5</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.00/  <span class="m">15</span>.15 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">1000</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">1236</span>.58 s Done.
+<span class="o">[</span>Task  <span class="m">6</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.00/  <span class="m">22</span>.74 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">1000</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">906</span>.60 s Done.
+<span class="o">[</span>Task  <span class="m">7</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.00/  <span class="m">15</span>.27 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">1000</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">1056</span>.25 s Done.
+<span class="o">[</span>Task  <span class="m">8</span>/10<span class="o">]</span>  Current/Best:    <span class="m">0</span>.00/   <span class="m">2</span>.18 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">1000</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">2275</span>.29 s Done.
+<span class="o">[</span>Task  <span class="m">9</span>/10<span class="o">]</span>  Current/Best:    <span class="m">2</span>.23/   <span class="m">3</span>.99 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">1000</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">2527</span>.25 s Done.
+<span class="o">[</span>Task <span class="m">10</span>/10<span class="o">]</span>  Current/Best:    <span class="m">1</span>.56/   <span class="m">6</span>.32 GFLOPS <span class="p">|</span> Progress: <span class="o">(</span><span class="m">480</span>/1000<span class="o">)</span> <span class="p">|</span> <span class="m">1304</span>.84 s Done.
+Compile...
+Upload...
+Evaluate inference <span class="nb">time</span> cost...
+Mean inference <span class="nb">time</span> <span class="o">(</span>std dev<span class="o">)</span>: <span class="m">621</span>.79 ms <span class="o">(</span><span class="m">0</span>.14 ms<span class="o">)</span>
 </pre></div>
 </div>
-<p>Finally, always feel free to ask our community for help on https://discuss.tvm.apache.org</p></div></p>
+<div class="alert alert-info admonition">
+<p class="admonition-title">实验困难？</p>
+<p>自动调优模块容易出错。如果你总是看到 ” 0.00/ 0.00 GFLOPS”，那么一定是哪里出了问题。</p>
+<p>首先，确保您设置了正确的设备配置。然后，您可以通过在脚本的开头添加这些行来打印调试信息。它将打印每个测量结果，您可以在其中找到有用的错误消息。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;autotvm&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>最后，请随时在 <a class="reference external" href="https://discuss.tvm.apache.org">https://discuss.tvm.apache.org</a> 社区寻求帮助。</p>
+</div>
 </section>
 </section>
 
@@ -1670,7 +1619,7 @@ error messages.</p>
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">Auto-tuning a ALU fused op on VTA</p>
+            <p class="prev-next-title">自动调优 VTA 上的 ALU fused op</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="../../../../test.html" title="下一页 页">
@@ -1701,7 +1650,7 @@ error messages.</p>
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-26, 13:55:41.<br>
+最后更新于 2022-04-27, 10:52:32.<br>
 </p>
     </div>
     

@@ -8,3 +8,10 @@ neural_networks/index
 test
 vta
 ```
+
+安装 CUDA 和 CUDNN，可以：
+
+```bash
+sudo apt install cuda
+conda install cudnn
+```
