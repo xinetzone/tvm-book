@@ -73,7 +73,7 @@
         "- 最后的运算是强制转换和复制回 DRAM，到结果张量 `C`。\n",
         "\n",
         "\n",
-        "```{image} https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/gemm_dataflow.png\n",
+        "```{image} images/gemm_dataflow.png\n",
         ":align: center\n",
         "```"
       ]
@@ -91,7 +91,7 @@
         "\n",
         "在瞄准加速器时，复杂性的来源之一是确保数据布局与加速器设计施加的布局相匹配。VTA 是围绕 *tensor core* 设计的，它在激活矩阵和权值矩阵之间执行周期的矩阵-矩阵运算，将结果矩阵添加到累加器矩阵，如下图所示。\n",
         "\n",
-        "```{image} https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/tensor_core.png\n",
+        "```{image} images/tensor_core.png\n",
         ":align: center\n",
         ":width: 480px\n",
         "```\n",
@@ -100,13 +100,13 @@
         "\n",
         "下图显示了数据平铺对最初形状为 (4,8) 的矩阵的影响。平铺 (2,2) tile 保证了每个平铺内的数据是连续的。得到的平铺张量的形状是 (2, 4, 2, 2)。\n",
         "\n",
-        "```{image} https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/data_tiling.png\n",
+        "```{image} images/data_tiling.png\n",
         ":align: center\n",
         ":width: 480px\n",
         "```\n",
         "::::\n",
         "\n",
-        "首先定义变量 `m`，`n`，:`o` 来表示矩阵乘法的形状。这些变量分别是 `BLOCK_OUT`、`BLOCK_IN` 和 `BATCH` 张量维度上的乘法因子。默认情况下，配置文件将 `BATCH`、`BLOCK_IN` 和 `BLOCK_OUT` 分别设置为 1、16 和 16（将 `BATCH` 设置为 1 意味着计算构建块是向量-矩阵乘法）。\n",
+        "首先定义变量 `m`，`n`，`o` 来表示矩阵乘法的形状。这些变量分别是 `BLOCK_OUT`、`BLOCK_IN` 和 `BATCH` 张量维度上的乘法因子。默认情况下，配置文件将 `BATCH`、`BLOCK_IN` 和 `BLOCK_OUT` 分别设置为 1、16 和 16（将 `BATCH` 设置为 1 意味着计算构建块是向量-矩阵乘法）。\n",
         "\n",
         "```{admonition} 数据类型\n",
         ":class: alert alert-info\n",
@@ -223,29 +223,13 @@
       "source": [
         "## 调度计算\n",
         "\n",
-        "While the above lines describes the computation rule, we can obtain\n",
-        ":code:`C` in many ways.\n",
-        "TVM asks the user to provide an implementation of the computation called\n",
-        "*schedule*.\n",
+        "虽然上面几行描述了计算规则，但可以通过多种方式得到 `C`。TVM 要求用户提供名为 schedule 的计算实现。\n",
         "\n",
-        "A schedule is a set of transformations to an original computation that\n",
-        "transforms the implementation of the computation without affecting\n",
-        "correctness.\n",
-        "This simple VTA programming tutorial aims to demonstrate basic schedule\n",
-        "transformations that will map the original schedule down to VTA hardware\n",
-        "primitives.\n",
-        "\n"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
+        "调度是对原始计算的一组变换，它在不影响正确性的情况下变换计算的实现。这个简单的 VTA 编程教程旨在演示基本的调度变换，将原始的调度映射到 VTA 硬件原语（primitive）。\n",
+        "\n",
         "### 默认调度\n",
         "\n",
-        "After we construct the schedule, by default the schedule computes\n",
-        ":code:`C` in the following way:\n",
-        "\n"
+        "在构造了调度后，默认情况下，调度按以下方式计算 `C`："
       ]
     },
     {
@@ -319,59 +303,29 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "Although this schedule makes sense, it won't compile to VTA.\n",
-        "In order to obtain correct code generation, we need to apply scheduling\n",
-        "primitives and code annotation that will transform the schedule into\n",
-        "one that can be directly lowered onto VTA hardware intrinsics.\n",
-        "Those include:\n",
+        "虽然此调度有意义，但它不会编译到 VTA。为了获得正确的代码生成，需要应用调度原语和代码注解，将调度变换为可以直接 lower 至 VTA 硬件 intrinsic 的调度。这些包括：\n",
         "\n",
-        " - DMA copy operations which will take globally-scoped tensors and copy\n",
-        "   those into locally-scoped tensors.\n",
-        " - Tensor operations that will perform the matrix multiplication.\n",
-        "\n"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
+        "- DMA 复制运算，将全局作用域张量复制到局部作用域张量。\n",
+        "- 用来做矩阵乘法的张量运算。\n",
+        "\n",
         "### Buffer 作用域\n",
         "\n",
-        "First, we set the scope of the buffers to tell TVM that these buffers\n",
-        "will be living in the VTA's on-chip SRAM caches.\n",
-        "Below, we tell TVM that :code:`A_buf`, :code:`B_buf`, :code:`C_buf`\n",
-        "will respectively live in VTA's on-chip input, weight and accumulator\n",
-        "memory.\n",
-        "\n"
+        "首先，设置 buffer 的作用域来告诉 TVM 这些 buffer 将存在于 VTA 的 on-chip SRAM cache 中。下面，告诉 TVM, `A_buf`，`B_buf`，`C_buf` 将分别存在于 VTA 的 on-chip 输入，权重和累加器（accumulator）内存中。"
       ]
     },
     {
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "<div class=\"alert alert-info\"><h4>Note</h4><p>**VTA's On-Chip SRAMs**\n",
+        "```{admonition} VTA's On-Chip SRAMs\n",
+        ":class: alert alert-info\n",
         "\n",
-        "  VTA has three different memory scopes, each corresponding to different\n",
-        "  on-chip SRAM buffers.\n",
+        "VTA 有三个不同的内存作用域，每个都对应于不同的片上 SRAM buffer。\n",
         "\n",
-        "   - :code:`env.inp_scope`: Input buffer, which is a read-only SRAM buffer\n",
-        "     that stores input matrices of shape :code:`(env.BATCH, env.BLOCK_IN)`\n",
-        "     of type :code:`env.inp_dtype`. The input buffer contains\n",
-        "     `2 ^ LOG_INP_BUFF_SIZE` matrix elements (as specified in the\n",
-        "     :code:`vta_config.json` file).\n",
-        "   - :code:`env.wgt_scope`: Weight buffer, which is a read-only SRAM buffer\n",
-        "     that stores weight matrices of shape :code:`(env.BLOCK_OUT, env.BLOCK_IN)`\n",
-        "     of type :code:`env.wgt_dtype`. The weight buffer contains\n",
-        "     `2 ^ LOG_WGT_BUFF_SIZE` matrix elements.\n",
-        "   - :code:`env.acc_scope`: Accumulator buffer, which is a read/write SRAM\n",
-        "     buffer that stores accumulator matrices of shape\n",
-        "     :code:`(env.BATCH, env.BLOCK_OUT)` of type :code:`env.acc_dtype`.\n",
-        "     The accumulator buffer is VTA's general purpose register file: it holds\n",
-        "     both intermediate results of convolutions and matrix multiplications\n",
-        "     as well as intermediate results of pooling, batch normalization, and\n",
-        "     activation layers. The accumulator buffer contains\n",
-        "     `2 ^ LOG_ACC_BUFF_SIZE` matrix elements.</p></div>\n",
-        "\n"
+        "- `env.inp_scope`：输入 buffer，这是只读的 SRAM buffer，存储形状为 `(env.BATCH, env.BLOCK_IN)`，类型为 `env.inp_dtype` 的矩阵。输入 buffer 包含 $2 ^ \\text{LOG_INP_BUFF_SIZE}$ 个矩阵元素（在 `vta_config.json` 文件中指定）。\n",
+        "- `env.wgt_scope`：权重 buffer，这是只读的 SRAM buffer，存储形状为 `(env.BLOCK_OUT, env.BLOCK_IN)`，类型为 `env.wgt_dtype` 的矩阵。权重 buffer 包含 $2 ^ \\text{LOG_WGT_BUFF_SIZE}$ 个矩阵元素。\n",
+        "- `env.acc_scope`： Accumulator buffer，这是读/写 SRAM buffer，存储形状为 `(env.BATCH, env.BLOCK_OUT)`，类型为 `env.acc_dtype` 的累加矩阵。累加器 buffer 是 VTA 的通用寄存器文件：它既保存卷积和矩阵乘法的中间结果，也保存池化、batch normalization 和激活层的中间结果。累加器缓冲区包含 $2 ^ \\text{LOG_ACC_BUFF_SIZE}$ 个矩阵元素。\n",
+        "```"
       ]
     },
     {
@@ -405,18 +359,9 @@
       "source": [
         "### DMA 传输\n",
         "\n",
-        "We need to schedule DMA transfers to move data living in DRAM to\n",
-        "and from the VTA on-chip buffers.\n",
-        "This can be achieved using the :code:`compute_at` schedule primitive\n",
-        "which nests the copying of the buffers into the computation loop\n",
-        "that performs the matrix multiplication.\n",
+        "需要调度 DMA transfer 来将存在于 DRAM 中的数据移动到 VTA on-chip buffer。这可以使用 `compute_at` 调度原语实现，该原语将 buffer 的复制嵌套到执行矩阵乘法的计算循环中。\n",
         "\n",
-        "We insert :code:`dma_copy` pragmas to indicate to the compiler\n",
-        "that the copy operations will be performed in bulk via DMA,\n",
-        "which is common in hardware accelerators.\n",
-        "Finally, we print the temporary schedule to observe the effects of\n",
-        "moving the copy operations into the matrix multiplication loop.\n",
-        "\n"
+        "插入 `dma_copy` pragmas 来指示编译器，复制运算将通过 DMA 批量执行，这在硬件加速器中很常见。最后，打印临时调度，观察将复制运算移动到矩阵乘法循环中的效果。"
       ]
     },
     {
@@ -491,26 +436,11 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "### Tensorization\n",
+        "### 张量化\n",
         "\n",
-        "The last step of the schedule transformation consists in applying\n",
-        "*tensorization* to our schedule.\n",
-        "Tensorization is analogous to vectorization, but extends the concept\n",
-        "to a higher-dimensional unit of computation.\n",
-        "Consequently, tensorization imposes data layout constraints as discussed\n",
-        "earlier when declaring the data layout input placeholders.\n",
-        "We've already arranged our tensors in a tiled format, so the next thing\n",
-        "we need to perform is loop reordering to accommodate for tensorization.\n",
+        "调度 transformation 的最后一步是对调度应用 *tensorization*。张量化类似于向量化，但将这个概念扩展到了高维计算单元。因此，在声明数据布局输入占位符时，张量化会施加数据布局约束。我们已经以平铺的形式排列了张量，所以接下来需要做的是循环重新排序以适应张量化。\n",
         "\n",
-        "Here we choose to move the outermost reduction axis all the way out.\n",
-        "This dictates that we first iterate over input channels, then batch\n",
-        "dimensions, and finally output channels.\n",
-        "Lastly, we apply the tensorization scheduling primitive :code:`tensorize`\n",
-        "along the outer axis of the inner-most matrix matrix multiplication tensor\n",
-        "block.\n",
-        "We print the finalized schedule that is ready for code-generation\n",
-        "by the VTA runtime JIT compiler.\n",
-        "\n"
+        "在这里，选择将最外面的 reduction 轴移出。这表明首先遍历输入通道，然后是 batch 维度，最后是输出通道。最后，应用张量调度原语沿着最内层矩阵的矩阵乘法张量块的外轴张量。打印最终的调度，该调度已准备好由 VTA 运行时 JIT 编译器生成代码。"
       ]
     },
     {
@@ -572,7 +502,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[21:55:48] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[20:30:54] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],
@@ -590,19 +520,11 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "This concludes the scheduling portion of this tutorial.\n",
-        "\n"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
+        "本教程的调度部分到此结束。\n",
+        "\n",
         "## TVM 计算\n",
         "\n",
-        "After we have finished specifying the schedule, we can compile it\n",
-        "into a TVM function.\n",
-        "\n"
+        "在完成了调度的指定之后，可以将它编译成 TVM 函数。"
       ]
     },
     {
@@ -616,7 +538,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[21:55:49] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[20:30:55] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],
@@ -643,19 +565,14 @@
       "source": [
         "## 运行函数\n",
         "\n",
-        "The compiled TVM function uses a concise C API and can be invoked from\n",
-        "code language.\n",
+        "编译后的 TVM 函数使用简洁的 C API，可以从代码语言调用。\n",
         "\n",
-        "TVM provides an array API in python to aid quick testing and prototyping.\n",
-        "The array API is based on `DLPack <https://github.com/dmlc/dlpack>`_ standard.\n",
+        "TVM 在 python 中提供了数组 API 来帮助快速测试和创建原型。数组 API 基于 [DLPac](https://github.com/dmlc/dlpack) 标准。\n",
         "\n",
-        "- We first create a remote context (for remote execution on the Pynq).\n",
-        "- Then :code:`tvm.nd.array` formats the data accordingly.\n",
-        "- :code:`f()` runs the actual computation.\n",
-        "- :code:`numpy()` copies the result array back in a format that can be\n",
-        "  interpreted.\n",
-        "\n",
-        "\n"
+        "- 首先创建远程上下文（remote context）（用于在 Pynq 上远程执行）。\n",
+        "- 然后 {func}`tvm.nd.array` 相应地格式化数据。\n",
+        "- {func}`f` 运行实际的计算。\n",
+        "- `numpy()` 以可解释的格式将结果数组复制回来。"
       ]
     },
     {
@@ -696,9 +613,7 @@
       "source": [
         "## 验证正确性\n",
         "\n",
-        "Compute the reference result with numpy and assert that the output of the\n",
-        "matrix multiplication indeed is correct\n",
-        "\n"
+        "用 numpy 计算参考结果，并断言矩阵乘法的输出确实是正确的："
       ]
     },
     {
@@ -746,17 +661,15 @@
       "source": [
         "## 小结\n",
         "\n",
-        "This tutorial showcases the TVM workflow to implement a simple matrix\n",
-        "multiplication example on VTA.\n",
-        "The general workflow includes:\n",
+        "本教程展示了在 VTA 上实现简单矩阵乘法的 TVM 工作流。\n",
         "\n",
-        "- Programming the FPGA with the VTA bitstream over RPC.\n",
-        "- Describing matrix multiplication via a series of computations.\n",
-        "- Describing how we want to perform the computation using schedule primitives.\n",
-        "- Compiling the function to the VTA target.\n",
-        "- Running the compiled module and verifying it against a numpy implementation.\n",
+        "一般工作流程包括：\n",
         "\n",
-        "\n"
+        "- 编程带有 VTA bitstream 的 FPGA 上的 RPC。\n",
+        "- 通过一系列计算描述矩阵乘法。\n",
+        "- 描述希望如何使用调度原语执行计算。\n",
+        "- 编译函数到 VTA 目标。\n",
+        "- 运行编译后的模块，并根据 numpy 实现来验证它。"
       ]
     }
   ],

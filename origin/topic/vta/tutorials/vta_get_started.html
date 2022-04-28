@@ -1329,17 +1329,26 @@ function checkPageExistsAndRedirect(event) {
 <h3>Input 占位符<a class="headerlink" href="#input" title="永久链接至标题">#</a></h3>
 <p>以平铺（tiled）数据格式描述占位符张量 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code>，以匹配 VTA 向量 ALU 施加的数据布局要求。</p>
 <p>对于 VTA 的一般用途的运算，如向量加法，tile 大小为 <code class="docutils literal notranslate"><span class="pre">(env.BATCH,</span> <span class="pre">env.BLOCK_OUT)</span></code>。维度在 <code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> 配置文件中指定，默认设置为 (1, 16) 向量。</p>
-<p>此外，A 和 B 的数据类型也需要匹配 <code class="docutils literal notranslate"><span class="pre">env.acc_dtype</span></code>，由 <code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> 文件设置为 32 位整型。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 输出通道因子 m -总共 64 x 16 = 1024 输出通道</span>
 <span class="n">m</span> <span class="o">=</span> <span class="mi">64</span>
 <span class="c1"># Batch 因子 o - 总共 1 x 1 = 1</span>
 <span class="n">o</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="c1"># 平铺数据格式的 A 占位符张量</span>
-<span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span>
+
+<span class="c1"># VTA 向量数据 shape</span>
+<span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>此外，A 和 B 的数据类型也需要匹配 <code class="docutils literal notranslate"><span class="pre">env.acc_dtype</span></code>，由 <code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> 文件设置为 32 位整型。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 平铺数据格式的 A 占位符张量</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span>
 <span class="c1"># 平铺数据格式的 B 占位符张量</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1352,9 +1361,9 @@ function checkPageExistsAndRedirect(event) {
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A copy buffer</span>
-<span class="n">A_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;A_buf&quot;</span><span class="p">)</span>
+<span class="n">A_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;A_buf&quot;</span><span class="p">)</span>
 <span class="c1"># B copy buffer</span>
-<span class="n">B_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">B</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;B_buf&quot;</span><span class="p">)</span>
+<span class="n">B_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">B</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;B_buf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1367,11 +1376,8 @@ function checkPageExistsAndRedirect(event) {
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 描述 VTA 中的向量加法</span>
-<span class="n">C_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span>
-    <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">A_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span> <span class="o">+</span> <span class="n">B_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">),</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C_buf&quot;</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">fcompute</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">A_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span> <span class="o">+</span> <span class="n">B_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">acc_dtype</span><span class="p">)</span>
+<span class="n">C_buf</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fcompute</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C_buf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1388,9 +1394,8 @@ function checkPageExistsAndRedirect(event) {
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 转换为输出类型，并发送到 main memory</span>
-<span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">),</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">C_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
-<span class="p">)</span>
+<span class="n">fcompute</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">C_buf</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">inp_dtype</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fcompute</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1596,8 +1601,9 @@ function checkPageExistsAndRedirect(event) {
 <p>随机初始化 A 和 B 数组，int 范围为 <span class="math notranslate nohighlight">\((-128, 128]\)</span>：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">o</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-<span class="n">B_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">o</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">size</span> <span class="o">=</span> <span class="n">o</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BATCH</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">BLOCK_OUT</span>
+<span class="n">A_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<span class="n">B_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1712,7 +1718,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-27, 10:52:32.<br>
+最后更新于 2022-04-28, 13:02:56.<br>
 </p>
     </div>
     

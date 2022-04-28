@@ -44,6 +44,8 @@
     <script src="../../../../_static/togglebutton.js"></script>
     <script src="../../../../_static/translations.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="shortcut icon" href="../../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../../search.html" />
@@ -1152,8 +1154,8 @@ function checkPageExistsAndRedirect(event) {
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#tensorization">
-     Tensorization
+    <a class="reference internal nav-link" href="#id7">
+     张量化
     </a>
    </li>
   </ul>
@@ -1164,17 +1166,17 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id7">
+  <a class="reference internal nav-link" href="#id8">
    运行函数
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id8">
+  <a class="reference internal nav-link" href="#id9">
    验证正确性
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id9">
+  <a class="reference internal nav-link" href="#id10">
    小结
   </a>
  </li>
@@ -1263,19 +1265,19 @@ function checkPageExistsAndRedirect(event) {
 <li><p>接着，描述了 <code class="docutils literal notranslate"><span class="pre">A_buf</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B_buf</span></code> 上的矩阵乘法运算，以产生 product matrix <code class="docutils literal notranslate"><span class="pre">C_buf</span></code>。</p></li>
 <li><p>最后的运算是强制转换和复制回 DRAM，到结果张量 <code class="docutils literal notranslate"><span class="pre">C</span></code>。</p></li>
 </ul>
-<img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/gemm_dataflow.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/gemm_dataflow.png" />
+<img alt="../../../../_images/gemm_dataflow.png" class="align-center" src="../../../../_images/gemm_dataflow.png" />
 <section id="id3">
 <h3>数据布局<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h3>
 <p>以平铺数据格式描述占位符张量 <code class="docutils literal notranslate"><span class="pre">A</span></code>和 <code class="docutils literal notranslate"><span class="pre">B</span></code>，以匹配 VTA 张量核心施加的数据布局要求。</p>
 <div class="alert alert-info admonition">
 <p class="admonition-title">数据平铺（Tiling）</p>
 <p>在瞄准加速器时，复杂性的来源之一是确保数据布局与加速器设计施加的布局相匹配。VTA 是围绕 <em>tensor core</em> 设计的，它在激活矩阵和权值矩阵之间执行周期的矩阵-矩阵运算，将结果矩阵添加到累加器矩阵，如下图所示。</p>
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/tensor_core.png"><img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/tensor_core.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/tensor_core.png" style="width: 480px;" /></a>
+<a class="reference internal image-reference" href="../../../../_images/tensor_core.png"><img alt="../../../../_images/tensor_core.png" class="align-center" src="../../../../_images/tensor_core.png" style="width: 480px;" /></a>
 <p>矩阵-矩阵乘法的维度在 <code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> 配置文件中指定。激活矩阵为 <code class="docutils literal notranslate"><span class="pre">(BATCH,</span> <span class="pre">BLOCK_IN)</span></code> 形状，权重矩阵为 <code class="docutils literal notranslate"><span class="pre">(BLOCK_OUT,</span> <span class="pre">BLOCK_IN)</span></code> 形状，由此推断，得到的输出矩阵为 <code class="docutils literal notranslate"><span class="pre">(BATCH,</span> <span class="pre">BLOCK_OUT)</span></code> 形状。因此，VTA 处理的输入和输出张量需要根据上述尺寸平铺。</p>
 <p>下图显示了数据平铺对最初形状为 (4,8) 的矩阵的影响。平铺 (2,2) tile 保证了每个平铺内的数据是连续的。得到的平铺张量的形状是 (2, 4, 2, 2)。</p>
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/data_tiling.png"><img alt="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/data_tiling.png" class="align-center" src="https://raw.githubusercontent.com/uwsampl/web-data/main/vta/tutorial/data_tiling.png" style="width: 480px;" /></a>
+<a class="reference internal image-reference" href="../../../../_images/data_tiling.png"><img alt="../../../../_images/data_tiling.png" class="align-center" src="../../../../_images/data_tiling.png" style="width: 480px;" /></a>
 </div>
-<p>首先定义变量 <code class="docutils literal notranslate"><span class="pre">m</span></code>，<code class="docutils literal notranslate"><span class="pre">n</span></code>，:<code class="docutils literal notranslate"><span class="pre">o</span></code> 来表示矩阵乘法的形状。这些变量分别是 <code class="docutils literal notranslate"><span class="pre">BLOCK_OUT</span></code>、<code class="docutils literal notranslate"><span class="pre">BLOCK_IN</span></code> 和 <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> 张量维度上的乘法因子。默认情况下，配置文件将 <code class="docutils literal notranslate"><span class="pre">BATCH</span></code>、<code class="docutils literal notranslate"><span class="pre">BLOCK_IN</span></code> 和 <code class="docutils literal notranslate"><span class="pre">BLOCK_OUT</span></code> 分别设置为 1、16 和 16（将 <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> 设置为 1 意味着计算构建块是向量-矩阵乘法）。</p>
+<p>首先定义变量 <code class="docutils literal notranslate"><span class="pre">m</span></code>，<code class="docutils literal notranslate"><span class="pre">n</span></code>，<code class="docutils literal notranslate"><span class="pre">o</span></code> 来表示矩阵乘法的形状。这些变量分别是 <code class="docutils literal notranslate"><span class="pre">BLOCK_OUT</span></code>、<code class="docutils literal notranslate"><span class="pre">BLOCK_IN</span></code> 和 <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> 张量维度上的乘法因子。默认情况下，配置文件将 <code class="docutils literal notranslate"><span class="pre">BATCH</span></code>、<code class="docutils literal notranslate"><span class="pre">BLOCK_IN</span></code> 和 <code class="docutils literal notranslate"><span class="pre">BLOCK_OUT</span></code> 分别设置为 1、16 和 16（将 <code class="docutils literal notranslate"><span class="pre">BATCH</span></code> 设置为 1 意味着计算构建块是向量-矩阵乘法）。</p>
 <div class="alert alert-info admonition">
 <p class="admonition-title">数据类型</p>
 <p>重要的是，不仅要匹配 VTA 张量核心的内部 tile 维度，而且要匹配 VTA 期望的特定数据类型。VTA 目前只支持定点数据类型（fixed point data types），整数宽度在 <code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> 中指定。<code class="docutils literal notranslate"><span class="pre">INP_WIDTH</span></code> 和 <code class="docutils literal notranslate"><span class="pre">WGT_WIDTH</span></code> 分别用于激活和权重数据类型。此外，累加器数据类型整型宽度由 <code class="docutils literal notranslate"><span class="pre">ACC_WIDTH</span></code> 指定。</p>
@@ -1351,20 +1353,11 @@ function checkPageExistsAndRedirect(event) {
 </section>
 <section id="id5">
 <h2>调度计算<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
-<p>While the above lines describes the computation rule, we can obtain
-:code:<code class="docutils literal notranslate"><span class="pre">C</span></code> in many ways.
-TVM asks the user to provide an implementation of the computation called
-<em>schedule</em>.</p>
-<p>A schedule is a set of transformations to an original computation that
-transforms the implementation of the computation without affecting
-correctness.
-This simple VTA programming tutorial aims to demonstrate basic schedule
-transformations that will map the original schedule down to VTA hardware
-primitives.</p>
+<p>虽然上面几行描述了计算规则，但可以通过多种方式得到 <code class="docutils literal notranslate"><span class="pre">C</span></code>。TVM 要求用户提供名为 schedule 的计算实现。</p>
+<p>调度是对原始计算的一组变换，它在不影响正确性的情况下变换计算的实现。这个简单的 VTA 编程教程旨在演示基本的调度变换，将原始的调度映射到 VTA 硬件原语（primitive）。</p>
 <section id="id6">
 <h3>默认调度<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h3>
-<p>After we construct the schedule, by default the schedule computes
-:code:<code class="docutils literal notranslate"><span class="pre">C</span></code> in the following way:</p>
+<p>在构造了调度后，默认情况下，调度按以下方式计算 <code class="docutils literal notranslate"><span class="pre">C</span></code>：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s take a look at the generated schedule</span>
@@ -1423,46 +1416,24 @@ primitives.</p>
 </div>
 </div>
 </div>
-<p>Although this schedule makes sense, it won’t compile to VTA.
-In order to obtain correct code generation, we need to apply scheduling
-primitives and code annotation that will transform the schedule into
-one that can be directly lowered onto VTA hardware intrinsics.
-Those include:</p>
+<p>虽然此调度有意义，但它不会编译到 VTA。为了获得正确的代码生成，需要应用调度原语和代码注解，将调度变换为可以直接 lower 至 VTA 硬件 intrinsic 的调度。这些包括：</p>
 <ul class="simple">
-<li><p>DMA copy operations which will take globally-scoped tensors and copy
-those into locally-scoped tensors.</p></li>
-<li><p>Tensor operations that will perform the matrix multiplication.</p></li>
+<li><p>DMA 复制运算，将全局作用域张量复制到局部作用域张量。</p></li>
+<li><p>用来做矩阵乘法的张量运算。</p></li>
 </ul>
 </section>
 <section id="buffer">
 <h3>Buffer 作用域<a class="headerlink" href="#buffer" title="永久链接至标题">#</a></h3>
-<p>First, we set the scope of the buffers to tell TVM that these buffers
-will be living in the VTA’s on-chip SRAM caches.
-Below, we tell TVM that :code:<code class="docutils literal notranslate"><span class="pre">A_buf</span></code>, :code:<code class="docutils literal notranslate"><span class="pre">B_buf</span></code>, :code:<code class="docutils literal notranslate"><span class="pre">C_buf</span></code>
-will respectively live in VTA’s on-chip input, weight and accumulator
-memory.</p>
-<div class="alert alert-info"><h4>Note</h4><p>**VTA's On-Chip SRAMs**
-<p>VTA has three different memory scopes, each corresponding to different
-on-chip SRAM buffers.</p>
+<p>首先，设置 buffer 的作用域来告诉 TVM 这些 buffer 将存在于 VTA 的 on-chip SRAM cache 中。下面，告诉 TVM, <code class="docutils literal notranslate"><span class="pre">A_buf</span></code>，<code class="docutils literal notranslate"><span class="pre">B_buf</span></code>，<code class="docutils literal notranslate"><span class="pre">C_buf</span></code> 将分别存在于 VTA 的 on-chip 输入，权重和累加器（accumulator）内存中。</p>
+<div class="alert alert-info admonition">
+<p class="admonition-title">VTA’s On-Chip SRAMs</p>
+<p>VTA 有三个不同的内存作用域，每个都对应于不同的片上 SRAM buffer。</p>
 <ul class="simple">
-<li><p>:code:<code class="docutils literal notranslate"><span class="pre">env.inp_scope</span></code>: Input buffer, which is a read-only SRAM buffer
-that stores input matrices of shape :code:<code class="docutils literal notranslate"><span class="pre">(env.BATCH,</span> <span class="pre">env.BLOCK_IN)</span></code>
-of type :code:<code class="docutils literal notranslate"><span class="pre">env.inp_dtype</span></code>. The input buffer contains
-<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">^</span> <span class="pre">LOG_INP_BUFF_SIZE</span></code> matrix elements (as specified in the
-:code:<code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> file).</p></li>
-<li><p>:code:<code class="docutils literal notranslate"><span class="pre">env.wgt_scope</span></code>: Weight buffer, which is a read-only SRAM buffer
-that stores weight matrices of shape :code:<code class="docutils literal notranslate"><span class="pre">(env.BLOCK_OUT,</span> <span class="pre">env.BLOCK_IN)</span></code>
-of type :code:<code class="docutils literal notranslate"><span class="pre">env.wgt_dtype</span></code>. The weight buffer contains
-<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">^</span> <span class="pre">LOG_WGT_BUFF_SIZE</span></code> matrix elements.</p></li>
-<li><p>:code:<code class="docutils literal notranslate"><span class="pre">env.acc_scope</span></code>: Accumulator buffer, which is a read/write SRAM
-buffer that stores accumulator matrices of shape
-:code:<code class="docutils literal notranslate"><span class="pre">(env.BATCH,</span> <span class="pre">env.BLOCK_OUT)</span></code> of type :code:<code class="docutils literal notranslate"><span class="pre">env.acc_dtype</span></code>.
-The accumulator buffer is VTA’s general purpose register file: it holds
-both intermediate results of convolutions and matrix multiplications
-as well as intermediate results of pooling, batch normalization, and
-activation layers. The accumulator buffer contains
-<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">^</span> <span class="pre">LOG_ACC_BUFF_SIZE</span></code> matrix elements.</p></div></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">env.inp_scope</span></code>：输入 buffer，这是只读的 SRAM buffer，存储形状为 <code class="docutils literal notranslate"><span class="pre">(env.BATCH,</span> <span class="pre">env.BLOCK_IN)</span></code>，类型为 <code class="docutils literal notranslate"><span class="pre">env.inp_dtype</span></code> 的矩阵。输入 buffer 包含 <span class="math notranslate nohighlight">\(2 ^ \text{LOG_INP_BUFF_SIZE}\)</span> 个矩阵元素（在 <code class="docutils literal notranslate"><span class="pre">vta_config.json</span></code> 文件中指定）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">env.wgt_scope</span></code>：权重 buffer，这是只读的 SRAM buffer，存储形状为 <code class="docutils literal notranslate"><span class="pre">(env.BLOCK_OUT,</span> <span class="pre">env.BLOCK_IN)</span></code>，类型为 <code class="docutils literal notranslate"><span class="pre">env.wgt_dtype</span></code> 的矩阵。权重 buffer 包含 <span class="math notranslate nohighlight">\(2 ^ \text{LOG_WGT_BUFF_SIZE}\)</span> 个矩阵元素。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">env.acc_scope</span></code>： Accumulator buffer，这是读/写 SRAM buffer，存储形状为 <code class="docutils literal notranslate"><span class="pre">(env.BATCH,</span> <span class="pre">env.BLOCK_OUT)</span></code>，类型为 <code class="docutils literal notranslate"><span class="pre">env.acc_dtype</span></code> 的累加矩阵。累加器 buffer 是 VTA 的通用寄存器文件：它既保存卷积和矩阵乘法的中间结果，也保存池化、batch normalization 和激活层的中间结果。累加器缓冲区包含 <span class="math notranslate nohighlight">\(2 ^ \text{LOG_ACC_BUFF_SIZE}\)</span> 个矩阵元素。</p></li>
 </ul>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the intermediate tensor&#39;s scope to VTA&#39;s on-chip buffers</span>
@@ -1481,16 +1452,8 @@ activation layers. The accumulator buffer contains
 </section>
 <section id="dma">
 <h3>DMA 传输<a class="headerlink" href="#dma" title="永久链接至标题">#</a></h3>
-<p>We need to schedule DMA transfers to move data living in DRAM to
-and from the VTA on-chip buffers.
-This can be achieved using the :code:<code class="docutils literal notranslate"><span class="pre">compute_at</span></code> schedule primitive
-which nests the copying of the buffers into the computation loop
-that performs the matrix multiplication.</p>
-<p>We insert :code:<code class="docutils literal notranslate"><span class="pre">dma_copy</span></code> pragmas to indicate to the compiler
-that the copy operations will be performed in bulk via DMA,
-which is common in hardware accelerators.
-Finally, we print the temporary schedule to observe the effects of
-moving the copy operations into the matrix multiplication loop.</p>
+<p>需要调度 DMA transfer 来将存在于 DRAM 中的数据移动到 VTA on-chip buffer。这可以使用 <code class="docutils literal notranslate"><span class="pre">compute_at</span></code> 调度原语实现，该原语将 buffer 的复制嵌套到执行矩阵乘法的计算循环中。</p>
+<p>插入 <code class="docutils literal notranslate"><span class="pre">dma_copy</span></code> pragmas 来指示编译器，复制运算将通过 DMA 批量执行，这在硬件加速器中很常见。最后，打印临时调度，观察将复制运算移动到矩阵乘法循环中的效果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move buffer copy into matrix multiply loop</span>
@@ -1551,24 +1514,10 @@ moving the copy operations into the matrix multiplication loop.</p>
 </div>
 </div>
 </section>
-<section id="tensorization">
-<h3>Tensorization<a class="headerlink" href="#tensorization" title="永久链接至标题">#</a></h3>
-<p>The last step of the schedule transformation consists in applying
-<em>tensorization</em> to our schedule.
-Tensorization is analogous to vectorization, but extends the concept
-to a higher-dimensional unit of computation.
-Consequently, tensorization imposes data layout constraints as discussed
-earlier when declaring the data layout input placeholders.
-We’ve already arranged our tensors in a tiled format, so the next thing
-we need to perform is loop reordering to accommodate for tensorization.</p>
-<p>Here we choose to move the outermost reduction axis all the way out.
-This dictates that we first iterate over input channels, then batch
-dimensions, and finally output channels.
-Lastly, we apply the tensorization scheduling primitive :code:<code class="docutils literal notranslate"><span class="pre">tensorize</span></code>
-along the outer axis of the inner-most matrix matrix multiplication tensor
-block.
-We print the finalized schedule that is ready for code-generation
-by the VTA runtime JIT compiler.</p>
+<section id="id7">
+<h3>张量化<a class="headerlink" href="#id7" title="永久链接至标题">#</a></h3>
+<p>调度 transformation 的最后一步是对调度应用 <em>tensorization</em>。张量化类似于向量化，但将这个概念扩展到了高维计算单元。因此，在声明数据布局输入占位符时，张量化会施加数据布局约束。我们已经以平铺的形式排列了张量，所以接下来需要做的是循环重新排序以适应张量化。</p>
+<p>在这里，选择将最外面的 reduction 轴移出。这表明首先遍历输入通道，然后是 batch 维度，最后是输出通道。最后，应用张量调度原语沿着最内层矩阵的矩阵乘法张量块的外轴张量。打印最终的调度，该调度已准备好由 VTA 运行时 JIT 编译器生成代码。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">[</span><span class="n">C_buf</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span>
@@ -1624,18 +1573,17 @@ by the VTA runtime JIT compiler.</p>
 }
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:55:48] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[20:30:54] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
 </pre></div>
 </div>
 </div>
 </div>
-<p>This concludes the scheduling portion of this tutorial.</p>
+<p>本教程的调度部分到此结束。</p>
 </section>
 </section>
 <section id="tvm">
 <h2>TVM 计算<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h2>
-<p>After we have finished specifying the schedule, we can compile it
-into a TVM function.</p>
+<p>在完成了调度的指定之后，可以将它编译成 TVM 函数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build GEMM VTA kernel</span>
@@ -1656,24 +1604,21 @@ into a TVM function.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:55:49] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[20:30:55] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="id7">
-<h2>运行函数<a class="headerlink" href="#id7" title="永久链接至标题">#</a></h2>
-<p>The compiled TVM function uses a concise C API and can be invoked from
-code language.</p>
-<p>TVM provides an array API in python to aid quick testing and prototyping.
-The array API is based on <code class="docutils literal notranslate"><span class="pre">DLPack</span> <span class="pre">&lt;https://github.com/dmlc/dlpack&gt;</span></code>_ standard.</p>
+<section id="id8">
+<h2>运行函数<a class="headerlink" href="#id8" title="永久链接至标题">#</a></h2>
+<p>编译后的 TVM 函数使用简洁的 C API，可以从代码语言调用。</p>
+<p>TVM 在 python 中提供了数组 API 来帮助快速测试和创建原型。数组 API 基于 <a class="reference external" href="https://github.com/dmlc/dlpack">DLPac</a> 标准。</p>
 <ul class="simple">
-<li><p>We first create a remote context (for remote execution on the Pynq).</p></li>
-<li><p>Then :code:<code class="docutils literal notranslate"><span class="pre">tvm.nd.array</span></code> formats the data accordingly.</p></li>
-<li><p>:code:<code class="docutils literal notranslate"><span class="pre">f()</span></code> runs the actual computation.</p></li>
-<li><p>:code:<code class="docutils literal notranslate"><span class="pre">numpy()</span></code> copies the result array back in a format that can be
-interpreted.</p></li>
+<li><p>首先创建远程上下文（remote context）（用于在 Pynq 上远程执行）。</p></li>
+<li><p>然后 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/ndarray.html#tvm.nd.array" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">tvm.nd.array()</span></code></a> 相应地格式化数据。</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">f()</span></code> 运行实际的计算。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy()</span></code> 以可解释的格式将结果数组复制回来。</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1704,10 +1649,9 @@ interpreted.</p></li>
 </div>
 </div>
 </section>
-<section id="id8">
-<h2>验证正确性<a class="headerlink" href="#id8" title="永久链接至标题">#</a></h2>
-<p>Compute the reference result with numpy and assert that the output of the
-matrix multiplication indeed is correct</p>
+<section id="id9">
+<h2>验证正确性<a class="headerlink" href="#id9" title="永久链接至标题">#</a></h2>
+<p>用 numpy 计算参考结果，并断言矩阵乘法的输出确实是正确的：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute reference result with numpy</span>
@@ -1741,17 +1685,16 @@ Successful matrix multiply test!
 </div>
 </div>
 </section>
-<section id="id9">
-<h2>小结<a class="headerlink" href="#id9" title="永久链接至标题">#</a></h2>
-<p>This tutorial showcases the TVM workflow to implement a simple matrix
-multiplication example on VTA.
-The general workflow includes:</p>
+<section id="id10">
+<h2>小结<a class="headerlink" href="#id10" title="永久链接至标题">#</a></h2>
+<p>本教程展示了在 VTA 上实现简单矩阵乘法的 TVM 工作流。</p>
+<p>一般工作流程包括：</p>
 <ul class="simple">
-<li><p>Programming the FPGA with the VTA bitstream over RPC.</p></li>
-<li><p>Describing matrix multiplication via a series of computations.</p></li>
-<li><p>Describing how we want to perform the computation using schedule primitives.</p></li>
-<li><p>Compiling the function to the VTA target.</p></li>
-<li><p>Running the compiled module and verifying it against a numpy implementation.</p></li>
+<li><p>编程带有 VTA bitstream 的 FPGA 上的 RPC。</p></li>
+<li><p>通过一系列计算描述矩阵乘法。</p></li>
+<li><p>描述希望如何使用调度原语执行计算。</p></li>
+<li><p>编译函数到 VTA 目标。</p></li>
+<li><p>运行编译后的模块，并根据 numpy 实现来验证它。</p></li>
 </ul>
 </section>
 </section>
@@ -1797,7 +1740,7 @@ The general workflow includes:</p>
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-27, 10:52:32.<br>
+最后更新于 2022-04-28, 13:02:56.<br>
 </p>
     </div>
     
