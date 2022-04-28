@@ -1212,6 +1212,11 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </li>
+<li><p>如果想要把 <code class="xref py py-mod docutils literal notranslate"><span class="pre">tvm</span></code> 和 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/vta/index.html#module-vta" title="(在 TVM)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vta</span></code></a> 作为全局环境的包，可以在 <code class="docutils literal notranslate"><span class="pre">tvm</span></code> 项目下创建软链接：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke ln-env --target tvm项目根目录 --root python环境路径
+</pre></div>
+</div>
+</li>
 </ol>
 </section>
 <section id="tvm-book">
@@ -1289,7 +1294,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:18:38.<br>
+最后更新于 2022-04-28, 16:40:53.<br>
 </p>
     </div>
     
