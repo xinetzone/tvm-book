@@ -5,8 +5,7 @@
 
 .. toctree::
    :hidden:
-
-   convolution_opt
-
+   
    matrix_multiply_opt
-
+   convolution_opt
+   

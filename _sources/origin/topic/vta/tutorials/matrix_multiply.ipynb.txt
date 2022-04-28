@@ -4,6 +4,7 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
+        "(basic-mat-mult)=\n",
         "# 简单的矩阵乘法\n",
         "\n",
         "**原作者**: [Thierry Moreau](https://homes.cs.washington.edu/~moreau/)\n",
@@ -502,7 +503,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[20:30:54] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[21:02:17] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],
@@ -538,7 +539,7 @@
           "name": "stderr",
           "output_type": "stream",
           "text": [
-            "[20:30:55] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
+            "[21:02:17] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128\n"
           ]
         }
       ],

@@ -1026,13 +1026,13 @@ function checkPageExistsAndRedirect(event) {
       </label>
       <ul>
        <li class="toctree-l4">
-        <a class="reference internal" href="optimize/convolution_opt.html">
-         2D Convolution Optimization
+        <a class="reference internal" href="optimize/matrix_multiply_opt.html">
+         分块矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
-        <a class="reference internal" href="optimize/matrix_multiply_opt.html">
-         Matrix Multiply Blocking
+        <a class="reference internal" href="optimize/convolution_opt.html">
+         2D 卷积优化
         </a>
        </li>
       </ul>
@@ -1208,8 +1208,8 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>简单的矩阵乘法<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="basic-mat-mult">
+<span id="id1"></span><h1>简单的矩阵乘法<a class="headerlink" href="#basic-mat-mult" title="永久链接至标题">#</a></h1>
 <p><strong>原作者</strong>: <a class="reference external" href="https://homes.cs.washington.edu/~moreau/">Thierry Moreau</a></p>
 <p>在本教程构建在 <a class="reference internal" href="vta_get_started.html#vta-get-started"><span class="std std-ref">VTA 入门</span></a> 教程的基础上，并介绍在 VTA 上使用 TVM 工作流实现矩阵乘法所需的额外概念。</p>
 <section id="rpc">
@@ -1573,7 +1573,7 @@ function checkPageExistsAndRedirect(event) {
 }
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[20:30:54] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:02:17] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
 </pre></div>
 </div>
 </div>
@@ -1604,7 +1604,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[20:30:55] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21:02:17] /media/pc/data/4tb/lxw/books/tvm/src/tir/transforms/arg_binder.cc:95: Warning: Trying to bind buffer to another one with lower alignment requirement  required_alignment=256, provided_alignment=128
 </pre></div>
 </div>
 </div>
@@ -1740,7 +1740,7 @@ Successful matrix multiply test!
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 13:02:56.<br>
+最后更新于 2022-04-28, 14:06:04.<br>
 </p>
     </div>
     
