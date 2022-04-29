@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1364,7 +1364,7 @@ The optimized scheduling scheme looks a lot like the scheduling of <code class="
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/batch_norm_11_0.svg" src="../../../_images/batch_norm_11_0.svg" /></div>
+<img alt="../../../_images/852fb1560c3dc16f65db0cd8746ee693488e6758d05b9f26a2688047bc2843a4.svg" src="../../../_images/852fb1560c3dc16f65db0cd8746ee693488e6758d05b9f26a2688047bc2843a4.svg" /></div>
 </div>
 <p>From the diagram we can see multiple things.
 First, for this kind of small operators, MXNet’s execution time is dominated by the function invoking overhead (:numref:<code class="docutils literal notranslate"><span class="pre">ch_call_overhead</span></code>). Second, TVM’s invoking overhead is small, making even the default schedule outperforms the MXNet baseline. Third, after fusing stages and doing proper parallelization and vectorization, we can have a much better performance for batch normalization.</p>
@@ -1418,7 +1418,7 @@ First, for this kind of small operators, MXNet’s execution time is dominated b
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

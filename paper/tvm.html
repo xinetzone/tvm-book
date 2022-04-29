@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -454,7 +454,7 @@ function checkPageExistsAndRedirect(event) {
 <li><p>自动调谐生成高效的代码</p></li>
 </ul>
 <p>TVM 通过三个关键模块来解决这些挑战：</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>引入了 <strong>张量表达式语言</strong> （tensor expression language）来构建算子，并提供程序变换原语（program transformation primitives） 用于生成具有各种优化的程序的不同版本。该层延伸 Halide 的计算/调度分离概念也通过将目标硬件 intrinsics 从变换原语中分离出来，从而支持新的加速器及其相应的新 intrinsics。此外，引入了新的变换原语来解决 GPU 相关的挑战，并支持部署到专门的加速器。然后可以应用不同序列的程序变换，为给定的算子声明，形成丰富的有效程序空间。</p></li>
 <li><p>引入 <strong>自动程序优化框架</strong> 来寻找优化的张量算子。优化器由基于 ML 的成本模型指导，当从硬件后端收集更多数据时，该模型可以进行调整和改进。</p></li>
 <li><p>在自动代码生成器之上，引入了 <strong>图重写器</strong> （graph rewriter），它充分利用了高层级和算子层级的优化。</p></li>
@@ -514,7 +514,7 @@ transformations，将内部数据布局转换为后端友好的形式）。</p>
 <section id="id5">
 <h3>算子融合<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h3>
 <p>算子融合将多个算子合并成一个内核，而不将中间结果保存在内存中。特别是在 GPU 和专门的加速器中，这种优化可以大大减少执行时间。具体来说，可以识别出四类计算图算子：</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>单射（injective，一对一映射，例如，add)，</p></li>
 <li><p>约简（例如，sum）</p></li>
 <li><p>复杂输出可融合（可以将元素映射融合到输出，例如，conv2d）</p></li>
@@ -637,7 +637,7 @@ transformations，将内部数据布局转换为后端友好的形式）。</p>
 <li><p>TVM 能支持和优化新的专业加速器吗？</p></li>
 </ul>
 <p>为了回答这些问题，在四种平台上评估了 TVM：</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>服务器级 GPU</p></li>
 <li><p>嵌入式 GPU</p></li>
 <li><p>嵌入式 CPU</p></li>
@@ -695,7 +695,7 @@ transformations，将内部数据布局转换为后端友好的形式）。</p>
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

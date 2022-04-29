@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1220,7 +1220,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/matmul_5_0.svg" src="../../../_images/matmul_5_0.svg" /></div>
+<img alt="../../../_images/f111905510f13f00dc5b331799b3ee6fe9086bd18e5203ee42439c3f17b27993.svg" src="../../../_images/f111905510f13f00dc5b331799b3ee6fe9086bd18e5203ee42439c3f17b27993.svg" /></div>
 </div>
 </section>
 <section id="blocked-matrix-multiplication-on-gpu">
@@ -1303,7 +1303,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <p>Now we can implement our schedule. There are three things worth mentioning:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>we denote by <code class="docutils literal notranslate"><span class="pre">x</span></code> the rows and <code class="docutils literal notranslate"><span class="pre">y</span></code> the columns, so an element can be assessed by <code class="docutils literal notranslate"><span class="pre">C[x,y]</span></code>.</p></li>
 <li><p>As mentioned above, in CUDA thread indexing, <code class="docutils literal notranslate"><span class="pre">x</span></code> is used for the innermost dimension, which is the matrix column in our case. Therefore you will see we bind axis <code class="docutils literal notranslate"><span class="pre">yb</span></code> (split from <code class="docutils literal notranslate"><span class="pre">y</span></code>) to <code class="docutils literal notranslate"><span class="pre">blockIdx.x</span></code> instead of <code class="docutils literal notranslate"><span class="pre">blockIdx.y</span></code>.</p></li>
 <li><p>W need to partition the axes of <code class="docutils literal notranslate"><span class="pre">A_shared</span></code> and <code class="docutils literal notranslate"><span class="pre">B_shared</span></code> into <code class="docutils literal notranslate"><span class="pre">block_size</span></code> parts, so we can reuse the threads bound to <code class="docutils literal notranslate"><span class="pre">xo</span></code> and <code class="docutils literal notranslate"><span class="pre">yo</span></code> for cooperative fetching. Otherwise TVM may not properly synchronize threads which leads to wrong results.</p></li>
@@ -1452,7 +1452,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/matmul_19_0.svg" src="../../../_images/matmul_19_0.svg" /></div>
+<img alt="../../../_images/986d71622cac32bfdcc20e66cba6b0e0f5b6246ec4b46ef058576834bce183e9.svg" src="../../../_images/986d71622cac32bfdcc20e66cba6b0e0f5b6246ec4b46ef058576834bce183e9.svg" /></div>
 </div>
 </section>
 <section id="summary">
@@ -1506,7 +1506,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

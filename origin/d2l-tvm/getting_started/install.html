@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1192,7 +1192,7 @@ function checkPageExistsAndRedirect(event) {
 <p>当前仅仅支持 Unubtu 平台。</p>
 </div>
 <p>可以直接利用脚本 <a class="reference download external" download="" href="https://github.com/daobook/tvm/blob/doc/xinetzone/tasks.py"><code class="xref download docutils literal notranslate"><span class="pre">task.py</span></code></a> （需要安装 <code class="docutils literal notranslate"><span class="pre">d2py</span></code> 和 <code class="docutils literal notranslate"><span class="pre">invoke</span></code>）编译 TVM。</p>
-<ol>
+<ol class="arabic">
 <li><p>构建 <code class="docutils literal notranslate"><span class="pre">build/</span></code> 目录，且创建并配置 <code class="docutils literal notranslate"><span class="pre">build/cmake/config.cmake</span></code> 文件。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke config
 </pre></div>
@@ -1213,7 +1213,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </li>
 <li><p>如果想要把 <code class="xref py py-mod docutils literal notranslate"><span class="pre">tvm</span></code> 和 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/vta/index.html#module-vta" title="(在 TVM)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">vta</span></code></a> 作为全局环境的包，可以在 <code class="docutils literal notranslate"><span class="pre">tvm</span></code> 项目下创建软链接：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke ln-env --target tvm项目根目录 --root python环境路径
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke ln-env --root tvm项目根目录 --target python环境路径 --python-version <span class="m">3</span>.10
 </pre></div>
 </div>
 </li>
@@ -1294,7 +1294,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

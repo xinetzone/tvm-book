@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1197,7 +1197,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/broadcast_add_3_01.svg" src="../../../_images/broadcast_add_3_01.svg" /></div>
+<img alt="../../../_images/43328b5188f8c3a44579006128b1864138de65d748d22a68c1486cb1480de3fe.svg" src="../../../_images/43328b5188f8c3a44579006128b1864138de65d748d22a68c1486cb1480de3fe.svg" /></div>
 </div>
 </section>
 <section id="continuous-scheduling">
@@ -1266,7 +1266,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/broadcast_add_9_01.svg" src="../../../_images/broadcast_add_9_01.svg" /></div>
+<img alt="../../../_images/693df38f915fadec7625f613ba5ef93da3c4929577d5bdc065e96138d8c52489.svg" src="../../../_images/693df38f915fadec7625f613ba5ef93da3c4929577d5bdc065e96138d8c52489.svg" /></div>
 </div>
 <p>We see that the continuous scheduling outperforms MXNet only for small workloads due to lighter overhead. Its performance becomes inferior to MXNet while increasing the data size. This is because the continuous scheduling causes serious bank conflict, which we will discuss in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_gpu</span></code> and solve it in a more systematic way.</p>
 </section>
@@ -1327,7 +1327,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/broadcast_add_13_01.svg" src="../../../_images/broadcast_add_13_01.svg" /></div>
+<img alt="../../../_images/67550d32b1851dc5881d9f0e0a20698e98b6306473e186ef5d062a10b938ea49.svg" src="../../../_images/67550d32b1851dc5881d9f0e0a20698e98b6306473e186ef5d062a10b938ea49.svg" /></div>
 </div>
 <p>The performance is much better than continuous scheduling once <code class="docutils literal notranslate"><span class="pre">need_further_split=True</span></code>. We also observe that the performance drops notably after the data size exceeds the L2 cache size (6 MB) shared by all SMs.</p>
 <p>Lastly, it is worthwhile to note that the two values <code class="docutils literal notranslate"><span class="pre">nt</span></code> and <code class="docutils literal notranslate"><span class="pre">nb</span></code> are tunable based on the workload and platform. It is not guaranteed that what we have chosen here is best for all cases we tested out. And there is no combination which works well across all cases. Therefore, a good compiler will need to allow tuning on this kind of parameters.</p>
@@ -1388,7 +1388,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

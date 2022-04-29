@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1249,7 +1249,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/call_overhead_9_0.svg" src="../../../_images/call_overhead_9_0.svg" /></div>
+<img alt="../../../_images/4cebbb7c43cd16383e27bbadaf117df2755d8b70231809b88ed8864ddac7de66.svg" src="../../../_images/4cebbb7c43cd16383e27bbadaf117df2755d8b70231809b88ed8864ddac7de66.svg" /></div>
 </div>
 <p>可以看到，吞吐量先是增加，然后趋于平稳。平台反映了内存带宽的饱和。然而，小向量的行为并不像预期的那样，因为当向量长度很小时，所有数据都应该在缓存中，这应该导致更高的吞吐量。为了分析原因，简单地画出执行时间与向量长度的关系。</p>
 <div class="cell docutils container">
@@ -1262,7 +1262,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/call_overhead_11_0.svg" src="../../../_images/call_overhead_11_0.svg" /></div>
+<img alt="../../../_images/8e20a03a76619f7611aa1b9c6a69d231174a78d1ceb77e26015e39961541908f.svg" src="../../../_images/8e20a03a76619f7611aa1b9c6a69d231174a78d1ceb77e26015e39961541908f.svg" /></div>
 </div>
 <p>可以看到，当向量长度小于 <span class="math notranslate nohighlight">\(10^3\)</span> 时，当向量长度缩短时，执行时间几乎没有减少。这是因为当向量长度很短时，真正的 <code class="docutils literal notranslate"><span class="pre">copyto</span></code> 执行时间太小，而总执行时间主要由函数调用开销决定。开销包括 Python 函数中的任何参数预处理，调用外部函数接口，以及其他 <a class="reference external" href="https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/">Python 后端开销</a>。因此，基准测试过小的工作负载是没有意义的。</p>
 </section>
@@ -1374,7 +1374,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

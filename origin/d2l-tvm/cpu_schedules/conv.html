@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1277,7 +1277,7 @@ function checkPageExistsAndRedirect(event) {
 <p><img alt="Compute a block of  in convolution." src="../../../_images/conv_block.svg" />
 :label:<code class="docutils literal notranslate"><span class="pre">fig_conv_block</span></code></p>
 <p>The implementation of this schedule is similar to the one for matrix multiplication defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_block_matmul_cpu</span></code>. But also note the following two differences:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>We parallelize the outer data blocks across the output channels.</p></li>
 <li><p>We move the inner height and width axes before the reduction axes, since they are more effectively to be optimized through vectorization and unrolling.</p></li>
 </ol>
@@ -1373,7 +1373,7 @@ produce Y {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/conv_13_0.svg" src="../../../_images/conv_13_0.svg" /></div>
+<img alt="../../../_images/1802603f0a18bfa7e82dcbc1541eee01d738394eeabe936262c5b385d824889e.svg" src="../../../_images/1802603f0a18bfa7e82dcbc1541eee01d738394eeabe936262c5b385d824889e.svg" /></div>
 </div>
 <p>As we can seen that our schedule does well for small channel sizes, while its performance decrease for large channel sizes. We will optimize the later in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>.</p>
 </section>
@@ -1432,7 +1432,7 @@ produce Y {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

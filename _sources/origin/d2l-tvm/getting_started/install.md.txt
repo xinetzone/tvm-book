@@ -67,7 +67,7 @@ pip install mxnet-cu112
 4. 如果想要把 {mod}`tvm` 和 {mod}`vta` 作为全局环境的包，可以在 `tvm` 项目下创建软链接：
 
     ```bash
-    invoke ln-env --target tvm项目根目录 --root python环境路径
+    invoke ln-env --root tvm项目根目录 --target python环境路径 --python-version 3.10
     ```
 
 ## 关于 `tvm_book` 库

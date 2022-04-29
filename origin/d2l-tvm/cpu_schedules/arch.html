@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1260,7 +1260,7 @@ CPU min MHz:                     1200.0000
 </figcaption>
 </figure>
 <p>在正常的 CPU 内核中，有指令获取（fetching）和解码（decoding）单元。它在处理单元（processing unit，简称 PU）（例如 ALU 或 FPU）上运行一条指令，每次处理一个元素，例如 float32。使用 SIMD，有多个 PUs 而不是一个。每次读取解码单元都将相同的指令提交给每个 PU 同时执行。如果有 <span class="math notranslate nohighlight">\(n\)</span> PUs，则每次都可以处理 <span class="math notranslate nohighlight">\(n\)</span> 元素。</p>
-<p>流行的 SIMD 指令集包括英特尔的 <a class="reference external" href="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">SSE</a> 和 <a class="reference external" href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a>，ARM 的 <a class="reference external" href="https://en.wikipedia.org/wiki/ARM_architecture#Advanced_SIMD_(NEON)">Neon</a> 和 AMD 的 <a class="reference external" href="https://en.wikipedia.org/wiki/3DNow%21">3DNow!</a>。</p>
+<p>流行的 SIMD 指令集包括英特尔的 <a class="reference external" href="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">SSE</a> 和 <a class="reference external" href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a>，ARM 的 <a class="reference external" href="https://en.wikipedia.org/wiki/ARM_architecture#Advanced_SIMD_(NEON)">Neon</a> 和 AMD 的 <a class="reference external" href="https://en.wikipedia.org/wiki/3DNow!">3DNow!</a>。</p>
 <p>查看 CPU SIMD 支持。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1453,7 +1453,7 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1222,7 +1222,7 @@ The only change that we need to make is to specify to the method that the target
  6281.556088500076]
 </pre></div>
 </div>
-<img alt="../../../_images/conv_3_1.svg" src="../../../_images/conv_3_1.svg" /></div>
+<img alt="../../../_images/55aa0b9fd891750f6a33cc1b3ed256dca532db28e73afb84dcc45a064c409370.svg" src="../../../_images/55aa0b9fd891750f6a33cc1b3ed256dca532db28e73afb84dcc45a064c409370.svg" /></div>
 </div>
 <p>The results above show that on GPUs the performance of convolution increases while the number of channels increases. For showing the gradual performance improvement brought by TVM scheduling, we now fix the channel size to be 64, where MXNet could get to the performance of about 1700 GFLOPS or 1.7 TGLOPS. Please keep this in mind while we are working on the TVM scheduling.</p>
 <div class="cell docutils container">
@@ -1512,7 +1512,7 @@ The only change that we need to make is to specify to the method that the target
        3746.19560406])
 </pre></div>
 </div>
-<img alt="../../../_images/conv_13_1.svg" src="../../../_images/conv_13_1.svg" /></div>
+<img alt="../../../_images/ce954e8c4d5b3fc0edb414c458274fccb63ca60d722a3280e191338b20230e5a.svg" src="../../../_images/ce954e8c4d5b3fc0edb414c458274fccb63ca60d722a3280e191338b20230e5a.svg" /></div>
 </div>
 <p>From the figure we see that TVM outperforms MXNet in smaller channel sizes but MXNet becomes better as the number of channels increases. This is mostly because cuDNN used by MXNet has manually optimized implementation for different data shapes, but here we use only one scheduling strategy for convolution kernels in different sizes.</p>
 <p>You may wonder how we can choose different schedules for convolutions of different data sizes, and even better, if we can automate the choice of schedules given a specific set of data shapes for convolution. We will talk about these techniques later.</p>
@@ -1576,7 +1576,7 @@ The only change that we need to make is to specify to the method that the target
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

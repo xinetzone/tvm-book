@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1478,7 +1478,7 @@ function checkPageExistsAndRedirect(event) {
 <h2>Step 2: 编译<a class="headerlink" href="#step-2" title="永久链接至标题">#</a></h2>
 <p>既然我们的模型已经在 Relay 中，下一步就是将它编译到需要运行的硬件上。我们把这个硬件称为目标（target）。此编译过程将模型从 Relay 转换为目标机器可以理解的较低级语言。</p>
 <p>为了编译模型 <code class="docutils literal notranslate"><span class="pre">tvm.target</span></code> 字符串是必需的。查看<a class="reference external" href="https://tvm.apache.org/docs/api/python/target.html">文档</a>，了解更多关于 <code class="docutils literal notranslate"><span class="pre">tvm.target</span></code> 的信息及其选项。一些例子包括：</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>cuda (Nvidia GPU)</p></li>
 <li><p>llvm (CPU)</p></li>
 <li><p>llvm -mcpu=cascadelake (Intel CPU)</p></li>
@@ -1622,7 +1622,7 @@ Output Names:
 <p>使用下一代 tvm 来启用可能更快的运行速度结果。调度的搜索空间是自动生成的，不像之前需要手写。</p>
 <div class="admonition seealso">
 <p class="admonition-title">参见</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>https://tvm.apache.org/2021/03/03/intro-auto-scheduler</p></li>
 <li><p>https://arxiv.org/abs/2006.06762</p></li>
 </ol>
@@ -10367,8 +10367,8 @@ Stack trace:
 <h3>保存调优结果<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h3>
 <p>调优结果可以保存在文件中，以便以后重用。</p>
 <div class="tabbed-set docutils">
-<input checked="checked" id="335e79dd-6c64-4a38-810f-78c2856eaa0d" name="c8034028-4213-41a5-8cfa-d12d82cb86c8" type="radio">
-</input><label class="tabbed-label" for="335e79dd-6c64-4a38-810f-78c2856eaa0d">
+<input checked="checked" id="87a2efa3-ca85-46ec-a047-fee19efc51cc" name="d5cc3ffa-d75e-413e-93e2-df10d22714ac" type="radio">
+</input><label class="tabbed-label" for="87a2efa3-ca85-46ec-a047-fee19efc51cc">
 方式1</label><div class="tabbed-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">log_file</span> <span class="o">=</span> <span class="s2">&quot;hello.json&quot;</span>
 
@@ -10382,8 +10382,8 @@ Stack trace:
 </pre></div>
 </div>
 </div>
-<input id="d2620739-0150-4963-a48b-0da6fe22be2f" name="c8034028-4213-41a5-8cfa-d12d82cb86c8" type="radio">
-</input><label class="tabbed-label" for="d2620739-0150-4963-a48b-0da6fe22be2f">
+<input id="c9e9e62c-65a8-4eb6-a468-d0ae33e23e40" name="d5cc3ffa-d75e-413e-93e2-df10d22714ac" type="radio">
+</input><label class="tabbed-label" for="c9e9e62c-65a8-4eb6-a468-d0ae33e23e40">
 方式2</label><div class="tabbed-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run tuning</span>
 <span class="n">tuning_records</span> <span class="o">=</span> <span class="n">tvmc</span><span class="o">.</span><span class="n">tune</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;llvm&quot;</span><span class="p">)</span>
@@ -10467,7 +10467,7 @@ Stack trace:
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

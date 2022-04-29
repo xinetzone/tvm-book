@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1198,7 +1198,7 @@ The only change that we need to make is to specify to the method that the target
  116.29688859027996]
 </pre></div>
 </div>
-<img alt="../../../_images/depthwise_conv_3_1.svg" src="../../../_images/depthwise_conv_3_1.svg" /></div>
+<img alt="../../../_images/caa381391d176a37ed4260a3b437a6a7c39a5c194c089a52b198585006a6a1e2.svg" src="../../../_images/caa381391d176a37ed4260a3b437a6a7c39a5c194c089a52b198585006a6a1e2.svg" /></div>
 </div>
 <p>It is expected to see that the performance of depthwise convoluyion on GPUs increases while the number of channels increases.</p>
 </section>
@@ -1226,7 +1226,7 @@ The only change that we need to make is to specify to the method that the target
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([24.89613593, 24.93398427, 24.90192682, 25.16284254, 24.97764198])
 </pre></div>
 </div>
-<img alt="../../../_images/depthwise_conv_5_1.svg" src="../../../_images/depthwise_conv_5_1.svg" /></div>
+<img alt="../../../_images/2cbc147c79956f5c84470b3eef946c2cda2a9c627dac3fd31c2225c116529277.svg" src="../../../_images/2cbc147c79956f5c84470b3eef946c2cda2a9c627dac3fd31c2225c116529277.svg" /></div>
 </div>
 <p>The default scheduling gives us the performance around 25 GFLOPS for every data shape we investigate, indicating that the compute power is not actually used.</p>
 </section>
@@ -1299,7 +1299,7 @@ The only change that we need to make is to specify to the method that the target
        309.149283  ])
 </pre></div>
 </div>
-<img alt="../../../_images/depthwise_conv_7_1.svg" src="../../../_images/depthwise_conv_7_1.svg" /></div>
+<img alt="../../../_images/dbbf661df8ab83fef8df8677a6220fa04a12881782bb9bb2d6b324adc4af7d7a.svg" src="../../../_images/dbbf661df8ab83fef8df8677a6220fa04a12881782bb9bb2d6b324adc4af7d7a.svg" /></div>
 </div>
 <p>We can see that after properly scheduling the computation, TVM can boost the performance of depthwise convolution by over one order of magnitude, which is also much better that the MXNet baseline.</p>
 <p>It is worthwhile noting that, in the real workloads, depthwise convolution consumes only a little computation, which can be finished in microseconds. Therefore, although TVM outperforms MXNet for quite a lot, the real executing time difference is marginal. This somewhat reflects the famous <a class="reference external" href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl’s law</a>, i.e. in the real use case, we should first focus on optimizing the hot spots which takes the majority of executing time.</p>
@@ -1360,7 +1360,7 @@ The only change that we need to make is to specify to the method that the target
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

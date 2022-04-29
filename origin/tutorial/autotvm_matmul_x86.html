@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1317,11 +1317,11 @@ sudo make cython3
 </div>
 </div>
 <p>在这里，我们对之前的调度代码做了四项修改，得到了一个可调度的 “模板”。我们可以逐一解释这些修改：</p>
-<ol>
+<ol class="arabic">
 <li><p>使用装饰器将这个函数标记为一个简单的模板。</p></li>
 <li><p>获取 config 对象。你可以把这个 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 看作是这个函数的一个参数，但我们以不同的方式获得它。有了这个参数，这个函数就不再是一个确定性的调度了。相反，我们可以向这个函数传递不同的配置，得到不同的调度。一个像这样使用配置对象的函数被称为 “模板”。</p>
 <p>为了使模板函数更加紧凑，我们可以做两件事来定义单一函数中的参数搜索空间。</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>定义一个跨越一组数值的搜索空间。这是通过使 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 成为一个 <code class="xref any docutils literal notranslate"><span class="pre">ConfigSpace</span></code> 对象来实现的。它将收集这个函数中的所有可调控旋钮，并从中建立一个搜索空间。</p></li>
 <li><p>根据这个空间的一个实体来调度。这是通过使 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 成为一个 <code class="xref any docutils literal notranslate"><span class="pre">ConfigEntity</span></code> 对象来实现的。当它是一个 <code class="xref any docutils literal notranslate"><span class="pre">ConfigEntity</span></code> 时，它将忽略所有空间定义 API（即 <code class="docutils literal notranslate"><span class="pre">cfg.define_XXXXX(...)</span></code>）。相反，它将为所有可调度的旋钮存储确定的值，我们根据这些值来调度。</p></li>
 </ol>
@@ -1536,7 +1536,7 @@ No: 10	GFLOPS: 6.29/7.05	result: MeasureResult(costs=(0.042653947799999994,), er
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

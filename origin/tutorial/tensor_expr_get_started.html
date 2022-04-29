@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1827,7 +1827,7 @@ extern &quot;C&quot; __global__ void __launch_bounds__(64) myadd_kernel0(float* 
 <h2>实例2：用 TE 手动优化矩阵乘法<a class="headerlink" href="#te" title="永久链接至标题">#</a></h2>
 <p>现在我们将考虑第二个更高级的例子，演示仅用 18 行 python 代码，TVM 如何将一个普通的矩阵乘法操作加快 18 倍。</p>
 <p>矩阵乘法是一个计算密集型操作。为了获得良好的 CPU 性能，有两个重要的优化措施：</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>提高内存访问的高速缓存命中率。复杂的数值计算和热点内存（hot-spot memory）访问都可以通过高缓存命中率（high cache hit rate）来加速。这就要求我们将原点内存（origin ）访问模式转化为符合高速缓存策略的模式。</p></li>
 <li><p>SIMD（单指令多数据），也被称为矢量处理单元。在每个周期中，SIMD 可以处理一小批数据，而不是处理一个单一的值。这就要求我们将循环体中的数据访问模式转化为统一模式，以便 LLVM 后端可以将其降低到 SIMD。</p></li>
 </ol>
@@ -2182,7 +2182,7 @@ extern &quot;C&quot; __global__ void __launch_bounds__(64) myadd_kernel0(float* 
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

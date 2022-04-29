@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1190,7 +1190,7 @@ function checkPageExistsAndRedirect(event) {
 <h2>它是如何工作的<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <p>没有虚拟机存储在 TVM 存储库中——相反，存储在 <code class="docutils literal notranslate"><span class="pre">apps/microtvm/reference-vm</span></code> 中的文件描述了如何使用 <a class="reference external" href="https://vagrantup.com">Vagrant</a> VM 构建工具构建虚拟机。</p>
 <p>参考虚拟机分为两部分：</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Vagrant Base Box，它包含该平台的所有稳定依赖项。构建脚本存储在 <code class="docutils literal notranslate"><span class="pre">apps/microtvm/reference-vm/&lt;platform&gt;/base-box</span></code> 中。TVM 提交者在平台的 “stable” 依赖项发生变化时运行这些程序，生成的 Base Box 存储在 <a class="reference external" href="https://app.vagrantup.com/tlcpack">Vagrant Cloud</a> 中。</p></li>
 <li><p>每个工作区 VM，用户通常使用 Base Box 作为起点构建它。构建脚本存储在 <code class="docutils literal notranslate"><span class="pre">apps/microtvm/reference-vm/&lt;platform&gt;</span></code>（除了 <code class="docutils literal notranslate"><span class="pre">base-box</span></code>）。</p></li>
 </ol>
@@ -1200,7 +1200,7 @@ function checkPageExistsAndRedirect(event) {
 <section id="id2">
 <h3>安装的先决条件<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h3>
 <p>需要最少的先决条件集：</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p><a class="reference external" href="https://vagrantup.com">Vagrant</a></p></li>
 <li><p>支持的虚拟机管理程序（<strong>VirtualBox</strong>、<strong>Parallels</strong> 或 <strong>VMWare Fusion/Workstation</strong>）。<a class="reference external" href="https://www.virtualbox.org">VirtualBox</a> 是建议的免费管理程序，但请注意 [VirtualBox Extension Pack](VirtualBox Extension Pack)  是正确的 USB 转发所必需的。如果使用 VirtualBox，也可以考虑安装 <a class="reference external" href="https://github.com/dotless-de/vagrant-vbguest">vbguest</a> 插件。</p></li>
 <li><p>如果您的系统管理程序需要，可以使用 <a class="reference external" href="https://github.com/hashicorp/vagrant/wiki/Available-Vagrant-Plugins#providers">Vagrant 提供程序插件</a>（VMWare 请参阅<a class="reference external" href="https://www.vagrantup.com/vmware">此处</a>）。</p></li>
@@ -1218,7 +1218,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 <p>This command will take a couple of minutes to run and will require 4 to 5GB of storage on your
 machine. It does the following:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Downloads the <a class="reference external" href="https://app.vagrantup.com/tlcpack/boxes/microtvm">microTVM base box</a> and clones it to form a new VM specific to this TVM directory.</p></li>
 <li><p>Mounts your TVM directory (and, if using <code class="docutils literal notranslate"><span class="pre">git-subtree</span></code>, the original <code class="docutils literal notranslate"><span class="pre">.git</span></code> repo) into the
 VM.</p></li>
@@ -1318,7 +1318,7 @@ $ poetry run pytest ../../../../tests/micro/qemu/test_zephyr.py --zephyr-board<s
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     

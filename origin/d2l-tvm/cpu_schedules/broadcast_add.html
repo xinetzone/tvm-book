@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
@@ -1196,7 +1196,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/broadcast_add_3_0.svg" src="../../../_images/broadcast_add_3_0.svg" /></div>
+<img alt="../../../_images/ccc991a7ffa92d42a3891987fd073590475478a8846d878d60133f8f475af5d4.svg" src="../../../_images/ccc991a7ffa92d42a3891987fd073590475478a8846d878d60133f8f475af5d4.svg" /></div>
 </div>
 <p>Note that the x axis is denoted as the total data size consumed. The performance drops when the data size is larger than the L2 cache of a single core (1024 KB or 1 MB), which indirectly suggests that <code class="docutils literal notranslate"><span class="pre">numpy</span></code> may use single-thread to perform this operator.</p>
 </section>
@@ -1264,7 +1264,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/broadcast_add_9_0.svg" src="../../../_images/broadcast_add_9_0.svg" /></div>
+<img alt="../../../_images/711987b840096d06f884fcb5544de391f0373b31abfd3f74d15ef4d5ddf0cede.svg" src="../../../_images/711987b840096d06f884fcb5544de391f0373b31abfd3f74d15ef4d5ddf0cede.svg" /></div>
 </div>
 <p>Like the case in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_cpu</span></code>, the performance is better and drops at a larger data size as multi-core comes into play, leading to a larger amount L2 cache in total.</p>
 </section>
@@ -1313,7 +1313,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/broadcast_add_13_0.svg" src="../../../_images/broadcast_add_13_0.svg" /></div>
+<img alt="../../../_images/c594adfb01699bd7fdd46170fab19672211f52616d338bc872b04d86e3149b72.svg" src="../../../_images/c594adfb01699bd7fdd46170fab19672211f52616d338bc872b04d86e3149b72.svg" /></div>
 </div>
 <p>Note that in order to make it finish in a short period of time, we reduce the number of tested sizes for this schedule.</p>
 <p>We can see that the performance of the vectorization-favorable schedule is pretty bad. The reason is that we access <code class="docutils literal notranslate"><span class="pre">B</span></code> in a stride to get the data in the same column, which is much slower than accessing data in a consecutive space. And the thread-level parallelism would make it even worse as different threads compete in getting the data in the same cache line.</p>
@@ -1375,7 +1375,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-04-28, 16:40:53.<br>
+最后更新于 2022-04-29, 10:29:51.<br>
 </p>
     </div>
     
