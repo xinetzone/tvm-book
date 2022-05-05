@@ -5,8 +5,5 @@
 :hidden:
 
 d2l-tvm/index
-tutorial/index
-how_to/index
-topic/vta/tutorials/index
 test
 ```

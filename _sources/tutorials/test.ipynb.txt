@@ -4,9 +4,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# 测试\n",
-    "\n",
-    "参考 [AutoTVM](sphx_glr_tutorial_autotvm_relay_x86)"
+    "# 测试"
    ]
   },
   {

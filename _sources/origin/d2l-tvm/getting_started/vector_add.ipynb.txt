@@ -371,7 +371,7 @@
     {
      "data": {
       "text/plain": [
-       "schedule(0x55a9fe9f0770)"
+       "schedule(0x55c7fc076ac0)"
       ]
      },
      "execution_count": 10,
@@ -497,7 +497,8 @@
     }
    ],
    "source": [
-    "tvm.lower(s, [A, B, C], simple_mode=True)"
+    "m = tvm.lower(s, [A, B, C], simple_mode=True)\n",
+    "m"
    ]
   },
   {
@@ -510,7 +511,14 @@
     "\n",
     "## 计算并执行\n",
     "\n",
-    "一旦定义了计算和调度，就可以使用 {func}`tvm.build` 将它们编译成可执行模块。它接受与 {func}`tvm.lower` 相同的参数。实际上，它首先调用了 {func}`tvm.lower` 生成程序，然后编译成机器码。"
+    "一旦定义了计算和调度，就可以使用 {func}`tvm.build` 将它们编译成可执行模块。它接受与 {func}`tvm.lower` 相同的参数。实际上，它首先调用了 {func}`tvm.lower` 生成中间表示程序，然后编译成机器码。即\n",
+    "\n",
+    "```python\n",
+    "m = tvm.build(s, [A, B, C])\n",
+    "m\n",
+    "```\n",
+    "\n",
+    "或者，直接把中间表示模块编译为结果模块："
    ]
   },
   {
@@ -540,7 +548,7 @@
     }
    ],
    "source": [
-    "mod = tvm.build(s, [A, B, C])\n",
+    "mod = tvm.build(m)\n",
     "type(mod)"
    ]
   },
@@ -712,7 +720,7 @@
       "Traceback (most recent call last):\n",
       "  1: TVMFuncCall\n",
       "  0: tvm::runtime::PackedFuncObj::Extractor<tvm::runtime::PackedFuncSubObj<tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr<tvm::runtime::Object> const&)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}> >::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)\n",
-      "  File \"/media/pc/data/4tb/lxw/study/tvm/src/runtime/library_module.cc\", line 80\n",
+      "  File \"/media/pc/data/4tb/lxw/books/tvm/src/runtime/library_module.cc\", line 80\n",
       "TVMError: \n",
       "---------------------------------------------------------------\n",
       "An error occurred during the execution of TVM.\n",
@@ -801,7 +809,7 @@
       "Traceback (most recent call last):\n",
       "  1: TVMFuncCall\n",
       "  0: tvm::runtime::PackedFuncObj::Extractor<tvm::runtime::PackedFuncSubObj<tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr<tvm::runtime::Object> const&)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}> >::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)\n",
-      "  File \"/media/pc/data/4tb/lxw/study/tvm/src/runtime/library_module.cc\", line 80\n",
+      "  File \"/media/pc/data/4tb/lxw/books/tvm/src/runtime/library_module.cc\", line 80\n",
       "TVMError: \n",
       "---------------------------------------------------------------\n",
       "An error occurred during the execution of TVM.\n",
