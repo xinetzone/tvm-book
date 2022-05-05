@@ -514,8 +514,8 @@
     "一旦定义了计算和调度，就可以使用 {func}`tvm.build` 将它们编译成可执行模块。它接受与 {func}`tvm.lower` 相同的参数。实际上，它首先调用了 {func}`tvm.lower` 生成中间表示程序，然后编译成机器码。即\n",
     "\n",
     "```python\n",
-    "m = tvm.build(s, [A, B, C])\n",
-    "m\n",
+    "mod = tvm.build(s, [A, B, C])\n",
+    "mod\n",
     "```\n",
     "\n",
     "或者，直接把中间表示模块编译为结果模块："
