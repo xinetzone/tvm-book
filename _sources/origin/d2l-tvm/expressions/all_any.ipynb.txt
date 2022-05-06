@@ -190,7 +190,7 @@
    "source": [
     "## 小结\n",
     "\n",
-    "- 可以用 `tvm.any` 和 `tvm.all` 来构造复杂的条件表达式。"
+    "- 可以用 {func}`tvm.te.any` 和 {func}`tvm.te.all` 来构造复杂的条件表达式。"
    ]
   }
  ],
