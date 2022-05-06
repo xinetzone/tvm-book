@@ -107,7 +107,7 @@
     "    a, b, c = d2ltvm.get_abc(n, lambda x: tvm.nd.array(x.astype(dtype)))\n",
     "    print('张量 dtype:', a.dtype, b.dtype, c.dtype)\n",
     "    mod(a, b, c)\n",
-    "    np.testing.assert_equal(c.asnumpy(), a.asnumpy() + b.asnumpy())\n",
+    "    np.testing.assert_equal(c.numpy(), a.numpy() + b.numpy())\n",
     "\n",
     "test_mod(mod, 'int32')"
    ]
@@ -222,7 +222,7 @@
     "    c_tvm = tvm.nd.array(c.astype(dtype))\n",
     "    print('张量 dtype:', a_tvm.dtype, b_tvm.dtype, c_tvm.dtype)\n",
     "    mod(a_tvm, b_tvm, c_tvm)\n",
-    "    np.testing.assert_equal(c_tvm.asnumpy(), a.astype(dtype) + b.astype(dtype))\n",
+    "    np.testing.assert_equal(c_tvm.numpy(), a.astype(dtype) + b.astype(dtype))\n",
     "\n",
     "mod = tvm_vector_add_2('int32')\n",
     "test_mod_2(mod, 'int32')"

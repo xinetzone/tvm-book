@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Index and Shape Expressions &#8212; tvm-book 0.0.2 文档</title>
+    <title>索引和形状表达式 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -49,7 +49,7 @@
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
-    <link rel="next" title="Reduction Operations" href="reductions.html" />
+    <link rel="next" title="归约运算" href="reductions.html" />
     <link rel="prev" title="形状" href="shapes.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
@@ -310,17 +310,17 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Index and Shape Expressions
+         索引和形状表达式
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="reductions.html">
-         Reduction Operations
+         归约运算
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="if_then_else.html">
-         Conditional Expression:
+         条件表达式：
          <code class="docutils literal notranslate">
           <span class="pre">
            if-then-else
@@ -560,23 +560,23 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#matrix-transpose">
-   Matrix Transpose
+  <a class="reference internal nav-link" href="#id2">
+   矩阵转置
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#reshaping">
-   Reshaping
+  <a class="reference internal nav-link" href="#id3">
+   重构形状
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#slicing">
-   Slicing
+  <a class="reference internal nav-link" href="#id4">
+   切片
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id5">
+   小结
   </a>
  </li>
 </ul>
@@ -607,13 +607,12 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="index-and-shape-expressions">
-<h1>Index and Shape Expressions<a class="headerlink" href="#index-and-shape-expressions" title="永久链接至标题">#</a></h1>
-<p>你已经知道形状可以是符号元组，例如 <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>，元素可以通过索引访问，例如 <code class="docutils literal notranslate"><span class="pre">a[i,</span> <span class="pre">j]</span></code>。在实践中，形状和索引都可以通过复杂的表达式来计算。在本节中，我们将介绍几个示例。</p>
-<p>You already know that a shape can be a tuple of symbols such as <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code> and the elements can be accessed via indexing, e.g. <code class="docutils literal notranslate"><span class="pre">a[i,</span> <span class="pre">j]</span></code>. In practice, both shapes and indices may be computed through complex expressions. We will go through several examples in this section.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>索引和形状表达式<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<p>你已经知道形状可以是符号元组，例如 <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>，元素可以通过索引访问，例如 <code class="docutils literal notranslate"><span class="pre">a[i,</span> <span class="pre">j]</span></code>。在实践中，形状和索引都可以通过复杂的表达式来计算。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">d2ltvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
@@ -621,22 +620,23 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<section id="matrix-transpose">
-<h2>Matrix Transpose<a class="headerlink" href="#matrix-transpose" title="永久链接至标题">#</a></h2>
-<p>Our first example is matrix transpose <code class="docutils literal notranslate"><span class="pre">a.T</span></code>, in which we access <code class="docutils literal notranslate"><span class="pre">a</span></code>’s elements by columns.</p>
+<section id="id2">
+<h2>矩阵转置<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>第一个例子是矩阵转置 <code class="docutils literal notranslate"><span class="pre">a.T</span></code>，按列访问 <code class="docutils literal notranslate"><span class="pre">a</span></code> 中的元素。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ir_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ir_mod</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce b {
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([a, b]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
   for (i, 0, m) {
     for (j, 0, n) {
       b[((i*stride) + (j*stride))] = a[((j*stride) + (i*stride))]
@@ -647,47 +647,49 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Note that the 2-D index, e.g. <code class="docutils literal notranslate"><span class="pre">b[i,j]</span></code> are collapsed to the 1-D index <code class="docutils literal notranslate"><span class="pre">b[((i*n)</span> <span class="pre">+</span> <span class="pre">j)]</span></code> to follow the C convention.</p>
-<p>Now verify the results.</p>
+<p>注意 2-D 索引，例如 <code class="docutils literal notranslate"><span class="pre">b[i,j]</span></code>  按照 C 约定折叠到（collapsed） 1-D 索引 <code class="docutils literal notranslate"><span class="pre">b[((i*n)</span> <span class="pre">+</span> <span class="pre">j)]</span></code>。</p>
+<p>验证结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
 <span class="n">mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.  1.  2.  3.]
- [ 4.  5.  6.  7.]
- [ 8.  9. 10. 11.]]
-[[ 0.  4.  8.]
- [ 1.  5.  9.]
- [ 2.  6. 10.]
- [ 3.  7. 11.]]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;tvm.nd.NDArray shape=(3, 4), cpu(0)&gt;
+ array([[ 0.,  1.,  2.,  3.],
+        [ 4.,  5.,  6.,  7.],
+        [ 8.,  9., 10., 11.]], dtype=float32),
+ &lt;tvm.nd.NDArray shape=(4, 3), cpu(0)&gt;
+ array([[ 0.,  4.,  8.],
+        [ 1.,  5.,  9.],
+        [ 2.,  6., 10.],
+        [ 3.,  7., 11.]], dtype=float32))
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="reshaping">
-<h2>Reshaping<a class="headerlink" href="#reshaping" title="永久链接至标题">#</a></h2>
-<p>Next let’s use expressions for indexing. The following code block reshapes a 2-D array <code class="docutils literal notranslate"><span class="pre">a</span></code> (<code class="docutils literal notranslate"><span class="pre">n</span></code> by <code class="docutils literal notranslate"><span class="pre">m</span></code> as defined above) to 1-D (just like <code class="docutils literal notranslate"><span class="pre">a.reshape(-1)</span></code> in NumPy). Note how we convert the 1-D index <code class="docutils literal notranslate"><span class="pre">i</span></code> to the 2-D index <code class="docutils literal notranslate"><span class="pre">[i//m,</span> <span class="pre">i%m]</span></code>.</p>
+<section id="id3">
+<h2>重构形状<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>接下来使用表达式进行索引。下面的代码块将2-D 数组 <code class="docutils literal notranslate"><span class="pre">a</span></code>（上面定义的 <span class="math notranslate nohighlight">\(n \times m\)</span>）重构为 1-D（就像 NumPy 中的<code class="docutils literal notranslate"><span class="pre">a.reshape(-1)</span></code>）。注意如何将 1-D 索引 <code class="docutils literal notranslate"><span class="pre">i</span></code> 转换为 2-D 索引 <code class="docutils literal notranslate"><span class="pre">[i//m,</span> <span class="pre">i%m]</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="n">m</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="o">//</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="k">m</span>], name=&#39;b&#39;)
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ir_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ir_mod</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce b {
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([a, b]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
   for (i, 0, (m*n)) {
     b[i] = a[((floordiv(i, m)*stride) + (floormod(i, m)*stride))]
   }
@@ -696,33 +698,22 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Since an <span class="math notranslate nohighlight">\(n\)</span>-D array is essentially listed in the memory as a 1-D array, the generated code does not rearrange the data sequence, but it simplifies the index expression from 2-D (<code class="docutils literal notranslate"><span class="pre">(i//m)*m</span> <span class="pre">+</span> <span class="pre">i%m</span></code>) to 1-D (<code class="docutils literal notranslate"><span class="pre">i</span></code>) to improve the efficiency.</p>
-<p>We can implement a general 2-D reshape function as well.</p>
+<p>由于 <span class="math notranslate nohighlight">\(n\)</span>-D 数组在内存中实际上是作为 1-D 数组列出的，因此生成的代码并不重新排列数据序列，而是将索引表达式从 2-D (<code class="docutils literal notranslate"><span class="pre">(i//m)*m</span> <span class="pre">+</span> <span class="pre">i%m</span></code>) 简化为 1-D (<code class="docutils literal notranslate"><span class="pre">i</span></code>)，以提高效率。</p>
+<p>也可以实现一般的二维重构函数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">),</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">)</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">A</span><span class="p">[(</span><span class="n">i</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">//</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="n">m</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">),</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">A</span><span class="p">[(</span><span class="n">i</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">//</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="k">m</span>], name=&#39;b&#39;)
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce b {
-  for (i, 0, p) {
-    for (j, 0, q) {
-      b[((i*stride) + (j*stride))] = a[((floordiv(((i*q) + j), m)*stride) + (floormod(((i*q) + j), m)*stride))]
-    }
-  }
-}
+<span class="n">ir_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>When testing the results, we should be aware that we put no constraint on the output shape, which can have an arbitrary shape <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">q)</span></code>, and therefore TVM will not be able to check if <span class="math notranslate nohighlight">\(qp = nm\)</span> for us. For example, in the following example we created a <code class="docutils literal notranslate"><span class="pre">b</span></code> with size (20) larger than <code class="docutils literal notranslate"><span class="pre">a</span></code> (12), then only the first 12 elements in <code class="docutils literal notranslate"><span class="pre">b</span></code> are from <code class="docutils literal notranslate"><span class="pre">a</span></code>, others are uninitialized values.</p>
+<p>在测试结果时，应该意识到，没有对输出形状施加约束，它可以有任意形状 <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">q)</span></code>，因此 TVM 将无法检查 <span class="math notranslate nohighlight">\(qp = nm\)</span>。例如，在下面的例子中，创建了 <code class="docutils literal notranslate"><span class="pre">b</span></code>，其尺寸 (20) 比 <code class="docutils literal notranslate"><span class="pre">a</span></code> (12) 大，那么 <code class="docutils literal notranslate"><span class="pre">b</span></code> 中只有前 12 个元素来自 <code class="docutils literal notranslate"><span class="pre">a</span></code> ，其他的都是未初始化的值。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
@@ -733,49 +724,51 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.000000e+00 1.000000e+00 2.000000e+00 3.000000e+00]
- [4.000000e+00 5.000000e+00 6.000000e+00 7.000000e+00]
- [8.000000e+00 9.000000e+00 1.000000e+01 1.100000e+01]
- [8.722636e-23 3.066461e-41 9.108440e-44 0.000000e+00]
- [8.743578e-23 3.066461e-41 8.741932e-23 3.066461e-41]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.0000000e+00 1.0000000e+00 2.0000000e+00 3.0000000e+00]
+ [4.0000000e+00 5.0000000e+00 6.0000000e+00 7.0000000e+00]
+ [8.0000000e+00 9.0000000e+00 1.0000000e+01 1.1000000e+01]
+ [1.2937045e-01 3.0773916e-41 0.0000000e+00 0.0000000e+00]
+ [1.3975525e-01 3.0773916e-41           nan           nan]]
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="slicing">
-<h2>Slicing<a class="headerlink" href="#slicing" title="永久链接至标题">#</a></h2>
-<p>Now let’s consider a special slicing operator <code class="docutils literal notranslate"><span class="pre">a[bi::si,</span> <span class="pre">bj::sj]</span> </code> where <code class="docutils literal notranslate"><span class="pre">bi</span></code>, <code class="docutils literal notranslate"><span class="pre">bj</span></code>, <code class="docutils literal notranslate"><span class="pre">si</span></code> and <code class="docutils literal notranslate"><span class="pre">sj</span></code> can be specified later. Now the output shape needs to be computed based on the arguments. In addition, we need to pass the variables <code class="docutils literal notranslate"><span class="pre">bi</span></code>, <code class="docutils literal notranslate"><span class="pre">bj</span></code>, <code class="docutils literal notranslate"><span class="pre">si</span></code> and <code class="docutils literal notranslate"><span class="pre">sj</span></code> as arguments when compiling the module.</p>
+<section id="id4">
+<h2>切片<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
+<p>考虑特殊的切片算子 <code class="docutils literal notranslate"><span class="pre">a[bi::si,</span> <span class="pre">bj::sj]</span></code>，其中 <code class="docutils literal notranslate"><span class="pre">bi</span></code>，<code class="docutils literal notranslate"><span class="pre">bj</span></code>，<code class="docutils literal notranslate"><span class="pre">si</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sj</span></code> 可以稍后指定。现在需要根据参数计算输出形状。此外，需要在编译模块时将变量 <code class="docutils literal notranslate"><span class="pre">bi</span></code>，<code class="docutils literal notranslate"><span class="pre">bj</span></code>，<code class="docutils literal notranslate"><span class="pre">si</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sj</span></code> 作为参数传递。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bi</span><span class="p">,</span> <span class="n">bj</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">sj</span> <span class="o">=</span> <span class="p">[</span><span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;bj&#39;</span><span class="p">,</span> <span class="s1">&#39;si&#39;</span><span class="p">,</span> <span class="s1">&#39;sj&#39;</span><span class="p">]]</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(((</span><span class="n">n</span><span class="o">-</span><span class="n">bi</span><span class="p">)</span><span class="o">//</span><span class="n">si</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">bj</span><span class="p">)</span><span class="o">//</span><span class="n">sj</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">si</span><span class="o">+</span><span class="n">bi</span><span class="p">,</span> <span class="n">j</span><span class="o">*</span><span class="n">sj</span><span class="o">+</span><span class="n">bj</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bi</span><span class="p">,</span> <span class="n">bj</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">sj</span> <span class="o">=</span> <span class="p">[</span><span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;bj&#39;</span><span class="p">,</span> <span class="s1">&#39;si&#39;</span><span class="p">,</span> <span class="s1">&#39;sj&#39;</span><span class="p">]]</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(((</span><span class="n">n</span><span class="o">-</span><span class="n">bi</span><span class="p">)</span><span class="o">//</span><span class="n">si</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">bj</span><span class="p">)</span><span class="o">//</span><span class="n">sj</span><span class="p">),</span>
+               <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">si</span><span class="o">+</span><span class="n">bi</span><span class="p">,</span> <span class="n">j</span><span class="o">*</span><span class="n">sj</span><span class="o">+</span><span class="n">bj</span><span class="p">],</span>
+               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
 <span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">bi</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">bj</span><span class="p">,</span> <span class="n">sj</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Now test two cases to verify the correctness.</p>
+<p>现在测试两个案例来验证正确性。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">))</span>
 <span class="n">mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">))</span>
 <span class="n">mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()[</span><span class="mi">2</span><span class="p">::</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">2</span><span class="p">::</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<section id="id5">
+<h2>小结<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>Both shape dimensions and indices can be expressions with variables.</p></li>
-<li><p>If a variable doesn’t only appear in the shape tuple, we need to pass it as an argument when compiling.</p></li>
+<li><p>形状维度和索引都可以是带有变量的表达式。</p></li>
+<li><p>如果变量不仅出现在形状元组中，那么需要在编译时将其作为参数传递。</p></li>
 </ul>
 </section>
 </section>
@@ -796,7 +789,7 @@ function checkPageExistsAndRedirect(event) {
     <a class='right-next' id="next-link" href="reductions.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">Reduction Operations</p>
+        <p class="prev-next-title">归约运算</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -821,7 +814,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-06, 14:33:21.<br>
+最后更新于 2022-05-06, 16:50:28.<br>
 </p>
     </div>
     

@@ -6,9 +6,9 @@
     "origin_pos": 0
    },
    "source": [
-    "# Reduction Operations\n",
+    "# 归约运算\n",
     "\n",
-    "Reduction is an operation to reduce certain dimension(s) of an input tensor, usually to scalar(s), e.g. `np.sum` in NumPy. Reduction is often straightforward to implement with for-loops. But it's a little bit more complicated in TVM since we cannot use a Python for-loop directly. In this section, we will describe how to implement reduction in TVM.\n"
+    "归约（Reduction）是将输入张量的某个维度归约为标量的运算，例如 NumPy 的 `np.sum`。使用 for 循环通常可以直接实现归约。但是在 TVM 中有点复杂，因为不能直接使用 Python for 循环。在本节中，将描述如何在 TVM 中实现归约。"
    ]
   },
   {
@@ -22,7 +22,7 @@
    },
    "outputs": [],
    "source": [
-    "import d2ltvm\n",
+    "# from tvm_book.contrib import d2ltvm\n",
     "import numpy as np\n",
     "import tvm\n",
     "from tvm import te"
@@ -34,9 +34,9 @@
     "origin_pos": 2
    },
    "source": [
-    "## Sum\n",
+    "## 求和\n",
     "\n",
-    "Let's start with summing the rows of a 2-D matrix to reduce it to be a 1-D vector. In NumPy, we can do it with the `sum` method.\n"
+    "从对二维矩阵的行求和开始把它变成一维向量。在 NumPy 中，可以用 `sum` 方法来完成。"
    ]
   },
   {
@@ -57,7 +57,7 @@
     {
      "data": {
       "text/plain": [
-       "array([ 1.8948135, -2.4319794,  1.9638997], dtype=float32)"
+       "array([-2.5569715 ,  0.20848459,  2.387809  ], dtype=float32)"
       ]
      },
      "execution_count": 2,
@@ -76,7 +76,7 @@
     "origin_pos": 4
    },
    "source": [
-    "As we did before, let's implement this operation from scratch to help understand the TVM expression.\n"
+    "和前面一样，从头实现这个运算，以帮助理解 TVM 表达式。"
    ]
   },
   {
@@ -97,7 +97,7 @@
     {
      "data": {
       "text/plain": [
-       "array([ 1.8948135, -2.4319794,  1.9638997], dtype=float32)"
+       "array([-2.5569715 ,  0.20848459,  2.387809  ], dtype=float32)"
       ]
      },
      "execution_count": 3,
@@ -147,7 +147,7 @@
     {
      "data": {
       "text/plain": [
-       "produce b {\n",
+       "PrimFunc([a, b]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
        "  for (i, 0, n) {\n",
        "    b[(i*stride)] = 0f\n",
        "    for (j, 0, m) {\n",
@@ -168,7 +168,8 @@
     "j = te.reduce_axis((0, m), name='j')\n",
     "B = te.compute((n,), lambda i: te.sum(A[i, j], axis=j), name='b')\n",
     "s = te.create_schedule(B.op)\n",
-    "tvm.lower(s, [A, B], simple_mode=True)"
+    "ir_mod = tvm.lower(s, [A, B], simple_mode=True)\n",
+    "ir_mod[\"main\"]"
    ]
   },
   {
@@ -198,7 +199,7 @@
    },
    "outputs": [],
    "source": [
-    "mod = tvm.build(s, [A, B])\n",
+    "mod = tvm.build(ir_mod)\n",
     "c = tvm.nd.array(np.empty((3,), dtype='float32'))\n",
     "mod(tvm.nd.array(a), c)\n",
     "np.testing.assert_equal(b, c.asnumpy())"
@@ -231,7 +232,7 @@
     {
      "data": {
       "text/plain": [
-       "produce b {\n",
+       "PrimFunc([a, b]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
        "  b[0] = 0f\n",
        "  for (i, 0, n) {\n",
        "    for (j, 0, m) {\n",
@@ -250,7 +251,8 @@
     "i = te.reduce_axis((0, n), name='i')\n",
     "B = te.compute((), lambda: te.sum(A[i, j], axis=(i, j)), name='b')\n",
     "s = te.create_schedule(B.op)\n",
-    "tvm.lower(s, [A, B], simple_mode=True)"
+    "ir_mod = tvm.lower(s, [A, B], simple_mode=True)\n",
+    "ir_mod[\"main\"]"
    ]
   },
   {
@@ -278,7 +280,7 @@
    },
    "outputs": [],
    "source": [
-    "mod = tvm.build(s, [A, B])\n",
+    "mod = tvm.build(ir_mod)\n",
     "c = tvm.nd.array(np.empty((), dtype='float32'))\n",
     "mod(tvm.nd.array(a), c)\n",
     "np.testing.assert_allclose(a.sum(), c.asnumpy(), atol=1e-5)"
@@ -379,7 +381,7 @@
     {
      "data": {
       "text/plain": [
-       "produce b {\n",
+       "PrimFunc([a, b]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
        "  for (i, 0, n) {\n",
        "    b[(i*stride)] = 1f\n",
        "    for (k, 0, m) {\n",
@@ -401,7 +403,8 @@
     "k = te.reduce_axis((0, m), name='k')\n",
     "B = te.compute((n,), lambda i: product(A[i, k], axis=k), name='b')\n",
     "s = te.create_schedule(B.op)\n",
-    "tvm.lower(s, [A, B], simple_mode=True)"
+    "ir_mod = tvm.lower(s, [A, B], simple_mode=True)\n",
+    "ir_mod[\"main\"]"
    ]
   },
   {
@@ -431,7 +434,7 @@
    },
    "outputs": [],
    "source": [
-    "mod = tvm.build(s, [A, B])\n",
+    "mod = tvm.build(ir_mod)\n",
     "b = tvm.nd.array(np.empty((3,), dtype='float32'))\n",
     "mod(tvm.nd.array(a), b)\n",
     "np.testing.assert_allclose(a.prod(axis=1), b.asnumpy(), atol=1e-5)"
@@ -451,8 +454,25 @@
   }
  ],
  "metadata": {
+  "interpreter": {
+   "hash": "113215d72022e03bdca1057c7933c75a3969a189b0b522e71371adf999f86f27"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('py310': conda)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Conditional Expression: if-then-else &#8212; tvm-book 0.0.2 文档</title>
+    <title>条件表达式：if-then-else &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -48,7 +48,7 @@
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
     <link rel="next" title="Truth Value Testing: all and any" href="all_any.html" />
-    <link rel="prev" title="Reduction Operations" href="reductions.html" />
+    <link rel="prev" title="归约运算" href="reductions.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
 
@@ -308,17 +308,17 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="index_shape_expressions.html">
-         Index and Shape Expressions
+         索引和形状表达式
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="reductions.html">
-         Reduction Operations
+         归约运算
         </a>
        </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Conditional Expression:
+         条件表达式：
          <code class="docutils literal notranslate">
           <span class="pre">
            if-then-else
@@ -558,8 +558,8 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id1">
+   小结
   </a>
  </li>
 </ul>
@@ -590,25 +590,23 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="conditional-expression-if-then-else">
-<h1>Conditional Expression: <code class="docutils literal notranslate"><span class="pre">if-then-else</span></code><a class="headerlink" href="#conditional-expression-if-then-else" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_if_then_else</span></code></p>
-<p>The <code class="docutils literal notranslate"><span class="pre">if-then-else</span></code> statement is supported through <code class="docutils literal notranslate"><span class="pre">te.if_then_else</span></code>. In this section,
-we will introduce this expression using computing the lower triangle of an matrix as the example.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="if-then-else">
+<span id="ch-if-then-else"></span><h1>条件表达式：<code class="docutils literal notranslate"><span class="pre">if-then-else</span></code><a class="headerlink" href="#if-then-else" title="永久链接至标题">#</a></h1>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">te.if_then_else</span></code> 支持 <code class="docutils literal notranslate"><span class="pre">if-then-else</span></code> 语句。在本节中，将以计算矩阵的下三角形为例介绍这个表达式。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
-<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># from tvm_book.contrib import d2ltvm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">d2ltvm</span>
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>In NumPy, we can easily use <code class="docutils literal notranslate"><span class="pre">np.tril</span></code> to obtain the lower triangle.</p>
+<p>在 NumPy 中，可以很容易地使用 <code class="docutils literal notranslate"><span class="pre">np.tril</span></code> 得到下三角形。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">np</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -621,38 +619,30 @@ we will introduce this expression using computing the lower triangle of an matri
 </div>
 </div>
 </div>
-<p>Now let’s implement it in TVM with <code class="docutils literal notranslate"><span class="pre">if_then_else</span></code>. It accepts three arguments, the first one is the condition, if true returning the second argument, otherwise returning the third one.</p>
+<p>在 TVM 中使用 <code class="docutils literal notranslate"><span class="pre">if_then_else</span></code> 实现它。它接受三个参数，第一个是条件，如果为真返回第二个参数，否则返回第三个参数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">),</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">),</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">te</span><span class="o">.</span><span class="n">if_then_else</span><span class="p">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">j</span><span class="p">,</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">))</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+               <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">te</span><span class="o">.</span><span class="n">if_then_else</span><span class="p">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">j</span><span class="p">,</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Verify the results.</p>
+<p>验证结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
+<span class="n">ir_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
 <span class="n">mod</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">b</span><span class="p">)</span>
 <span class="n">b</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce compute {
-  for (i, 0, n) {
-    for (j, 0, m) {
-      compute[((i*stride) + (j*stride))] = tvm_if_then_else((j &lt;= i), placeholder[((i*stride) + (j*stride))], 0f)
-    }
-  }
-}
-</pre></div>
-</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.nd.NDArray shape=(3, 4), cpu(0)&gt;
 array([[ 0.,  0.,  0.,  0.],
        [ 4.,  5.,  0.,  0.],
@@ -661,10 +651,28 @@ array([[ 0.,  0.,  0.,  0.],
 </div>
 </div>
 </div>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ir_mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([placeholder, compute]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
+  for (i, 0, n) {
+    for (j, 0, m) {
+      compute[((i*stride) + (j*stride))] = tir.if_then_else((j &lt;= i), placeholder[((i*stride) + (j*stride))], 0f)
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id1">
+<h2>小结<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>We can use <code class="docutils literal notranslate"><span class="pre">tvm.if_then_else</span></code> for the if-then-else statement.</p></li>
+<li><p>可以用 <code class="docutils literal notranslate"><span class="pre">tvm.if_then_else</span></code> 用于 if-then-else 语句。</p></li>
 </ul>
 </section>
 </section>
@@ -679,7 +687,7 @@ array([[ 0.,  0.,  0.,  0.],
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">Reduction Operations</p>
+            <p class="prev-next-title">归约运算</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="all_any.html" title="下一页 页">
@@ -710,7 +718,7 @@ array([[ 0.,  0.,  0.,  0.],
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-06, 14:33:21.<br>
+最后更新于 2022-05-06, 16:50:28.<br>
 </p>
     </div>
     

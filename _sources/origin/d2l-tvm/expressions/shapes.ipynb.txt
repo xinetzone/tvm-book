@@ -194,7 +194,7 @@
     "    a, b, c = d2ltvm.get_abc(n, tvm.nd.array)\n",
     "    mod(a, b, c)\n",
     "    print('c.shape:', c.shape)\n",
-    "    np.testing.assert_equal(c.asnumpy(), a.asnumpy() + b.asnumpy())\n",
+    "    np.testing.assert_equal(c.numpy(), a.numpy() + b.numpy())\n",
     "\n",
     "mod = tvm.build(m)\n",
     "test_mod(mod, 5)\n",
