@@ -6,10 +6,10 @@
     "origin_pos": 0
    },
    "source": [
-    "# Truth Value Testing: `all` and `any`\n",
-    ":label:`ch_all_any`\n",
+    "(ch_all_any)=\n",
+    "# 真值测试：`all` 和 `any`\n",
     "\n",
-    "In Python, we can use `all` and `any` to get the boolean return of a list of values. `all` returns the logical `and` result while `any` returns the logical `or` result.\n"
+    "在 Python 中，可以使用 `all` 和 `any` 来获取值列表的布尔值返回值。`all` 返回逻辑 `and` 结果，而 `any` 返回逻辑 `or` 结果。"
    ]
   },
   {
@@ -35,7 +35,6 @@
    ],
    "source": [
     "import numpy as np\n",
-    "import d2ltvm \n",
     "import tvm\n",
     "from tvm import te\n",
     "\n",
@@ -48,9 +47,9 @@
     "origin_pos": 2
    },
    "source": [
-    "TVM provides similar `te.all` and `te.any`, which are useful to construct complex conditional expression for `te.if_then_else`. \n",
+    "TVM提供类似的 `te.all` 和 `te.any`，这对于构造 `te.if_then_else` 的复杂条件表达式很有用。\n",
     "\n",
-    "The example we will use is padding the matrix `a` with 0s.\n"
+    "将使用的例子是用 0 填充矩阵 `a`。"
    ]
   },
   {
@@ -94,7 +93,7 @@
     "origin_pos": 4
    },
    "source": [
-    "Now let's implement it in TVM. Note that we pass the four condition values into `tvm.any`.\n"
+    "在 TVM 中实现它。注意，将这四个条件值传递给 `tvm.any`。"
    ]
   },
   {
@@ -123,7 +122,7 @@
     "origin_pos": 6
    },
    "source": [
-    "Verify the results.\n"
+    "验证结果。"
    ]
   },
   {
@@ -150,10 +149,37 @@
    ],
    "source": [
     "s = te.create_schedule(B.op)\n",
-    "mod = tvm.build(s, [A, B])\n",
+    "ir_mod = tvm.lower(s, [A, B])\n",
+    "mod = tvm.build(ir_mod)\n",
     "c = tvm.nd.array(np.empty_like(b))\n",
     "mod(tvm.nd.array(a), c)\n",
     "print(c)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "PrimFunc([a, b]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
+       "  for (i, 0, (n + 2)) {\n",
+       "    for (j, 0, (m + 2)) {\n",
+       "      b[((i*(m + 2)) + j)] = tir.if_then_else(((((i < 1) || ((n + 1) <= i)) || (j < 1)) || ((m + 1) <= j)), 0f, a[(((i - 1)*stride) + ((j - 1)*stride))])\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ir_mod[\"main\"]"
    ]
   },
   {
@@ -162,15 +188,32 @@
     "origin_pos": 8
    },
    "source": [
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "- We can use `tvm.any` and `tvm.all` to construct complex conditional expressions.\n"
+    "- 可以用 `tvm.any` 和 `tvm.all` 来构造复杂的条件表达式。"
    ]
   }
  ],
  "metadata": {
+  "interpreter": {
+   "hash": "113215d72022e03bdca1057c7933c75a3969a189b0b522e71371adf999f86f27"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('py310': conda)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,

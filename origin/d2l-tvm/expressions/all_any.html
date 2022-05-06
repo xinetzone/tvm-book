@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Truth Value Testing: all and any &#8212; tvm-book 0.0.2 文档</title>
+    <title>真值测试：all 和 any &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -328,13 +328,13 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Truth Value Testing:
+         真值测试：
          <code class="docutils literal notranslate">
           <span class="pre">
            all
           </span>
          </code>
-         and
+         和
          <code class="docutils literal notranslate">
           <span class="pre">
            any
@@ -558,8 +558,8 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id1">
+   小结
   </a>
  </li>
 </ul>
@@ -590,14 +590,12 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="truth-value-testing-all-and-any">
-<h1>Truth Value Testing: <code class="docutils literal notranslate"><span class="pre">all</span></code> and <code class="docutils literal notranslate"><span class="pre">any</span></code><a class="headerlink" href="#truth-value-testing-all-and-any" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_all_any</span></code></p>
-<p>In Python, we can use <code class="docutils literal notranslate"><span class="pre">all</span></code> and <code class="docutils literal notranslate"><span class="pre">any</span></code> to get the boolean return of a list of values. <code class="docutils literal notranslate"><span class="pre">all</span></code> returns the logical <code class="docutils literal notranslate"><span class="pre">and</span></code> result while <code class="docutils literal notranslate"><span class="pre">any</span></code> returns the logical <code class="docutils literal notranslate"><span class="pre">or</span></code> result.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="all-any">
+<span id="ch-all-any"></span><h1>真值测试：<code class="docutils literal notranslate"><span class="pre">all</span></code> 和 <code class="docutils literal notranslate"><span class="pre">any</span></code><a class="headerlink" href="#all-any" title="永久链接至标题">#</a></h1>
+<p>在 Python 中，可以使用 <code class="docutils literal notranslate"><span class="pre">all</span></code> 和 <code class="docutils literal notranslate"><span class="pre">any</span></code> 来获取值列表的布尔值返回值。<code class="docutils literal notranslate"><span class="pre">all</span></code> 返回逻辑 <code class="docutils literal notranslate"><span class="pre">and</span></code> 结果，而 <code class="docutils literal notranslate"><span class="pre">any</span></code> 返回逻辑 <code class="docutils literal notranslate"><span class="pre">or</span></code> 结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">d2ltvm</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
 
@@ -611,11 +609,11 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>TVM provides similar <code class="docutils literal notranslate"><span class="pre">te.all</span></code> and <code class="docutils literal notranslate"><span class="pre">te.any</span></code>, which are useful to construct complex conditional expression for <code class="docutils literal notranslate"><span class="pre">te.if_then_else</span></code>.</p>
-<p>The example we will use is padding the matrix <code class="docutils literal notranslate"><span class="pre">a</span></code> with 0s.</p>
+<p>TVM提供类似的 <code class="docutils literal notranslate"><span class="pre">te.all</span></code> 和 <code class="docutils literal notranslate"><span class="pre">te.any</span></code>，这对于构造 <code class="docutils literal notranslate"><span class="pre">te.if_then_else</span></code> 的复杂条件表达式很有用。</p>
+<p>将使用的例子是用 0 填充矩阵 <code class="docutils literal notranslate"><span class="pre">a</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 <span class="c1"># applying a zero padding of size 1 to a</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
@@ -633,10 +631,10 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Now let’s implement it in TVM. Note that we pass the four condition values into <code class="docutils literal notranslate"><span class="pre">tvm.any</span></code>.</p>
+<p>在 TVM 中实现它。注意，将这四个条件值传递给 <code class="docutils literal notranslate"><span class="pre">tvm.any</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># padding size</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># padding size</span>
 <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">),</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">n</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">m</span><span class="o">+</span><span class="n">p</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span>
@@ -647,11 +645,12 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Verify the results.</p>
+<p>验证结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+<span class="n">ir_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
 <span class="n">mod</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
@@ -668,10 +667,28 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ir_mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([a, b]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
+  for (i, 0, (n + 2)) {
+    for (j, 0, (m + 2)) {
+      b[((i*(m + 2)) + j)] = tir.if_then_else(((((i &lt; 1) || ((n + 1) &lt;= i)) || (j &lt; 1)) || ((m + 1) &lt;= j)), 0f, a[(((i - 1)*stride) + ((j - 1)*stride))])
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id1">
+<h2>小结<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>We can use <code class="docutils literal notranslate"><span class="pre">tvm.any</span></code> and <code class="docutils literal notranslate"><span class="pre">tvm.all</span></code> to construct complex conditional expressions.</p></li>
+<li><p>可以用 <code class="docutils literal notranslate"><span class="pre">tvm.any</span></code> 和 <code class="docutils literal notranslate"><span class="pre">tvm.all</span></code> 来构造复杂的条件表达式。</p></li>
 </ul>
 </section>
 </section>
@@ -717,7 +734,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-06, 16:50:28.<br>
+最后更新于 2022-05-06, 17:19:41.<br>
 </p>
     </div>
     
