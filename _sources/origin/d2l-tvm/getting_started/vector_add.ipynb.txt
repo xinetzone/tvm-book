@@ -129,26 +129,11 @@
    "cell_type": "code",
    "execution_count": 4,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Python: 3.10.4\n",
-      "TVM: 0.9.dev0\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
-    "def set_env(num, current_path='.'):\n",
-    "    import sys\n",
-    "    from pathlib import Path\n",
-    "\n",
-    "    ROOT = Path(current_path).resolve().parents[num]\n",
-    "    sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境\n",
-    "    from tvm_book.contrib.tvm import set_env # 设置 TVM 环境\n",
-    "\n",
-    "set_env(3)"
+    "from tvm_book.tvm.env import set_tvm # 设置 TVM 环境\n",
+    "tvm_root = \"/home/xinet/study/tvm\"\n",
+    "set_tvm(tvm_root)"
    ]
   },
   {
@@ -371,7 +356,7 @@
     {
      "data": {
       "text/plain": [
-       "schedule(0x55c7fc076ac0)"
+       "schedule(0x56162a742100)"
       ]
      },
      "execution_count": 10,
@@ -720,7 +705,7 @@
       "Traceback (most recent call last):\n",
       "  1: TVMFuncCall\n",
       "  0: tvm::runtime::PackedFuncObj::Extractor<tvm::runtime::PackedFuncSubObj<tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr<tvm::runtime::Object> const&)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}> >::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)\n",
-      "  File \"/media/pc/data/4tb/lxw/books/tvm/src/runtime/library_module.cc\", line 80\n",
+      "  File \"/home/xinet/study/tvm/src/runtime/library_module.cc\", line 80\n",
       "TVMError: \n",
       "---------------------------------------------------------------\n",
       "An error occurred during the execution of TVM.\n",
@@ -809,7 +794,7 @@
       "Traceback (most recent call last):\n",
       "  1: TVMFuncCall\n",
       "  0: tvm::runtime::PackedFuncObj::Extractor<tvm::runtime::PackedFuncSubObj<tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr<tvm::runtime::Object> const&)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}> >::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)\n",
-      "  File \"/media/pc/data/4tb/lxw/books/tvm/src/runtime/library_module.cc\", line 80\n",
+      "  File \"/home/xinet/study/tvm/src/runtime/library_module.cc\", line 80\n",
       "TVMError: \n",
       "---------------------------------------------------------------\n",
       "An error occurred during the execution of TVM.\n",

@@ -610,16 +610,7 @@ function checkPageExistsAndRedirect(event) {
 <p>记住，我们为张量 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 创建了符号（symbolic）占位符，这样我们以后就可以 feed 数据。我们也可以对这个形状做同样的事情。特别地，下面的代码块使用 <code class="docutils literal notranslate"><span class="pre">te.var</span></code> 来为 <code class="docutils literal notranslate"><span class="pre">int32</span></code> 标量创建符号变量（symbolic variable），其值可以稍后指定。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">sys</span>
-    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
-    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
-
-<span class="n">set_env</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
@@ -648,7 +639,8 @@ function checkPageExistsAndRedirect(event) {
 <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="n">n</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
 <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">m</span>
 </pre></div>
 </div>
 </div>
@@ -718,7 +710,7 @@ function checkPageExistsAndRedirect(event) {
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;c.shape:&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">())</span>
 
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">])</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 <span class="n">test_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">test_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 </pre></div>
@@ -744,7 +736,8 @@ c.shape: (1000,)
     <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">])</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -818,7 +811,7 @@ c.shape: (2, 3, 4, 5)
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-06, 13:05:34.<br>
+最后更新于 2022-05-06, 14:33:21.<br>
 </p>
     </div>
     

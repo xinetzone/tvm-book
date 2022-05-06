@@ -682,21 +682,9 @@ function checkPageExistsAndRedirect(event) {
 <p>为了加载 TVM 环境，需要：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">sys</span>
-    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
-    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
-
-<span class="n">set_env</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
-TVM: 0.9.dev0
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.tvm.env</span> <span class="kn">import</span> <span class="n">set_tvm</span> <span class="c1"># 设置 TVM 环境</span>
+<span class="n">tvm_root</span> <span class="o">=</span> <span class="s2">&quot;/home/xinet/study/tvm&quot;</span>
+<span class="n">set_tvm</span><span class="p">(</span><span class="n">tvm_root</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -797,7 +785,7 @@ TVM: 0.9.dev0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>schedule(0x55c7fc076ac0)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>schedule(0x56162a742100)
 </pre></div>
 </div>
 </div>
@@ -966,7 +954,7 @@ TVM: 0.9.dev0
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
   1: TVMFuncCall
   0: tvm::runtime::PackedFuncObj::Extractor&lt;tvm::runtime::PackedFuncSubObj&lt;tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr&lt;tvm::runtime::Object&gt; const&amp;)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}&gt; &gt;::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)
-  File &quot;/media/pc/data/4tb/lxw/books/tvm/src/runtime/library_module.cc&quot;, line 80
+  File &quot;/home/xinet/study/tvm/src/runtime/library_module.cc&quot;, line 80
 TVMError: 
 ---------------------------------------------------------------
 An error occurred during the execution of TVM.
@@ -1007,7 +995,7 @@ For more information, please see: https://tvm.apache.org/docs/errors.html
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
   1: TVMFuncCall
   0: tvm::runtime::PackedFuncObj::Extractor&lt;tvm::runtime::PackedFuncSubObj&lt;tvm::runtime::WrapPackedFunc(int (*)(TVMValue*, int*, int, TVMValue*, int*, void*), tvm::runtime::ObjectPtr&lt;tvm::runtime::Object&gt; const&amp;)::{lambda(tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)#1}&gt; &gt;::Call(tvm::runtime::PackedFuncObj const*, tvm::runtime::TVMArgs, tvm::runtime::TVMRetValue*)
-  File &quot;/media/pc/data/4tb/lxw/books/tvm/src/runtime/library_module.cc&quot;, line 80
+  File &quot;/home/xinet/study/tvm/src/runtime/library_module.cc&quot;, line 80
 TVMError: 
 ---------------------------------------------------------------
 An error occurred during the execution of TVM.
@@ -1103,7 +1091,7 @@ For more information, please see: https://tvm.apache.org/docs/errors.html
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-06, 13:05:34.<br>
+最后更新于 2022-05-06, 14:33:21.<br>
 </p>
     </div>
     

@@ -620,27 +620,11 @@ function checkPageExistsAndRedirect(event) {
 <p>您已经了解了如何在 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中实现和编译简单的向量加法算子。现在要做一个大的跳跃，编译完整的由一组算子组成的预训练神经网络，来进行推理。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">sys</span>
-    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
-    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
-
-<span class="n">set_env</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
-TVM: 0.9.dev0
 </pre></div>
 </div>
 </div>
@@ -749,10 +733,15 @@ TVM: 0.9.dev0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>URLError(ConnectionRefusedError(111, &#39;Connection refused&#39;))
+Download attempt 0/3 failed, retrying.
+URLError(ConnectionRefusedError(111, &#39;Connection refused&#39;))
+Download attempt 1/3 failed, retrying.
+WARNING:root:Failed to download tophub package for llvm: &lt;urlopen error [Errno 111] Connection refused&gt;
+WARNING:autotvm:One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fa6bd5a6ec0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fc465dcbc40&gt;
 </pre></div>
 </div>
 </div>
@@ -780,7 +769,7 @@ TVM: 0.9.dev0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7fa6bd5efbb0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7fc4fd4cf2e0&gt;
 </pre></div>
 </div>
 </div>
@@ -827,7 +816,7 @@ TVM: 0.9.dev0
 <p>可以保存 <code class="docutils literal notranslate"><span class="pre">relay.build</span></code> 的输出到磁盘以便以后重用它们。下面的代码块保存了 json 字符串、库和参数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>rm -rf resnet18*
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>rm -rf outputs/resnet18*
 <span class="n">graph_fn</span><span class="p">,</span> <span class="n">mod_fn</span><span class="p">,</span> <span class="n">params_fn</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;outputs/&#39;</span><span class="o">+</span><span class="n">model_name</span><span class="o">+</span><span class="n">ext</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span><span class="s1">&#39;.tar&#39;</span><span class="p">,</span><span class="s1">&#39;.params&#39;</span><span class="p">)]</span>
 <span class="n">lib</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">mod_fn</span><span class="p">)</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -840,9 +829,9 @@ TVM: 0.9.dev0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 4月  24 09:09 outputs/resnet18_v2.params
--rw-rw-r-- 1 pc pc 36K 4月  24 09:09 outputs/resnet18_v2.json
--rw-rw-r-- 1 pc pc 42M 4月  24 09:09 outputs/resnet18_v2.tar
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-r--r-- 1 xinet xinet 45M May  6 22:14 outputs/resnet18_v2.params
+-rw-r--r-- 1 xinet xinet 28K May  6 22:14 outputs/resnet18_v2.json
+-rw-r--r-- 1 xinet xinet 42M May  6 22:14 outputs/resnet18_v2.tar
 </pre></div>
 </div>
 </div>
@@ -864,7 +853,7 @@ TVM: 0.9.dev0
 <span class="n">loaded_rt</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_executor</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">loaded_graph</span><span class="p">,</span> <span class="n">loaded_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
 <span class="n">loaded_rt</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">loaded_params</span><span class="p">)</span>
 <span class="n">loaded_rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-<span class="n">loaded_scores</span> <span class="o">=</span> <span class="n">loaded_rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">loaded_scores</span> <span class="o">=</span> <span class="n">loaded_rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">tvm</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">loaded_scores</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -921,7 +910,7 @@ TVM: 0.9.dev0
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-06, 13:05:34.<br>
+最后更新于 2022-05-06, 14:33:21.<br>
 </p>
     </div>
     
