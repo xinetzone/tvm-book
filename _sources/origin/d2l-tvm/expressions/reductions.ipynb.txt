@@ -124,9 +124,9 @@
     "origin_pos": 6
    },
    "source": [
-    "It's fairly straightforward, we first iterate on the first dimension, `axis=0`, and then sum all elements on the second dimension to write the results. In NumPy, we can use `:` to slice all elements along that dimension.\n",
+    "这非常简单，首先对第一个维度进行迭代，`axis=0`，然后对第二个维度上的所有元素求和，以写入结果。在 NumPy 中，可以使用 `:` 对该维度上的所有元素进行切片。\n",
     "\n",
-    "Now let's implement the same thing in TVM. Comparing to the vector addition in :numref:`ch_vector_add`, we used two new operators here. One is `tvm.reduce_axis`, which create an axis for reduction with range from 0 to `m`. It's functionally similar to the `:` used in `sum_rows`, but we need to explicitly specify the range in TVM. The other one is `tvm.sum`, which sums all elements along the reducing axis `k` and returns a scalar.\n"
+    "可以在 TVM 中实现同样的事情。与 [](ch_vector_add) 中的加法运算相比，这里使用了两个新的算子。一个是 `tvm.reduce_axis`，创建范围为 0 到 `m` 的归约轴。它的功能类似于 `sum_rows` 中使用的 `:`，但需要在 TVM 中显式指定范围。另一个是 `tvm.sum`，它对沿归约轴 `k` 的所有元素求和，并返回标量。"
    ]
   },
   {

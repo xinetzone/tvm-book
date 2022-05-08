@@ -653,8 +653,8 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>It’s fairly straightforward, we first iterate on the first dimension, <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>, and then sum all elements on the second dimension to write the results. In NumPy, we can use <code class="docutils literal notranslate"><span class="pre">:</span></code> to slice all elements along that dimension.</p>
-<p>Now let’s implement the same thing in TVM. Comparing to the vector addition in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add</span></code>, we used two new operators here. One is <code class="docutils literal notranslate"><span class="pre">tvm.reduce_axis</span></code>, which create an axis for reduction with range from 0 to <code class="docutils literal notranslate"><span class="pre">m</span></code>. It’s functionally similar to the <code class="docutils literal notranslate"><span class="pre">:</span></code> used in <code class="docutils literal notranslate"><span class="pre">sum_rows</span></code>, but we need to explicitly specify the range in TVM. The other one is <code class="docutils literal notranslate"><span class="pre">tvm.sum</span></code>, which sums all elements along the reducing axis <code class="docutils literal notranslate"><span class="pre">k</span></code> and returns a scalar.</p>
+<p>这非常简单，首先对第一个维度进行迭代，<code class="docutils literal notranslate"><span class="pre">axis=0</span></code>，然后对第二个维度上的所有元素求和，以写入结果。在 NumPy 中，可以使用 <code class="docutils literal notranslate"><span class="pre">:</span></code> 对该维度上的所有元素进行切片。</p>
+<p>可以在 TVM 中实现同样的事情。与 <a class="reference internal" href="../getting_started/vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中的加法运算相比，这里使用了两个新的算子。一个是 <code class="docutils literal notranslate"><span class="pre">tvm.reduce_axis</span></code>，创建范围为 0 到 <code class="docutils literal notranslate"><span class="pre">m</span></code> 的归约轴。它的功能类似于 <code class="docutils literal notranslate"><span class="pre">sum_rows</span></code> 中使用的 <code class="docutils literal notranslate"><span class="pre">:</span></code>，但需要在 TVM 中显式指定范围。另一个是 <code class="docutils literal notranslate"><span class="pre">tvm.sum</span></code>，它对沿归约轴 <code class="docutils literal notranslate"><span class="pre">k</span></code> 的所有元素求和，并返回标量。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">),</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
@@ -848,7 +848,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-06, 17:22:56.<br>
+最后更新于 2022-05-08, 15:17:25.<br>
 </p>
     </div>
     
