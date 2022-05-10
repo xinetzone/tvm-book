@@ -61,6 +61,7 @@ pip install mxnet-cu112
 3. 若要生成 TVM 文档，可：
 
     ```bash
+    invoke update
     invoke doc
     ```
 
