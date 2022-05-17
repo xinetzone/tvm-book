@@ -15,7 +15,9 @@
     "\n",
     "Arithmetic Units\n",
     "\n",
-    "典型的通用 CPU 有硬件单元来执行整数（称为 [ALU](https://en.wikipedia.org/wiki/Arithmetic_logic_unit)，中文：算术逻辑单元）和浮点数（称为 [FPU](https://en.wikipedia.org/wiki/Floating-point_unit)）上的运算。各种数据类型的性能取决于硬件。让我们先检查一下我们使用的 CPU 型号。"
+    "典型的通用 CPU 有硬件单元来执行整数（称为 [ALU](https://en.wikipedia.org/wiki/Arithmetic_logic_unit)，中文：算术逻辑单元）和浮点数（称为 [FPU](https://en.wikipedia.org/wiki/Floating-point_unit)）上的运算。各种数据类型的性能取决于硬件。\n",
+    "\n",
+    "先检查一下使用的 CPU 型号。"
    ]
   },
   {
@@ -74,10 +76,10 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "2.77 ms ± 18 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
-      "5.99 ms ± 166 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
-      "1.09 s ± 20 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n",
-      "1.1 s ± 4.25 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+      "3 ms ± 88.6 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
+      "4.7 ms ± 810 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)\n",
+      "1.09 s ± 6.26 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n",
+      "1.02 s ± 3.72 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
      ]
     }
    ],
@@ -98,9 +100,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "可以看出，32 位浮点（floating-point）(float32) 比 64 位浮点 (floati64) 快 2 倍。整数性能要慢得多，32 位整数 (int32) 和 64 位整数之间没有太大区别。我们将在后面进一步了解这些数字。\n",
+    "可以看出，32 位浮点（floating-point）(float32) 比 64 位浮点 (floati64) 快 2 倍。整数性能要慢得多，32 位整数 (int32) 和 64 位整数之间没有太大区别。\n",
     "\n",
-    "然而，有些算子可能比矩阵乘法中使用的乘法和加法 `a += b * c` 要慢得多。例如，CPU 可能需要数百个周期来计算 transcendental 函数，例如 `exp`。你可以看到，`np.exp(x)` 比 `np.dot(x, x)` 需要的运算少了很多，前者需要更长的时间。"
+    "然而，有些算子可能比矩阵乘法中使用的乘法和加法 `a += b * c` 要慢得多。例如，CPU 可能需要数百个周期来计算 transcendental 函数，例如 `exp`。"
    ]
   },
   {
@@ -112,7 +114,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "1.54 ms ± 34.5 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)\n"
+      "1.57 ms ± 1.7 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)\n"
      ]
     }
    ],
@@ -146,7 +148,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU MHz:                         1200.000\n",
+      "CPU MHz:                         2781.296\n",
       "CPU max MHz:                     3300.0000\n",
       "CPU min MHz:                     1200.0000\n"
      ]
@@ -312,7 +314,7 @@
     {
      "data": {
       "text/plain": [
-       "665.4080305521185"
+       "1007.5528471470129"
       ]
      },
      "execution_count": 8,
@@ -351,7 +353,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "MemTotal:       131879180 kB\n"
+      "MemTotal:       131879168 kB\n"
      ]
     }
    ],
@@ -387,7 +389,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "AVG\tMethod: MEMCPY\tElapsed: 0.04695\tMiB: 256.00000\tCopy: 5452.992 MiB/s\n"
+      "AVG\tMethod: MEMCPY\tElapsed: 0.04498\tMiB: 256.00000\tCopy: 5690.963 MiB/s\n"
      ]
     }
    ],
@@ -402,7 +404,9 @@
     "origin_pos": 20
    },
    "source": [
-    "注意，我们的 CPU 每秒可以对 float32 执行 $5740\\times 10^9$ 运算。这要求带宽至少为 $5740\\times 4=22960$ GB/s，这明显大于测量的带宽。CPU 使用 cache 来填补这一巨大的带宽缺口。让我们检查一下 CPU 的 cache。"
+    "注意，我们的 CPU 每秒可以对 float32 执行 $5760\\times 10^9$ 运算。这要求带宽至少为 $5760\\times 4=23040$ GB/s，这明显大于测量的带宽。CPU 使用 cache 来填补这一巨大的带宽缺口。\n",
+    "\n",
+    "检查一下 CPU 的 cache。"
    ]
   },
   {
@@ -436,7 +440,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "可以看到，有三个级别的缓存：L1、L2 和 L3（或 LLC，最后一级缓存）。L1 缓存有 768KB 的指令和 768KB 的数据。L2 缓存要大 8 倍。L3 缓存要大得多，但它仍然比主存（main memory）小数千倍。缓存的好处是显著改善了访问延迟（access latency）和带宽（bandwidth）。通常在现代 CPU 上，访问 L1 缓存的延迟小于 1ns, L2 缓存的延迟约为 7ns, L3 缓存慢一些，大约为 20ns，但仍然比主存的 100ns 的延迟快。\n",
+    "可以看到，有三个级别的缓存：L1、L2 和 L3（或 LLC，最后一级缓存）。L1 缓存有 768KB 的指令（L1i）和 768KB 的数据（L1d）。L2 缓存要大 8 倍。L3 缓存要大得多，但它仍然比主存（main memory）小数千倍。缓存的好处是显著改善了访问延迟（access latency）和带宽（bandwidth）。通常在现代 CPU 上，访问 L1 缓存的延迟小于 1ns, L2 缓存的延迟约为 7ns, L3 缓存慢一些，大约为 20ns，但仍然比主存的 100ns 的延迟快。\n",
     "\n",
     "```{figure} ../img/cpu_memory.svg\n",
     "The layout of main memory and caches.\n",
@@ -446,7 +450,7 @@
     "\n",
     "这看起来非常昂贵，但幸运的是，在实践中，程序有[数据本地模式](https://en.wikipedia.org/wiki/Locality_of_reference)，这将加快数据检索过程。有两种类型的地方性：temporal locality 和 spatial locality。时间局部性（temporal locality）意味着我们刚刚使用的数据通常将在不久的将来使用，因此它们可能仍然在缓存中。空间局部性（spatial locality）是指我们刚刚使用的相邻数据在不久的将来可能会被使用。\n",
     "\n",
-    "由于系统每次都会将一个值块带到缓存中（参见 [缓存线](https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES) 的概念），当引用这些相邻的数据时，这些数据可能仍然在缓存中。利用数据局部性带来的优势是最重要的性能优化原则之一，我们将在后面详细描述。\n",
+    "由于系统每次都会将一个值块带到缓存中（参见 [缓存线](https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES) 的概念），当引用这些相邻的数据时，这些数据可能仍然在缓存中。利用数据局部性带来的优势是最重要的性能优化原则之一。\n",
     "\n",
     "## 小结\n",
     "\n",

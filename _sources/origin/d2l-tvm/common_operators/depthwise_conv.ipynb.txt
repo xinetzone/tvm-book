@@ -28,7 +28,7 @@
    },
    "outputs": [],
    "source": [
-    "import d2ltvm\n",
+    "from tvm_book.contrib import d2ltvm\n",
     "import numpy as np\n",
     "import tvm\n",
     "from tvm import te"
@@ -123,7 +123,7 @@
    },
    "outputs": [],
    "source": [
-    "from d2ltvm import padding, conv_out_size\n",
+    "from tvm_book.contrib.d2ltvm import padding, conv_out_size\n",
     "\n",
     "# Save to the d2ltvm package.\n",
     "def depthwise_conv(ic, nh, nw, kh, kw, ph=0, pw=0, sh=1, sw=1):\n",
@@ -175,36 +175,36 @@
    },
    "outputs": [
     {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "// attr [PaddedX] storage_scope = \"global\"\n",
-      "allocate PaddedX[float32 * 50176]\n",
-      "produce PaddedX {\n",
-      "  for (i0, 0, 256) {\n",
-      "    for (i1, 0, 14) {\n",
-      "      for (i2, 0, 14) {\n",
-      "        PaddedX[(((i0*196) + (i1*14)) + i2)] = tvm_if_then_else(((((i1 < 1) || (13 <= i1)) || (i2 < 1)) || (13 <= i2)), 0f, X[((((i0*144) + (i1*12)) + i2) - 13)])\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "produce Y {\n",
-      "  for (c, 0, 256) {\n",
-      "    for (i, 0, 12) {\n",
-      "      for (j, 0, 12) {\n",
-      "        Y[(((c*144) + (i*12)) + j)] = 0f\n",
-      "        for (rkh, 0, 3) {\n",
-      "          for (rkw, 0, 3) {\n",
-      "            Y[(((c*144) + (i*12)) + j)] = (Y[(((c*144) + (i*12)) + j)] + (PaddedX[(((((c*196) + (i*14)) + (rkh*14)) + j) + rkw)]*K[(((c*9) + (rkh*3)) + rkw)]))\n",
-      "          }\n",
-      "        }\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "\n"
-     ]
+     "data": {
+      "text/plain": [
+       "PrimFunc([X, K, Y]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
+       "  allocate PaddedX[float32 * 50176], storage_scope = global\n",
+       "  for (i0, 0, 256) {\n",
+       "    for (i1, 0, 14) {\n",
+       "      for (i2, 0, 14) {\n",
+       "        PaddedX[(((i0*196) + (i1*14)) + i2)] = tir.if_then_else(((((i1 < 1) || (13 <= i1)) || (i2 < 1)) || (13 <= i2)), 0f, X[((((i0*144) + (i1*12)) + i2) - 13)])\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "  for (c, 0, 256) {\n",
+       "    for (i, 0, 12) {\n",
+       "      for (j, 0, 12) {\n",
+       "        Y[(((c*144) + (i*12)) + j)] = 0f\n",
+       "        for (rkh, 0, 3) {\n",
+       "          for (rkw, 0, 3) {\n",
+       "            let cse_var_1 = (((c*144) + (i*12)) + j)\n",
+       "            Y[cse_var_1] = (Y[cse_var_1] + (PaddedX[(((((c*196) + (i*14)) + (rkh*14)) + j) + rkw)]*K[(((c*9) + (rkh*3)) + rkw)]))\n",
+       "          }\n",
+       "        }\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
     }
    ],
    "source": [
@@ -212,13 +212,15 @@
     "\n",
     "X, K, Y, _ = depthwise_conv(ic, n, n, k, k, p, p, s, s)\n",
     "sch = te.create_schedule(Y.op)\n",
-    "mod = tvm.build(sch, [X, K, Y])\n",
-    "print(tvm.lower(sch, [X, K, Y], simple_mode=True))\n",
+    "\n",
+    "m = tvm.lower(sch, [X, K, Y], simple_mode=True)\n",
     "\n",
     "data, weight, out = get_conv_data(ic, ic, n, k, p, s, \n",
     "                                  constructor=tvm.nd.array, \n",
     "                                  conv_type='depthwise')\n",
-    "mod(data, weight, out)"
+    "mod = tvm.build(m)\n",
+    "mod(data, weight, out)\n",
+    "m[\"main\"]"
    ]
   },
   {
@@ -317,8 +319,25 @@
   }
  ],
  "metadata": {
+  "interpreter": {
+   "hash": "f0a0fcc4cb7375f8ee907b3c51d5b9d65107fda1aab037a85df7b0c09b870b98"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 (conda)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,

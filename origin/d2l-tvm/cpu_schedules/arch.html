@@ -630,7 +630,8 @@ function checkPageExistsAndRedirect(event) {
 <section id="id1">
 <h2>算术单元<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <p>Arithmetic Units</p>
-<p>典型的通用 CPU 有硬件单元来执行整数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Arithmetic_logic_unit">ALU</a>，中文：算术逻辑单元）和浮点数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Floating-point_unit">FPU</a>）上的运算。各种数据类型的性能取决于硬件。让我们先检查一下我们使用的 CPU 型号。</p>
+<p>典型的通用 CPU 有硬件单元来执行整数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Arithmetic_logic_unit">ALU</a>，中文：算术逻辑单元）和浮点数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Floating-point_unit">FPU</a>）上的运算。各种数据类型的性能取决于硬件。</p>
+<p>先检查一下使用的 CPU 型号。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 下面的代码运行在 Linux 上</span>
@@ -661,16 +662,16 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.77 ms ± 18 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-5.99 ms ± 166 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-1.09 s ± 20 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-1.1 s ± 4.25 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3 ms ± 88.6 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+4.7 ms ± 810 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+1.09 s ± 6.26 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+1.02 s ± 3.72 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre></div>
 </div>
 </div>
 </div>
-<p>可以看出，32 位浮点（floating-point）(float32) 比 64 位浮点 (floati64) 快 2 倍。整数性能要慢得多，32 位整数 (int32) 和 64 位整数之间没有太大区别。我们将在后面进一步了解这些数字。</p>
-<p>然而，有些算子可能比矩阵乘法中使用的乘法和加法 <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+=</span> <span class="pre">b</span> <span class="pre">*</span> <span class="pre">c</span></code> 要慢得多。例如，CPU 可能需要数百个周期来计算 transcendental 函数，例如 <code class="docutils literal notranslate"><span class="pre">exp</span></code>。你可以看到，<code class="docutils literal notranslate"><span class="pre">np.exp(x)</span></code> 比 <code class="docutils literal notranslate"><span class="pre">np.dot(x,</span> <span class="pre">x)</span></code> 需要的运算少了很多，前者需要更长的时间。</p>
+<p>可以看出，32 位浮点（floating-point）(float32) 比 64 位浮点 (floati64) 快 2 倍。整数性能要慢得多，32 位整数 (int32) 和 64 位整数之间没有太大区别。</p>
+<p>然而，有些算子可能比矩阵乘法中使用的乘法和加法 <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+=</span> <span class="pre">b</span> <span class="pre">*</span> <span class="pre">c</span></code> 要慢得多。例如，CPU 可能需要数百个周期来计算 transcendental 函数，例如 <code class="docutils literal notranslate"><span class="pre">exp</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
@@ -679,7 +680,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.54 ms ± 34.5 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.57 ms ± 1.7 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
 </pre></div>
 </div>
 </div>
@@ -696,7 +697,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU MHz:                         1200.000
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU MHz:                         2781.296
 CPU max MHz:                     3300.0000
 CPU min MHz:                     1200.0000
 </pre></div>
@@ -787,7 +788,7 @@ cat: write error: Broken pipe
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>665.4080305521185
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1007.5528471470129
 </pre></div>
 </div>
 </div>
@@ -805,7 +806,7 @@ cat: write error: Broken pipe
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MemTotal:       131879180 kB
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MemTotal:       131879168 kB
 </pre></div>
 </div>
 </div>
@@ -822,12 +823,13 @@ cat: write error: Broken pipe
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AVG	Method: MEMCPY	Elapsed: 0.04695	MiB: 256.00000	Copy: 5452.992 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AVG	Method: MEMCPY	Elapsed: 0.04498	MiB: 256.00000	Copy: 5690.963 MiB/s
 </pre></div>
 </div>
 </div>
 </div>
-<p>注意，我们的 CPU 每秒可以对 float32 执行 <span class="math notranslate nohighlight">\(5740\times 10^9\)</span> 运算。这要求带宽至少为 <span class="math notranslate nohighlight">\(5740\times 4=22960\)</span> GB/s，这明显大于测量的带宽。CPU 使用 cache 来填补这一巨大的带宽缺口。让我们检查一下 CPU 的 cache。</p>
+<p>注意，我们的 CPU 每秒可以对 float32 执行 <span class="math notranslate nohighlight">\(5760\times 10^9\)</span> 运算。这要求带宽至少为 <span class="math notranslate nohighlight">\(5760\times 4=23040\)</span> GB/s，这明显大于测量的带宽。CPU 使用 cache 来填补这一巨大的带宽缺口。</p>
+<p>检查一下 CPU 的 cache。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 以下代码在 Linux 运行</span>
@@ -845,7 +847,7 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
 </div>
 </div>
 </div>
-<p>可以看到，有三个级别的缓存：L1、L2 和 L3（或 LLC，最后一级缓存）。L1 缓存有 768KB 的指令和 768KB 的数据。L2 缓存要大 8 倍。L3 缓存要大得多，但它仍然比主存（main memory）小数千倍。缓存的好处是显著改善了访问延迟（access latency）和带宽（bandwidth）。通常在现代 CPU 上，访问 L1 缓存的延迟小于 1ns, L2 缓存的延迟约为 7ns, L3 缓存慢一些，大约为 20ns，但仍然比主存的 100ns 的延迟快。</p>
+<p>可以看到，有三个级别的缓存：L1、L2 和 L3（或 LLC，最后一级缓存）。L1 缓存有 768KB 的指令（L1i）和 768KB 的数据（L1d）。L2 缓存要大 8 倍。L3 缓存要大得多，但它仍然比主存（main memory）小数千倍。缓存的好处是显著改善了访问延迟（access latency）和带宽（bandwidth）。通常在现代 CPU 上，访问 L1 缓存的延迟小于 1ns, L2 缓存的延迟约为 7ns, L3 缓存慢一些，大约为 20ns，但仍然比主存的 100ns 的延迟快。</p>
 <figure class="align-default" id="id8">
 <img alt="../../../_images/cpu_memory.svg" src="../../../_images/cpu_memory.svg" /><figcaption>
 <p><span class="caption-text">The layout of main memory and caches.</span><a class="headerlink" href="#id8" title="永久链接至图片">#</a></p>
@@ -853,7 +855,7 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
 </figure>
 <p>L1 和 L2 缓存是独家的 CPU core，而 L3 缓存共享相同的 CPU 处理器来处理一些数据，CPU 将首先检查是否存在 L1 缓存的数据，如果没有，再检查 L2 高速缓存，如果没有，再检查 L3 缓存。如果不去主内存检索数据并把它所有的方式通过 L3 缓存，L2 缓存和 L1 缓存，最后到 CPU 寄存器。</p>
 <p>这看起来非常昂贵，但幸运的是，在实践中，程序有<a class="reference external" href="https://en.wikipedia.org/wiki/Locality_of_reference">数据本地模式</a>，这将加快数据检索过程。有两种类型的地方性：temporal locality 和 spatial locality。时间局部性（temporal locality）意味着我们刚刚使用的数据通常将在不久的将来使用，因此它们可能仍然在缓存中。空间局部性（spatial locality）是指我们刚刚使用的相邻数据在不久的将来可能会被使用。</p>
-<p>由于系统每次都会将一个值块带到缓存中（参见 <a class="reference external" href="https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES">缓存线</a> 的概念），当引用这些相邻的数据时，这些数据可能仍然在缓存中。利用数据局部性带来的优势是最重要的性能优化原则之一，我们将在后面详细描述。</p>
+<p>由于系统每次都会将一个值块带到缓存中（参见 <a class="reference external" href="https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES">缓存线</a> 的概念），当引用这些相邻的数据时，这些数据可能仍然在缓存中。利用数据局部性带来的优势是最重要的性能优化原则之一。</p>
 </section>
 <section id="id6">
 <h2>小结<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
@@ -906,7 +908,7 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-17, 11:30:34.<br>
+最后更新于 2022-05-17, 14:15:45.<br>
 </p>
     </div>
     
