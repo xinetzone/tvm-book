@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -47,7 +47,7 @@
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
-    <link rel="next" title="Broadcast Add" href="broadcast_add.html" />
+    <link rel="next" title="广播加法" href="broadcast_add.html" />
     <link rel="prev" title="真值测试：all 和 any" href="../expressions/all_any.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
@@ -356,17 +356,17 @@ function checkPageExistsAndRedirect(event) {
       <ul>
        <li class="toctree-l4">
         <a class="reference internal" href="broadcast_add.html">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="matmul.html">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -376,7 +376,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4">
@@ -585,18 +585,18 @@ function checkPageExistsAndRedirect(event) {
 <p>在上一章中，讨论了如何使用 tvm 算子来实现基本表达式/算子。本章将进一步描述如何实现在深度学习模型中遇到的典型算子。</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="broadcast_add.html">Broadcast Add</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="broadcast_add.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="broadcast_add.html">广播加法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="broadcast_add.html#id2">小结</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="matmul.html">Matrix Multiplication</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="matmul.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="matmul.html">矩阵乘法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="matmul.html#id2">小结</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="conv.html">Convolution</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="conv.html">卷积</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="conv.html#padding">Padding</a></li>
-<li class="toctree-l2"><a class="reference internal" href="conv.html#id1">Convolution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="conv.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#id2">卷积</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#id3">小结</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="depthwise_conv.html">Depthwise Convolution</a><ul>
@@ -606,16 +606,16 @@ function checkPageExistsAndRedirect(event) {
 <li class="toctree-l2"><a class="reference internal" href="depthwise_conv.html#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pooling.html">Pooling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pooling.html#compute-definition">Compute definition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pooling.html">池化</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pooling.html#id2">定义计算</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pooling.html#mxnet-baseline">MXNet Baseline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pooling.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pooling.html#id3">小结</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="batch_norm.html">Batch Normalization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="batch_norm.html#compute-definition">Compute definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_norm.html#id1">计算定义</a></li>
 <li class="toctree-l2"><a class="reference internal" href="batch_norm.html#mxnet-baseline">MXNet Baseline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batch_norm.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_norm.html#id2">小结</a></li>
 </ul>
 </li>
 </ul>
@@ -638,7 +638,7 @@ function checkPageExistsAndRedirect(event) {
     <a class='right-next' id="next-link" href="broadcast_add.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">Broadcast Add</p>
+        <p class="prev-next-title">广播加法</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -663,7 +663,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

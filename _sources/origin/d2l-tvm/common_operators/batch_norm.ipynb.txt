@@ -6,14 +6,14 @@
     "origin_pos": 0
    },
    "source": [
+    "(ch_batch_norm)=\n",
     "# Batch Normalization\n",
-    ":label:`ch_batch_norm`\n",
     "\n",
-    "This section talks about how to use TVM to do batch normalization (`batch_norm`). Like pooling, `batch_norm` is also a common operator in CNN. D2L introduces this operator in [details](https://d2l.ai/chapter_convolutional-modern/batch-norm.html). \n",
+    "本节讨论如何使用 TVM 执行 batch normalization（`batch_norm`）。和 pooling 一样，`batch_norm` 也是 CNN 中常见的算子。D2L 在 [细节](https://d2l.ai/chapter_convolutional-modern/batch-norm.html) 中引入了这个算子。\n",
     "\n",
-    "From the calculation perspective, for a given value, `batch_norm` subtracts the $mean$ out of it, and then divide it with the square root of the $variance$, no difference than a regular normalization. It is call `batch_norm` because the mean and variance are attained from the batches of when performed the training. After that, `batch_norm` also applies an affine transformation to the value, i.e. multiplies it with a scale value $gamma$ followed by adding a shift value $beta$. $Gamma$ and $beta$ are attained from the gradient computation of training. Lastly, a small positive value $epsilon$ is added to prevent the divisor to be 0.\n",
+    "从计算的角度来看，对于给定的值，`batch_norm` 减去其中的 `mean`，然后用 `variance` 的平方根除以它，与常规 normalization 没有区别。它被称为 `batch_norm`，因为均值和方差是在执行训练时从批次中获得的。在此之后，  `batch_norm` 也对该值应用仿射变换，即将其与 scale 值 $\\gamma$ 相乘，然后加上 shift 值 $\\beta$。由训练梯度计算得到 $\\gamma$ 和 $\\beta$。最后，加上一个小的正值 $\\epsilon$，以防止除数为 0。\n",
     "\n",
-    "In the case of inference, both the mean and variance are determined, so the process of `batch_norm` is just a combination of several simple element-wise operations.\n"
+    "在推理的情况下，均值和方差都是确定的，因此 `batch_norm` 的过程只是几个简单的元素运算的组合。"
    ]
   },
   {
@@ -34,7 +34,7 @@
    "source": [
     "import tvm\n",
     "from tvm import te\n",
-    "import d2ltvm\n",
+    "from tvm_book.contrib import d2ltvm\n",
     "import numpy as np"
    ]
   },
@@ -44,21 +44,20 @@
     "origin_pos": 2
    },
    "source": [
-    "## Compute definition\n",
+    "## 计算定义\n",
     "\n",
-    "In practice, we are not going to perform `batch_norm` of one value. Instead, the `batch_norm` will be executed on the output of a convolution, namely, 3-D data in (channel, height, weight). Data in different channels have different values of $mean$, $variance$, $gamma$, and $beta$. The calculation can be expressed as the following formula.\n",
+    "在实践中，不打算执行一个值的 `batch_norm`。相反，`batch_norm` 将在卷积的输出上执行，即 (channel, height, weight) 中的 3-D 数据。\n",
     "\n",
     "$$out[i,:,:] = \\frac{data[i,:,:] - mean[i]}{\\sqrt{var[i]+\\epsilon}} \\\n",
-    "* gamma[i] + beta[i] $$\n",
+    "* \\gamma[i] + \\beta[i] $$\n",
     "\n",
-    "During model training, $mean$ and $var$ are computed from the input $data$. However, in model inference which we focus on here, $mean$ and $var$ are given; therefore we don't need to compute them from $data$.\n",
+    "在模型训练过程中，并根据输入 $data$ 进行计算 $mean$ 和 $var$。然而，这里重点关注模型推理，并给出了 $mean$ 和 $var$；因此不需要从中计算它们。\n",
     "\n",
-    "We will define the compute of this formula. Essentially, `batch_norm` is a combination of a number of simple broadcasting and element-wise calculations. \n",
-    "Note that in :numref:`ch_bcast_add` we defined a limited `broadcast_add` to perform only broadcast addition for 2-D tensors. If we generalize it to more dimensions and more calculators, we can reuse them to compose the `batch_norm` operator. This is actually what TVM does.\n",
+    "我们将定义这个公式的计算。实际上，`batch_norm` 是一些简单的广播和元素相关的计算的组合。注意，在 {ref}`ch_bcast_add` 中，定义了有限的 `broadcast_add`，只对二维张量执行广播加法。如果将其推广到更多维和更多的 calculator，就可以重用它们来组成 `batch_norm` 算子。这就是 TVM 所做的。\n",
     "\n",
-    "Here, for simplicity, we use TVM basic operators for broadcast calculation. TVM operators are defined in `TOPI`, which stands for Tensor OPerator Inventory. It follows the NumPy convention to override the arithmetic operators (i.e. `+`, `-`, `*`, `/`) for broadcast calculation. The element-wise square root can be found in `TOPI`, too.\n",
+    "这里，为了简单起见，使用 TVM 基本算子进行广播计算。TVM 算子定义在 `TOPI` 中，TOPI 代表张量算子清单。它遵循 NumPy 约定来覆盖算术算子（即 `+`、`-`、`*`、`/`）。元素的平方根也可以在 `TOPI` 中找到。\n",
     "\n",
-    "The code snippet to define `batch_norm` is as follows.\n"
+    "定义 `batch_norm` 的代码片段如下所示。"
    ]
   },
   {
@@ -78,7 +77,7 @@
    "outputs": [],
    "source": [
     "# Save to the d2ltvm package.\n",
-    "import topi\n",
+    "from tvm_book.contrib.d2ltvm import topi\n",
     "\n",
     "def batch_norm(c, n, eps=1e-5):\n",
     "    \"\"\"batch normalization\n",
@@ -105,7 +104,7 @@
     "origin_pos": 4
    },
    "source": [
-    "We can then compile print the IR and compile it. The IR contains several stages but should be easy to follow.\n"
+    "然后可以打印并编译 IR。IR 包括几个阶段，但应该很容易遵循。"
    ]
   },
   {
@@ -119,61 +118,55 @@
    },
    "outputs": [
     {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "// attr [T_subtract] storage_scope = \"global\"\n",
-      "allocate T_subtract[float32 * 25088]\n",
-      "// attr [T_add] storage_scope = \"global\"\n",
-      "allocate T_add[float32 * 32]\n",
-      "produce T_subtract {\n",
-      "  for (ax0, 0, 32) {\n",
-      "    for (ax1, 0, 28) {\n",
-      "      for (ax2, 0, 28) {\n",
-      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (X[(((ax0*784) + (ax1*28)) + ax2)] - Mean[ax0])\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "produce T_add {\n",
-      "  for (ax0, 0, 32) {\n",
-      "    T_add[ax0] = (Var[ax0] + 1e-05f)\n",
-      "  }\n",
-      "}\n",
-      "produce compute {\n",
-      "  for (i0, 0, 32) {\n",
-      "    T_add[i0] = sqrt(T_add[i0])\n",
-      "  }\n",
-      "}\n",
-      "produce T_divide {\n",
-      "  for (ax0, 0, 32) {\n",
-      "    for (ax1, 0, 28) {\n",
-      "      for (ax2, 0, 28) {\n",
-      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)]/T_add[ax0])\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "produce T_multiply {\n",
-      "  for (ax0, 0, 32) {\n",
-      "    for (ax1, 0, 28) {\n",
-      "      for (ax2, 0, 28) {\n",
-      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)]*Gamma[ax0])\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "produce T_add {\n",
-      "  for (ax0, 0, 32) {\n",
-      "    for (ax1, 0, 28) {\n",
-      "      for (ax2, 0, 28) {\n",
-      "        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)] + Beta[ax0])\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "\n"
-     ]
+     "data": {
+      "text/plain": [
+       "PrimFunc([X, Mean, Var, Gamma, Beta, T_add]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
+       "  allocate T_subtract[float32 * 25088], storage_scope = global\n",
+       "  allocate T_add[float32 * 32], storage_scope = global\n",
+       "  for (ax0, 0, 32) {\n",
+       "    for (ax1, 0, 28) {\n",
+       "      for (ax2, 0, 28) {\n",
+       "        let cse_var_1 = (((ax0*784) + (ax1*28)) + ax2)\n",
+       "        T_subtract[cse_var_1] = (X[cse_var_1] - Mean[ax0])\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "  for (ax0, 0, 32) {\n",
+       "    T_add[ax0] = (Var[ax0] + 1e-05f)\n",
+       "  }\n",
+       "  for (i0, 0, 32) {\n",
+       "    T_add[i0] = tir.sqrt(T_add[i0])\n",
+       "  }\n",
+       "  for (ax0, 0, 32) {\n",
+       "    for (ax1, 0, 28) {\n",
+       "      for (ax2, 0, 28) {\n",
+       "        let cse_var_2 = (((ax0*784) + (ax1*28)) + ax2)\n",
+       "        T_subtract[cse_var_2] = (T_subtract[cse_var_2]/T_add[ax0])\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "  for (ax0, 0, 32) {\n",
+       "    for (ax1, 0, 28) {\n",
+       "      for (ax2, 0, 28) {\n",
+       "        let cse_var_3 = (((ax0*784) + (ax1*28)) + ax2)\n",
+       "        T_subtract[cse_var_3] = (T_subtract[cse_var_3]*Gamma[ax0])\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "  for (ax0, 0, 32) {\n",
+       "    for (ax1, 0, 28) {\n",
+       "      for (ax2, 0, 28) {\n",
+       "        let cse_var_4 = (((ax0*784) + (ax1*28)) + ax2)\n",
+       "        T_add[cse_var_4] = (T_subtract[cse_var_4] + Beta[ax0])\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
     }
    ],
    "source": [
@@ -182,9 +175,10 @@
     "X, Mean, Var, Gamma, Beta, Y = batch_norm(c, n)\n",
     "\n",
     "sch = te.create_schedule(Y.op)\n",
-    "mod = tvm.build(sch, [X, Mean, Var, Gamma, Beta, Y])\n",
+    "m = tvm.lower(sch, [X, Mean, Var, Gamma, Beta, Y], simple_mode=True)\n",
+    "mod = tvm.build(m)\n",
     "\n",
-    "print(tvm.lower(sch, [X, Mean, Var, Gamma, Beta], simple_mode=True))"
+    "m[\"main\"]"
    ]
   },
   {
@@ -193,9 +187,9 @@
     "origin_pos": 6
    },
    "source": [
-    "To execute it, we will need to create data for `batch_norm`. Similar to the previous sections for getting conv and pooling data, we define a `get_bn_data` method to generate the data of `batch_norm`. One tricky thing is that the variance must be non-negative numbers. Therefore, we move the mean value of the random number generator's normal distribution to 1 (by default mean 0 and standard deviation 1), and get the absolute numbers of generated results.\n",
+    "要执行它，需要为 `batch_norm` 创建数据。与前面获取 conv 和 pooling 数据的部分类似，定义了 `get_bn_data` 方法来生成 `batch_norm` 的数据。棘手的问题是方差必须是非负数。因此，将随机数生成器正态分布的均值移至 1（默认均值为 0，标准差为 1），得到生成结果的绝对数量。\n",
     "\n",
-    "After getting the data, we can simply call the compiled module to execute.\n"
+    "在获得数据之后，可以简单地调用编译后的模块来执行。"
    ]
   },
   {
@@ -250,12 +244,11 @@
    "source": [
     "## MXNet Baseline\n",
     "\n",
-    "We use the `batch_norm` function of MXNet as the baseline to check the correctness of our compiled functions. \n",
-    "This function in MXNet was defined to be generic for both training and inference. In the inference case that we talk about here, we will need to set the corresponding input arguments properly. \n",
-    "One is $use_global_stats$, which needs to be set `True` as we will use the input mean and variance for `batch_norm` to compute instead of computing them from the input data (training will do so). \n",
-    "The other is $fix\\_gamma$, which needs to be set `False` so that the input $gamma$ will be used instead of setting $gamma$ to be all 1.\n",
+    "使用 MXNet 的 `batch_norm` 函数作为基准来检查编译函数的正确性。\n",
     "\n",
-    "Lastly, like we have discussed in other cases, MXNet `batch_norm` has input data in 4D, including batch as the outmost dimension. So we will expand this dimension in the data accordingly.\n"
+    "MXNet 中的这个函数被定义为通用函数，用于训练和推理。在这里讨论的推理案例中，需要正确地设置相应的输入参数。一个是 `use_global_stats`，需要设置为 `True` ，因为将使用 `batch_norm` 的输入平均值和方差来计算，而不是从输入数据计算它们（训练将这样做）。另一个是 `fix_gamma`，它需要设置为 `False`，这样输入的 $\\gamma$ 就会被使用，而不是将 $\\gamma$ 为全设置为 1。\n",
+    "\n",
+    "最后，就像在其他例子中讨论的那样，MXNet `batch_norm` 的输入数据是 4D，其中 batch 是最外维。因此，将在数据中相应地扩展这个维度。"
    ]
   },
   {
@@ -302,7 +295,7 @@
     "origin_pos": 10
    },
    "source": [
-    "Finally, we check if our results are close enough to the results produced by MXNet.\n"
+    "最后，检查结果是否与 MXNet 产生的结果足够接近。"
    ]
   },
   {
@@ -330,16 +323,33 @@
     "origin_pos": 12
    },
    "source": [
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "- From the computation perspective, `batch_norm` is a combination of a number of broadcast and element-wise simple operators, which can be easily attained from TVM's Tensor OPerator Inventory (TOPI).\n",
-    "- In inference, $mean$ and $var$ of `batch_norm` are pre-defined.\n"
+    "- 从计算的角度来看，`batch_norm` 是一系列广播和元素算子的组合，可以很容易地从 TVM 的张量算子库（Tensor OPerator Inventory，简称 TOPI）中得到。\n",
+    "- 在推理中，`batch_norm` 的 $mean$ 和 $var$ 是预定义的。"
    ]
   }
  ],
  "metadata": {
+  "interpreter": {
+   "hash": "f0a0fcc4cb7375f8ee907b3c51d5b9d65107fda1aab037a85df7b0c09b870b98"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 (conda)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,

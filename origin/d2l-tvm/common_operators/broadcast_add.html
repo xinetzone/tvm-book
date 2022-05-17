@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Broadcast Add &#8212; tvm-book 0.0.2 文档</title>
+    <title>广播加法 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -47,7 +47,7 @@
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
-    <link rel="next" title="Matrix Multiplication" href="matmul.html" />
+    <link rel="next" title="矩阵乘法" href="matmul.html" />
     <link rel="prev" title="常见的算子" href="index.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
@@ -356,17 +356,17 @@ function checkPageExistsAndRedirect(event) {
       <ul class="current">
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="matmul.html">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -376,7 +376,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4">
@@ -558,8 +558,8 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id2">
+   小结
   </a>
  </li>
 </ul>
@@ -590,16 +590,18 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="broadcast-add">
-<h1>Broadcast Add<a class="headerlink" href="#broadcast-add" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_bcast_add</span></code></p>
-<p>A broadcast operator process two tensors in different shapes. Normally, one of the operands has a particular dimension to be 1, which will be broadcast along the corresponding dimension of the other operator to perform the given calculation. Common scalar calculations can all be broadcast, such as elementary arithmetic and logical operations. :numref:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add</span></code> illustrates one broadcast add case between two 2-dimensional tensors. Broadcast operators are commonly seen in deep learning workloads, e.g. <a class="reference external" href="http://d2l.ai/chapter_convolutional-modern/batch-norm.html">batch normalization</a>.</p>
-<p><img alt="One case of broadcast add between two 2-dimensional tensors" src="../../../_images/bcast_add.svg" />
-:label:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add</span></code></p>
-<p>In this section we will demonstrate how to perform a broadcast add between two 2-dimensional tensors. The following code defines the computation.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="ch-bcast-add">
+<span id="id1"></span><h1>广播加法<a class="headerlink" href="#ch-bcast-add" title="永久链接至标题">#</a></h1>
+<p>广播算子处理两个不同形状的张量。通常，其中一个操作数的特定维度为 1，该维度将沿着另一个算子的相应维度广播，以执行给定的计算。普通标量计算都可以广播，如基本算术和逻辑运算。<a class="reference internal" href="#fig-bcast-add"><span class="std std-ref">二维张量间广播相加的一种情况</span></a> 说明了两个二维张量之间的广播加法案例。Broadcast 算子在深度学习工作负载（workload）中很常见，如 <a class="reference external" href="http://d2l.ai/chapter_convolutional-modern/batch-norm.html">batch normalization</a>。</p>
+<figure class="align-default" id="id3">
+<span id="fig-bcast-add"></span><img alt="../../../_images/bcast_add.svg" src="../../../_images/bcast_add.svg" /><figcaption>
+<p><span class="caption-text">二维张量间广播相加的一种情况</span><a class="headerlink" href="#id3" title="永久链接至图片">#</a></p>
+</figcaption>
+</figure>
+<p>在本节中，将演示如何在两个二维张量之间进行广播相加。下面的代码定义了计算。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
 
@@ -626,27 +628,28 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Then we use it to perform the broadcast add illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add</span></code>.</p>
+<p>然后使用它来执行广播加法：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="mi">3</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">shape1</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">shape2</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">broadcast_add</span><span class="p">(</span><span class="n">shape1</span><span class="p">,</span> <span class="n">shape2</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">])</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">m</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>// attr [C] storage_scope = &quot;global&quot;
-allocate C[float32 * 12]
-produce C {
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([A, B]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
+  allocate C[float32 * 12], storage_scope = global
   for (x, 0, 3) {
     for (y, 0, 4) {
-      C[((x*4) + y)] = (A[x] + B[((x*4) + y)])
+      let cse_var_1 = ((x*4) + y)
+      C[cse_var_1] = (A[x] + B[cse_var_1])
     }
   }
 }
@@ -654,10 +657,10 @@ produce C {
 </div>
 </div>
 </div>
-<p>The printed pseudocode clearly depicts the process of a broadcast add. We verify the results as follows.</p>
+<p>打印的伪代码清楚地描述了广播相加的过程。验证结果如下。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
 <span class="k">def</span> <span class="nf">get_bcast_data</span><span class="p">(</span><span class="n">shape1</span><span class="p">,</span> <span class="n">shape2</span><span class="p">,</span> <span class="n">constructor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return random tensors a, b </span>
 <span class="sd">    and empty tensor c to store broadcast results between a and b</span>
@@ -681,10 +684,10 @@ produce C {
 </div>
 </div>
 </div>
-<p>Note that broadcast is allowed to perform along multiple dimensions.</p>
+<p>注意，广播是允许沿着多个维度执行的。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shape1</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape1</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">shape2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">broadcast_add</span><span class="p">(</span><span class="n">shape1</span><span class="p">,</span> <span class="n">shape2</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
@@ -702,16 +705,14 @@ produce C {
 </div>
 </div>
 </div>
-<p>Lastly, it is easy to note that when the shapes of two input tensors are indentical, the broadcast add reduces to an element-wise add.</p>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
-<ul class="simple">
-<li><p>We can define a broadcast operator in TVM.</p></li>
-<li><p>Broadcast be can performed along multiple dimensions.</p></li>
-</ul>
+<p>最后，很容易注意到，当两个输入张量的形状相同时，广播相加归约为元素级相加。</p>
+<section id="id2">
+<h2>小结<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>-可以在 TVM 中定义广播算子。
+— 广播可以沿着多个维度进行。</p>
 <p>EE Exercise</p>
 <ul class="simple">
-<li><p>Generalize <code class="docutils literal notranslate"><span class="pre">broadcast_add</span></code> defined above to more dimensions and more operators.</p></li>
+<li><p>将上面定义的 <code class="docutils literal notranslate"><span class="pre">broadcast_add</span></code> 泛化为更多维度和更多算子。</p></li>
 </ul>
 </section>
 </section>
@@ -732,7 +733,7 @@ produce C {
     <a class='right-next' id="next-link" href="matmul.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">Matrix Multiplication</p>
+        <p class="prev-next-title">矩阵乘法</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -757,7 +758,7 @@ produce C {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

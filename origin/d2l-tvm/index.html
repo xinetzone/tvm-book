@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -356,17 +356,17 @@ function checkPageExistsAndRedirect(event) {
       <ul>
        <li class="toctree-l4">
         <a class="reference internal" href="common_operators/broadcast_add.html">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="common_operators/matmul.html">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="common_operators/conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -376,7 +376,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="common_operators/pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4">
@@ -659,8 +659,8 @@ function checkPageExistsAndRedirect(event) {
 </li>
 <li class="toctree-l2"><a class="reference internal" href="expressions/reductions.html">归约运算</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="expressions/reductions.html#id2">求和</a></li>
-<li class="toctree-l3"><a class="reference internal" href="expressions/reductions.html#commutative-reduction">Commutative Reduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="expressions/reductions.html#summary">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expressions/reductions.html#id3">可交换的归约</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expressions/reductions.html#id4">小结</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="expressions/if_then_else.html">条件表达式：<code class="docutils literal notranslate"><span class="pre">if-then-else</span></code></a><ul>
@@ -674,18 +674,18 @@ function checkPageExistsAndRedirect(event) {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="common_operators/index.html">常见的算子</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="common_operators/broadcast_add.html">Broadcast Add</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/broadcast_add.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_operators/broadcast_add.html">广播加法</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/broadcast_add.html#id2">小结</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="common_operators/matmul.html">Matrix Multiplication</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/matmul.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_operators/matmul.html">矩阵乘法</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/matmul.html#id2">小结</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="common_operators/conv.html">Convolution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="common_operators/conv.html">卷积</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="common_operators/conv.html#padding">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/conv.html#id1">Convolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/conv.html#summary">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/conv.html#id2">卷积</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/conv.html#id3">小结</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="common_operators/depthwise_conv.html">Depthwise Convolution</a><ul>
@@ -695,16 +695,16 @@ function checkPageExistsAndRedirect(event) {
 <li class="toctree-l3"><a class="reference internal" href="common_operators/depthwise_conv.html#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="common_operators/pooling.html">Pooling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/pooling.html#compute-definition">Compute definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_operators/pooling.html">池化</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/pooling.html#id2">定义计算</a></li>
 <li class="toctree-l3"><a class="reference internal" href="common_operators/pooling.html#mxnet-baseline">MXNet Baseline</a></li>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/pooling.html#summary">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/pooling.html#id3">小结</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="common_operators/batch_norm.html">Batch Normalization</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/batch_norm.html#compute-definition">Compute definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/batch_norm.html#id1">计算定义</a></li>
 <li class="toctree-l3"><a class="reference internal" href="common_operators/batch_norm.html#mxnet-baseline">MXNet Baseline</a></li>
-<li class="toctree-l3"><a class="reference internal" href="common_operators/batch_norm.html#summary">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_operators/batch_norm.html#id2">小结</a></li>
 </ul>
 </li>
 </ul>
@@ -817,7 +817,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Matrix Multiplication &#8212; tvm-book 0.0.2 文档</title>
+    <title>矩阵乘法 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -49,8 +49,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
-    <link rel="next" title="Convolution" href="conv.html" />
-    <link rel="prev" title="Broadcast Add" href="broadcast_add.html" />
+    <link rel="next" title="卷积" href="conv.html" />
+    <link rel="prev" title="广播加法" href="broadcast_add.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
 
@@ -358,17 +358,17 @@ function checkPageExistsAndRedirect(event) {
       <ul class="current">
        <li class="toctree-l4">
         <a class="reference internal" href="broadcast_add.html">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -378,7 +378,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4">
@@ -560,8 +560,8 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id2">
+   小结
   </a>
  </li>
 </ul>
@@ -592,19 +592,21 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="matrix-multiplication">
-<h1>Matrix Multiplication<a class="headerlink" href="#matrix-multiplication" title="永久链接至标题">#</a></h1>
-<p>Matrix Multiplication is one of the most widely operators in scientific computing and deep learning, which is typically referred to as <em>GEMM</em> (GEneral Matrix Multiply). Let’s implement its computation in this section.</p>
-<p>Given <span class="math notranslate nohighlight">\(A\in\mathbb R^{n\times l}\)</span>, and <span class="math notranslate nohighlight">\(B \in\mathbb R^{l\times m}\)</span>, if <span class="math notranslate nohighlight">\(C=AB\)</span> then <span class="math notranslate nohighlight">\(C \in\mathbb R^{n\times m}\)</span> and</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>矩阵乘法<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<p>矩阵乘法是科学计算和深度学习中应用最广泛的运算之一，通常被称为通用矩阵乘法（GEneral Matrix Multiply，简称 GEMM）。在本节中将实现它的计算。</p>
+<p>给定 <span class="math notranslate nohighlight">\(A\in\mathbb R^{n\times l}\)</span> 和 <span class="math notranslate nohighlight">\(B \in\mathbb R^{l\times m}\)</span>，如果 <span class="math notranslate nohighlight">\(C=AB\)</span> 那么 <span class="math notranslate nohighlight">\(C \in\mathbb R^{n\times m}\)</span>，且</p>
 <div class="math notranslate nohighlight">
 \[C_{i,j} = \sum_{k=1}^l A_{i,k} B_{k,j}.\]</div>
-<p>The elements accessed to compute <span class="math notranslate nohighlight">\(C_{i,j}\)</span> are illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">fig_matmul_default</span></code>.</p>
-<p><img alt="Compute  in matrix multiplication." src="../../../_images/matmul_default.svg" />
-:label:<code class="docutils literal notranslate"><span class="pre">fig_matmul_default</span></code></p>
-<p>The following method returns the computing expression of matrix multiplication.</p>
+<figure class="align-default" id="id3">
+<span id="fig-matmul-default"></span><img alt="../../../_images/matmul_default.svg" src="../../../_images/matmul_default.svg" /><figcaption>
+<p><span class="caption-text">计算矩阵乘法的原始 <span class="math notranslate nohighlight">\(C_{x,y}\)</span></span><a class="headerlink" href="#id3" title="永久链接至图片">#</a></p>
+</figcaption>
+</figure>
+<p>下面的方法返回矩阵乘法的计算表达式。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">d2ltvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import d2ltvm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
@@ -627,26 +629,27 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Let’s compile a module for a square matrix multiplication.</p>
+<p>下面编译方阵乘法模块。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">matmul</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">])</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">m</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>// attr [C] storage_scope = &quot;global&quot;
-allocate C[float32 * 10000]
-produce C {
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([A, B, C]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
   for (x, 0, 100) {
     for (y, 0, 100) {
       C[((x*100) + y)] = 0f
       for (k, 0, 100) {
-        C[((x*100) + y)] = (C[((x*100) + y)] + (A[((x*100) + k)]*B[((k*100) + y)]))
+        let cse_var_2 = (x*100)
+        let cse_var_1 = (cse_var_2 + y)
+        C[cse_var_1] = (C[cse_var_1] + (A[(cse_var_2 + k)]*B[((k*100) + y)]))
       }
     }
   }
@@ -655,23 +658,24 @@ produce C {
 </div>
 </div>
 </div>
-<p>The pseudo code is simply a naive 3-level nested for loop to calculate the matrix multiplication.</p>
-<p>And then we verify the results. Note that NumPy may use multi-threading to accelerate its computing, which may result in slightly different results due to the numerical error. There we use <code class="docutils literal notranslate"><span class="pre">assert_allclose</span></code> with a relative large tolerant error to test the correctness.</p>
+<p>伪代码只是简单的 3 级嵌套的 for 循环，用于计算矩阵乘法。</p>
+<p>然后验证结果。注意，NumPy 可能使用多线程来加速其计算，这可能会由于数值错误而导致略有不同的结果。使用 <code class="docutils literal notranslate"><span class="pre">assert_allclose</span></code> 和相对较大的容错来测试正确性。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
 <span class="n">mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()),</span>
-                           <span class="n">c</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">numpy</span><span class="p">()),</span>
+                           <span class="n">c</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<section id="id2">
+<h2>小结<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>We can express the computation of matrix multiplication in TVM in one line of code.</p></li>
-<li><p>The naive matrix multiplication is a 3-level nested for loop.</p></li>
+<li><p>可以用一行代码来表示 TVM 中矩阵乘法的计算。</p></li>
+<li><p>原始矩阵乘法是 3 层嵌套的 for 循环。</p></li>
 </ul>
 </section>
 </section>
@@ -686,13 +690,13 @@ produce C {
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">Broadcast Add</p>
+            <p class="prev-next-title">广播加法</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="conv.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">Convolution</p>
+        <p class="prev-next-title">卷积</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -717,7 +721,7 @@ produce C {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

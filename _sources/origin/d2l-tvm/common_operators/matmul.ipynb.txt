@@ -6,20 +6,20 @@
     "origin_pos": 0
    },
    "source": [
-    "# Matrix Multiplication\n",
+    "# 矩阵乘法\n",
     "\n",
-    "Matrix Multiplication is one of the most widely operators in scientific computing and deep learning, which is typically referred to as *GEMM* (GEneral Matrix Multiply). Let's implement its computation in this section.\n",
+    "矩阵乘法是科学计算和深度学习中应用最广泛的运算之一，通常被称为通用矩阵乘法（GEneral Matrix Multiply，简称 GEMM）。在本节中将实现它的计算。\n",
     "\n",
-    "Given $A\\in\\mathbb R^{n\\times l}$, and $B \\in\\mathbb R^{l\\times m}$, if $C=AB$ then $C \\in\\mathbb R^{n\\times m}$ and\n",
+    "给定 $A\\in\\mathbb R^{n\\times l}$ 和 $B \\in\\mathbb R^{l\\times m}$，如果 $C=AB$ 那么 $C \\in\\mathbb R^{n\\times m}$，且\n",
     "\n",
     "$$C_{i,j} = \\sum_{k=1}^l A_{i,k} B_{k,j}.$$\n",
     "\n",
-    "The elements accessed to compute $C_{i,j}$ are illustrated in :numref:`fig_matmul_default`.\n",
+    "(fig_matmul_default)=\n",
+    "```{figure} ../img/matmul_default.svg\n",
+    "计算矩阵乘法的原始 $C_{x,y}$\n",
+    "```\n",
     "\n",
-    "![Compute $C_{x,y}$ in matrix multiplication.](../img/matmul_default.svg)\n",
-    ":label:`fig_matmul_default`\n",
-    "\n",
-    "The following method returns the computing expression of matrix multiplication.\n"
+    "下面的方法返回矩阵乘法的计算表达式。"
    ]
   },
   {
@@ -38,7 +38,7 @@
    },
    "outputs": [],
    "source": [
-    "import d2ltvm\n",
+    "# import d2ltvm\n",
     "import numpy as np\n",
     "import tvm\n",
     "from tvm import te\n",
@@ -65,7 +65,7 @@
     "origin_pos": 2
    },
    "source": [
-    "Let's compile a module for a square matrix multiplication.\n"
+    "下面编译方阵乘法模块。"
    ]
   },
   {
@@ -84,31 +84,34 @@
    },
    "outputs": [
     {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "// attr [C] storage_scope = \"global\"\n",
-      "allocate C[float32 * 10000]\n",
-      "produce C {\n",
-      "  for (x, 0, 100) {\n",
-      "    for (y, 0, 100) {\n",
-      "      C[((x*100) + y)] = 0f\n",
-      "      for (k, 0, 100) {\n",
-      "        C[((x*100) + y)] = (C[((x*100) + y)] + (A[((x*100) + k)]*B[((k*100) + y)]))\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "\n"
-     ]
+     "data": {
+      "text/plain": [
+       "PrimFunc([A, B, C]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
+       "  for (x, 0, 100) {\n",
+       "    for (y, 0, 100) {\n",
+       "      C[((x*100) + y)] = 0f\n",
+       "      for (k, 0, 100) {\n",
+       "        let cse_var_2 = (x*100)\n",
+       "        let cse_var_1 = (cse_var_2 + y)\n",
+       "        C[cse_var_1] = (C[cse_var_1] + (A[(cse_var_2 + k)]*B[((k*100) + y)]))\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
     }
    ],
    "source": [
     "n = 100\n",
     "A, B, C = matmul(n, n, n)\n",
     "s = te.create_schedule(C.op)\n",
-    "print(tvm.lower(s, [A, B], simple_mode=True))\n",
-    "mod = tvm.build(s, [A, B, C])"
+    "m = tvm.lower(s, [A, B, C], simple_mode=True)\n",
+    "mod = tvm.build(m)\n",
+    "m[\"main\"]"
    ]
   },
   {
@@ -117,9 +120,9 @@
     "origin_pos": 4
    },
    "source": [
-    "The pseudo code is simply a naive 3-level nested for loop to calculate the matrix multiplication.\n",
+    "伪代码只是简单的 3 级嵌套的 for 循环，用于计算矩阵乘法。\n",
     "\n",
-    "And then we verify the results. Note that NumPy may use multi-threading to accelerate its computing, which may result in slightly different results due to the numerical error. There we use `assert_allclose` with a relative large tolerant error to test the correctness.\n"
+    "然后验证结果。注意，NumPy 可能使用多线程来加速其计算，这可能会由于数值错误而导致略有不同的结果。使用 `assert_allclose` 和相对较大的容错来测试正确性。"
    ]
   },
   {
@@ -138,10 +141,11 @@
    },
    "outputs": [],
    "source": [
+    "from tvm_book.contrib import d2ltvm\n",
     "a, b, c = d2ltvm.get_abc((100, 100), tvm.nd.array)\n",
     "mod(a, b, c)\n",
-    "np.testing.assert_allclose(np.dot(a.asnumpy(), b.asnumpy()),\n",
-    "                           c.asnumpy(), atol=1e-5)"
+    "np.testing.assert_allclose(np.dot(a.numpy(), b.numpy()),\n",
+    "                           c.numpy(), atol=1e-5)"
    ]
   },
   {
@@ -150,16 +154,33 @@
     "origin_pos": 6
    },
    "source": [
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "- We can express the computation of matrix multiplication in TVM in one line of code.\n",
-    "- The naive matrix multiplication is a 3-level nested for loop.\n"
+    "- 可以用一行代码来表示 TVM 中矩阵乘法的计算。\n",
+    "- 原始矩阵乘法是 3 层嵌套的 for 循环。"
    ]
   }
  ],
  "metadata": {
+  "interpreter": {
+   "hash": "f0a0fcc4cb7375f8ee907b3c51d5b9d65107fda1aab037a85df7b0c09b870b98"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 (conda)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,

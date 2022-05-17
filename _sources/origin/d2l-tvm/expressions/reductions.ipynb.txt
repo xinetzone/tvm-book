@@ -57,7 +57,7 @@
     {
      "data": {
       "text/plain": [
-       "array([-2.5569715 ,  0.20848459,  2.387809  ], dtype=float32)"
+       "array([1.0295496, 3.784973 , 2.0665042], dtype=float32)"
       ]
      },
      "execution_count": 2,
@@ -97,7 +97,7 @@
     {
      "data": {
       "text/plain": [
-       "array([-2.5569715 ,  0.20848459,  2.387809  ], dtype=float32)"
+       "array([1.0295496, 3.784973 , 2.0665042], dtype=float32)"
       ]
      },
      "execution_count": 3,
@@ -178,9 +178,9 @@
     "origin_pos": 8
    },
    "source": [
-    "We can see that the generated pseudo codes expand `tvm.sum` into another for loop along axis `k`. As mentioned before, the pseudo codes are C-like, so the index of `a[i,j]` is expanded to `(i*m)+j` by treating `a` as a 1-D array. Also note that `b` is initialized to be all-zero before summation.\n",
+    "可以看到，生成的伪代码将 `tvm.sum` 扩展成另一个沿着 `k` 轴的 for 循环。正如前面提到的，伪代码是类似于 C 语言的，因此将 `a[i,j]` 的索引展开为 `(i*m)+j`，将 `a` 处理为一维数组。还要注意，`b` 在求和之前被初始化为全零。\n",
     "\n",
-    "Now test the results are as expected.\n"
+    "现在测试结果与预期一致。"
    ]
   },
   {
@@ -211,7 +211,7 @@
     "origin_pos": 10
    },
    "source": [
-    "We know that `a.sum()` will sum all elements in `a` and returns a scalar. Let's also implement this in TVM. To do it, we need another reduction axis along the first dimension, whose size is `n`. The result is a scalar, namely a 0-rank tensor, can be created with an empty tuple `()`.\n"
+    "`a.sum()` 将对 `a` 中的所有元素求和，并返回标量。TVM 中实现它，需要沿着第一个维度的另一个轴归约，它的大小是 `n`。结果是标量，即 0 阶张量，可以用空元组 `()` 创建。"
    ]
   },
   {
@@ -261,7 +261,7 @@
     "origin_pos": 12
    },
    "source": [
-    "Let's also verify the results.\n"
+    "验证结果："
    ]
   },
   {
@@ -288,19 +288,17 @@
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 14
-   },
+   "metadata": {},
    "source": [
-    "In this case we use `np.testing.assert_allclose` instead of `np.testing.assert_equal` to verify the results as the calculation on `float32` numbers may differ due to the numerical error.\n",
+    "在本例中，使用 `np.testing.assert_allclose` 而不是 `np.testing.assert_equal` 用于验证结果，因为 `float32` 数字的计算可能由于数值误差而不同。\n",
     "\n",
-    "Beyond `tvm.sum`, there are other reduction operators in TVM such as `tvm.min` and `tvm.max`. We can also use them to implement the corresponding reduction operations as well.\n",
+    "除 `tvm.sum` 之外，在 TVM 中还有其他的归约算子，如 `tvm.min`、`tvm.max`。也可以用它们来实现相应的归约运算。\n",
     "\n",
-    "## Commutative Reduction\n",
+    "## 可交换的归约\n",
     "\n",
-    "In mathematics, an operator $\\circ$ is commutative if $a\\circ b = b\\circ a$. TVM allows to define a customized commutative reduction operator through `tvm.comm_reducer`. It accepts two function arguments, one defines how to compute $a\\circ b$, the other one specifies the initial value.\n",
+    "在数学中，如果 $a\\circ b = b\\circ a$，则算子 $\\circ$ 是可交换的（commutative）。TVM 允许通过 `tvm.comm_reducer` 定义定制的可交换归约算子。它接受两个函数参数，一个定义如何计算，另一个指定初始值。\n",
     "\n",
-    "Let's use the production by rows, e.g `a.prod(axis=1)`, as an example. Again, we first show how to implement it from scratch.\n"
+    "让我们以行为单位使用乘法，例如 `a.prod(axis=1)`。同样，首先展示如何从头开始实现它。"
    ]
   },
   {
@@ -331,11 +329,9 @@
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 16
-   },
+   "metadata": {},
    "source": [
-    "As can be seen, we need to first initialize the return values to be 1, and then compute the reduction using scalar product `*`. Now let's define these two functions in TVM to serve as the arguments of `te.comm_reducer`. As discussed, the first one defines $a\\circ b$ with two scalar inputs. The second one accepts a data type argument to return the initial value of an element. Then we can create the reduction operator.\n"
+    "可以看出，首先需要将返回值初始化为 1，然后使用标量积 `*` 计算归约。现在让我们在 TVM 中定义这两个函数，作为 `te.comm_reducer` 的参数。如前所述，第一个函数定义两个标量输入的 $a\\circ b$。第二个参数接受数据类型参数，以返回元素的初始值。然后可以创建归约算子。"
    ]
   },
   {
@@ -360,7 +356,7 @@
     "origin_pos": 18
    },
    "source": [
-    "The usage of `product` is similar to `te.sum`. Actually, `te.sum` is a pre-defined reduction operator using the same way.\n"
+    "`product` 的用法类似于 `te.sum`。实际上，`te.sum` 是预定义的归约算子，使用相同的方法。"
    ]
   },
   {
@@ -413,9 +409,9 @@
     "origin_pos": 20
    },
    "source": [
-    "The generated pseudo codes are similar to the one for summing by rows, except for the initialized value and the reduction arithmetic.\n",
+    "生成的伪代码与按行求和的伪代码类似，只是初始值和归约算法不同。\n",
     "\n",
-    "Again, let's verify the results.\n"
+    "再来验证一下结果。"
    ]
   },
   {
@@ -446,19 +442,19 @@
     "origin_pos": 22
    },
    "source": [
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "- We can apply a reduction operator, e.g. `te.sum` over a reduction axis `te.reduce_axis`.\n",
-    "- We can implement customized commutative reduction operators by `te.comm_reducer`.\n"
+    "- 可以应用归约算子，例如 `te.sum` 对归约轴 `te.reduce_axis` 求和。\n",
+    "- 可以通过 `te.comm_reducer` 实现定制的可交换归约算子。"
    ]
   }
  ],
  "metadata": {
   "interpreter": {
-   "hash": "113215d72022e03bdca1057c7933c75a3969a189b0b522e71371adf999f86f27"
+   "hash": "f0a0fcc4cb7375f8ee907b3c51d5b9d65107fda1aab037a85df7b0c09b870b98"
   },
   "kernelspec": {
-   "display_name": "Python 3.10.4 ('py310': conda)",
+   "display_name": "Python 3.10.4 (conda)",
    "language": "python",
    "name": "python3"
   },

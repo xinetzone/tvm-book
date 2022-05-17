@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -50,7 +50,7 @@
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
     <link rel="next" title="CPU 上的算子优化" href="../cpu_schedules/index.html" />
-    <link rel="prev" title="Pooling" href="pooling.html" />
+    <link rel="prev" title="池化" href="pooling.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
 
@@ -358,17 +358,17 @@ function checkPageExistsAndRedirect(event) {
       <ul class="current">
        <li class="toctree-l4">
         <a class="reference internal" href="broadcast_add.html">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="matmul.html">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -378,7 +378,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4 current active">
@@ -560,8 +560,8 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#compute-definition">
-   Compute definition
+  <a class="reference internal nav-link" href="#id1">
+   计算定义
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -570,8 +570,8 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id2">
+   小结
   </a>
  </li>
 </ul>
@@ -603,36 +603,34 @@ function checkPageExistsAndRedirect(event) {
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="batch-normalization">
-<h1>Batch Normalization<a class="headerlink" href="#batch-normalization" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_batch_norm</span></code></p>
-<p>This section talks about how to use TVM to do batch normalization (<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>). Like pooling, <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> is also a common operator in CNN. D2L introduces this operator in <a class="reference external" href="https://d2l.ai/chapter_convolutional-modern/batch-norm.html">details</a>.</p>
-<p>From the calculation perspective, for a given value, <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> subtracts the <span class="math notranslate nohighlight">\(mean\)</span> out of it, and then divide it with the square root of the <span class="math notranslate nohighlight">\(variance\)</span>, no difference than a regular normalization. It is call <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> because the mean and variance are attained from the batches of when performed the training. After that, <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> also applies an affine transformation to the value, i.e. multiplies it with a scale value <span class="math notranslate nohighlight">\(gamma\)</span> followed by adding a shift value <span class="math notranslate nohighlight">\(beta\)</span>. <span class="math notranslate nohighlight">\(Gamma\)</span> and <span class="math notranslate nohighlight">\(beta\)</span> are attained from the gradient computation of training. Lastly, a small positive value <span class="math notranslate nohighlight">\(epsilon\)</span> is added to prevent the divisor to be 0.</p>
-<p>In the case of inference, both the mean and variance are determined, so the process of <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> is just a combination of several simple element-wise operations.</p>
+<span id="ch-batch-norm"></span><h1>Batch Normalization<a class="headerlink" href="#batch-normalization" title="永久链接至标题">#</a></h1>
+<p>本节讨论如何使用 TVM 执行 batch normalization（<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>）。和 pooling 一样，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 也是 CNN 中常见的算子。D2L 在 <a class="reference external" href="https://d2l.ai/chapter_convolutional-modern/batch-norm.html">细节</a> 中引入了这个算子。</p>
+<p>从计算的角度来看，对于给定的值，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 减去其中的 <code class="docutils literal notranslate"><span class="pre">mean</span></code>，然后用 <code class="docutils literal notranslate"><span class="pre">variance</span></code> 的平方根除以它，与常规 normalization 没有区别。它被称为 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>，因为均值和方差是在执行训练时从批次中获得的。在此之后，  <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 也对该值应用仿射变换，即将其与 scale 值 <span class="math notranslate nohighlight">\(\gamma\)</span> 相乘，然后加上 shift 值 <span class="math notranslate nohighlight">\(\beta\)</span>。由训练梯度计算得到 <span class="math notranslate nohighlight">\(\gamma\)</span> 和 <span class="math notranslate nohighlight">\(\beta\)</span>。最后，加上一个小的正值 <span class="math notranslate nohighlight">\(\epsilon\)</span>，以防止除数为 0。</p>
+<p>在推理的情况下，均值和方差都是确定的，因此 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的过程只是几个简单的元素运算的组合。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
-<span class="kn">import</span> <span class="nn">d2ltvm</span>
+<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
 </div>
 </div>
-<section id="compute-definition">
-<h2>Compute definition<a class="headerlink" href="#compute-definition" title="永久链接至标题">#</a></h2>
-<p>In practice, we are not going to perform <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> of one value. Instead, the <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> will be executed on the output of a convolution, namely, 3-D data in (channel, height, weight). Data in different channels have different values of <span class="math notranslate nohighlight">\(mean\)</span>, <span class="math notranslate nohighlight">\(variance\)</span>, <span class="math notranslate nohighlight">\(gamma\)</span>, and <span class="math notranslate nohighlight">\(beta\)</span>. The calculation can be expressed as the following formula.</p>
+<section id="id1">
+<h2>计算定义<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
+<p>在实践中，不打算执行一个值的 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>。相反，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 将在卷积的输出上执行，即 (channel, height, weight) 中的 3-D 数据。</p>
 <div class="math notranslate nohighlight">
 \[out[i,:,:] = \frac{data[i,:,:] - mean[i]}{\sqrt{var[i]+\epsilon}} \
-* gamma[i] + beta[i] \]</div>
-<p>During model training, <span class="math notranslate nohighlight">\(mean\)</span> and <span class="math notranslate nohighlight">\(var\)</span> are computed from the input <span class="math notranslate nohighlight">\(data\)</span>. However, in model inference which we focus on here, <span class="math notranslate nohighlight">\(mean\)</span> and <span class="math notranslate nohighlight">\(var\)</span> are given; therefore we don’t need to compute them from <span class="math notranslate nohighlight">\(data\)</span>.</p>
-<p>We will define the compute of this formula. Essentially, <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> is a combination of a number of simple broadcasting and element-wise calculations.
-Note that in :numref:<code class="docutils literal notranslate"><span class="pre">ch_bcast_add</span></code> we defined a limited <code class="docutils literal notranslate"><span class="pre">broadcast_add</span></code> to perform only broadcast addition for 2-D tensors. If we generalize it to more dimensions and more calculators, we can reuse them to compose the <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> operator. This is actually what TVM does.</p>
-<p>Here, for simplicity, we use TVM basic operators for broadcast calculation. TVM operators are defined in <code class="docutils literal notranslate"><span class="pre">TOPI</span></code>, which stands for Tensor OPerator Inventory. It follows the NumPy convention to override the arithmetic operators (i.e. <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>) for broadcast calculation. The element-wise square root can be found in <code class="docutils literal notranslate"><span class="pre">TOPI</span></code>, too.</p>
-<p>The code snippet to define <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> is as follows.</p>
+* \gamma[i] + \beta[i] \]</div>
+<p>在模型训练过程中，并根据输入 <span class="math notranslate nohighlight">\(data\)</span> 进行计算 <span class="math notranslate nohighlight">\(mean\)</span> 和 <span class="math notranslate nohighlight">\(var\)</span>。然而，这里重点关注模型推理，并给出了 <span class="math notranslate nohighlight">\(mean\)</span> 和 <span class="math notranslate nohighlight">\(var\)</span>；因此不需要从中计算它们。</p>
+<p>我们将定义这个公式的计算。实际上，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 是一些简单的广播和元素相关的计算的组合。注意，在 <a class="reference internal" href="broadcast_add.html#ch-bcast-add"><span class="std std-ref">广播加法</span></a> 中，定义了有限的 <code class="docutils literal notranslate"><span class="pre">broadcast_add</span></code>，只对二维张量执行广播加法。如果将其推广到更多维和更多的 calculator，就可以重用它们来组成 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 算子。这就是 TVM 所做的。</p>
+<p>这里，为了简单起见，使用 TVM 基本算子进行广播计算。TVM 算子定义在 <code class="docutils literal notranslate"><span class="pre">TOPI</span></code> 中，TOPI 代表张量算子清单。它遵循 NumPy 约定来覆盖算术算子（即 <code class="docutils literal notranslate"><span class="pre">+</span></code>、<code class="docutils literal notranslate"><span class="pre">-</span></code>、<code class="docutils literal notranslate"><span class="pre">*</span></code>、<code class="docutils literal notranslate"><span class="pre">/</span></code>）。元素的平方根也可以在 <code class="docutils literal notranslate"><span class="pre">TOPI</span></code> 中找到。</p>
+<p>定义 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的代码片段如下所示。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
-<span class="kn">import</span> <span class="nn">topi</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<span class="kn">from</span> <span class="nn">tvm_book.contrib.d2ltvm</span> <span class="kn">import</span> <span class="n">topi</span>
 
 <span class="k">def</span> <span class="nf">batch_norm</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;batch normalization</span>
@@ -655,67 +653,60 @@ Note that in :numref:<code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 </div>
-<p>We can then compile print the IR and compile it. The IR contains several stages but should be easy to follow.</p>
+<p>然后可以打印并编译 IR。IR 包括几个阶段，但应该很容易遵循。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="mi">32</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="mi">32</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">28</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">Mean</span><span class="p">,</span> <span class="n">Var</span><span class="p">,</span> <span class="n">Gamma</span><span class="p">,</span> <span class="n">Beta</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">batch_norm</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 
 <span class="n">sch</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">sch</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">Mean</span><span class="p">,</span> <span class="n">Var</span><span class="p">,</span> <span class="n">Gamma</span><span class="p">,</span> <span class="n">Beta</span><span class="p">,</span> <span class="n">Y</span><span class="p">])</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">sch</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">Mean</span><span class="p">,</span> <span class="n">Var</span><span class="p">,</span> <span class="n">Gamma</span><span class="p">,</span> <span class="n">Beta</span><span class="p">,</span> <span class="n">Y</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">sch</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">Mean</span><span class="p">,</span> <span class="n">Var</span><span class="p">,</span> <span class="n">Gamma</span><span class="p">,</span> <span class="n">Beta</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">m</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>// attr [T_subtract] storage_scope = &quot;global&quot;
-allocate T_subtract[float32 * 25088]
-// attr [T_add] storage_scope = &quot;global&quot;
-allocate T_add[float32 * 32]
-produce T_subtract {
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([X, Mean, Var, Gamma, Beta, T_add]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
+  allocate T_subtract[float32 * 25088], storage_scope = global
+  allocate T_add[float32 * 32], storage_scope = global
   for (ax0, 0, 32) {
     for (ax1, 0, 28) {
       for (ax2, 0, 28) {
-        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (X[(((ax0*784) + (ax1*28)) + ax2)] - Mean[ax0])
+        let cse_var_1 = (((ax0*784) + (ax1*28)) + ax2)
+        T_subtract[cse_var_1] = (X[cse_var_1] - Mean[ax0])
       }
     }
   }
-}
-produce T_add {
   for (ax0, 0, 32) {
     T_add[ax0] = (Var[ax0] + 1e-05f)
   }
-}
-produce compute {
   for (i0, 0, 32) {
-    T_add[i0] = sqrt(T_add[i0])
+    T_add[i0] = tir.sqrt(T_add[i0])
   }
-}
-produce T_divide {
   for (ax0, 0, 32) {
     for (ax1, 0, 28) {
       for (ax2, 0, 28) {
-        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)]/T_add[ax0])
+        let cse_var_2 = (((ax0*784) + (ax1*28)) + ax2)
+        T_subtract[cse_var_2] = (T_subtract[cse_var_2]/T_add[ax0])
       }
     }
   }
-}
-produce T_multiply {
   for (ax0, 0, 32) {
     for (ax1, 0, 28) {
       for (ax2, 0, 28) {
-        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)]*Gamma[ax0])
+        let cse_var_3 = (((ax0*784) + (ax1*28)) + ax2)
+        T_subtract[cse_var_3] = (T_subtract[cse_var_3]*Gamma[ax0])
       }
     }
   }
-}
-produce T_add {
   for (ax0, 0, 32) {
     for (ax1, 0, 28) {
       for (ax2, 0, 28) {
-        T_subtract[(((ax0*784) + (ax1*28)) + ax2)] = (T_subtract[(((ax0*784) + (ax1*28)) + ax2)] + Beta[ax0])
+        let cse_var_4 = (((ax0*784) + (ax1*28)) + ax2)
+        T_add[cse_var_4] = (T_subtract[cse_var_4] + Beta[ax0])
       }
     }
   }
@@ -724,11 +715,11 @@ produce T_add {
 </div>
 </div>
 </div>
-<p>To execute it, we will need to create data for <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>. Similar to the previous sections for getting conv and pooling data, we define a <code class="docutils literal notranslate"><span class="pre">get_bn_data</span></code> method to generate the data of <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>. One tricky thing is that the variance must be non-negative numbers. Therefore, we move the mean value of the random number generator’s normal distribution to 1 (by default mean 0 and standard deviation 1), and get the absolute numbers of generated results.</p>
-<p>After getting the data, we can simply call the compiled module to execute.</p>
+<p>要执行它，需要为 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 创建数据。与前面获取 conv 和 pooling 数据的部分类似，定义了 <code class="docutils literal notranslate"><span class="pre">get_bn_data</span></code> 方法来生成 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的数据。棘手的问题是方差必须是非负数。因此，将随机数生成器正态分布的均值移至 1（默认均值为 0，标准差为 1），得到生成结果的绝对数量。</p>
+<p>在获得数据之后，可以简单地调用编译后的模块来执行。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
 <span class="k">def</span> <span class="nf">get_bn_data</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">constructor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the batch norm data, mean, variance, gamma and beta tensors.</span>
 <span class="sd">       Also return the empty tensor for output.</span>
@@ -761,14 +752,12 @@ produce T_add {
 </section>
 <section id="mxnet-baseline">
 <h2>MXNet Baseline<a class="headerlink" href="#mxnet-baseline" title="永久链接至标题">#</a></h2>
-<p>We use the <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> function of MXNet as the baseline to check the correctness of our compiled functions.
-This function in MXNet was defined to be generic for both training and inference. In the inference case that we talk about here, we will need to set the corresponding input arguments properly.
-One is <span class="math notranslate nohighlight">\(use_global_stats\)</span>, which needs to be set <code class="docutils literal notranslate"><span class="pre">True</span></code> as we will use the input mean and variance for <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> to compute instead of computing them from the input data (training will do so).
-The other is <span class="math notranslate nohighlight">\(fix\_gamma\)</span>, which needs to be set <code class="docutils literal notranslate"><span class="pre">False</span></code> so that the input <span class="math notranslate nohighlight">\(gamma\)</span> will be used instead of setting <span class="math notranslate nohighlight">\(gamma\)</span> to be all 1.</p>
-<p>Lastly, like we have discussed in other cases, MXNet <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> has input data in 4D, including batch as the outmost dimension. So we will expand this dimension in the data accordingly.</p>
+<p>使用 MXNet 的 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 函数作为基准来检查编译函数的正确性。</p>
+<p>MXNet 中的这个函数被定义为通用函数，用于训练和推理。在这里讨论的推理案例中，需要正确地设置相应的输入参数。一个是 <code class="docutils literal notranslate"><span class="pre">use_global_stats</span></code>，需要设置为 <code class="docutils literal notranslate"><span class="pre">True</span></code> ，因为将使用 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的输入平均值和方差来计算，而不是从输入数据计算它们（训练将这样做）。另一个是 <code class="docutils literal notranslate"><span class="pre">fix_gamma</span></code>，它需要设置为 <code class="docutils literal notranslate"><span class="pre">False</span></code>，这样输入的 <span class="math notranslate nohighlight">\(\gamma\)</span> 就会被使用，而不是将 <span class="math notranslate nohighlight">\(\gamma\)</span> 为全设置为 1。</p>
+<p>最后，就像在其他例子中讨论的那样，MXNet <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的输入数据是 4D，其中 batch 是最外维。因此，将在数据中相应地扩展这个维度。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
 
 <span class="c1"># Save to the d2ltvm package.</span>
 <span class="k">def</span> <span class="nf">get_bn_data_mxnet</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
@@ -792,20 +781,20 @@ The other is <span class="math notranslate nohighlight">\(fix\_gamma\)</span>, w
 </div>
 </div>
 </div>
-<p>Finally, we check if our results are close enough to the results produced by MXNet.</p>
+<p>最后，检查结果是否与 MXNet 产生的结果足够接近。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">out_mx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">out</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">out_mx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">out</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<section id="id2">
+<h2>小结<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>From the computation perspective, <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> is a combination of a number of broadcast and element-wise simple operators, which can be easily attained from TVM’s Tensor OPerator Inventory (TOPI).</p></li>
-<li><p>In inference, <span class="math notranslate nohighlight">\(mean\)</span> and <span class="math notranslate nohighlight">\(var\)</span> of <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> are pre-defined.</p></li>
+<li><p>从计算的角度来看，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 是一系列广播和元素算子的组合，可以很容易地从 TVM 的张量算子库（Tensor OPerator Inventory，简称 TOPI）中得到。</p></li>
+<li><p>在推理中，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的 <span class="math notranslate nohighlight">\(mean\)</span> 和 <span class="math notranslate nohighlight">\(var\)</span> 是预定义的。</p></li>
 </ul>
 </section>
 </section>
@@ -820,7 +809,7 @@ The other is <span class="math notranslate nohighlight">\(fix\_gamma\)</span>, w
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">Pooling</p>
+            <p class="prev-next-title">池化</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="../cpu_schedules/index.html" title="下一页 页">
@@ -851,7 +840,7 @@ The other is <span class="math notranslate nohighlight">\(fix\_gamma\)</span>, w
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

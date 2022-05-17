@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -358,17 +358,17 @@ function checkPageExistsAndRedirect(event) {
       <ul>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/broadcast_add.html">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/matmul.html">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -378,7 +378,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4">
@@ -565,13 +565,13 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#commutative-reduction">
-   Commutative Reduction
+  <a class="reference internal nav-link" href="#id3">
+   可交换的归约
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id4">
+   小结
   </a>
  </li>
 </ul>
@@ -626,7 +626,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-2.5569715 ,  0.20848459,  2.387809  ], dtype=float32)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.0295496, 3.784973 , 2.0665042], dtype=float32)
 </pre></div>
 </div>
 </div>
@@ -648,7 +648,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-2.5569715 ,  0.20848459,  2.387809  ], dtype=float32)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.0295496, 3.784973 , 2.0665042], dtype=float32)
 </pre></div>
 </div>
 </div>
@@ -680,8 +680,8 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>We can see that the generated pseudo codes expand <code class="docutils literal notranslate"><span class="pre">tvm.sum</span></code> into another for loop along axis <code class="docutils literal notranslate"><span class="pre">k</span></code>. As mentioned before, the pseudo codes are C-like, so the index of <code class="docutils literal notranslate"><span class="pre">a[i,j]</span></code> is expanded to <code class="docutils literal notranslate"><span class="pre">(i*m)+j</span></code> by treating <code class="docutils literal notranslate"><span class="pre">a</span></code> as a 1-D array. Also note that <code class="docutils literal notranslate"><span class="pre">b</span></code> is initialized to be all-zero before summation.</p>
-<p>Now test the results are as expected.</p>
+<p>可以看到，生成的伪代码将 <code class="docutils literal notranslate"><span class="pre">tvm.sum</span></code> 扩展成另一个沿着 <code class="docutils literal notranslate"><span class="pre">k</span></code> 轴的 for 循环。正如前面提到的，伪代码是类似于 C 语言的，因此将 <code class="docutils literal notranslate"><span class="pre">a[i,j]</span></code> 的索引展开为 <code class="docutils literal notranslate"><span class="pre">(i*m)+j</span></code>，将 <code class="docutils literal notranslate"><span class="pre">a</span></code> 处理为一维数组。还要注意，<code class="docutils literal notranslate"><span class="pre">b</span></code> 在求和之前被初始化为全零。</p>
+<p>现在测试结果与预期一致。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
@@ -692,7 +692,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>We know that <code class="docutils literal notranslate"><span class="pre">a.sum()</span></code> will sum all elements in <code class="docutils literal notranslate"><span class="pre">a</span></code> and returns a scalar. Let’s also implement this in TVM. To do it, we need another reduction axis along the first dimension, whose size is <code class="docutils literal notranslate"><span class="pre">n</span></code>. The result is a scalar, namely a 0-rank tensor, can be created with an empty tuple <code class="docutils literal notranslate"><span class="pre">()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">a.sum()</span></code> 将对 <code class="docutils literal notranslate"><span class="pre">a</span></code> 中的所有元素求和，并返回标量。TVM 中实现它，需要沿着第一个维度的另一个轴归约，它的大小是 <code class="docutils literal notranslate"><span class="pre">n</span></code>。结果是标量，即 0 阶张量，可以用空元组 <code class="docutils literal notranslate"><span class="pre">()</span></code> 创建。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">reduce_axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
@@ -716,7 +716,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Let’s also verify the results.</p>
+<p>验证结果：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
@@ -727,13 +727,13 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>In this case we use <code class="docutils literal notranslate"><span class="pre">np.testing.assert_allclose</span></code> instead of <code class="docutils literal notranslate"><span class="pre">np.testing.assert_equal</span></code> to verify the results as the calculation on <code class="docutils literal notranslate"><span class="pre">float32</span></code> numbers may differ due to the numerical error.</p>
-<p>Beyond <code class="docutils literal notranslate"><span class="pre">tvm.sum</span></code>, there are other reduction operators in TVM such as <code class="docutils literal notranslate"><span class="pre">tvm.min</span></code> and <code class="docutils literal notranslate"><span class="pre">tvm.max</span></code>. We can also use them to implement the corresponding reduction operations as well.</p>
+<p>在本例中，使用 <code class="docutils literal notranslate"><span class="pre">np.testing.assert_allclose</span></code> 而不是 <code class="docutils literal notranslate"><span class="pre">np.testing.assert_equal</span></code> 用于验证结果，因为 <code class="docutils literal notranslate"><span class="pre">float32</span></code> 数字的计算可能由于数值误差而不同。</p>
+<p>除 <code class="docutils literal notranslate"><span class="pre">tvm.sum</span></code> 之外，在 TVM 中还有其他的归约算子，如 <code class="docutils literal notranslate"><span class="pre">tvm.min</span></code>、<code class="docutils literal notranslate"><span class="pre">tvm.max</span></code>。也可以用它们来实现相应的归约运算。</p>
 </section>
-<section id="commutative-reduction">
-<h2>Commutative Reduction<a class="headerlink" href="#commutative-reduction" title="永久链接至标题">#</a></h2>
-<p>In mathematics, an operator <span class="math notranslate nohighlight">\(\circ\)</span> is commutative if <span class="math notranslate nohighlight">\(a\circ b = b\circ a\)</span>. TVM allows to define a customized commutative reduction operator through <code class="docutils literal notranslate"><span class="pre">tvm.comm_reducer</span></code>. It accepts two function arguments, one defines how to compute <span class="math notranslate nohighlight">\(a\circ b\)</span>, the other one specifies the initial value.</p>
-<p>Let’s use the production by rows, e.g <code class="docutils literal notranslate"><span class="pre">a.prod(axis=1)</span></code>, as an example. Again, we first show how to implement it from scratch.</p>
+<section id="id3">
+<h2>可交换的归约<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>在数学中，如果 <span class="math notranslate nohighlight">\(a\circ b = b\circ a\)</span>，则算子 <span class="math notranslate nohighlight">\(\circ\)</span> 是可交换的（commutative）。TVM 允许通过 <code class="docutils literal notranslate"><span class="pre">tvm.comm_reducer</span></code> 定义定制的可交换归约算子。它接受两个函数参数，一个定义如何计算，另一个指定初始值。</p>
+<p>让我们以行为单位使用乘法，例如 <code class="docutils literal notranslate"><span class="pre">a.prod(axis=1)</span></code>。同样，首先展示如何从头开始实现它。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prod_rows</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
@@ -748,7 +748,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>As can be seen, we need to first initialize the return values to be 1, and then compute the reduction using scalar product <code class="docutils literal notranslate"><span class="pre">*</span></code>. Now let’s define these two functions in TVM to serve as the arguments of <code class="docutils literal notranslate"><span class="pre">te.comm_reducer</span></code>. As discussed, the first one defines <span class="math notranslate nohighlight">\(a\circ b\)</span> with two scalar inputs. The second one accepts a data type argument to return the initial value of an element. Then we can create the reduction operator.</p>
+<p>可以看出，首先需要将返回值初始化为 1，然后使用标量积 <code class="docutils literal notranslate"><span class="pre">*</span></code> 计算归约。现在让我们在 TVM 中定义这两个函数，作为 <code class="docutils literal notranslate"><span class="pre">te.comm_reducer</span></code> 的参数。如前所述，第一个函数定义两个标量输入的 <span class="math notranslate nohighlight">\(a\circ b\)</span>。第二个参数接受数据类型参数，以返回元素的初始值。然后可以创建归约算子。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
@@ -758,7 +758,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>The usage of <code class="docutils literal notranslate"><span class="pre">product</span></code> is similar to <code class="docutils literal notranslate"><span class="pre">te.sum</span></code>. Actually, <code class="docutils literal notranslate"><span class="pre">te.sum</span></code> is a pre-defined reduction operator using the same way.</p>
+<p><code class="docutils literal notranslate"><span class="pre">product</span></code> 的用法类似于 <code class="docutils literal notranslate"><span class="pre">te.sum</span></code>。实际上，<code class="docutils literal notranslate"><span class="pre">te.sum</span></code> 是预定义的归约算子，使用相同的方法。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
@@ -785,8 +785,8 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>The generated pseudo codes are similar to the one for summing by rows, except for the initialized value and the reduction arithmetic.</p>
-<p>Again, let’s verify the results.</p>
+<p>生成的伪代码与按行求和的伪代码类似，只是初始值和归约算法不同。</p>
+<p>再来验证一下结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
@@ -798,11 +798,11 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<section id="id4">
+<h2>小结<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>We can apply a reduction operator, e.g. <code class="docutils literal notranslate"><span class="pre">te.sum</span></code> over a reduction axis <code class="docutils literal notranslate"><span class="pre">te.reduce_axis</span></code>.</p></li>
-<li><p>We can implement customized commutative reduction operators by <code class="docutils literal notranslate"><span class="pre">te.comm_reducer</span></code>.</p></li>
+<li><p>可以应用归约算子，例如 <code class="docutils literal notranslate"><span class="pre">te.sum</span></code> 对归约轴 <code class="docutils literal notranslate"><span class="pre">te.reduce_axis</span></code> 求和。</p></li>
+<li><p>可以通过 <code class="docutils literal notranslate"><span class="pre">te.comm_reducer</span></code> 实现定制的可交换归约算子。</p></li>
 </ul>
 </section>
 </section>
@@ -848,7 +848,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -358,17 +358,17 @@ function checkPageExistsAndRedirect(event) {
       <ul>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/broadcast_add.html">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/matmul.html">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -378,7 +378,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4">
@@ -640,61 +640,15 @@ function checkPageExistsAndRedirect(event) {
 <span class="n">C</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">m</span>
+<span class="n">m</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#[version = &quot;0.0.5&quot;]
-@main = primfn(a_1: handle, b_1: handle, c_1: handle) -&gt; ()
-  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
-  buffers = {a: Buffer(a_2: Pointer(float32), float32, [(stride: int32*n: int32)], [], type=&quot;auto&quot;),
-             b: Buffer(b_2: Pointer(float32), float32, [(stride_1: int32*n)], [], type=&quot;auto&quot;),
-             c: Buffer(c_2: Pointer(float32), float32, [(stride_2: int32*n)], [], type=&quot;auto&quot;)}
-  buffer_map = {a_1: a, b_1: b, c_1: c}
-  preflattened_buffer_map = {a_1: a_3: Buffer(a_2, float32, [n], [stride], type=&quot;auto&quot;), b_1: b_3: Buffer(b_2, float32, [n], [stride_1], type=&quot;auto&quot;), c_1: c_3: Buffer(c_2, float32, [n], [stride_2], type=&quot;auto&quot;)} {
-  for (i: int32, 0, n) {
-    c[(i*stride_2)] = (a[(i*stride)] + b[(i*stride_1)])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([a, b, c]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
+  for (i, 0, n) {
+    c[(i*stride)] = (a[(i*stride)] + b[(i*stride)])
   }
-}
-
-#[metadata]
-{
-  &quot;root&quot;: 1, 
-  &quot;nodes&quot;: [
-    {
-      &quot;type_key&quot;: &quot;&quot;
-    }, 
-    {
-      &quot;type_key&quot;: &quot;Map&quot;, 
-      &quot;keys&quot;: [
-        &quot;IntImm&quot;
-      ], 
-      &quot;data&quot;: [2]
-    }, 
-    {
-      &quot;type_key&quot;: &quot;Array&quot;, 
-      &quot;data&quot;: [3, 4]
-    }, 
-    {
-      &quot;type_key&quot;: &quot;IntImm&quot;, 
-      &quot;attrs&quot;: {
-        &quot;dtype&quot;: &quot;bool&quot;, 
-        &quot;span&quot;: &quot;0&quot;, 
-        &quot;value&quot;: &quot;1&quot;
-      }
-    }, 
-    {
-      &quot;type_key&quot;: &quot;IntImm&quot;, 
-      &quot;attrs&quot;: {
-        &quot;dtype&quot;: &quot;bool&quot;, 
-        &quot;span&quot;: &quot;0&quot;, 
-        &quot;value&quot;: &quot;1&quot;
-      }
-    }
-  ], 
-  &quot;b64ndarrays&quot;: [], 
-  &quot;attrs&quot;: {&quot;tvm_version&quot;: &quot;0.9.dev0&quot;}
 }
 </pre></div>
 </div>
@@ -811,7 +765,7 @@ c.shape: (2, 3, 4, 5)
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

@@ -25,8 +25,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -358,17 +358,17 @@ function checkPageExistsAndRedirect(event) {
       <ul>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/broadcast_add.html">
-         Broadcast Add
+         广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/matmul.html">
-         Matrix Multiplication
+         矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/conv.html">
-         Convolution
+         卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -378,7 +378,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/pooling.html">
-         Pooling
+         池化
         </a>
        </li>
        <li class="toctree-l4">
@@ -612,7 +612,7 @@ function checkPageExistsAndRedirect(event) {
 <p>你已经知道形状可以是符号元组，例如 <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>，元素可以通过索引访问，例如 <code class="docutils literal notranslate"><span class="pre">a[i,</span> <span class="pre">j]</span></code>。在实践中，形状和索引都可以通过复杂的表达式来计算。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># from tvm_book.contrib import d2ltvm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
@@ -706,6 +706,18 @@ function checkPageExistsAndRedirect(event) {
 <span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">compute</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">A</span><span class="p">[(</span><span class="n">i</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">//</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="k">m</span>], name=&#39;b&#39;)
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
 <span class="n">ir_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ir_mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PrimFunc([a, b]) attrs={&quot;from_legacy_te_schedule&quot;: (bool)1, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: (bool)1} {
+  for (i, 0, p) {
+    for (j, 0, q) {
+      b[((i*stride) + (j*stride))] = a[((floordiv(((i*q) + j), m)*stride) + (floormod(((i*q) + j), m)*stride))]
+    }
+  }
+}
 </pre></div>
 </div>
 </div>
@@ -714,7 +726,7 @@ function checkPageExistsAndRedirect(event) {
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">ir_mod</span><span class="p">)</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 
@@ -724,11 +736,11 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.0000000e+00 1.0000000e+00 2.0000000e+00 3.0000000e+00]
- [4.0000000e+00 5.0000000e+00 6.0000000e+00 7.0000000e+00]
- [8.0000000e+00 9.0000000e+00 1.0000000e+01 1.1000000e+01]
- [1.2937045e-01 3.0773916e-41 0.0000000e+00 0.0000000e+00]
- [1.3975525e-01 3.0773916e-41           nan           nan]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.0000000e+00  1.0000000e+00  2.0000000e+00  3.0000000e+00]
+ [ 4.0000000e+00  5.0000000e+00  6.0000000e+00  7.0000000e+00]
+ [ 8.0000000e+00  9.0000000e+00  1.0000000e+01  1.1000000e+01]
+ [-2.7943063e-24  3.0936466e-41  1.5834673e-43  0.0000000e+00]
+ [-2.4915414e-24  3.0936466e-41 -2.4883166e-24  3.0936466e-41]]
 </pre></div>
 </div>
 </div>
@@ -814,7 +826,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-10, 03:20:45.<br>
+最后更新于 2022-05-17, 11:30:34.<br>
 </p>
     </div>
     

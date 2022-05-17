@@ -6,10 +6,10 @@
     "origin_pos": 0
    },
    "source": [
-    "# Convolution\n",
-    ":label:`ch_conv`\n",
+    "(ch_conv)=\n",
+    "# 卷积\n",
     "\n",
-    "The convolution (*CONV*) operator is the one of the most expensive and popular operators in neural networks. In this section, we will cover the operator with single input and output channels. Please refer to chapter [6.2](http://numpy.d2l.ai/chapter_convolutional-neural-networks/conv-layer.html), [6.3](http://numpy.d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html), and [6.4](http://numpy.d2l.ai/chapter_convolutional-neural-networks/channels.html) in D2L for more explanation about this operator. Here we would not explain much about the convolution-related terms such as padding, channel, stride, convolution kernel, etc.\n"
+    "卷积（convolution，简称 *CONV*）算子是神经网络中最昂贵、最流行的算子之一。在本节中，将介绍具有单个输入和输出通道的算子。请参阅 D2L 的 [6.2](https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html)、[6.3](http://d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html) 和 [6.4](http://d2l.ai/chapter_convolutional-neural-networks/channels.html) 章，了解更多关于该算子的说明。在这里，不会解释太多与卷积相关的术语，如填充、通道、步幅、卷积核等。"
    ]
   },
   {
@@ -28,7 +28,7 @@
    },
    "outputs": [],
    "source": [
-    "import d2ltvm\n",
+    "from tvm_book.contrib import d2ltvm\n",
     "import numpy as np\n",
     "import tvm\n",
     "from tvm import te"
@@ -42,8 +42,13 @@
    "source": [
     "## Padding\n",
     "\n",
-    "As a prerequisite to convolution, let's first implement *padding*, which visually surrounds the targeting tensor with a \"shell\" surrounding it. The padding values are normally 0. Note that we briefly touched padding in :numref:`ch_all_any` when introducing `te.any`, which was a padding for a 2-D matrix.\n",
-    "Here we generalize the padding to work for 2-D convolution on $n$-D tensors, which is usually used in the convolution operators of neural networks. In the general case, we assume the last two dimensions are rows and columns, 0s are only padded on these two dimensions. In particular, if the matrix height (i.e. number of rows) is $n_h$ and width (i.e. number of columns) is $n_w$, then we will pad $p_h$ rows with 0s on top and bottom, and $p_w$ columns with 0s on left and right to make its height and width to $n_h+2p_h$ and $n_w+2p_w$, respectively. We have mentioned it once in :numref:`ch_shapes`, but again note that `*X` and `*i` in `te.compute` are used to represent general multi-dimensional tensors.\n"
+    "作为卷积的先决条件，首先实现填充，它在视觉上用 \"shell\" 包围目标张量。填充值通常为 0。\n",
+    "\n",
+    "```{note}\n",
+    "在 {ref}`ch_all_any` 引入 `te.any` 时，简单地触及了的填充，这是二维矩阵的填充。在此，将填充推广到 $n$-D 张量的二维张量卷积中，它通常用于神经网络的卷积算子。\n",
+    "```\n",
+    "\n",
+    "在一般情况下，假设最后两个维度是行和列，0 只在这两个维度上填充。特别是，如果矩阵高度（即行数） $n_h$ 和宽度（即列数）是 $n_w$，然后在顶部和底部将填充 $p_h$ 行，在左右各填充 $p_w$，使其高度为 $n_h+2p_h$ 和宽度为 $n_w+2p_w$。已经在 {ref}`ch_shapes` 中提到过一次，但要再次注意，`te.compute` 中的 `*X` 和 `*i` 是用来表示一般的多维张量的。"
    ]
   },
   {
@@ -85,7 +90,7 @@
     "origin_pos": 4
    },
    "source": [
-    "Verify the results for a 3-D tensor.\n"
+    "验证三维张量的结果。"
    ]
   },
   {
@@ -139,39 +144,38 @@
     "origin_pos": 6
    },
    "source": [
-    "## Convolution\n",
+    "## 卷积\n",
     "\n",
-    "We consider the simple single-channel convolution first. Given an $n_h\\times n_w$ data matrix $X$, we first pad 0s into $(n_h+2p_h) \\times (n_w+2p_w)$. If the kernel matrix $K$ has a size of $k_h\\times k_w$, using a stride $s_h$ for height and $s_w$ for width, the output $Y = X \\star K$ will have a shape\n",
+    "首先考虑简单的单通道卷积。给定 $n_h\\times n_w$ 数据矩阵 $X$，首先填充 0 到 $(n_h+2p_h) \\times (n_w+2p_w)$。若核矩阵 $K$ 尺寸为 $k_h\\times k_w$，使用 stride 的高度 $s_h$ 和宽度 $s_w$，输出 $Y = X \\star K$  将有形状\n",
     "\n",
     "$$ \\lfloor (n_h-k_h+2p_h)/s_h+1\\rfloor  \\times \\lfloor (n_w-k_w+2p_w)/s_w+1\\rfloor.$$\n",
     "\n",
-    "And the element of $Y$ can be computed $Y_{i,j}$ by\n",
+    "并且 $Y$ 的元素可以通过计算 $Y_{i,j}$\n",
     "\n",
     "$$ Y_{i,j} = \\sum_{a=0}^{k_w-1}\\sum_{b=0}^{k_h-1} X_{i s_w+a, j s_h+b} K_{a, b}$$\n",
     "\n",
-    "An example is illustrated in :numref:`fig_conv_strides`.\n",
+    "```{figure} ../img/conv-stride.svg\n",
+    "2-D 卷积，填充值为1，步长分别为 3 和 2，对应高度和宽度。阴影部分描述了两个输出元素，以及用于计算它们的相应输入和卷积核数组元素 $0\\times0+0\\times1+1\\times2+2\\times3=8$, $0\\times0+6\\times1+0\\times2+0\\times3=6$。\n",
+    "```\n",
     "\n",
-    "![The 2-D convolution with paddings for 1, and strides of 3 and 2 for height and width respectively. The shaded portions depicts the two output elements, with the corresponding input and kernel array elements used to calculate them: $0\\times0+0\\times1+1\\times2+2\\times3=8$, $0\\times0+6\\times1+0\\times2+0\\times3=6$. ](../img/conv-stride.svg)\n",
-    ":label:`fig_conv_strides`\n",
+    "现在看一个更一般的多通道情况。\n",
     "\n",
-    "Now let's look at a more general case with multiple channels.\n",
-    "Assuming that we have a $c_i \\times n_h \\times n_w$ 3-D input tensor $X$, and a $c_o\\times c_i\\times k_h\\times k_w$ 4-D kernel tensor $K$, here $c_i$ and $c_o$ are the numbers of input channels and output channels, respectively. Then the output $Y$ has a shape\n",
+    "假设有 $c_i \\times n_h \\times n_w$ 输入张量 $X$，和 $c_o\\times c_i\\times k_h\\times k_w$ 4-D 核张量 $K$，这里 $c_i$ 和 $c_o$ 分别是输入通道和输出通道的数目。然后输出 $Y$ 有形状\n",
     "\n",
     "$$ c_o \\times \\lfloor (h-k_h+2p_h)/s_h+1\\rfloor  \\times \\lfloor (w-k_w+2p_w)/s_w+1\\rfloor.$$\n",
     "\n",
-    "In particular, the $i$-th 2-D matrix $Y_i$, $i=1,\\ldots,c_o$, is computed by\n",
+    "特别地，第 $i$ 个二维矩阵 $Y_i$，$i=1,\\ldots,c_o$，定义如下\n",
     "\n",
     "$$ Y_i = \\sum_{j=1}^n X_j \\star K_{i,j},$$\n",
     "\n",
-    "where $K_{i,j}$ is the 2-D kernel matrix with output channel $i$ and input channel $j$.\n",
     "\n",
-    "In deep learning workloads, especially training, we often concatenate multiple inputs into a batch to process together. A batch of inputs has the shape $n \\times c_i \\times n_h \\times n_w$, where $n$ is the batch size. Applying convolution to a batch means running convolution on the $n$ 3-D tensors separately, and then concatenates results into a 4-D tensor with the first dimension size being $n$.\n",
+    "这里 $K_{i,j}$ 是输出通道 $i$ 和输入通道 $j$ 的 2-D 卷积核矩阵。\n",
     "\n",
-    "Note that the input layout we used here is called `NCHW`, which means the 4 dimensions of the input tensors are batch, channel, height and width, respectively. \n",
-    "conventionally, `NCHW` means the data is arranged in the memory with `N` being the outer most dimension and `W` being the inner most dimension. Sometimes we use other data layouts such as `NHWC` which may offer a higher performance. We will discuss this in detail later.\n",
-    "Similarly, the kernel layout is defined as `KCRS`, which correspond to output channel, input channel, kernel height and width.\n",
+    "在深度学习 workload 中，特别是在训练中，经常将多个输入连接到批处理中。一批输入具有形状 $n \\times c_i \\times n_h \\times n_w$，其中 $n$ 是批大小。将卷积应用到批处理中意味着分别对 3-D 张量进行卷积，然后将结果拼接成 4-D 张量，其第一个维的尺寸是 $n$。\n",
     "\n",
-    "Before implementing the convolution, we define a method to calculate the output width or height given the input width or height.\n"
+    "请注意，这里使用的输入布局称为 `NCHW`，这意味着输入张量的 4 个维度分别是批大小、通道、高度和宽度。通常，`NCHW` 意味着数据被安排在内存中，`N `是最外层的维数，`W` 是最内部的维数。有时使用其他数据布局，如 `NHWC`，它可以提供更高的性能。稍后将详细讨论这个问题。同样，卷积核布局定义为 `KCRS`，对应于输出通道、输入通道、卷积核高度和宽度。\n",
+    "\n",
+    "在实现卷积之前，定义了一种给定输入宽度或高度来计算输出宽度或高度的方法。"
    ]
   },
   {
@@ -205,7 +209,7 @@
     "origin_pos": 8
    },
    "source": [
-    "Now let's implement the convolution. For simplicity we only consider the single batch case, i.e. `N=1`. In this case, the input data layout can be treated as `CHW`.\n"
+    "现在实现卷积。为简单起见，只考虑单个批处理的情况，即 `N=1`。在这种情况下，输入数据布局可以被视为 `CHW`。"
    ]
   },
   {
@@ -259,7 +263,7 @@
     "origin_pos": 10
    },
    "source": [
-    "Just as what we created `get_abc` in :numref:`ch_vector_add`, we define a method to get the input and output tensors. Again, we fix the random seed so it returns the same results if calling multiple times.\n"
+    "正如在 {ref}`ch_vector_add` 中创建的 `get_abc` 一样，定义方法来获取输入和输出张量。同样，固定随机种子，使它在多次调用时返回相同的结果。"
    ]
   },
   {
@@ -291,7 +295,7 @@
     "    out = np.empty((oc, on, on), dtype='float32')\n",
     "    if constructor:\n",
     "        data, weight, out = (constructor(x) for x in [data, weight, out])\n",
-    "    return data, weight, out\n"
+    "    return data, weight, out"
    ]
   },
   {
@@ -300,7 +304,7 @@
     "origin_pos": 12
    },
    "source": [
-    "Now compile a module and compute the results.\n"
+    "现在编译模块并计算结果。"
    ]
   },
   {
@@ -314,49 +318,51 @@
    },
    "outputs": [
     {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "// attr [PaddedX] storage_scope = \"global\"\n",
-      "allocate PaddedX[float32 * 1176]\n",
-      "produce PaddedX {\n",
-      "  for (i0, 0, 6) {\n",
-      "    for (i1, 0, 14) {\n",
-      "      for (i2, 0, 14) {\n",
-      "        PaddedX[(((i0*196) + (i1*14)) + i2)] = tvm_if_then_else(((((i1 < 1) || (13 <= i1)) || (i2 < 1)) || (13 <= i2)), 0f, X[((((i0*144) + (i1*12)) + i2) - 13)])\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "produce Y {\n",
-      "  for (c, 0, 4) {\n",
-      "    for (i, 0, 12) {\n",
-      "      for (j, 0, 12) {\n",
-      "        Y[(((c*144) + (i*12)) + j)] = 0f\n",
-      "        for (ric, 0, 6) {\n",
-      "          for (rkh, 0, 3) {\n",
-      "            for (rkw, 0, 3) {\n",
-      "              Y[(((c*144) + (i*12)) + j)] = (Y[(((c*144) + (i*12)) + j)] + (PaddedX[(((((ric*196) + (i*14)) + (rkh*14)) + j) + rkw)]*K[((((c*54) + (ric*9)) + (rkh*3)) + rkw)]))\n",
-      "            }\n",
-      "          }\n",
-      "        }\n",
-      "      }\n",
-      "    }\n",
-      "  }\n",
-      "}\n",
-      "\n"
-     ]
+     "data": {
+      "text/plain": [
+       "PrimFunc([X, K, Y]) attrs={\"from_legacy_te_schedule\": (bool)1, \"global_symbol\": \"main\", \"tir.noalias\": (bool)1} {\n",
+       "  allocate PaddedX[float32 * 1176], storage_scope = global\n",
+       "  for (i0, 0, 6) {\n",
+       "    for (i1, 0, 14) {\n",
+       "      for (i2, 0, 14) {\n",
+       "        PaddedX[(((i0*196) + (i1*14)) + i2)] = tir.if_then_else(((((i1 < 1) || (13 <= i1)) || (i2 < 1)) || (13 <= i2)), 0f, X[((((i0*144) + (i1*12)) + i2) - 13)])\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "  for (c, 0, 4) {\n",
+       "    for (i, 0, 12) {\n",
+       "      for (j, 0, 12) {\n",
+       "        Y[(((c*144) + (i*12)) + j)] = 0f\n",
+       "        for (ric, 0, 6) {\n",
+       "          for (rkh, 0, 3) {\n",
+       "            for (rkw, 0, 3) {\n",
+       "              let cse_var_1 = (((c*144) + (i*12)) + j)\n",
+       "              Y[cse_var_1] = (Y[cse_var_1] + (PaddedX[(((((ric*196) + (i*14)) + (rkh*14)) + j) + rkw)]*K[((((c*54) + (ric*9)) + (rkh*3)) + rkw)]))\n",
+       "            }\n",
+       "          }\n",
+       "        }\n",
+       "      }\n",
+       "    }\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
     }
    ],
    "source": [
     "oc, ic, n, k, p, s = 4, 6, 12, 3, 1, 1\n",
     "X, K, Y, _ = conv(oc, ic, n, n, k, k, p, p, s, s)\n",
     "sch = te.create_schedule(Y.op)\n",
-    "mod = tvm.build(sch, [X, K, Y])\n",
-    "print(tvm.lower(sch, [X, K, Y], simple_mode=True))\n",
+    "\n",
+    "m = tvm.lower(sch, [X, K, Y], simple_mode=True)\n",
     "\n",
     "data, weight, out = get_conv_data(oc, ic, n, k, p, s, tvm.nd.array)\n",
-    "mod(data, weight, out)"
+    "mod = tvm.build(m)\n",
+    "mod(data, weight, out)\n",
+    "m[\"main\"]"
    ]
   },
   {
@@ -365,9 +371,9 @@
     "origin_pos": 14
    },
    "source": [
-    "In the last code block we also print out the pseudo code of a 2-D convolution, which is a naive 6-level nested for loop.\n",
+    "在最后的代码块中，还打印了 2-D 卷积的伪代码，这是朴素的 6 级嵌套 for 循环。\n",
     "\n",
-    "Since NumPy only has a convolution for vectors, we use MXNet's convolution operator as the ground truth. The following code block defines the data generating function and a wrap function to call the convolution operator. Then we can feed the same tensors to compute the results in MXNet.\n"
+    "由于 NumPy 只对向量进行卷积，所以使用 MXNet 的卷积算子作为基础真值。下面的代码块定义了数据生成函数和调用卷积运算符的 wrap 函数。然后可以输入相同的张量，在 MXNet 中计算结果。"
    ]
   },
   {
@@ -406,7 +412,7 @@
     "origin_pos": 16
    },
    "source": [
-    "Lastly, let's compare the results. For a similar reason mentioned in the last chapter, the multi-threading used in MXNet makes us use a relative large tolerant error here.\n"
+    "最后，比较一下结果。由于上一章提到的类似原因，在 MXNet 中使用的多线程使在这里使用了相对较大的容错。"
    ]
   },
   {
@@ -429,17 +435,34 @@
     "origin_pos": 18
    },
    "source": [
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "- We can express the computation of 2-D convolution in TVM in a fairly easy way.\n",
-    "- Deep learning workloads normally operate 2-D convolution on 4-D data tensors and kernel tensors.\n",
-    "- The naive 2-D convolution is a 6-level nested for loop.\n"
+    "- 可以用一种相当简单的方式来表示 TVM 中二维卷积的计算。\n",
+    "— 深度学习工作负载通常是在 4-D 数据张量和卷积核张量上进行二维卷积。\n",
+    "- 简单的 2-D 卷积是 6 层嵌套的 for 循环。"
    ]
   }
  ],
  "metadata": {
+  "interpreter": {
+   "hash": "f0a0fcc4cb7375f8ee907b3c51d5b9d65107fda1aab037a85df7b0c09b870b98"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 (conda)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
   }
  },
  "nbformat": 4,
