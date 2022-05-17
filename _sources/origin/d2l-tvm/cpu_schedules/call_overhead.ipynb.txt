@@ -133,9 +133,7 @@
     "origin_pos": 6
    },
    "source": [
-    "We can see that the newly measured execution time of `np.zeros((4, 4))` is much smaller than the one we first measured, as the former one includes the warmup time.\n",
-    "\n",
-    "可以看到 `np.zeros((4, 4))` 的新测量的执行时间比我们第一次测量的零要小得多，因为第一次测量包括了热身（warmup）时间。\n",
+    "可以看到 `np.zeros((4, 4))` 的新测量的执行时间比我们\\\\第一次测量的零要小得多，因为第一次测量包括了热身（warmup）时间。\n",
     "\n",
     "## 不小的开销\n",
     "\n",
