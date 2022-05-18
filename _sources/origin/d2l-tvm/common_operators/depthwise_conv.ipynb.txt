@@ -6,10 +6,10 @@
     "origin_pos": 0
    },
    "source": [
-    "# Depthwise Convolution\n",
-    ":label:`ch_depthwise_conv`\n",
+    "(ch_depthwise_conv)=\n",
+    "# 深度可分离卷积\n",
     "\n",
-    "Depthwise convolution is a special kind of convolution commonly used in convolutional neural networks designed for mobile and embedded applications, e.g. MobileNet :cite:`Howard.Zhu.Chen.ea.2017`.\n"
+    "深度可分离卷积是一种特殊的卷积，通常用于为移动和嵌入式应用设计的卷积神经网络，例如 MobileNet {cite:p}`Howard.Zhu.Chen.ea.2017`。\n"
    ]
   },
   {
@@ -40,7 +40,7 @@
     "origin_pos": 2
    },
    "source": [
-    "## Compute definition\n",
+    "## 定义计算\n",
     "\n",
     "Let's revisit the 2-D convolution described in :numref:`ch_conv` first. The 2-D convolution basically takes a 3-D data (note that for simplicity we set the batch size to be 1) in size `(ic, ih, iw)`, convolves it with a 4-D kernel in size `(oc, ic, kh, kw)`, and produces an output data in size `(oc, oh, ow)`. During the convolution, some padding and stride may be applied.\n",
     "\n",

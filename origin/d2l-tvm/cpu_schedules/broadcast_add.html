@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Broadcast Add &#8212; tvm-book 0.0.2 文档</title>
+    <title>CPU 广播加法 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -47,8 +47,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
-    <link rel="next" title="Matrix Multiplication" href="matmul.html" />
-    <link rel="prev" title="Vector Add" href="vector_add.html" />
+    <link rel="next" title="CPU 矩阵乘法" href="matmul.html" />
+    <link rel="prev" title="CPU 向量加法" href="vector_add.html" />
     <link rel="stylesheet" href="../../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../../_static/css/custom.css"/>
 
@@ -371,7 +371,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../common_operators/depthwise_conv.html">
-         Depthwise Convolution
+         深度可分离卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -408,17 +408,17 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="vector_add.html">
-         Vector Add
+         CPU 向量加法
         </a>
        </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Broadcast Add
+         CPU 广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="matmul.html">
-         Matrix Multiplication
+         CPU 矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
@@ -558,28 +558,28 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#setup">
-   Setup
+  <a class="reference internal nav-link" href="#id1">
+   设置
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#good-schedule">
-   Good Schedule
+  <a class="reference internal nav-link" href="#id2">
+   良好的调度
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#bad-schedule">
-   Bad Schedule
+  <a class="reference internal nav-link" href="#id3">
+   糟糕的调度
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id4">
+   小结
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#exercise">
-   Exercise
+  <a class="reference internal nav-link" href="#id5">
+   练习
   </a>
  </li>
 </ul>
@@ -610,17 +610,16 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="broadcast-add">
-<h1>Broadcast Add<a class="headerlink" href="#broadcast-add" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_bcast_add_cpu</span></code></p>
-<p>This section talks about scheduling the broadcast add computation defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_bcast_add</span></code> on CPU. The optimization of it is similar to what we have done for vector add in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_cpu</span></code>, as they are both essentially memory-bound element-wise calculation. Hence, instead of “what works”, we will talk about “what doesn’t work” in this section.</p>
-<section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="cpu">
+<span id="ch-bcast-add-cpu"></span><h1>CPU 广播加法<a class="headerlink" href="#cpu" title="永久链接至标题">#</a></h1>
+<p>本节讨论调度 CPU 上 <a class="reference internal" href="../common_operators/broadcast_add.html#ch-bcast-add"><span class="std std-ref">广播加法</span></a> 中定义的广播加法计算。它的优化类似于对 <a class="reference internal" href="vector_add.html#ch-vector-add-cpu"><span class="std std-ref">CPU 向量加法</span></a> 所做的，因为它们本质上都是内存绑定的元素级计算。因此，在本节中，将讨论“什么不起作用”，而不是“什么起作用”。</p>
+<section id="id1">
+<h2>设置<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
-<span class="kn">import</span> <span class="nn">d2ltvm</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+<span class="c1"># import inspect</span>
 <span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -631,16 +630,21 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Here we choose the broadcast add depicted in :numref:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add</span></code>. The other broadcast patterns do not make essential difference.</p>
-<p>First, we define the baseline in <code class="docutils literal notranslate"><span class="pre">numpy</span></code>. We use the real used data sizes in the x axis.</p>
+<p>这里，选择在 <a class="reference internal" href="../common_operators/broadcast_add.html#fig-bcast-add"><span class="std std-ref">二维张量间广播相加的一种情况</span></a> 中描述的广播加法。其他的广播模式没有本质的区别。</p>
+<p>首先，在 <code class="docutils literal notranslate"><span class="pre">numpy</span></code> 中定义基线。在 x 轴上使用实际使用的数据大小。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">np_bcast_add</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">setup</span><span class="o">=</span><span class="s1">&#39;import numpy as np</span><span class="se">\n</span><span class="s1">&#39;</span>
-                                <span class="s1">&#39;import d2ltvm</span><span class="se">\n</span><span class="s1">&#39;</span>
-                                <span class="s1">&#39;a, b, c = d2ltvm.get_bcast_data(</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">),</span>
-                                <span class="n">stmt</span><span class="o">=</span><span class="s1">&#39;np.add(a, b, out=c)&#39;</span><span class="p">)</span>
-<span class="n">exe_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">np_bcast_add</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">.</span><span class="n">timeit</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">np_bcast_add</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">):</span>
+    <span class="n">setup</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;import numpy as np</span><span class="se">\n</span><span class="s1">&#39;</span>
+             <span class="s1">&#39;from tvm_book.contrib.d2ltvm import get_bcast_data</span><span class="se">\n</span><span class="s1">&#39;</span>
+             <span class="sa">f</span><span class="s1">&#39;a, b, c = get_bcast_data(</span><span class="si">{</span><span class="n">s1</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">s2</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s1">&#39;np.add(a, b, out=c)&#39;</span><span class="p">,</span> <span class="n">setup</span><span class="p">)</span>
+
+
+<span class="n">exe_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span>
+    <span class="n">np_bcast_add</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">.</span><span class="n">timeit</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
 <span class="n">np_gflops</span> <span class="o">=</span> <span class="n">sizes</span> <span class="o">*</span> <span class="n">sizes</span> <span class="o">/</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">exe_times</span><span class="p">)</span>
 <span class="c1"># data size in MB</span>
 <span class="n">x_axis_sizes</span> <span class="o">=</span> <span class="p">(</span><span class="n">sizes</span> <span class="o">*</span> <span class="n">sizes</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">sizes</span> <span class="o">*</span> <span class="n">sizes</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">/</span> <span class="mf">1e6</span>
@@ -649,37 +653,37 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ccc991a7ffa92d42a3891987fd073590475478a8846d878d60133f8f475af5d4.svg" src="../../../_images/ccc991a7ffa92d42a3891987fd073590475478a8846d878d60133f8f475af5d4.svg" /></div>
+<img alt="../../../_images/4bc315ee7100b657a066ec12fdbc78d3051ba4747cbb31a05fad22d6f6d8cc07.svg" src="../../../_images/4bc315ee7100b657a066ec12fdbc78d3051ba4747cbb31a05fad22d6f6d8cc07.svg" /></div>
 </div>
-<p>Note that the x axis is denoted as the total data size consumed. The performance drops when the data size is larger than the L2 cache of a single core (1024 KB or 1 MB), which indirectly suggests that <code class="docutils literal notranslate"><span class="pre">numpy</span></code> may use single-thread to perform this operator.</p>
+<p>请注意，x 轴表示所消耗的总数据大小。当数据大小大于单核的 L2 缓存（1024 KB 或 1 MB）时，性能会下降，这间接表明 <code class="docutils literal notranslate"><span class="pre">numpy</span></code> 可能使用单线程来执行这个算子。</p>
 </section>
-<section id="good-schedule">
-<h2>Good Schedule<a class="headerlink" href="#good-schedule" title="永久链接至标题">#</a></h2>
-<p>The following code block defines a benchmarking method for broadcast add of a specific pattern in TVM. It follows the same format we discussed in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_cpu</span></code>.</p>
+<section id="id2">
+<h2>良好的调度<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<p>下面的代码块为 TVM 中特定模式的广播添加定义了基准测试方法。它遵循在 <a class="reference internal" href="vector_add.html#ch-vector-add-cpu"><span class="std std-ref">CPU 向量加法</span></a> 中讨论的格式。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
 <span class="k">def</span> <span class="nf">bench_bcast_add_tvm</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">workload</span><span class="p">(</span><span class="n">nrepeats</span><span class="p">):</span>
-        <span class="n">timer</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">time_evaluator</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">entry_name</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">nrepeats</span><span class="p">)</span>
+        <span class="n">timer</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">time_evaluator</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">entry_name</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">nrepeats</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">timer</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span> <span class="o">*</span> <span class="n">nrepeats</span>
     <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">target</span><span class="p">)</span>
-        <span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_bcast_data</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_bcast_data</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="p">))</span>
         <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">sizes</span> <span class="o">*</span> <span class="n">sizes</span> <span class="o">/</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>The good schedule (i.e. what works) follows the similar scheme defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_cpu</span></code>.</p>
+<p>好的调度（即什么工作）遵循类似的方案定义在 <a class="reference internal" href="vector_add.html#ch-vector-add-cpu"><span class="std std-ref">CPU 向量加法</span></a>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -mcpu=skylake-avx512&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -mcpu=skylake-avx512&#39;</span>
 <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">broadcast_add</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
@@ -693,44 +697,56 @@ function checkPageExistsAndRedirect(event) {
     <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
 
 <span class="n">s</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">good_schedule</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce C {
-  parallel (x, 0, 64) {
-    C[ramp((x*64), 1, 64)] = (x64(A[x]) + B[ramp((x*64), 1, 64)])
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(A_1: handle, B_1: handle, C_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {A: Buffer(A_2: Pointer(float32), float32, [64], []),
+             B: Buffer(B_2: Pointer(float32), float32, [4096], []),
+             C: Buffer(C_2: Pointer(float32), float32, [4096], [])}
+  buffer_map = {A_1: A, B_1: B, C_1: C}
+  preflattened_buffer_map = {A_1: A_3: Buffer(A_2, float32, [64, 1], []), B_1: B_3: Buffer(B_2, float32, [64, 64], []), C_1: C_3: Buffer(C_2, float32, [64, 64], [])} {
+  for (x: int32, 0, 64) &quot;parallel&quot; {
+    let cse_var_1: int32 = (x*64)
+    C[ramp(cse_var_1, 1, 64)] = (broadcast(A[x], 64) + B[ramp(cse_var_1, 1, 64)])
   }
 }
 </pre></div>
 </div>
 </div>
 </div>
-<p>Now the C-like pseudo code should be familiar to you. One notable difference from :numref:ch_vector_add_cpu is that we broadcast <code class="docutils literal notranslate"><span class="pre">A[x]</span></code> to a vectorized register (i.e. <code class="docutils literal notranslate"><span class="pre">x64(A[x]</span></code>) for vectorized add.</p>
-<p>Let’s benchmark the good schedule.</p>
+<p>现在，您应该熟悉类似 C 的伪代码了。与 <a class="reference internal" href="vector_add.html#ch-vector-add-cpu"><span class="std std-ref">CPU 向量加法</span></a> 的显著区别是，将  <code class="docutils literal notranslate"><span class="pre">A[x]</span></code> 广播到向量化 register（即 <code class="docutils literal notranslate"><span class="pre">x64(A[x]</span></code>）用于向量化加法。</p>
+<p>让我们参照一下良好的调度。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">good_gflops</span> <span class="o">=</span> <span class="n">bench_bcast_add_tvm</span><span class="p">(</span><span class="n">good_schedule</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-<span class="n">d2ltvm</span><span class="o">.</span><span class="n">plot_gflops</span><span class="p">(</span><span class="n">x_axis_sizes</span><span class="p">,</span> <span class="p">[</span><span class="n">np_gflops</span><span class="p">,</span> <span class="n">good_gflops</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;good&#39;</span><span class="p">],</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Size (MB)&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">good_gflops</span> <span class="o">=</span> <span class="n">bench_bcast_add_tvm</span><span class="p">(</span><span class="n">good_schedule</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">d2ltvm</span><span class="o">.</span><span class="n">plot_gflops</span><span class="p">(</span><span class="n">x_axis_sizes</span><span class="p">,</span>
+                   <span class="p">[</span><span class="n">np_gflops</span><span class="p">,</span> <span class="n">good_gflops</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;good&#39;</span><span class="p">],</span>
+                   <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Size (MB)&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/711987b840096d06f884fcb5544de391f0373b31abfd3f74d15ef4d5ddf0cede.svg" src="../../../_images/711987b840096d06f884fcb5544de391f0373b31abfd3f74d15ef4d5ddf0cede.svg" /></div>
 </div>
-<p>Like the case in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_cpu</span></code>, the performance is better and drops at a larger data size as multi-core comes into play, leading to a larger amount L2 cache in total.</p>
+<p>就像 <a class="reference internal" href="vector_add.html#ch-vector-add-cpu"><span class="std std-ref">CPU 向量加法</span></a> 的情况，性能会更好，随着多核的使用，数据量越大，性能就会下降，从而导致 L2 缓存总量更大。</p>
 </section>
-<section id="bad-schedule">
-<h2>Bad Schedule<a class="headerlink" href="#bad-schedule" title="永久链接至标题">#</a></h2>
-<p>Now let’s see how a bad schedule (i.e. what doesn’t work) looks like. Note that our data are all stored in row-major and our schedules always make sure that the innermost loop manipulates the data in consecutive space.</p>
-<p>However, if we think from the perspective vectorization, we may find that broadcasting <code class="docutils literal notranslate"><span class="pre">A[x]</span></code> to a vectorized register brings overhead. A better way is to have multiple values of <code class="docutils literal notranslate"><span class="pre">A</span></code> to add with multiple values of <code class="docutils literal notranslate"><span class="pre">B</span></code> in a vectorized instruction, which is illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add_vectorize</span></code>.</p>
-<p><img alt="Different vectorization strategies of broadcast add." src="../../../_images/bcast_add_vectorize.svg" />
-:label:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add_vectorize</span></code></p>
-<p>In order to make vectorization along the column, we need to reorder to data access pattern as follows.</p>
+<section id="id3">
+<h2>糟糕的调度<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>现在看看一个糟糕的调度（即什么不起作用）是什么样的。请注意，数据都存储在 row-major 中，调度总是确保最内层的循环在连续空间中操作数据。</p>
+<p>然而，如果从向量化的角度考虑，可能会发现向向量化寄存器广播 <code class="docutils literal notranslate"><span class="pre">A[x]</span></code> 会带来开销。更好的方法是在向量化指令中有多个 <code class="docutils literal notranslate"><span class="pre">A</span></code>  值与多个 <code class="docutils literal notranslate"><span class="pre">B</span></code> 值相加，如 <a class="reference internal" href="#fig-bcast-add-vectorize"><span class="std std-ref">广播加法的不同向量化策略。</span></a>。</p>
+<figure class="align-default" id="id6">
+<span id="fig-bcast-add-vectorize"></span><img alt="../../../_images/bcast_add_vectorize.svg" src="../../../_images/bcast_add_vectorize.svg" /><figcaption>
+<p><span class="caption-text">广播加法的不同向量化策略。</span><a class="headerlink" href="#id6" title="永久链接至图片">#</a></p>
+</figcaption>
+</figure>
+<p>为了沿列进行向量化，需要按如下方式对数据访问模式进行重新排序。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bad_schedule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bad_schedule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span> <span class="o">=</span> <span class="n">default</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
     <span class="n">s</span><span class="p">[</span><span class="n">C</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
@@ -744,8 +760,14 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>produce C {
-  parallel (y, 0, 64) {
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(A_1: handle, B_1: handle, C_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {A: Buffer(A_2: Pointer(float32), float32, [64], []),
+             B: Buffer(B_2: Pointer(float32), float32, [4096], []),
+             C: Buffer(C_2: Pointer(float32), float32, [4096], [])}
+  buffer_map = {A_1: A, B_1: B, C_1: C}
+  preflattened_buffer_map = {A_1: A_3: Buffer(A_2, float32, [64, 1], []), B_1: B_3: Buffer(B_2, float32, [64, 64], []), C_1: C_3: Buffer(C_2, float32, [64, 64], [])} {
+  for (y: int32, 0, 64) &quot;parallel&quot; {
     C[ramp(y, 64, 64)] = (A[ramp(0, 1, 64)] + B[ramp(y, 64, 64)])
   }
 }
@@ -753,10 +775,10 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Now we eliminate the broadcast of <code class="docutils literal notranslate"><span class="pre">A[x]</span></code> in vectorization. Let’s run the benchmark and plot the chart for this schedule.</p>
+<p>现在消除向量化中 <code class="docutils literal notranslate"><span class="pre">A[x]</span></code> 的广播。让我们运行基准并绘制这个调度的图表。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sizes</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">bad_gflops</span> <span class="o">=</span> <span class="n">bench_bcast_add_tvm</span><span class="p">(</span><span class="n">bad_schedule</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="n">diff</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_gflops</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">bad_gflops</span><span class="p">)</span>
 <span class="n">bad_gflops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bad_gflops</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="n">diff</span><span class="p">)</span>
@@ -766,23 +788,29 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c594adfb01699bd7fdd46170fab19672211f52616d338bc872b04d86e3149b72.svg" src="../../../_images/c594adfb01699bd7fdd46170fab19672211f52616d338bc872b04d86e3149b72.svg" /></div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">Canceled</span> <span class="n">future</span> <span class="k">for</span> <span class="n">execute_request</span> <span class="n">message</span> <span class="n">before</span> <span class="n">replies</span> <span class="n">were</span> <span class="n">done</span>
+</pre></div>
 </div>
-<p>Note that in order to make it finish in a short period of time, we reduce the number of tested sizes for this schedule.</p>
-<p>We can see that the performance of the vectorization-favorable schedule is pretty bad. The reason is that we access <code class="docutils literal notranslate"><span class="pre">B</span></code> in a stride to get the data in the same column, which is much slower than accessing data in a consecutive space. And the thread-level parallelism would make it even worse as different threads compete in getting the data in the same cache line.</p>
-<p>The result shows that a good schedule needs to consider multiple performance-related factors together. A scheduling scheme that favors one aspect may lead to bad overall performance as it harms other aspects.</p>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">Kernel</span> <span class="n">crashed</span> <span class="k">while</span> <span class="n">executing</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">the</span> <span class="n">current</span> <span class="n">cell</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">previous</span> <span class="n">cell</span><span class="o">.</span> <span class="n">Please</span> <span class="n">review</span> <span class="n">the</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">cell</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">to</span> <span class="n">identify</span> <span class="n">a</span> <span class="n">possible</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">failure</span><span class="o">.</span> <span class="n">Click</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;https://aka.ms/vscodeJupyterKernelCrash&#39;</span><span class="o">&gt;</span><span class="n">here</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">info</span><span class="o">.</span> <span class="n">View</span> <span class="n">Jupyter</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;command:jupyter.viewOutput&#39;</span><span class="o">&gt;</span><span class="n">log</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">for</span> <span class="n">further</span> <span class="n">details</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>注意，为了使它在短时间内完成，归约了这个调度的测试大小的数量。</p>
+<p>可以看到有利于向量化调度的性能相当差。原因是要跨步访问 <code class="docutils literal notranslate"><span class="pre">B</span></code> 来获取同一列中的数据，这比访问连续空间中的数据要慢得多。线程级的并行性会使情况变得更糟，因为不同的线程在同一缓存线上竞争获取数据。</p>
+<p>结果表明，好的调度需要同时考虑多个与性能相关的因素。偏袒某个方面的调度方案可能会损害其他方面，从而导致整体性能下降。</p>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<section id="id4">
+<h2>小结<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>Like vector add, broadcast add is a memory-bound operator.</p></li>
-<li><p>A good schedule needs to consider multiple performance-related factors together.</p></li>
+<li><p>和 vector add 一样，broadcast add 也是内存绑定算子。</p></li>
+<li><p>好的调度需要同时考虑多个与性能相关的因素</p></li>
 </ul>
 </section>
-<section id="exercise">
-<h2>Exercise<a class="headerlink" href="#exercise" title="永久链接至标题">#</a></h2>
+<section id="id5">
+<h2>练习<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>Try to schedule other broadcast add patterns and observe the difference.</p></li>
+<li><p>尝试调度其他的广播加法模式，并观察差异。</p></li>
 </ul>
 </section>
 </section>
@@ -797,13 +825,13 @@ function checkPageExistsAndRedirect(event) {
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">上一页</p>
-            <p class="prev-next-title">Vector Add</p>
+            <p class="prev-next-title">CPU 向量加法</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="matmul.html" title="下一页 页">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">下一页</p>
-        <p class="prev-next-title">Matrix Multiplication</p>
+        <p class="prev-next-title">CPU 矩阵乘法</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -828,7 +856,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-17, 15:32:36.<br>
+最后更新于 2022-05-18, 11:44:35.<br>
 </p>
     </div>
     

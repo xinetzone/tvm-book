@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Depthwise Convolution &#8212; tvm-book 0.0.2 文档</title>
+    <title>深度可分离卷积 &#8212; tvm-book 0.0.2 文档</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -373,7 +373,7 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4 current active">
         <a class="current reference internal" href="#">
-         Depthwise Convolution
+         深度可分离卷积
         </a>
        </li>
        <li class="toctree-l4">
@@ -410,17 +410,17 @@ function checkPageExistsAndRedirect(event) {
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../cpu_schedules/vector_add.html">
-         Vector Add
+         CPU 向量加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../cpu_schedules/broadcast_add.html">
-         Broadcast Add
+         CPU 广播加法
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="../cpu_schedules/matmul.html">
-         Matrix Multiplication
+         CPU 矩阵乘法
         </a>
        </li>
        <li class="toctree-l4">
@@ -560,8 +560,8 @@ function checkPageExistsAndRedirect(event) {
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#compute-definition">
-   Compute definition
+  <a class="reference internal nav-link" href="#id3">
+   定义计算
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -607,10 +607,9 @@ function checkPageExistsAndRedirect(event) {
               
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="depthwise-convolution">
-<h1>Depthwise Convolution<a class="headerlink" href="#depthwise-convolution" title="永久链接至标题">#</a></h1>
-<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_depthwise_conv</span></code></p>
-<p>Depthwise convolution is a special kind of convolution commonly used in convolutional neural networks designed for mobile and embedded applications, e.g. MobileNet :cite:<code class="docutils literal notranslate"><span class="pre">Howard.Zhu.Chen.ea.2017</span></code>.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="ch-depthwise-conv">
+<span id="id1"></span><h1>深度可分离卷积<a class="headerlink" href="#ch-depthwise-conv" title="永久链接至标题">#</a></h1>
+<p>深度可分离卷积是一种特殊的卷积，通常用于为移动和嵌入式应用设计的卷积神经网络，例如 MobileNet <span id="id2">[<a class="reference internal" href="../zreferences.html#id12" title="Andrew G Howard, Menglong Zhu, Bo Chen, Dmitry Kalenichenko, Weijun Wang, Tobias Weyand, Marco Andreetto, and Hartwig Adam. Mobilenets: efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861, 2017.">Howard <em>et al.</em>, 2017</a>]</span>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
@@ -621,8 +620,8 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<section id="compute-definition">
-<h2>Compute definition<a class="headerlink" href="#compute-definition" title="永久链接至标题">#</a></h2>
+<section id="id3">
+<h2>定义计算<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>Let’s revisit the 2-D convolution described in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code> first. The 2-D convolution basically takes a 3-D data (note that for simplicity we set the batch size to be 1) in size <code class="docutils literal notranslate"><span class="pre">(ic,</span> <span class="pre">ih,</span> <span class="pre">iw)</span></code>, convolves it with a 4-D kernel in size <code class="docutils literal notranslate"><span class="pre">(oc,</span> <span class="pre">ic,</span> <span class="pre">kh,</span> <span class="pre">kw)</span></code>, and produces an output data in size <code class="docutils literal notranslate"><span class="pre">(oc,</span> <span class="pre">oh,</span> <span class="pre">ow)</span></code>. During the convolution, some padding and stride may be applied.</p>
 <p>For depthwise convolution, the convolution computation itself stays the same, as illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">fig_conv_strides</span></code>. It differs from the normal 2-D convolution in the way of organizing the convolution. In order to generate an output data in size <code class="docutils literal notranslate"><span class="pre">(oc,</span> <span class="pre">oh,</span> <span class="pre">ow)</span></code> from input data in size <code class="docutils literal notranslate"><span class="pre">(ic,</span> <span class="pre">ih,</span> <span class="pre">iw)</span></code>, a two-stage computation is needed. First, we process the input data with <code class="docutils literal notranslate"><span class="pre">ic</span></code> kernels, each of which convolves with the corresponding channel, to produce an intermediate data in size <code class="docutils literal notranslate"><span class="pre">(ic,</span> <span class="pre">oh,</span> <span class="pre">ow)</span></code>; then we perform the normal, but pointwise, 2-D convolution on the intermediate data in size <code class="docutils literal notranslate"><span class="pre">(ic,</span> <span class="pre">oh,</span> <span class="pre">ow)</span></code> using a 4-D kernel in size <code class="docutils literal notranslate"><span class="pre">(oc,</span> <span class="pre">ic,</span> <span class="pre">1,</span> <span class="pre">1)</span></code> to produce the output data in size <code class="docutils literal notranslate"><span class="pre">(oc,</span> <span class="pre">oh,</span> <span class="pre">ow)</span></code>, where <code class="docutils literal notranslate"><span class="pre">padding=0</span></code> and <code class="docutils literal notranslate"><span class="pre">stride=1</span></code>.</p>
 <p>The computation of the second stage has been covered in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code>. This section only focuses on the computation of the first stage, which is referred to as depthwise convolution. :numref:<code class="docutils literal notranslate"><span class="pre">fig_depthwise_conv</span></code> illustrates its computation procedure.</p>
@@ -840,7 +839,7 @@ We also print out the pseudo-code of it.</p>
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-17, 15:32:36.<br>
+最后更新于 2022-05-18, 11:44:35.<br>
 </p>
     </div>
     
