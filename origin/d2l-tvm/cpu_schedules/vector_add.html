@@ -25,9 +25,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -44,6 +42,7 @@
     <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/translations.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
@@ -87,6 +86,12 @@
     <li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="../../../tutorials/index.html">
   教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../vta/index.html">
+  VTA
  </a>
 </li>
 
@@ -527,6 +532,21 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../tutorials/test.html">
    测试
   </a>
@@ -692,7 +712,10 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/cd5a8b8272dca45af50b6c6cc7359a1005e73ebe2e78a1eda3629ff55393fe8e.svg" src="../../../_images/cd5a8b8272dca45af50b6c6cc7359a1005e73ebe2e78a1eda3629ff55393fe8e.svg" /></div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <p>可以看到，性能首先随着向量长度的增加而增加，这是由于工作负载较小时系统开销占主导地位。当无法将所有数据放入缓存时，性能就会下降。</p>
 </section>
@@ -783,7 +806,10 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ae21e18afdc1db1a81f9897adab83de95b0a851aec088e8bc612bf849ecf9f12.svg" src="../../../_images/ae21e18afdc1db1a81f9897adab83de95b0a851aec088e8bc612bf849ecf9f12.svg" /></div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <p>当向量大小较小时，默认调度优于 NumPy，即该方法中 TVM 的函数调用开销小于 NumPy。当增加向量大小时，性能会下降，因为数据无法放入最后一级缓存中，这并不奇怪。</p>
 </section>
@@ -832,7 +858,10 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f38002ed4ab87f6ae9cc0e89f53469439b09f87a99f40f9e0ac783a7ead71477.svg" src="../../../_images/f38002ed4ab87f6ae9cc0e89f53469439b09f87a99f40f9e0ac783a7ead71477.svg" /></div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <p>与之前得到的结果相比，当工作负载较大时，例如向量长度超过 <span class="math notranslate nohighlight">\(10^4\)</span> 时，并行化显著提高了性能。但是，并行化开销会影响小工作负载的性能，在这种情况下，单线程甚至更快。随着多核的出现，性能下降的幅度越大，导致 L2 缓存的总量就越大。</p>
 </section>
@@ -883,7 +912,10 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f3bdf804176261ae06bd2d3102c082195672813d32caab24ff914b40e765f56b.svg" src="../../../_images/f3bdf804176261ae06bd2d3102c082195672813d32caab24ff914b40e765f56b.svg" /></div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <p>向量化版本的性能几乎和普通的并行化版本一样。部分原因是，向量加法的瓶颈是内存带宽，而不是计算，而 SIMD 只有助于后者。稍后将看到它对计算密集型工作负载（如矩阵乘法）有更多帮助。</p>
 </section>
@@ -938,7 +970,7 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-18, 11:44:35.<br>
+最后更新于 2022-06-07, 11:55:17.<br>
 </p>
     </div>
     

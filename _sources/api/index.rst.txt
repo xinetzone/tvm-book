@@ -8,4 +8,4 @@ API 参考
 .. toctree::
 
     contrib/index
-
+    vta/index

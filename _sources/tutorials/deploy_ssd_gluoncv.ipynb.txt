@@ -1,0 +1,247 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# 部署 Single Shot Multibox Detector(SSD) 模型\n",
+        "\n",
+        "参考：[deploy_ssd_gluoncv](https://tvm.apache.org/docs/how_to/deploy_models/deploy_ssd_gluoncv.html)\n",
+        "\n",
+        "使用 GluonCV 预训练 SSD 模型，并将其转换为 Relay IR。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "import tvm\n",
+        "from matplotlib import pyplot as plt\n",
+        "from tvm import relay\n",
+        "from tvm.contrib import graph_executor\n",
+        "from tvm.contrib.download import download_testdata\n",
+        "from gluoncv import model_zoo, data, utils"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## 初始和设置参数\n",
+        "\n",
+        "```{note}\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "现在支持在 CPU 和 GPU 上编译 SSD。\n",
+        "\n",
+        "为了在 CPU 上获得最佳的推理性能，根据你的设备改变目标参数，按照 {ref}`tune_relay_x86` 来调优 x86 CPU，按照 {ref}`tune_relay_arm` 来调优 ARM CPU。\n",
+        "\n",
+        "为了在 Intel graphics 上获得最佳的推理性能，将目标参数改为 `opencl -device=intel_graphics`。但是当在 Mac 上使用 Intel graphics 时，target 需要设置为 `opencl`，只是因为 Mac 上不支持 Intel subgroup 扩展。\n",
+        "\n",
+        "为了在基于 ``cuda`` 的 GPU 上获得最佳的推理性能，将目标参数改为 ``cuda``；对于基于 ``opencl`` 的 GPU，根据你的设备更改目标参数为 ``opencl``。\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "supported_model = [\n",
+        "    \"ssd_512_resnet50_v1_voc\",\n",
+        "    \"ssd_512_resnet50_v1_coco\",\n",
+        "    \"ssd_512_resnet101_v2_voc\",\n",
+        "    \"ssd_512_mobilenet1.0_voc\",\n",
+        "    \"ssd_512_mobilenet1.0_coco\",\n",
+        "    \"ssd_300_vgg16_atrous_voc\",\n",
+        "    \"ssd_512_vgg16_atrous_coco\",\n",
+        "]\n",
+        "\n",
+        "model_name = supported_model[0]\n",
+        "dshape = (1, 3, 512, 512)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "下载并预处理演示图像。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "im_fname = download_testdata(\n",
+        "    \"https://github.com/dmlc/web-data/blob/main/\" + \"gluoncv/detection/street_small.jpg?raw=true\",\n",
+        "    \"street_small.jpg\",\n",
+        "    module=\"data\",\n",
+        ")\n",
+        "x, img = data.transforms.presets.ssd.load_test(im_fname, short=512)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "为 CPU 转换和编译模型。"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [
+        {
+          "name": "stderr",
+          "output_type": "stream",
+          "text": [
+            "/media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/mxnet/gluon/block.py:1784: UserWarning: Cannot decide type for the following arguments. Consider providing them as input:\n",
+            "\tdata: None\n",
+            "  input_sym_arg_type = in_param.infer_type()[0]\n"
+          ]
+        }
+      ],
+      "source": [
+        "block = model_zoo.get_model(model_name, pretrained=True)\n",
+        "\n",
+        "\n",
+        "def build(target):\n",
+        "    mod, params = relay.frontend.from_mxnet(block, {\"data\": dshape})\n",
+        "    with tvm.transform.PassContext(opt_level=3):\n",
+        "        lib = relay.build(mod, target, params=params)\n",
+        "    return lib"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "\n",
+        "\n",
+        "```{admonition} 创建 TVM 运行时并进行推理\n",
+        ":class: alert alert-info\n",
+        "\n",
+        "如果你在 cmake 期间设定 `-DUSE_THRUST=ON` 启用了 thrust，则使用 ``target = \"cuda -libs\"`` 来启用基于 thrust 的排序。\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "def run(lib, dev):\n",
+        "    # Build TVM runtime\n",
+        "    m = graph_executor.GraphModule(lib[\"default\"](dev))\n",
+        "    tvm_input = tvm.nd.array(x.asnumpy(), device=dev)\n",
+        "    m.set_input(\"data\", tvm_input)\n",
+        "    # execute\n",
+        "    m.run()\n",
+        "    # get outputs\n",
+        "    class_IDs, scores, bounding_boxs = m.get_output(0), m.get_output(1), m.get_output(2)\n",
+        "    return class_IDs, scores, bounding_boxs\n",
+        "\n",
+        "\n",
+        "for target in [\"llvm\", \"cuda\"]:\n",
+        "    dev = tvm.device(target, 0)\n",
+        "    if dev.exist:\n",
+        "        lib = build(target)\n",
+        "        class_IDs, scores, bounding_boxs = run(lib, dev)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "显示结果："
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "collapsed": false
+      },
+      "outputs": [],
+      "source": [
+        "ax = utils.viz.plot_bbox(\n",
+        "    img,\n",
+        "    bounding_boxs.numpy()[0],\n",
+        "    scores.numpy()[0],\n",
+        "    class_IDs.numpy()[0],\n",
+        "    class_names=block.classes,\n",
+        ")\n",
+        "plt.show()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "import mxnet as mx\n",
+        "\n",
+        "inp = mx.nd.array(x.asnumpy())\n",
+        "block.summary(inp)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "36927598/(2**20)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": []
+    }
+  ],
+  "metadata": {
+    "interpreter": {
+      "hash": "ee40e4cbda3c4716866f133b45765e0887afdbc9aa3bd872ab229f889d521355"
+    },
+    "kernelspec": {
+      "display_name": "Python 3.10.4 ('mx')",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.10.4"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

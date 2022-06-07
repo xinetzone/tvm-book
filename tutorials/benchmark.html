@@ -1,0 +1,864 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>基准 &#8212; tvm-book 0.0.2 文档</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="部署 Single Shot Multibox Detector(SSD) 模型" href="deploy_ssd_gluoncv.html" />
+    <link rel="prev" title="部署 TVM" href="deploy.html" />
+    <link rel="stylesheet" href="../_static/css/default.css"/>
+    <link rel="stylesheet" href="../_static/css/custom.css"/>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../index.html">
+  <img src="../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../vta/index.html">
+  VTA
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../tests/index.html">
+  测试
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../chaos.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.2  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables tutorials/benchmark and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.2', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "tutorials/benchmark.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "tutorials/benchmark.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.2 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.2") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../origin/index.html">
+   初级教程
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../origin/d2l-tvm/index.html">
+     d2l-tvm 教程
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../origin/d2l-tvm/getting_started/index.html">
+       入门
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/getting_started/install.html">
+         安装
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/getting_started/vector_add.html">
+         向量加法
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/getting_started/from_mxnet.html">
+         神经网络推理
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/getting_started/remote.html">
+         在远程计算机上运行
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../origin/d2l-tvm/expressions/index.html">
+       表达式算子
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/expressions/data_types.html">
+         数据类型
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/expressions/shapes.html">
+         形状
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/expressions/index_shape_expressions.html">
+         索引和形状表达式
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/expressions/reductions.html">
+         归约运算
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/expressions/if_then_else.html">
+         条件表达式：
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           if-then-else
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/expressions/all_any.html">
+         真值测试：
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           all
+          </span>
+         </code>
+         和
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           any
+          </span>
+         </code>
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../origin/d2l-tvm/common_operators/index.html">
+       常见的算子
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/common_operators/broadcast_add.html">
+         广播加法
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/common_operators/matmul.html">
+         矩阵乘法
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/common_operators/conv.html">
+         卷积
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/common_operators/depthwise_conv.html">
+         深度可分离卷积
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/common_operators/pooling.html">
+         池化
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/common_operators/batch_norm.html">
+         Batch Normalization
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/index.html">
+       CPU 上的算子优化
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/arch.html">
+         CPU 架构
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/call_overhead.html">
+         函数调用的开销
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/vector_add.html">
+         CPU 向量加法
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/broadcast_add.html">
+         CPU 广播加法
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/matmul.html">
+         CPU 矩阵乘法
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/block_matmul.html">
+         Improve Cache Efficiency by Blocking
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/conv.html">
+         Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/packed_conv.html">
+         Packed Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/depthwise_conv.html">
+         Depthwise Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/pooling.html">
+         Pooling
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/cpu_schedules/batch_norm.html">
+         Batch Normalization
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/index.html">
+       GPU 上的算子优化
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+      <label for="toctree-checkbox-7">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/arch.html">
+         GPU 架构
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/vector_add.html">
+         Vector Add
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/broadcast_add.html">
+         Broadcast Add
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/matmul.html">
+         Matrix Multiplication
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/conv.html">
+         Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/depthwise_conv.html">
+         Depthwise Convolution
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/pooling.html">
+         Pooling
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../origin/d2l-tvm/gpu_schedules/batch_norm.html">
+         Batch Norm
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../origin/d2l-tvm/zreferences.html">
+       参考文献
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../origin/test.html">
+     草稿
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="neural_networks/index.html">
+   神经网络
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="test.html">
+   测试
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="vta.html">
+   VTA 测试
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/tutorials/benchmark.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>基准<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+<span class="kn">from</span> <span class="nn">tvm.ir</span> <span class="kn">import</span> <span class="n">IRModule</span>
+<span class="kn">from</span> <span class="nn">tvm.relay</span> <span class="kn">import</span> <span class="n">testing</span>
+
+<span class="k">def</span> <span class="nf">get_network</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the symbol definition and random weight of a network</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name: str</span>
+<span class="sd">        The name of the network, can be &#39;resnet-18&#39;, &#39;resnet-50&#39;, &#39;vgg-16&#39;, &#39;inception_v3&#39;, &#39;mobilenet&#39;, ...</span>
+<span class="sd">    batch_size: int</span>
+<span class="sd">        batch size</span>
+<span class="sd">    dtype: str</span>
+<span class="sd">        Data type</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    net: tvm.IRModule</span>
+<span class="sd">        The relay function of network definition</span>
+<span class="sd">    params: dict</span>
+<span class="sd">        The random parameters for benchmark</span>
+<span class="sd">    input_shape: tuple</span>
+<span class="sd">        The shape of input tensor</span>
+<span class="sd">    output_shape: tuple</span>
+<span class="sd">        The shape of output tensor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+    <span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;mobilenet&quot;</span><span class="p">:</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">mobilenet</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;inception_v3&quot;</span><span class="p">:</span>
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">299</span><span class="p">,</span> <span class="mi">299</span><span class="p">)</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">inception_v3</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;resnet&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">n_layer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">resnet</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span>
+            <span class="n">num_layers</span><span class="o">=</span><span class="n">n_layer</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;vgg&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">n_layer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">vgg</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span>
+            <span class="n">num_layers</span><span class="o">=</span><span class="n">n_layer</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;densenet&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">n_layer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">densenet</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span>
+            <span class="n">densenet_size</span><span class="o">=</span><span class="n">n_layer</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;squeezenet&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_v&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><span class="n">squeezenet</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;mxnet&quot;</span><span class="p">:</span>
+        <span class="c1"># an example for mxnet model</span>
+        <span class="kn">from</span> <span class="nn">mxnet.gluon.model_zoo.vision</span> <span class="kn">import</span> <span class="n">get_model</span>
+
+        <span class="n">block</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;resnet18_v1&quot;</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_mxnet</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">input_shape</span><span class="p">},</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">body</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">type_params</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="p">)</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="n">IRModule</span><span class="o">.</span><span class="n">from_expr</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported network: &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">net</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">,</span> <span class="n">output_shape</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">9190</span>
+<span class="n">rpc_key</span> <span class="o">=</span> <span class="s2">&quot;mate10pro&quot;</span>
+<span class="n">repeat</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;mate10pro&quot;</span>
+<span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
+<span class="n">network</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">networks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;squeezenet_v1.1&quot;</span><span class="p">,</span> <span class="s2">&quot;mobilenet&quot;</span><span class="p">,</span> <span class="s2">&quot;resnet-18&quot;</span><span class="p">,</span> <span class="s2">&quot;vgg-16&quot;</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">networks</span> <span class="o">=</span> <span class="p">[</span><span class="n">network</span><span class="p">]</span>
+
+<span class="n">target</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">arm_cpu</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+<span class="n">target_host</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
+<span class="kn">from</span> <span class="nn">tvm.contrib.utils</span> <span class="kn">import</span> <span class="n">tempdir</span>
+<span class="kn">import</span> <span class="nn">tvm.contrib.graph_executor</span> <span class="k">as</span> <span class="nn">runtime</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+
+<span class="k">def</span> <span class="nf">evaluate_network</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_host</span><span class="p">,</span> <span class="n">repeat</span><span class="p">):</span>
+    <span class="c1"># connect to remote device</span>
+    <span class="n">tracker</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">rpc</span><span class="o">.</span><span class="n">connect_tracker</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+    <span class="n">remote</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">rpc_key</span><span class="p">)</span>
+
+    <span class="c1"># print_progress(network)</span>
+    <span class="n">net</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">,</span> <span class="n">output_shape</span> <span class="o">=</span> <span class="n">get_network</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># print_progress(&quot;%-20s building...&quot; % network)</span>
+    <span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">lib</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">Target</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">target_host</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempdir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;android&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">ndk</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.so&quot;</span> <span class="o">%</span> <span class="n">network</span>
+        <span class="n">lib</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">ndk</span><span class="o">.</span><span class="n">create_shared</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.tar&quot;</span> <span class="o">%</span> <span class="n">network</span>
+        <span class="n">lib</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+    <span class="c1"># upload library and params</span>
+    <span class="c1"># print_progress(&quot;%-20s uploading...&quot; % network)</span>
+    <span class="n">dev</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+    <span class="n">rlib</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">rlib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">dev</span><span class="p">))</span>
+    <span class="n">data_tvm</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">input_shape</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data_tvm</span><span class="p">)</span>
+
+    <span class="c1"># evaluate</span>
+    <span class="c1"># print_progress(&quot;%-20s evaluating...&quot; % network)</span>
+    <span class="n">ftimer</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">time_evaluator</span><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">repeat</span><span class="p">)</span>
+    <span class="n">prof_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ftimer</span><span class="p">()</span><span class="o">.</span><span class="n">results</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># multiply 1000 for converting to millisecond</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">%-20s</span><span class="s2"> </span><span class="si">%-19s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2"> ms&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">prof_res</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2"> ms&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">prof_res</span><span class="p">))</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">networks</span><span class="p">:</span>
+    <span class="n">evaluate_network</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_host</span><span class="p">,</span> <span class="n">repeat</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="nn">/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb Cell 5&#39;</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000003vscode-remote?line=0&#39;</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">networks</span><span class="p">:</span>
+<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000003vscode-remote?line=1&#39;</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">evaluate_network</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_host</span><span class="p">,</span> <span class="n">repeat</span><span class="p">)</span>
+
+<span class="nn">/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb Cell 4&#39;</span> in <span class="ni">evaluate_network</span><span class="nt">(network, target, target_host, repeat)</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000004vscode-remote?line=8&#39;</span><span class="o">&gt;</span><span class="mi">9</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">def</span> <span class="nf">evaluate_network</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_host</span><span class="p">,</span> <span class="n">repeat</span><span class="p">):</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000004vscode-remote?line=9&#39;</span><span class="o">&gt;</span><span class="mi">10</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="c1"># connect to remote device</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000004vscode-remote?line=10&#39;</span><span class="o">&gt;</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">tracker</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">rpc</span><span class="o">.</span><span class="n">connect_tracker</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+<span class="o">---&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000004vscode-remote?line=11&#39;</span><span class="o">&gt;</span><span class="mi">12</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">remote</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">rpc_key</span><span class="p">)</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000004vscode-remote?line=13&#39;</span><span class="o">&gt;</span><span class="mi">14</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="c1"># print_progress(network)</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell://ssh-remote%2Bxin/media/pc/data/4tb/lxw/study/tvm-book/doc/tutorials/benchmark.ipynb#ch0000004vscode-remote?line=14&#39;</span><span class="o">&gt;</span><span class="mi">15</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">net</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">,</span> <span class="n">output_shape</span> <span class="o">=</span> <span class="n">get_network</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nn">File /media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/client.py:400,</span> in <span class="ni">TrackerSession.request</span><span class="nt">(self, key, priority, session_timeout, max_retry, session_constructor_args)</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/client.py?line=397&#39;</span><span class="o">&gt;</span><span class="mi">398</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/client.py?line=398&#39;</span><span class="o">&gt;</span><span class="mi">399</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">base</span><span class="o">.</span><span class="n">sendjson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="p">,</span> <span class="p">[</span><span class="n">base</span><span class="o">.</span><span class="n">TrackerCode</span><span class="o">.</span><span class="n">REQUEST</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">priority</span><span class="p">])</span>
+<span class="o">--&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/client.py?line=399&#39;</span><span class="o">&gt;</span><span class="mi">400</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">value</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">recvjson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="p">)</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/client.py?line=400&#39;</span><span class="o">&gt;</span><span class="mi">401</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">base</span><span class="o">.</span><span class="n">TrackerCode</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/client.py?line=401&#39;</span><span class="o">&gt;</span><span class="mi">402</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid return value </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+<span class="nn">File /media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py:118,</span> in <span class="ni">recvjson</span><span class="nt">(sock)</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=104&#39;</span><span class="o">&gt;</span><span class="mi">105</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">def</span> <span class="nf">recvjson</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=105&#39;</span><span class="o">&gt;</span><span class="mi">106</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="s2">&quot;&quot;&quot;receive python value from remote via json</span>
+<span class="s2">    &lt;a href=&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=106&#39;&gt;107&lt;/a&gt; </span>
+<span class="s2">    &lt;a href=&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=107&#39;&gt;108&lt;/a&gt;     Parameters</span>
+<span class="s2">   (...)</span>
+<span class="s2">    &lt;a href=&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=115&#39;&gt;116&lt;/a&gt;         The value received.</span>
+<span class="s2">    &lt;a href=&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=116&#39;&gt;117&lt;/a&gt;     &quot;&quot;&quot;</span>
+<span class="o">--&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=117&#39;</span><span class="o">&gt;</span><span class="mi">118</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;i&quot;</span><span class="p">,</span> <span class="n">recvall</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=118&#39;</span><span class="o">&gt;</span><span class="mi">119</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">py_str</span><span class="p">(</span><span class="n">recvall</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">size</span><span class="p">)))</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=119&#39;</span><span class="o">&gt;</span><span class="mi">120</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="k">return</span> <span class="n">data</span>
+
+<span class="nn">File /media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py:81,</span> in <span class="ni">recvall</span><span class="nt">(sock, nbytes)</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=78&#39;</span><span class="o">&gt;</span><span class="mi">79</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="n">nread</span> <span class="o">=</span> <span class="mi">0</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=79&#39;</span><span class="o">&gt;</span><span class="mi">80</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">while</span> <span class="n">nread</span> <span class="o">&lt;</span> <span class="n">nbytes</span><span class="p">:</span>
+<span class="o">---&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=80&#39;</span><span class="o">&gt;</span><span class="mi">81</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="n">chunk</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">nbytes</span> <span class="o">-</span> <span class="n">nread</span><span class="p">,</span> <span class="mi">1024</span><span class="p">))</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=81&#39;</span><span class="o">&gt;</span><span class="mi">82</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+     <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;file:///media/workspace/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/rpc/base.py?line=82&#39;</span><span class="o">&gt;</span><span class="mi">83</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;connection reset&quot;</span><span class="p">)</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="deploy.html" title="上一页 页">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">上一页</p>
+            <p class="prev-next-title">部署 TVM</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="deploy_ssd_gluoncv.html" title="下一页 页">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">部署 Single Shot Multibox Detector(SSD) 模型</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="last-updated">
+最后更新于 2022-06-07, 11:55:17.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

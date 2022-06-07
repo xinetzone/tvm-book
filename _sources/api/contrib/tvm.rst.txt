@@ -1,6 +1,7 @@
 ``tvm``
 ================
 
-.. autosummary::
+.. currentmodule:: tvm_book.contrib
 
-    tvm_book.contrib.tvm
+.. autofunction::
+    tvm

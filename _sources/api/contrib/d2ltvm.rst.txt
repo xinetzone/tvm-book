@@ -1,6 +1,7 @@
 ``d2ltvm``
 ================
 
-.. autosummary::
+.. currentmodule:: tvm_book.contrib
 
-    tvm_book.contrib.d2ltvm
+.. autofunction::
+    d2ltvm

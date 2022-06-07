@@ -1,6 +1,8 @@
 ``mxnet``
 ===================
 
-.. autosummary::
+.. currentmodule:: tvm_book.contrib
 
-    tvm_book.contrib.mxnet
+.. autofunction::
+    mxnet
+    

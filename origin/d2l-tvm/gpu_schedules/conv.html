@@ -25,9 +25,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -44,6 +42,7 @@
     <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/translations.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
@@ -87,6 +86,12 @@
     <li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="../../../tutorials/index.html">
   教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../vta/index.html">
+  VTA
  </a>
 </li>
 
@@ -527,6 +532,21 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../tutorials/test.html">
    测试
   </a>
@@ -675,7 +695,10 @@ The only change that we need to make is to specify to the method that the target
  6281.556088500076]
 </pre></div>
 </div>
-<img alt="../../../_images/55aa0b9fd891750f6a33cc1b3ed256dca532db28e73afb84dcc45a064c409370.svg" src="../../../_images/55aa0b9fd891750f6a33cc1b3ed256dca532db28e73afb84dcc45a064c409370.svg" /></div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <p>The results above show that on GPUs the performance of convolution increases while the number of channels increases. For showing the gradual performance improvement brought by TVM scheduling, we now fix the channel size to be 64, where MXNet could get to the performance of about 1700 GFLOPS or 1.7 TGLOPS. Please keep this in mind while we are working on the TVM scheduling.</p>
 <div class="cell docutils container">
@@ -965,7 +988,10 @@ The only change that we need to make is to specify to the method that the target
        3746.19560406])
 </pre></div>
 </div>
-<img alt="../../../_images/ce954e8c4d5b3fc0edb414c458274fccb63ca60d722a3280e191338b20230e5a.svg" src="../../../_images/ce954e8c4d5b3fc0edb414c458274fccb63ca60d722a3280e191338b20230e5a.svg" /></div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <p>From the figure we see that TVM outperforms MXNet in smaller channel sizes but MXNet becomes better as the number of channels increases. This is mostly because cuDNN used by MXNet has manually optimized implementation for different data shapes, but here we use only one scheduling strategy for convolution kernels in different sizes.</p>
 <p>You may wonder how we can choose different schedules for convolutions of different data sizes, and even better, if we can automate the choice of schedules given a specific set of data shapes for convolution. We will talk about these techniques later.</p>
@@ -1029,7 +1055,7 @@ The only change that we need to make is to specify to the method that the target
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-18, 11:44:35.<br>
+最后更新于 2022-06-07, 11:55:17.<br>
 </p>
     </div>
     

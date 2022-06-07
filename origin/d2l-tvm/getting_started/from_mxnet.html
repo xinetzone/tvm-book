@@ -25,9 +25,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -44,6 +42,7 @@
     <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/translations.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../../genindex.html" />
     <link rel="search" title="搜索" href="../../../search.html" />
@@ -85,6 +84,12 @@
     <li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="../../../tutorials/index.html">
   教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../vta/index.html">
+  VTA
  </a>
 </li>
 
@@ -525,6 +530,21 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../tutorials/test.html">
    测试
   </a>
@@ -675,7 +695,9 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/17b2e3af124ed5f0d54c69cb880caabd755b4253dc532ec9c01f20edc571733d.png" src="../../../_images/17b2e3af124ed5f0d54c69cb880caabd755b4253dc532ec9c01f20edc571733d.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;PIL.Image.Image image mode=RGB size=224x224 at 0x7F74CAA3A890&gt;
+</pre></div>
+</div>
 </div>
 </div>
 <p>根据 <a class="reference external" href="https://mxnet.apache.org/api/python/docs/api/gluon/model_zoo/index.html">动物园模型页面</a>。图像像素在每个颜色通道上进行归一化，数据布局为 <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">RGB</span> <span class="pre">channels,</span> <span class="pre">height,</span> <span class="pre">width)</span></code>。下面的函数对输入图像进行变换，使其满足要求。</p>
@@ -736,7 +758,7 @@ function checkPageExistsAndRedirect(event) {
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fea7b7dde40&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7f74c894ace0&gt;
 </pre></div>
 </div>
 </div>
@@ -764,7 +786,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7fea7b708040&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7f77afbbb5b0&gt;
 </pre></div>
 </div>
 </div>
@@ -778,8 +800,8 @@ function checkPageExistsAndRedirect(event) {
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
 <span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 <span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">output_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-<span class="n">tvm_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">output_shape</span><span class="p">))</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="c1"># output_shape = (1, 1000)</span>
+<span class="n">tvm_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 <span class="n">tvm_output</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
@@ -824,9 +846,9 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 5月  17 13:51 outputs/resnet18_v2.params
--rw-rw-r-- 1 pc pc 36K 5月  17 13:51 outputs/resnet18_v2.json
--rw-rw-r-- 1 pc pc 42M 5月  17 13:51 outputs/resnet18_v2.tar
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 5月  24 22:22 outputs/resnet18_v2.params
+-rw-rw-r-- 1 pc pc 36K 5月  24 22:22 outputs/resnet18_v2.json
+-rw-rw-r-- 1 pc pc 42M 5月  24 22:22 outputs/resnet18_v2.tar
 </pre></div>
 </div>
 </div>
@@ -905,7 +927,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-18, 11:44:35.<br>
+最后更新于 2022-06-07, 11:55:17.<br>
 </p>
     </div>
     

@@ -1,8 +1,6 @@
 ``contrib``
 ============
 
-.. currentmodule:: tvm_book.contrib
-
 .. toctree::
 
     tvm

@@ -1,0 +1,203 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# VTA 配置"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import tvm\n",
+    "from tvm import te\n",
+    "import vta\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "函数 {func}`vta.get_env` 可以获取 VTA 的参数："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'tsim'"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "env = vta.get_env()\n",
+    "\n",
+    "env.TARGET"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "用户可以自由地修改影响硬件设计布局的高级硬件参数。这些参数在 `tvm/3rdparty/vta-hw/config/vta_config.json` 中通过它们的 `log2` 值指定。\n",
+    "\n",
+    "为了便于修改 VTA 硬件参数，可以使用 {func}`~tvm_book.vta.config.update_vta_config` 自动修改配置："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from tvm_book.vta.config import update_vta_config\n",
+    "\n",
+    "tvm_root = TVM_ROOT\n",
+    "update_vta_config(tvm_root, **{'TARGET': \"sim\"})"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "再次查看："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'sim'"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "env = vta.get_env()\n",
+    "\n",
+    "env.TARGET"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```{note}\n",
+    "一定要重写导入 `vta`，才可以生效。\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## VTA 多环境管理"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'skip_alu'"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "env = vta.get_env()\n",
+    "mock = env.mock\n",
+    "mock.alu"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "借助 {data}`with` 管理 VTA 环境："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def test_env_scope():\n",
+    "    env = vta.get_env()\n",
+    "    cfg = env.cfg_dict\n",
+    "    cfg[\"TARGET\"] = \"xyz\"\n",
+    "    with vta.Environment(cfg):\n",
+    "        assert vta.get_env().TARGET == \"xyz\"\n",
+    "    assert vta.get_env().TARGET == env.TARGET"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "test_env_scope()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "interpreter": {
+   "hash": "ee40e4cbda3c4716866f133b45765e0887afdbc9aa3bd872ab229f889d521355"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('mx')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

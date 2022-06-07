@@ -25,9 +25,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -44,6 +42,7 @@
     <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/translations.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
@@ -87,6 +86,12 @@
     <li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="../../../tutorials/index.html">
   教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../vta/index.html">
+  VTA
  </a>
 </li>
 
@@ -527,6 +532,21 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../../tutorials/deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../../tutorials/test.html">
    测试
   </a>
@@ -580,13 +600,13 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id5">
+   小结
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#exercises">
-   Exercises
+  <a class="reference internal nav-link" href="#id6">
+   练习
   </a>
  </li>
 </ul>
@@ -631,7 +651,7 @@ function checkPageExistsAndRedirect(event) {
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
 
-<span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -mcpu=skylake-avx512&#39;</span>
+<span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;llvm&quot;</span> <span class="c1">#&#39;llvm -mcpu=skylake-avx512&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -721,10 +741,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">Canceled</span> <span class="n">future</span> <span class="k">for</span> <span class="n">execute_request</span> <span class="n">message</span> <span class="n">before</span> <span class="n">replies</span> <span class="n">were</span> <span class="n">done</span>
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">Kernel</span> <span class="n">crashed</span> <span class="k">while</span> <span class="n">executing</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">the</span> <span class="n">current</span> <span class="n">cell</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">previous</span> <span class="n">cell</span><span class="o">.</span> <span class="n">Please</span> <span class="n">review</span> <span class="n">the</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">cell</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">to</span> <span class="n">identify</span> <span class="n">a</span> <span class="n">possible</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">failure</span><span class="o">.</span> <span class="n">Click</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;https://aka.ms/vscodeJupyterKernelCrash&#39;</span><span class="o">&gt;</span><span class="n">here</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">info</span><span class="o">.</span> <span class="n">View</span> <span class="n">Jupyter</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;command:jupyter.viewOutput&#39;</span><span class="o">&gt;</span><span class="n">log</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">for</span> <span class="n">further</span> <span class="n">details</span><span class="o">.</span>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
 </pre></div>
 </div>
 </div>
@@ -733,9 +750,9 @@ function checkPageExistsAndRedirect(event) {
 <section id="id3">
 <h2>重新排序轴<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p><a class="reference internal" href="../common_operators/matmul.html#fig-matmul-default"><span class="std std-ref">计算矩阵乘法的原始 C_{x,y}</span></a> 的第一个问题是矩阵 <span class="math notranslate nohighlight">\(B\)</span> 是按列访问的，而它的元素是按行存储的（即矩阵 <span class="math notranslate nohighlight">\(B\)</span> 属于 <a class="reference external" href="https://en.wikipedia.org/wiki/Row-_and_column-major_order">row-major</a> ）。换句话说，在上面的伪代码中，在轴 <code class="docutils literal notranslate"><span class="pre">k</span></code> 之前迭代轴 <code class="docutils literal notranslate"><span class="pre">y</span></code>。只要简单地切换这两个 for 循环，就可以按顺序读取和写入所有元素。<a class="reference internal" href="#fig-matmul-reorder"><span class="std std-ref">在矩阵乘法中重新排列坐标轴</span></a> 说明了数据访问模式的改变。</p>
-<figure class="align-default" id="id5">
+<figure class="align-default" id="id7">
 <span id="fig-matmul-reorder"></span><img alt="../../../_images/matmul_reorder.svg" src="../../../_images/matmul_reorder.svg" /><figcaption>
-<p><span class="caption-text">在矩阵乘法中重新排列坐标轴</span><a class="headerlink" href="#id5" title="永久链接至图片">#</a></p>
+<p><span class="caption-text">在矩阵乘法中重新排列坐标轴</span><a class="headerlink" href="#id7" title="永久链接至图片">#</a></p>
 </figcaption>
 </figure>
 <p>为了实现它，通过 <code class="docutils literal notranslate"><span class="pre">reorder</span></code> 原语将轴的顺序从 (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">k</span></code>) 更改为 (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">k</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>)。</p>
@@ -753,6 +770,30 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(A_1: handle, B_1: handle, C_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {A: Buffer(A_2: Pointer(float32), float32, [4096], []),
+             B: Buffer(B_2: Pointer(float32), float32, [4096], []),
+             C: Buffer(C_2: Pointer(float32), float32, [4096], [])}
+  buffer_map = {A_1: A, B_1: B, C_1: C}
+  preflattened_buffer_map = {A_1: A_3: Buffer(A_2, float32, [64, 64], []), B_1: B_3: Buffer(B_2, float32, [64, 64], []), C_1: C_3: Buffer(C_2, float32, [64, 64], [])} {
+  for (x: int32, 0, 64) {
+    for (y.init: int32, 0, 64) {
+      C[((x*64) + y.init)] = 0f32
+    }
+    for (k: int32, 0, 64) {
+      for (y: int32, 0, 64) {
+        let cse_var_2: int32 = (x*64)
+        let cse_var_1: int32 = (cse_var_2 + y)
+        C[cse_var_1] = (C[cse_var_1] + (A[(cse_var_2 + k)]*B[((k*64) + y)]))
+      }
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
 </div>
 <p>可以看到，与默认调度相比，重新排序显著提高了性能。</p>
 <div class="cell docutils container">
@@ -760,6 +801,11 @@ function checkPageExistsAndRedirect(event) {
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reorder_gflops</span> <span class="o">=</span> <span class="n">bench_matmul_tvm</span><span class="p">(</span><span class="n">reorder</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="n">d2ltvm</span><span class="o">.</span><span class="n">plot_gflops</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="p">[</span><span class="n">np_gflops</span><span class="p">,</span> <span class="n">default_gflops</span><span class="p">,</span> <span class="n">reorder_gflops</span><span class="p">],</span>
             <span class="p">[</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;reorder&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
 </pre></div>
 </div>
 </div>
@@ -780,6 +826,30 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@main = primfn(A_1: handle, B_1: handle, C_1: handle) -&gt; ()
+  attr = {&quot;from_legacy_te_schedule&quot;: True, &quot;global_symbol&quot;: &quot;main&quot;, &quot;tir.noalias&quot;: True}
+  buffers = {A: Buffer(A_2: Pointer(float32), float32, [4096], []),
+             B: Buffer(B_2: Pointer(float32), float32, [4096], []),
+             C: Buffer(C_2: Pointer(float32), float32, [4096], [])}
+  buffer_map = {A_1: A, B_1: B, C_1: C}
+  preflattened_buffer_map = {A_1: A_3: Buffer(A_2, float32, [64, 64], []), B_1: B_3: Buffer(B_2, float32, [64, 64], []), C_1: C_3: Buffer(C_2, float32, [64, 64], [])} {
+  for (x: int32, 0, 64) &quot;parallel&quot; {
+    for (y.init: int32, 0, 64) {
+      C[((x*64) + y.init)] = 0f32
+    }
+    for (k: int32, 0, 64) {
+      for (y: int32, 0, 64) {
+        let cse_var_2: int32 = (x*64)
+        let cse_var_1: int32 = (cse_var_2 + y)
+        C[cse_var_1] = (C[cse_var_1] + (A[(cse_var_2 + k)]*B[((k*64) + y)]))
+      }
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -789,22 +859,27 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
 </div>
-<p>Parallelization improves the performance again. But we can see that there is still a gap compared to NumPy on large matrices, specially when they cannot fit into the L2 cache. We will try to resolve it in the next section.</p>
+</div>
+</div>
+<p>并行化再次提高了性能。但可以看到，与 NumPy 相比，在大型矩阵上仍然存在差距，特别是当它们无法放入 L2 缓存时。将在下一节中解决它。</p>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<section id="id5">
+<h2>小结<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <ul class="simple">
-<li><p>Reordering the for-loops in matrix multiplication properly improves the performance.</p></li>
-<li><p>Proper thread-level parallelization also improves the performance.</p></li>
+<li><p>对矩阵乘法中的 for 循环进行适当的排序可以提高性能。</p></li>
+<li><p>适当的线程级并行也可以提高性能。</p></li>
 </ul>
 </section>
-<section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="永久链接至标题">#</a></h2>
+<section id="id6">
+<h2>练习<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
 <ol class="arabic simple">
-<li><p>Change the number of threads</p></li>
-<li><p>Try to order the axes in method <code class="docutils literal notranslate"><span class="pre">parallel</span></code> differently</p></li>
-<li><p>Benchmark matrix multiplication in larger sizes</p></li>
+<li><p>更改线程数</p></li>
+<li><p>尝试用不同的 <code class="docutils literal notranslate"><span class="pre">parallel</span></code> 方法排列坐标轴</p></li>
+<li><p>更大尺寸的基准矩阵乘法</p></li>
 </ol>
 </section>
 </section>
@@ -850,7 +925,7 @@ function checkPageExistsAndRedirect(event) {
     
     <div class="footer-item">
       <p class="last-updated">
-最后更新于 2022-05-18, 11:44:35.<br>
+最后更新于 2022-06-07, 11:55:17.<br>
 </p>
     </div>
     

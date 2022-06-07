@@ -5,6 +5,9 @@
 
 ../origin/index
 neural_networks/index
+deploy
+benchmark
+deploy_ssd_gluoncv
 test
 vta
 ```
