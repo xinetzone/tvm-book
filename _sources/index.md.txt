@@ -6,6 +6,7 @@
 
 tutorials/index
 vta/index
+eagerpy/index
 tests/index
 chaos
 api/index

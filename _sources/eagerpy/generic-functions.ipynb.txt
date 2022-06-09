@@ -1,0 +1,205 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 实现通用框架无关函数\n",
+    "\n",
+    "使用 {ref}`eagerpy:convert` 中显示的转换函数，已经可以定义简单的框架无关函数。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import eagerpy as ep\n",
+    "\n",
+    "def norm(x):\n",
+    "    x = ep.astensor(x)\n",
+    "    result = x.square().sum().sqrt()\n",
+    "    return result.raw"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "这个函数可以用任何框架的原生张量来调用，它将返回该张量的范数，同样是该框架的原生张量。\n",
+    "\n",
+    "```{rubric} 使用 PyTorch 张量调用 norm 函数\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "tensor(13.)"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import torch\n",
+    "norm(torch.tensor([3., 4., 12.]))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```{rubric} 使用 TensorFlow 张量调用 norm 函数\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<tf.Tensor: shape=(), dtype=float32, numpy=13.0>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import tensorflow as tf\n",
+    "norm(tf.constant([3., 4., 12.]))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "如果用 EagerPy 张量来调用上面的 `norm` 函数，`ep.astensor` 调用将简单地返回它的输入。然而，最后一行中的 `result.raw` 调用仍然会提取底层的原生张量。\n",
+    "\n",
+    "通常最好是实现泛型函数，它不仅透明地处理任何原生张量，还透明地处理 EagerPy 张量，即返回类型应该总是与输入类型匹配。这在像 Foolbox 这样允许用户使用 EagerPy 和原生张量的库中特别有用。为了实现这一点，EagerPy 提供了上述变换函数的两个衍生品：`ep.astensor_` 和 `ep.astensors_`。\n",
+    "\n",
+    "与没有下划线的对应方法不同，它们返回额外的反转函数，用于恢复输入类型。如果 `astensor_` 的输入是原生张量，`restore_type` 将与 `.raw` 相同，但如果原始输入是 EagerPy 张量，restore_type 将不会调用 `.raw`。有了它，就可以编写通用的框架无关函数，对任何输入都透明地工作。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import eagerpy as ep\n",
+    "\n",
+    "def norm(x):\n",
+    "    x, restore_type = ep.astensor_(x)\n",
+    "    result = x.square().sum().sqrt()\n",
+    "    return restore_type(result)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "使用 `ep.astensors_` 变换和恢复多个输入："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import eagerpy as ep\n",
+    "\n",
+    "def example(x, y, z):\n",
+    "    (x, y, z), restore_type = ep.astensors_(x, y, z)\n",
+    "    result = (x + y) * z\n",
+    "    return restore_type(result)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import tensorflow as tf\n",
+    "\n",
+    "x = norm(tf.constant([3., 4., 12.]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "(x,y), tt = ep.astensors_(x, x+2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<tf.Tensor: shape=(), dtype=float32, numpy=15.0>"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "norm(x+2).raw"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "interpreter": {
+   "hash": "866b7107d6b642074133aa95f5b94d9a7ea858e3128bed98b795c3cd28c1dfdb"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('tf')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

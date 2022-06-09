@@ -1,0 +1,149 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 快速上手 EagerPy\n",
+    "\n",
+    "安装：\n",
+    "\n",
+    "```bash\n",
+    "pip install eagerpy\n",
+    "```\n",
+    "\n",
+    "下面以 `norm` 为例，介绍 EagerPy："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import eagerpy as ep\n",
+    "\n",
+    "def norm(x):\n",
+    "    x = ep.astensor(x)\n",
+    "    result = x.square().sum().sqrt()\n",
+    "    return result.raw"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "现在，您可以使用 `norm` 函数与 PyTorch、TensorFlow、JAX 和 NumPy 中的原生张量和数组一起使用，与原生代码相比，几乎没有任何开销。当然，它也适用于 GPU 张量。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "tensor(3.7417)"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import torch\n",
+    "norm(torch.tensor([1., 2., 3.]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<tf.Tensor: shape=(), dtype=float32, numpy=3.7416573>"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import tensorflow as tf\n",
+    "norm(tf.constant([1., 2., 3.]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "DeviceArray(3.7416573, dtype=float32)"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import jax.numpy as np\n",
+    "norm(np.array([1., 2., 3.]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "3.7416573867739413"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "norm(np.array([1., 2., 3.]))"
+   ]
+  }
+ ],
+ "metadata": {
+  "interpreter": {
+   "hash": "866b7107d6b642074133aa95f5b94d9a7ea858e3128bed98b795c3cd28c1dfdb"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('tf')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
