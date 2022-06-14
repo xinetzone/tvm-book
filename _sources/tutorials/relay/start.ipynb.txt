@@ -1,0 +1,971 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 快速了解 Relay\n",
+    "\n",
+    "Relay IR 是纯粹的、面向表达式的语言。\n",
+    "\n",
+    "从计算图的角度来看，函数（{class}`tvm.relay.function.Function` ）是计算图的子图，函数调用在子图中，将其参数替换为带有相应名称的子图中的自由变量。\n",
+    "\n",
+    "Relay 明显地区分了 AST 和文本格式之间的局部变量（{class}`tvm.ir.expr.Var` 使用 `%` 标识）和全局变量（{class}`tvm.ir.expr.GlobalVar` 使用 `@` 标识）。\n",
+    "\n",
+    "- 全局标识符总是引用在全局可见环境中包含的全局可见定义，称为 **模块** （module）。全局标识符必须是唯一的。\n",
+    "- 局部标识符总是引用函数参数或被 `let` （{class}`tvm.relay.expr.Let`） 表达式绑定的变量，并将作用于它出现的函数或被 `let` 表达式绑定之处。\n",
+    "\n",
+    "## 局部变量\n",
+    "\n",
+    "局部变量可用于声明函数的输入参数或中间变量。可由 `tvm.relay.Var(name_hint, type_annotation=None)` 创建。其中\n",
+    "\n",
+    "- `name_hint` 指定了局部变量的名字。\n",
+    "- `type_annotation` 用于局部变量的类型注解。\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Var(x)"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from tvm import relay\n",
+    "\n",
+    "x = relay.Var(\"x\") # 创建局部变量 x\n",
+    "x"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "可以查看文本表示："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "free_var %x;\n",
+      "%x\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(x)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "如果想要声明给定 `dtype` 和形状已知的张量的类型，可以指定 `type_annotation` 参数创建："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Var(x, ty=TensorType([5, 5], float32))"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type_annotation = relay.TensorType(shape=(5, 5),\n",
+    "                                   dtype=\"float32\")\n",
+    "x = relay.Var(\"x\", type_annotation)\n",
+    "x"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "查看文本格式："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "free_var %x: Tensor[(5, 5), float32];\n",
+      "%x\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(x)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "还有一种便捷函数：`tvm.ir.expr.var(name_hint, type_annotation=None, shape=None, dtype=\"float32\")`："
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "创建变量的四种等效方式："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.Var(\"x\", relay.TensorType([1, 2]))\n",
+    "x = relay.var(\"x\", relay.TensorType([1, 2]))\n",
+    "x = relay.var(\"x\", shape=[1, 2])\n",
+    "x = relay.var(\"x\", shape=[1, 2], dtype=\"float32\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "同样，下面两列也是等效的："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "y = relay.var(\"x\", \"float32\")\n",
+    "y = relay.var(\"x\", shape=(), dtype=\"float32\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 函数\n",
+    "\n",
+    "Relay 中的函数的作用类似于其他编程语言中的过程或函数，并用于推广命名子图的概念。\n",
+    "\n",
+    "可以直接定义函数："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "a, b = [relay.var(name) for name in \"ab\"]\n",
+    "add_op = a + b\n",
+    "add_func = relay.Function([a, b], add_op)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "此函数的文本形式："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%a, %b) {\n",
+       "  add(%a, %b)\n",
+       "}"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "add_func"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "也可以使用 Python 函数回调的形式："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<function __main__.add(a, b)>"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "def add(a, b):\n",
+    "    add_op = a + b\n",
+    "    return relay.Function([a, b], add_op)\n",
+    "\n",
+    "add"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "想要使用，需要："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%a, %b) {\n",
+       "  add(%a, %b)\n",
+       "}"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a, b = [relay.var(name) for name in \"ab\"]\n",
+    "add_func = add(a, b)\n",
+    "add_func"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "也可以添加变量注解："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%a: Tensor[(5, 5), float32], %b: Tensor[(5, 5), float32]) -> Tensor[(5, 5), float32] {\n",
+       "  add(%a, %b)\n",
+       "}"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type_annotation = relay.TensorType(shape=(5, 5),\n",
+    "                                   dtype=\"float32\")\n",
+    "\n",
+    "\n",
+    "def add(a, b):\n",
+    "    add_op = a + b\n",
+    "    return relay.Function([a, b],\n",
+    "                          add_op,\n",
+    "                          ret_type=type_annotation)\n",
+    "\n",
+    "\n",
+    "a, b = [relay.var(name, type_annotation) for name in \"ab\"]\n",
+    "add_func = add(a, b)\n",
+    "add_func"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 模块\n",
+    "\n",
+    "Relay 保留称为 “module” 的全局数据结构（在其他函数式编程语言中通常称为 “environment”），以跟踪全局函数的定义。特别地，该模块保持全局变量到它们所表示的函数表达式的全局可访问映射。模块的实用之处在于，它允许全局函数递归地引用它们自己或任何其他全局函数（例如，在 mutual 递归中）。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 定义变量\n",
+    "names = \"xy\"\n",
+    "x, y = [relay.var(name) for name in names]\n",
+    "# 定义函数\n",
+    "add_op = x + y\n",
+    "add_func = relay.Function([x, y], add_op)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "声明全局变量："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "@AddFunc\n"
+     ]
+    }
+   ],
+   "source": [
+    "add_gvar = relay.GlobalVar(\"AddFunc\")\n",
+    "print(add_gvar)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "定义将 `add_func` 提升为全局变量："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "def @AddFunc(%x, %y) {\n",
+      "  add(%x, %y)\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "from tvm import IRModule\n",
+    "\n",
+    "mod = IRModule({add_gvar: add_func})\n",
+    "print(mod)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "获取模块的全局变量内容："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%x, %y) {\n",
+       "  add(%x, %y)\n",
+       "}"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mod[add_gvar]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "也可以直接借助全局变量的名字获取其内容："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%x, %y) {\n",
+       "  add(%x, %y)\n",
+       "}"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mod[\"AddFunc\"]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "也可以分配新的全局变量给模块："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "def @AddFunc(%x, %y) {\n",
+      "  add(%x, %y)\n",
+      "}\n",
+      "\n",
+      "def @MulFunc(%x1, %y1) {\n",
+      "  multiply(%x1, %y1)\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "names = \"xy\"\n",
+    "x, y = [relay.var(name) for name in names]\n",
+    "# 定义函数\n",
+    "mul_op = x * y\n",
+    "mul_func = relay.Function([x, y], mul_op)\n",
+    "mod[\"MulFunc\"] = mul_func\n",
+    "\n",
+    "print(mod)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "也可以通过 Python 字典更新全局变量："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "def @AddFunc(%x, %y) {\n",
+      "  add(%x, %y)\n",
+      "}\n",
+      "\n",
+      "def @MulAddFunc(%x1, %y1, %z) {\n",
+      "  %0 = multiply(%x1, %y1);\n",
+      "  add(%0, %z)\n",
+      "}\n",
+      "\n",
+      "def @MulFunc(%x2, %y2) {\n",
+      "  multiply(%x2, %y2)\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "names = \"xyz\"\n",
+    "x, y, z = [relay.var(name) for name in names]\n",
+    "# 定义函数\n",
+    "v1 = x * y\n",
+    "muladd_op = v1 + z\n",
+    "muladd_func = relay.Function([x, y, z], muladd_op)\n",
+    "\n",
+    "mod.update({\"MulAddFunc\": muladd_func})\n",
+    "print(mod)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "查看全局变量："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[GlobalVar(AddFunc), GlobalVar(MulFunc), GlobalVar(MulAddFunc)]"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mod.get_global_vars()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 回调全局变量\n",
+    "\n",
+    "{class}`tvm.relay.expr.Call` 可以在模块中回调全局变量。\n",
+    "\n",
+    "比如，定义 `add` 算子："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data = relay.var(\"data\")\n",
+    "bias = relay.var(\"bias\")\n",
+    "add_op = data + bias"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "初始化 Relay 模块："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "mod = IRModule()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "创建并绑定 `add` 全局函数到 `mod`："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "mod['AddFunc'] = relay.Function([data, bias], add_op)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "下面定义三个变量用于定义“连加”运算："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "a, b, c = [relay.var(name) for name in \"abc\"]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "获取全局变量 `add`："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "add_gvar = mod.get_global_var('AddFunc')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "定义“连加”运算："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "add_01 = relay.Call(add_gvar, [a, b])\n",
+    "add_012 = relay.Call(add_gvar, [c, add_01])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "绑定到 `mod`："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "def @AddFunc(%data, %bias) {\n",
+      "  add(%data, %bias)\n",
+      "}\n",
+      "\n",
+      "def @main(%a, %b, %c) {\n",
+      "  %0 = @AddFunc(%a, %b);\n",
+      "  @AddFunc(%c, %0)\n",
+      "}\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "mod['main'] = relay.Function([a, b, c], add_012)\n",
+    "print(mod)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 常量\n",
+    "\n",
+    "{class}`tvm.relay.Constant` 节点表示常量张量值。常量被表示为 {class}`~tvm.runtime.ndarray.NDArray`，允许 Relay 使用 TVM 算子来计算常量。\n",
+    "\n",
+    "此节点还可以表示标量常数，因为标量是形状为 `()` 的张量。因此，在文本格式中，数值和布尔字面值是将张量类型编码为零阶形状的常量的语法糖。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from tvm import nd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "('7i64', 'Constant(7)')"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "const_a = nd.array(7)\n",
+    "const_op = relay.Constant(const_a)\n",
+    "str(const_op), repr(const_op)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 元组\n",
+    "\n",
+    "元组节点构建有限（即静态已知大小）的异构数据序列。这些元组与 Python 非常匹配，它们的固定长度允许有效地投影其成员。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "free_var %a: Tensor[(10, 10), float32];\n",
+      "free_var %b: Tensor[(100, 20), float32];\n",
+      "free_var %c: Tensor[(100, 20), float32];\n",
+      "(%a, %b, %c)\n"
+     ]
+    }
+   ],
+   "source": [
+    "a = relay.var(\"a\", shape=(10, 10))\n",
+    "b = relay.var(\"b\", shape=(100, 20))\n",
+    "c = relay.var(\"c\", shape=(100, 20))\n",
+    "f_tuple = relay.Tuple([a, b, c])\n",
+    "\n",
+    "print(f_tuple)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "支持索引："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Var(a, ty=TensorType([10, 10], float32))"
+      ]
+     },
+     "execution_count": 30,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "f_tuple[0]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## If 条件表达"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "if (False) {\n",
+      "  free_var %a;\n",
+      "  free_var %b;\n",
+      "  add(%a, %b)\n",
+      "} else {\n",
+      "  multiply(%a, %b)\n",
+      "}\n"
+     ]
+    }
+   ],
+   "source": [
+    "a, b = [relay.var(name) for name in \"ab\"]\n",
+    "c = a + b\n",
+    "d = a * b\n",
+    "cond = relay.const(a == b)\n",
+    "f = relay.If(cond, c, d)\n",
+    "print(f)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `let` 绑定\n",
+    "\n",
+    "其实上述介绍的模块绑定属于 Relay graph 绑定，对应于计算图。\n",
+    "\n",
+    "let 绑定是不可变的局部变量绑定，允许用户将表达式绑定到名称。\n",
+    "\n",
+    "- let 绑定包含局部变量、可选类型注解、值和可以引用绑定标识符的 body 表达式。如果省略了绑定变量上的类型注释，Relay 将尝试推断该变量允许的最通用类型。\n",
+    "- let 表达式中的绑定变量只作用在其 body 作用域内，除非该变量定义了函数表达式。当 let 表达式创建函数时，该变量的值也在范围内，以允许递归定义函数（请参阅前一小节）。\n",
+    "- let 绑定的值是计算它所依赖的绑定后的最后一个表达式的值。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%x) {\n",
+       "  let %v1 = log(%x);\n",
+       "  let %v2 = add(%v1, %v1);\n",
+       "  %v2\n",
+       "}"
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "sb = relay.ScopeBuilder()\n",
+    "v1 = sb.let(\"v1\", relay.log(x))\n",
+    "v2 = sb.let(\"v2\", v1 + v1)\n",
+    "sb.ret(v2)\n",
+    "f = relay.Function([x], sb.get())\n",
+    "\n",
+    "f"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "也可以定义 if-else 语句："
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%x, %y, %cond: bool) {\n",
+       "  if (%cond) {\n",
+       "    let %t1 = add(%x, 1f);\n",
+       "    %t1\n",
+       "  } else {\n",
+       "    %y\n",
+       "  }\n",
+       "}"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sb = relay.ScopeBuilder()\n",
+    "cond = relay.var(\"cond\", 'bool')\n",
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "\n",
+    "with sb.if_scope(cond):\n",
+    "    one = relay.const(1, \"float32\")\n",
+    "    t1 = sb.let(\"t1\", relay.add(x, one))\n",
+    "    sb.ret(t1)\n",
+    "with sb.else_scope():\n",
+    "    sb.ret(y)\n",
+    "f = relay.Function([x, y, cond], sb.get())\n",
+    "f"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "interpreter": {
+   "hash": "aa67ff675248b5ab29dcd2f00c1422844307085c8ca7c8ce7eddecd21b9c2975"
+  },
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('mxnetx')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

@@ -1,0 +1,982 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>神经网络推理 &#8212; tvm-book 0.0.2 文档</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="next" title="在远程计算机上运行" href="remote.html" />
+    <link rel="prev" title="向量加法" href="vector_add.html" />
+    <link rel="stylesheet" href="../../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../../_static/css/custom.css"/>
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../computer-vision/index.html">
+  计算机视觉
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../tests/index.html">
+  测试
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../chaos/index.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.2  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables tutorials/d2l-tvm/getting_started/from_mxnet and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.2', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "tutorials/d2l-tvm/getting_started/from_mxnet.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "tutorials/d2l-tvm/getting_started/from_mxnet.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.2 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.2") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../index.html">
+   d2l-tvm 教程
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="index.html">
+     入门
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="install.html">
+       安装
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="vector_add.html">
+       向量加法
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       神经网络推理
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="remote.html">
+       在远程计算机上运行
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expressions/index.html">
+     表达式算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/data_types.html">
+       数据类型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/shapes.html">
+       形状
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/index_shape_expressions.html">
+       索引和形状表达式
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/reductions.html">
+       归约运算
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/if_then_else.html">
+       条件表达式：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         if-then-else
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/all_any.html">
+       真值测试：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         all
+        </span>
+       </code>
+       和
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         any
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../common_operators/index.html">
+     常见的算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/broadcast_add.html">
+       广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/matmul.html">
+       矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/conv.html">
+       卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/depthwise_conv.html">
+       深度可分离卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/pooling.html">
+       池化
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../cpu_schedules/index.html">
+     CPU 上的算子优化
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/arch.html">
+       CPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/call_overhead.html">
+       函数调用的开销
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/vector_add.html">
+       CPU 向量加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/broadcast_add.html">
+       CPU 广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/matmul.html">
+       CPU 矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/block_matmul.html">
+       Improve Cache Efficiency by Blocking
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/conv.html">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/packed_conv.html">
+       Packed Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../gpu_schedules/index.html">
+     GPU 上的算子优化
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/arch.html">
+       GPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/vector_add.html">
+       Vector Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/broadcast_add.html">
+       Broadcast Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/matmul.html">
+       Matrix Multiplication
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/conv.html">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/batch_norm.html">
+       Batch Norm
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../zreferences.html">
+     参考文献
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../relay/index.html">
+   Relay
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/start.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/viz.html">
+     可视化 Relay 模块
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/build.html">
+     构建模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/ir-module.html">
+     快速上手 IRModule
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../test.html">
+   测试
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../vta/index.html">
+   VTA
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../vta/config.html">
+     VTA 配置
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../vta/test.html">
+     VTA 测试
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   获得预训练模型
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id5">
+   数据预处理
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id6">
+   编译预训练模型
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id7">
+   推理
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id8">
+   保存已编译的库
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id9">
+   小结
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/tutorials/d2l-tvm/getting_started/from_mxnet.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="ch-from-mxnet">
+<span id="id1"></span><h1>神经网络推理<a class="headerlink" href="#ch-from-mxnet" title="永久链接至标题">#</a></h1>
+<p>您已经了解了如何在 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中实现和编译简单的向量加法算子。现在要做一个大的跳跃，编译完整的由一组算子组成的预训练神经网络，来进行推理。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>与前一章相比，这里导入了三个额外的模块。将使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">PIL</span></code> 读取图像，<a class="reference external" href="https://mxnet.incubator.apache.org/versions/1.9.0/api/python/docs/api/mxnet/index.html#module-mxnet" title="(在 Apache MXNet)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mxnet</span></code></a> 获取预训练的神经网络，以及在 TVM 中的 <code class="xref py py-mod docutils literal notranslate"><span class="pre">relay</span></code> 模块 <span id="id2">[<a class="reference internal" href="../zreferences.html#id5" title="Jared Roesch, Steven Lyubomirsky, Marisa Kirisame, Josh Pollock, Logan Weber, Ziheng Jiang, Tianqi Chen, Thierry Moreau, and Zachary Tatlock. Relay: a high-level ir for deep learning. arXiv preprint arXiv:1904.08368, 2019.">Roesch <em>et al.</em>, 2019</a>]</span> 转换和优化神经网络。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Relay</span></code> 是 TVM 中表示神经网络的高级中间表示（intermediate representation，简称 IR）。</p>
+<section id="id3">
+<h2>获得预训练模型<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<p>预训练模型是指在数据集上训练好参数的神经网络。在这里，通过从 MXNet 的模型动物园 <span id="id4">[<a class="reference internal" href="../zreferences.html#id5" title="Jared Roesch, Steven Lyubomirsky, Marisa Kirisame, Josh Pollock, Logan Weber, Ziheng Jiang, Tianqi Chen, Thierry Moreau, and Zachary Tatlock. Relay: a high-level ir for deep learning. arXiv preprint arXiv:1904.08368, 2019.">Roesch <em>et al.</em>, 2019</a>]</span> 指定 <code class="docutils literal notranslate"><span class="pre">pretrained=True</span></code> 来下载和加载 ResNet-18 模型。如果你想了解该模型，可以参考 <a class="reference external" href="http://d2l.ai/chapter_convolutional-modern/resnet.html">Chapter 7.6 in D2L</a>。</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference external" href="https://mxnet.apache.org/api/python/docs/api/gluon/model_zoo/index.html">MXNet model zoo</a> 可以找到更多信息。或者参考 <a class="reference external" href="https://gluon-cv.mxnet.io/model_zoo/index.html">GluonCV</a> 和 <a class="reference external" href="http://gluon-nlp.mxnet.io/model_zoo/index.html">GluonNLP</a> 使用更多的计算机视觉和自然语言模型。</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;resnet18_v2&#39;</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">gluon</span><span class="o">.</span><span class="n">model_zoo</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">output</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(13, Dense(512 -&gt; 1000, linear))
+</pre></div>
+</div>
+</div>
+</div>
+<p>加载的模型在 Imagenet 1K 数据集上训练，该数据集包含 1000 个类中大约 100 万张自然物体图像。模型分为两部分，主体部分 <code class="docutils literal notranslate"><span class="pre">model.features</span></code> 包含 13 个块，输出层是 dense 层，有 1000 个输出。</p>
+<p>下面的代码块为 Imagenet 数据集中的每个类加载文本标签。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../data/imagenet1k_labels.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2>数据预处理<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
+<p>首先读取一个样本图像。它被调整到大小，即 224 像素的宽度和高度，这是训练的神经网络的尺寸。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;../data/cat.jpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
+<span class="n">image</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;PIL.Image.Image image mode=RGB size=224x224 at 0x7F74CAA3A890&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>根据 <a class="reference external" href="https://mxnet.apache.org/api/python/docs/api/gluon/model_zoo/index.html">动物园模型页面</a>。图像像素在每个颜色通道上进行归一化，数据布局为 <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">RGB</span> <span class="pre">channels,</span> <span class="pre">height,</span> <span class="pre">width)</span></code>。下面的函数对输入图像进行变换，使其满足要求。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package</span>
+<span class="k">def</span> <span class="nf">image_preprocessing</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">123.</span><span class="p">,</span> <span class="mf">117.</span><span class="p">,</span> <span class="mf">104.</span><span class="p">])</span>
+    <span class="n">image</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">58.395</span><span class="p">,</span> <span class="mf">57.12</span><span class="p">,</span> <span class="mf">57.375</span><span class="p">])</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">image_preprocessing</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 3, 224, 224)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2>编译预训练模型<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
+<p>为了编译模型，首先在 Relay IR 中表示 MXNet 模型，<code class="docutils literal notranslate"><span class="pre">from_mxnet</span></code> 方法可能会有所帮助。在该方法为模型提供输入数据形状。一些神经网络可能需要稍后确定的数据形状的某些维数。然而，在 ResNet 模型中，数据形状是固定的，这使得编译器更容易实现高性能。在书中主要坚持固定的数据形状。在后面的章节中，只涉及动态数据形状（即在运行时确定的某些维度）。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_name</span> <span class="o">=</span> <span class="s1">&#39;data&#39;</span>
+<span class="n">relay_mod</span><span class="p">,</span> <span class="n">relay_params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_mxnet</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">{</span><span class="n">input_name</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">})</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">relay_params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(tvm.ir.module.IRModule, dict)
+</pre></div>
+</div>
+</div>
+</div>
+<p>这个方法将返回 program <code class="docutils literal notranslate"><span class="pre">relay_mod</span></code>，它是 <code class="docutils literal notranslate"><span class="pre">relay</span></code> 模块，以及 <code class="docutils literal notranslate"><span class="pre">relay_params</span></code> 参数字典，它将字符串键映射到 TVM ndarray。</p>
+<p>接下来，将模块降低到一些可以被 <code class="docutils literal notranslate"><span class="pre">llvm</span></code> 后端使用的低级 IR。LLVM 定义了被多种编程语言采用的 IR。然后，<a class="reference external" href="https://en.wikipedia.org/wiki/LLVM">LLVM</a> 编译器能够将生成的程序编译成 CPU 的机器码。<a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 已经使用它来编译向量加法算子，尽管没有显式地指定它。</p>
+<p>此外，将优化级别设置为最高级别 3。您可能会收到警告消息，并不是每个算子都得到了很好的优化，现在可以忽略它。稍后再谈。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm&#39;</span>
+<span class="c1"># 将模型与标准优化一起构建成 TVM 库</span>
+<span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">lib</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">relay_params</span><span class="p">)</span>
+
+<span class="n">lib</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7f74c894ace0&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>编译模块 <code class="docutils literal notranslate"><span class="pre">lib</span></code> 有：<code class="docutils literal notranslate"><span class="pre">graph_json</span></code> 是描述神经网络的 JSON 字符串，<code class="docutils literal notranslate"><span class="pre">params</span></code> 是映射参数名到权重的字典。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">graph_json</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(str, dict)
+</pre></div>
+</div>
+</div>
+</div>
+<p>从 TVM 库中创建 TVM graph 运行时模块。包含已编译算子机器码的库，带有可以从目标构建的设备上下文（<code class="docutils literal notranslate"><span class="pre">ctx</span></code>）。这里的设备是 CPU，由 <code class="docutils literal notranslate"><span class="pre">llvm</span></code> 指定。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_executor</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">ctx</span><span class="p">))</span>
+<span class="n">module</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7f77afbbb5b0&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id7">
+<h2>推理<a class="headerlink" href="#id7" title="永久链接至标题">#</a></h2>
+<p>借由创建的运行时来运行模型推理，即神经网络的前向传播。使用 <code class="docutils literal notranslate"><span class="pre">set_input</span></code> 加载参数，并通过输入数据运行工作负载（workload）。由于此网络只有单个输出层，可以通过 <code class="docutils literal notranslate"><span class="pre">get_output(0)</span></code> 得到 <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1000)</span></code> 形状矩阵。最终输出长度为 1000 的 NumPy 向量。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
+<span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="c1"># output_shape = (1, 1000)</span>
+<span class="n">tvm_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">tvm_output</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 1000)
+</pre></div>
+</div>
+</div>
+</div>
+<p>该向量包含每个类的预测置信度得分（confidence score）。注意，预训练的模型没有 <a class="reference external" href="https://en.wikipedia.org/wiki/Softmax_function">softmax</a> 算子，所以这些得分没有映射到概率 (0,1) 中。现在可以找到两个最大的分数并报告它们的标签。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">tvm_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">scores</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">labels</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">labels</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;tiger cat&#39;, &#39;Egyptian cat&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h2>保存已编译的库<a class="headerlink" href="#id8" title="永久链接至标题">#</a></h2>
+<p>可以保存 <code class="docutils literal notranslate"><span class="pre">relay.build</span></code> 的输出到磁盘以便以后重用它们。下面的代码块保存了 json 字符串、库和参数。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>rm -rf outputs/resnet18*
+<span class="n">graph_fn</span><span class="p">,</span> <span class="n">mod_fn</span><span class="p">,</span> <span class="n">params_fn</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;outputs/&#39;</span><span class="o">+</span><span class="n">model_name</span><span class="o">+</span><span class="n">ext</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span><span class="s1">&#39;.tar&#39;</span><span class="p">,</span><span class="s1">&#39;.params&#39;</span><span class="p">)]</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">mod_fn</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">graph_json</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_fn</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">relay</span><span class="o">.</span><span class="n">save_param_dict</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">params</span><span class="p">))</span>
+
+<span class="o">!</span>ls -alht outputs/resnet18*
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 5月  24 22:22 outputs/resnet18_v2.params
+-rw-rw-r-- 1 pc pc 36K 5月  24 22:22 outputs/resnet18_v2.json
+-rw-rw-r-- 1 pc pc 42M 5月  24 22:22 outputs/resnet18_v2.tar
+</pre></div>
+</div>
+</div>
+</div>
+<p>加载已保存的模块。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loaded_graph</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_fn</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">loaded_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">mod_fn</span><span class="p">)</span>
+<span class="n">loaded_params</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_fn</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>然后像前面一样构造运行时来验证结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm.testing</span>
+<span class="n">loaded_rt</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_executor</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">loaded_graph</span><span class="p">,</span> <span class="n">loaded_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+<span class="n">loaded_rt</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">loaded_params</span><span class="p">)</span>
+<span class="n">loaded_rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">loaded_scores</span> <span class="o">=</span> <span class="n">loaded_rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">tvm</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">loaded_scores</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2>小结<a class="headerlink" href="#id9" title="永久链接至标题">#</a></h2>
+<ul class="simple">
+<li><p>可以利用 TVM 的 <code class="docutils literal notranslate"><span class="pre">relay</span></code> 将神经网络转换并编译成模块以进行模型推理。</p></li>
+<li><p>可以将编译后的模块保存到磁盘中，以方便将来的部署。</p></li>
+</ul>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="vector_add.html" title="上一页 页">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">上一页</p>
+          <p class="prev-next-title">向量加法</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="remote.html" title="下一页 页">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">下一页</p>
+      <p class="prev-next-title">在远程计算机上运行</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+最后更新于 2022-06-14, 08:25:03.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

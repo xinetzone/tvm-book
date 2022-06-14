@@ -5,10 +5,9 @@
 :maxdepth: 3
 
 tutorials/index
-vta/index
-eagerpy/index
+computer-vision/index
 tests/index
-chaos
+chaos/index
 api/index
 about/index
 ```

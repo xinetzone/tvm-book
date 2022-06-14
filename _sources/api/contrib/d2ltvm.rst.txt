@@ -1,7 +1,0 @@
-``d2ltvm``
-================
-
-.. currentmodule:: tvm_book.contrib
-
-.. autofunction::
-    d2ltvm

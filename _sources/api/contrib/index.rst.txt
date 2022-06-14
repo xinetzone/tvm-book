@@ -1,8 +1,0 @@
-``contrib``
-============
-
-.. toctree::
-
-    tvm
-    mxnet
-    d2ltvm

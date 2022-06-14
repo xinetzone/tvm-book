@@ -1,0 +1,963 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Convolution &#8212; tvm-book 0.0.2 文档</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="next" title="Packed Convolution" href="packed_conv.html" />
+    <link rel="prev" title="Improve Cache Efficiency by Blocking" href="block_matmul.html" />
+    <link rel="stylesheet" href="../../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../../_static/css/custom.css"/>
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../computer-vision/index.html">
+  计算机视觉
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../tests/index.html">
+  测试
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../chaos/index.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.2  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables tutorials/d2l-tvm/cpu_schedules/conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.2', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "tutorials/d2l-tvm/cpu_schedules/conv.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "tutorials/d2l-tvm/cpu_schedules/conv.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.2 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.2") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../index.html">
+   d2l-tvm 教程
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../getting_started/index.html">
+     入门
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../getting_started/install.html">
+       安装
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../getting_started/vector_add.html">
+       向量加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../getting_started/from_mxnet.html">
+       神经网络推理
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../getting_started/remote.html">
+       在远程计算机上运行
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expressions/index.html">
+     表达式算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/data_types.html">
+       数据类型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/shapes.html">
+       形状
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/index_shape_expressions.html">
+       索引和形状表达式
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/reductions.html">
+       归约运算
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/if_then_else.html">
+       条件表达式：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         if-then-else
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/all_any.html">
+       真值测试：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         all
+        </span>
+       </code>
+       和
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         any
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../common_operators/index.html">
+     常见的算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/broadcast_add.html">
+       广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/matmul.html">
+       矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/conv.html">
+       卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/depthwise_conv.html">
+       深度可分离卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/pooling.html">
+       池化
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="index.html">
+     CPU 上的算子优化
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="arch.html">
+       CPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="call_overhead.html">
+       函数调用的开销
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="vector_add.html">
+       CPU 向量加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="broadcast_add.html">
+       CPU 广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="matmul.html">
+       CPU 矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="block_matmul.html">
+       Improve Cache Efficiency by Blocking
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="packed_conv.html">
+       Packed Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../gpu_schedules/index.html">
+     GPU 上的算子优化
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/arch.html">
+       GPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/vector_add.html">
+       Vector Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/broadcast_add.html">
+       Broadcast Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/matmul.html">
+       Matrix Multiplication
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/conv.html">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/batch_norm.html">
+       Batch Norm
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../zreferences.html">
+     参考文献
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../relay/index.html">
+   Relay
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/start.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/viz.html">
+     可视化 Relay 模块
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/build.html">
+     构建模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/ir-module.html">
+     快速上手 IRModule
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../test.html">
+   测试
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../vta/index.html">
+   VTA
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../vta/config.html">
+     VTA 配置
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../vta/test.html">
+     VTA 测试
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#setup">
+   Setup
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#blocked-convolution">
+   Blocked Convolution
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary">
+   Summary
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#exercises">
+   Exercises
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/tutorials/d2l-tvm/cpu_schedules/conv.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="convolution">
+<h1>Convolution<a class="headerlink" href="#convolution" title="永久链接至标题">#</a></h1>
+<p>:label:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code></p>
+<p>In this section, we will optimize the convolution operator defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code> on CPUs. Specifically, this is a 2-D convolution operator.</p>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
+    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
+
+<span class="n">set_env</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">timeit</span>
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
+
+<span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -mcpu=skylake-avx512&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s first define our performance baseline, which is the convolution operator provided by MXNet, backing up by Intel MKL-DNN library. MKL-DNN uses OpenMP compiled by Intel compiler to implement the thread-level parallelization. In order to match the thread behavior of TVM described in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_cpu</span></code>, we specify the following Intel OpenMP environment variables. Without setting them, sometimes the multi-thread performance of MKL-DNN kernels may not be stable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;KMP_AFFINITY&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;granularity=fine,noduplicates,compact,1,0&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To simplify the measurement, we use the same number of input and output channels, and the same size of height and width of input and kernel tensors. The padding will be <code class="docutils literal notranslate"><span class="pre">(kernel</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">//</span> <span class="pre">2</span></code> and the stride will be 1 so that the output will have the same width and height as the input, i.e. <code class="docutils literal notranslate"><span class="pre">SAME</span></code> padding.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">conv_gflop</span><span class="p">(</span><span class="n">oc</span><span class="p">,</span> <span class="n">ic</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the #floating point operations in a convolution.</span>
+
+<span class="sd">    The arguments are output channels oc, input channels ic, input size n,</span>
+<span class="sd">    kernel size k, padding p and stride s.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">on</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">conv_out_size</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">oc</span> <span class="o">*</span> <span class="n">ic</span> <span class="o">*</span> <span class="n">on</span> <span class="o">*</span> <span class="n">on</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="n">k</span> <span class="o">/</span> <span class="mf">1e9</span>
+
+<span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">conv_timer_mxnet</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Benchmark convolution in MXNet</span>
+
+<span class="sd">    c : input, output channels</span>
+<span class="sd">    n : input width and height</span>
+<span class="sd">    k : kernel width and height</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">timer</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span>
+        <span class="n">setup</span><span class="o">=</span><span class="s1">&#39;import d2ltvm</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;import mxnet as mx</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;c, n, k, p, s = </span><span class="si">%d</span><span class="s1">, </span><span class="si">%d</span><span class="s1">, </span><span class="si">%d</span><span class="s1">, </span><span class="si">%d</span><span class="s1">, 1</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;data, weight, bias, out = d2ltvm.get_conv_data_mxnet(</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="s1">&#39;    c, c, n, k, p, s, &quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">ctx</span><span class="p">),</span>
+        <span class="n">stmt</span><span class="o">=</span><span class="s1">&#39;d2ltvm.conv_mxnet(data, weight, bias, out, k, p, s);&#39;</span>
+        <span class="s1">&#39;out.wait_to_read()&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">timer</span><span class="o">.</span><span class="n">timeit</span>
+
+<span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">bench_conv_mxnet</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the GFLOPS of MXNet convolution&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">conv_gflop</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span>
+            <span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">conv_timer_mxnet</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ctx</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then benchmark its performance with various numbers of channels, when the input and kernel width/height are fixed to be 64 and 3, respectively.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="c1"># a list of (c, n, k)</span>
+<span class="n">sizes</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
+<span class="n">mxnet_gflops</span> <span class="o">=</span> <span class="n">bench_conv_mxnet</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Similar to the <code class="docutils literal notranslate"><span class="pre">bench_matmul_tvm</span></code> method implemented in :numref:<code class="docutils literal notranslate"><span class="pre">ch_matmul_cpu</span></code>, we implement the reusable method to benchmark the convolution operator. Note that the first argument <code class="docutils literal notranslate"><span class="pre">func</span></code> here is a function that takes input arguments <code class="docutils literal notranslate"><span class="pre">oc,</span> <span class="pre">ic,</span> <span class="pre">n,</span> <span class="pre">k,</span> <span class="pre">p,</span> <span class="pre">s</span></code> and returns the schedule as well as its corresponding tensor symbolic arguments.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package.</span>
+<span class="k">def</span> <span class="nf">bench_conv_tvm</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">workload</span><span class="p">(</span><span class="n">nrepeats</span><span class="p">):</span>
+        <span class="n">timer</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">time_evaluator</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">entry_name</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">nrepeats</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">timer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span> <span class="o">*</span> <span class="n">nrepeats</span>
+    <span class="n">gflops</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span> <span class="c1"># oc, ic, n, k, p, s</span>
+        <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">Y</span><span class="p">],</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_conv_data</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+        <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2ltvm</span><span class="o">.</span><span class="n">bench_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">))</span>
+        <span class="n">gflops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conv_gflop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gflops</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="blocked-convolution">
+<h2>Blocked Convolution<a class="headerlink" href="#blocked-convolution" title="永久链接至标题">#</a></h2>
+<p>Just as we tiled matrices into blocks to improve the cache efficiency for matrix multiplication in :numref:<code class="docutils literal notranslate"><span class="pre">ch_block_matmul_cpu</span></code>, we can do the same thing for convolution. Let’s consider the case with a single output channel for simplicity.</p>
+<p>Consider a block of <span class="math notranslate nohighlight">\(Y\)</span>, denoted as <code class="docutils literal notranslate"><span class="pre">Y[i:i+tw,</span> <span class="pre">j:j+th]</span></code>, where <code class="docutils literal notranslate"><span class="pre">th</span></code> and <code class="docutils literal notranslate"><span class="pre">tw</span></code> are the tile sizes for height and width, respectively. We know the it can be computed by applying the convolution on a block of <span class="math notranslate nohighlight">\(X\)</span> with kernel <span class="math notranslate nohighlight">\(K\)</span>. In particular, assuming the width and height of <span class="math notranslate nohighlight">\(K\)</span> are <code class="docutils literal notranslate"><span class="pre">kw</span></code> and <code class="docutils literal notranslate"><span class="pre">kh</span></code>, then</p>
+<p><code class="docutils literal notranslate"><span class="pre">Y[i:i+tw,</span> <span class="pre">j:j+th]</span> <span class="pre">=</span> <span class="pre">conv(X[i:i+tw+kw-1,</span> <span class="pre">j:j+th+kh-1],</span> <span class="pre">K)</span></code></p>
+<p>The elements that needed for a block are illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">fig_conv_block</span></code>. If we choose proper <code class="docutils literal notranslate"><span class="pre">tw</span></code> and <code class="docutils literal notranslate"><span class="pre">th</span></code>, we can fit data into the cache to improve its efficiency. This is easy to be generated to multiple output channels as it simply adds the number of kernels accordingly.</p>
+<p><img alt="Compute a block of  in convolution." src="../../../_images/conv_block.svg" />
+:label:<code class="docutils literal notranslate"><span class="pre">fig_conv_block</span></code></p>
+<p>The implementation of this schedule is similar to the one for matrix multiplication defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_block_matmul_cpu</span></code>. But also note the following two differences:</p>
+<ol class="arabic simple">
+<li><p>We parallelize the outer data blocks across the output channels.</p></li>
+<li><p>We move the inner height and width axes before the reduction axes, since they are more effectively to be optimized through vectorization and unrolling.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">th</span><span class="p">,</span> <span class="n">tw</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span>  <span class="c1"># Tile sizes for height and weight</span>
+
+<span class="k">def</span> <span class="nf">cached_block</span><span class="p">(</span><span class="n">oc</span><span class="p">,</span> <span class="n">ic</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">PaddedX</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">conv</span><span class="p">(</span><span class="n">oc</span><span class="p">,</span> <span class="n">ic</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+    <span class="n">CachedY</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">cache_write</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="s1">&#39;local&#39;</span><span class="p">)</span>
+    <span class="c1"># Compute the output block for every output channel in parallel</span>
+    <span class="n">oc</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
+    <span class="n">ho</span><span class="p">,</span> <span class="n">wo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">wi</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">tw</span><span class="p">)</span>
+    <span class="n">ochw</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">fuse</span><span class="p">(</span><span class="n">oc</span><span class="p">,</span> <span class="n">ho</span><span class="p">,</span> <span class="n">wo</span><span class="p">)</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">Y</span><span class="p">]</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span><span class="n">ochw</span><span class="p">)</span>
+    <span class="c1"># Cache the output block, and move the inner height and width axes</span>
+    <span class="c1"># to innermost, so we can vectorize and unroll them</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">CachedY</span><span class="p">]</span><span class="o">.</span><span class="n">compute_at</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">Y</span><span class="p">],</span> <span class="n">ochw</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span>  <span class="n">ch</span><span class="p">,</span> <span class="n">cw</span> <span class="o">=</span> <span class="n">CachedY</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span>
+    <span class="n">ric</span><span class="p">,</span> <span class="n">rkh</span><span class="p">,</span> <span class="n">rkw</span> <span class="o">=</span> <span class="n">CachedY</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">reduce_axis</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">CachedY</span><span class="p">]</span><span class="o">.</span><span class="n">reorder</span><span class="p">(</span><span class="n">ric</span><span class="p">,</span> <span class="n">rkh</span><span class="p">,</span> <span class="n">rkw</span><span class="p">,</span> <span class="n">ch</span><span class="p">,</span> <span class="n">cw</span><span class="p">)</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">CachedY</span><span class="p">]</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">cw</span><span class="p">)</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">CachedY</span><span class="p">]</span><span class="o">.</span><span class="n">unroll</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+    <span class="c1"># Schedule the padding by adding thread-level parallelism</span>
+    <span class="k">if</span> <span class="n">PaddedX</span> <span class="o">!=</span> <span class="n">X</span><span class="p">:</span>
+        <span class="n">s</span><span class="p">[</span><span class="n">PaddedX</span><span class="p">]</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span><span class="n">PaddedX</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+<span class="n">s</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">cached_block</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">tvm</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">simple_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>// attr [PaddedX] storage_scope = &quot;global&quot;
+allocate PaddedX[float32 * 139392]
+produce PaddedX {
+  parallel (i0, 0, 32) {
+    for (i1, 0, 66) {
+      for (i2, 0, 66) {
+        PaddedX[(((i0*4356) + (i1*66)) + i2)] = tvm_if_then_else(((((i1 &lt; 1) || (65 &lt;= i1)) || (i2 &lt; 1)) || (65 &lt;= i2)), 0f, X[((((i0*4096) + (i1*64)) + i2) - 65)])
+      }
+    }
+  }
+}
+produce Y {
+  parallel (c.i.outer.fused.j.outer.fused, 0, 2048) {
+    // attr [Y.local] storage_scope = &quot;local&quot;
+    allocate Y.local[float32 * 64]
+    produce Y.local {
+      Y.local[ramp(0, 1, 8)] = x8(0f)
+      Y.local[ramp(8, 1, 8)] = x8(0f)
+      Y.local[ramp(16, 1, 8)] = x8(0f)
+      Y.local[ramp(24, 1, 8)] = x8(0f)
+      Y.local[ramp(32, 1, 8)] = x8(0f)
+      Y.local[ramp(40, 1, 8)] = x8(0f)
+      Y.local[ramp(48, 1, 8)] = x8(0f)
+      Y.local[ramp(56, 1, 8)] = x8(0f)
+      for (ric, 0, 32) {
+        for (rkh, 0, 3) {
+          for (rkw, 0, 3) {
+            Y.local[ramp(0, 1, 8)] = (Y.local[ramp(0, 1, 8)] + (PaddedX[ramp((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+            Y.local[ramp(8, 1, 8)] = (Y.local[ramp(8, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 66), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+            Y.local[ramp(16, 1, 8)] = (Y.local[ramp(16, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 132), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+            Y.local[ramp(24, 1, 8)] = (Y.local[ramp(24, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 198), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+            Y.local[ramp(32, 1, 8)] = (Y.local[ramp(32, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 264), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+            Y.local[ramp(40, 1, 8)] = (Y.local[ramp(40, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 330), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+            Y.local[ramp(48, 1, 8)] = (Y.local[ramp(48, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 396), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+            Y.local[ramp(56, 1, 8)] = (Y.local[ramp(56, 1, 8)] + (PaddedX[ramp(((((((ric*4356) + (floordiv(floormod(c.i.outer.fused.j.outer.fused, 64), 8)*528)) + (rkh*66)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + rkw) + 462), 1, 8)]*x8(K[((((floordiv(c.i.outer.fused.j.outer.fused, 64)*288) + (ric*9)) + (rkh*3)) + rkw)])))
+          }
+        }
+      }
+    }
+    for (i.inner, 0, 8) {
+      for (j.inner, 0, 8) {
+        Y[((((floordiv(c.i.outer.fused.j.outer.fused, 8)*512) + (i.inner*64)) + (floormod(c.i.outer.fused.j.outer.fused, 8)*8)) + j.inner)] = Y.local[((i.inner*8) + j.inner)]
+      }
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
+</div>
+<p>The output pseudo code becomes a bit long, but as long as you understand the scheduling primitives we used above, the code should make sense if you take a close look.</p>
+<p>Now let’s benchmark its performance and compare with our baseline.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tvm_gflops</span> <span class="o">=</span> <span class="n">bench_conv_tvm</span><span class="p">(</span><span class="n">cached_block</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">d2ltvm</span><span class="o">.</span><span class="n">plot_gflops</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="p">[</span><span class="n">mxnet_gflops</span><span class="p">,</span> <span class="n">tvm_gflops</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;mxnet&#39;</span><span class="p">,</span> <span class="s1">&#39;tvm&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 324x216 with 1 Axes&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>As we can seen that our schedule does well for small channel sizes, while its performance decrease for large channel sizes. We will optimize the later in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<ul class="simple">
+<li><p>We tile the input and output data of convolution as we did for matrix multiplication for better cache efficiency.</p></li>
+</ul>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="永久链接至标题">#</a></h2>
+<ul class="simple">
+<li><p>Try different tiling sizes.</p></li>
+</ul>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="block_matmul.html" title="上一页 页">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">上一页</p>
+          <p class="prev-next-title">Improve Cache Efficiency by Blocking</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="packed_conv.html" title="下一页 页">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">下一页</p>
+      <p class="prev-next-title">Packed Convolution</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+最后更新于 2022-06-14, 08:25:03.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

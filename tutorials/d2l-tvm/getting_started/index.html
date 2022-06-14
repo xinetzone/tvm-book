@@ -1,0 +1,746 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>入门 &#8212; tvm-book 0.0.2 文档</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="next" title="安装" href="install.html" />
+    <link rel="prev" title="d2l-tvm 教程" href="../index.html" />
+    <link rel="stylesheet" href="../../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../../_static/css/custom.css"/>
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../computer-vision/index.html">
+  计算机视觉
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../tests/index.html">
+  测试
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../chaos/index.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.2  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables tutorials/d2l-tvm/getting_started/index and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.2', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "tutorials/d2l-tvm/getting_started/index.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "tutorials/d2l-tvm/getting_started/index.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.2 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.2") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../index.html">
+   d2l-tvm 教程
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active has-children">
+    <a class="current reference internal" href="#">
+     入门
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="install.html">
+       安装
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="vector_add.html">
+       向量加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="from_mxnet.html">
+       神经网络推理
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="remote.html">
+       在远程计算机上运行
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expressions/index.html">
+     表达式算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/data_types.html">
+       数据类型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/shapes.html">
+       形状
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/index_shape_expressions.html">
+       索引和形状表达式
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/reductions.html">
+       归约运算
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/if_then_else.html">
+       条件表达式：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         if-then-else
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expressions/all_any.html">
+       真值测试：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         all
+        </span>
+       </code>
+       和
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         any
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../common_operators/index.html">
+     常见的算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/broadcast_add.html">
+       广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/matmul.html">
+       矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/conv.html">
+       卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/depthwise_conv.html">
+       深度可分离卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/pooling.html">
+       池化
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../common_operators/batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../cpu_schedules/index.html">
+     CPU 上的算子优化
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/arch.html">
+       CPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/call_overhead.html">
+       函数调用的开销
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/vector_add.html">
+       CPU 向量加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/broadcast_add.html">
+       CPU 广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/matmul.html">
+       CPU 矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/block_matmul.html">
+       Improve Cache Efficiency by Blocking
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/conv.html">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/packed_conv.html">
+       Packed Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../cpu_schedules/batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../gpu_schedules/index.html">
+     GPU 上的算子优化
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/arch.html">
+       GPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/vector_add.html">
+       Vector Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/broadcast_add.html">
+       Broadcast Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/matmul.html">
+       Matrix Multiplication
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/conv.html">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gpu_schedules/batch_norm.html">
+       Batch Norm
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../zreferences.html">
+     参考文献
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../relay/index.html">
+   Relay
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/start.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/viz.html">
+     可视化 Relay 模块
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/build.html">
+     构建模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../relay/ir-module.html">
+     快速上手 IRModule
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../test.html">
+   测试
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../vta/index.html">
+   VTA
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../vta/config.html">
+     VTA 配置
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../vta/test.html">
+     VTA 测试
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/tutorials/d2l-tvm/getting_started/index.md">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>入门<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<p>开始你的旅程吧！有很多东西要学，但每段旅程都有起点。在这一部分，将讨论：</p>
+<ul class="simple">
+<li><p>安装所需的库，这样你就可以自己运行（几乎）每一章</p></li>
+<li><p>写出两个向量相加的算子</p></li>
+<li><p>编译神经网络模型来运行推断，并保存编译后的库</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">导航</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">安装</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#id2">安装运行环境</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#id5">便捷安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#tvm-book">关于 <code class="docutils literal notranslate"><span class="pre">tvm_book</span></code> 库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#faqs">安装的 FAQs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vector_add.html">向量加法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vector_add.html#numpy">NumPy 实现</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_add.html#tvm">定义 TVM 计算</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_add.html#schedule">创建 Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_add.html#id3">计算并执行</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_add.html#id4">参数约束</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_add.html#id5">保存和加载模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vector_add.html#id6">小结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="from_mxnet.html">神经网络推理</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="from_mxnet.html#id3">获得预训练模型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from_mxnet.html#id5">数据预处理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from_mxnet.html#id6">编译预训练模型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from_mxnet.html#id7">推理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from_mxnet.html#id8">保存已编译的库</a></li>
+<li class="toctree-l2"><a class="reference internal" href="from_mxnet.html#id9">小结</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="remote.html">在远程计算机上运行</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="remote.html#id2">设置远程计算机</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html#compile-the-program-for-the-remote-machine">Compile the Program for the Remote Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html#evaluate-on-the-remote-machine">Evaluate on the Remote Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html#running-neural-network-inference">Running Neural Network Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html#discussions">Discussions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+              </article>
+              
+
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="../index.html" title="上一页 页">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">上一页</p>
+          <p class="prev-next-title">d2l-tvm 教程</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="install.html" title="下一页 页">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">下一页</p>
+      <p class="prev-next-title">安装</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+最后更新于 2022-06-14, 08:25:03.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

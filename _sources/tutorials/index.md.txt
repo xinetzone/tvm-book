@@ -3,13 +3,13 @@
 ```{toctree}
 :maxdepth: 3
 
-../origin/index
-neural_networks/index
+d2l-tvm/index
+relay/index
 deploy
 benchmark
 deploy_ssd_gluoncv
 test
-vta
+vta/index
 ```
 
 安装 CUDA 和 CUDNN，可以：

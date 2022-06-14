@@ -1,8 +1,0 @@
-``mxnet``
-===================
-
-.. currentmodule:: tvm_book.contrib
-
-.. autofunction::
-    mxnet
-    

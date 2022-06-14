@@ -1,9 +1,0 @@
-# 初级教程
-
-```{toctree}
-:maxdepth: 3
-:hidden:
-
-d2l-tvm/index
-test
-```

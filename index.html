@@ -29,6 +29,7 @@
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -95,14 +96,8 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="vta/index.html">
-  VTA
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="eagerpy/index.html">
-  EagerPy
+ <a class="reference internal nav-link" href="computer-vision/index.html">
+  计算机视觉
  </a>
 </li>
 
@@ -113,7 +108,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="chaos.html">
+ <a class="reference internal nav-link" href="chaos/index.html">
   混沌
  </a>
 </li>
@@ -317,8 +312,22 @@ function checkPageExistsAndRedirect(event) {
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">教程</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="origin/index.html">初级教程</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/neural_networks/index.html">神经网络</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/d2l-tvm/index.html">d2l-tvm 教程</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/d2l-tvm/getting_started/index.html">入门</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/d2l-tvm/expressions/index.html">表达式算子</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/d2l-tvm/common_operators/index.html">常见的算子</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/d2l-tvm/cpu_schedules/index.html">CPU 上的算子优化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/d2l-tvm/gpu_schedules/index.html">GPU 上的算子优化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/d2l-tvm/zreferences.html">参考文献</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/relay/index.html">Relay</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/start.html">快速了解 Relay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/viz.html">可视化 Relay 模块</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/build.html">构建模型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/ir-module.html">快速上手 IRModule</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/deploy.html">部署 TVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/benchmark.html">基准</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/deploy_ssd_gluoncv.html">部署 Single Shot Multibox Detector(SSD) 模型</a><ul>
@@ -331,15 +340,12 @@ function checkPageExistsAndRedirect(event) {
 <li class="toctree-l3"><a class="reference internal" href="tutorials/test.html#relay">用 Relay 编译模型</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/vta.html">VTA 测试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/vta/index.html">VTA</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="vta/index.html">VTA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="eagerpy/index.html">EagerPy</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="eagerpy/start.html">快速上手 EagerPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eagerpy/convert.html">EagerPy 和 Native 张量之间的变换</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eagerpy/generic-functions.html">实现通用框架无关函数</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eagerpy/autodiff.html">EagerPy 中的自动微分</a></li>
+<li class="toctree-l1"><a class="reference internal" href="computer-vision/index.html">计算机视觉</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="computer-vision/anchor.html">锚框</a></li>
+<li class="toctree-l2"><a class="reference internal" href="computer-vision/ssd.html">SSD</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tests/index.html">测试</a><ul>
@@ -353,25 +359,33 @@ function checkPageExistsAndRedirect(event) {
 <li class="toctree-l2"><a class="reference internal" href="tests/vta-sim.html">VTA 仿真</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests/dsl.html">领域专用语言</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests/refs.html">参考</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests/test.html">草稿</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tests/test.html#relay">用 Relay 编译模型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tests/test.html#tvm">在 TVM 运行时上执行</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tests/test.html#id2">收集基本性能数据</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tests/test.html#id3">对输出进行后处理</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="chaos.html">混沌</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="interpret/index.html">可解释性</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="interpret/tvm.html">TVM 项目解读</a></li>
-<li class="toctree-l3"><a class="reference internal" href="interpret/glossary/index.html">术语表</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="paper/index.html">论文解读</a></li>
-<li class="toctree-l2"><a class="reference internal" href="chaos.html#git">Git 自动补全</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chaos/index.html">混沌</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chaos/eagerpy/index.html">EagerPy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chaos/eagerpy/start.html">快速上手 EagerPy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chaos/eagerpy/convert.html">EagerPy 和 Native 张量之间的变换</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chaos/eagerpy/generic-functions.html">实现通用框架无关函数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chaos/eagerpy/autodiff.html">EagerPy 中的自动微分</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chaos/interpret/index.html">可解释性</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="chaos/interpret/tvm.html">TVM 项目解读</a></li>
+<li class="toctree-l3"><a class="reference internal" href="chaos/interpret/glossary/index.html">术语表</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="chaos/paper/index.html">论文解读</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chaos/index.html#git">Git 自动补全</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API 参考</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/contrib/index.html"><code class="docutils literal notranslate"><span class="pre">contrib</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api/contrib/tvm.html"><code class="docutils literal notranslate"><span class="pre">tvm</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/contrib/mxnet.html"><code class="docutils literal notranslate"><span class="pre">mxnet</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/contrib/d2ltvm.html"><code class="docutils literal notranslate"><span class="pre">d2ltvm</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="api/vta/index.html"><code class="docutils literal notranslate"><span class="pre">vta</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/vta/config.html"><code class="docutils literal notranslate"><span class="pre">config</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/vta/remote.html"><code class="docutils literal notranslate"><span class="pre">remote</span></code></a></li>
@@ -430,7 +444,7 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-09, 05:57:48.<br>
+最后更新于 2022-06-14, 08:25:03.<br>
 </p>
   </div>
   

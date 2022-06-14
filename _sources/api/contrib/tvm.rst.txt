@@ -1,7 +1,0 @@
-``tvm``
-================
-
-.. currentmodule:: tvm_book.contrib
-
-.. autofunction::
-    tvm
