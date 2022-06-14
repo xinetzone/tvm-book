@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Packed Convolution &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -666,7 +672,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="packed-convolution">
-<h1>Packed Convolution<a class="headerlink" href="#packed-convolution" title="永久链接至标题">#</a></h1>
+<h1>Packed Convolution<a class="headerlink" href="#packed-convolution" title="Permalink to this heading">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code></p>
 <p>We observed in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code> that the performance degrades when increasing the channel size for the convolution operator. In this section, we will consider tiling the channel axes and packing the data to improve the performance.</p>
 <div class="cell docutils container">
@@ -684,7 +690,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="packing-data-and-weight">
-<h2>Packing Data and Weight<a class="headerlink" href="#packing-data-and-weight" title="永久链接至标题">#</a></h2>
+<h2>Packing Data and Weight<a class="headerlink" href="#packing-data-and-weight" title="Permalink to this heading">#</a></h2>
 <p>In :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code>, we first tiled the width and height axes and then moved the inner axes as the innermost dimensions during computing. It’s the same idea to tile the channels. But we do one additional step to actually move the data in the inner channel loop to the last dimension, i.e. do data layout transformation. So we pay the data movement cost once, while improving the data accessing performance significantly.</p>
 <p>The following code block splits the channel dimension and move the data in NumPy.</p>
 <div class="cell docutils container">
@@ -773,7 +779,7 @@ packed shape (2, 2, 2, 2)
 <p>Of note, in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code> we defined the layout of the input data to be <code class="docutils literal notranslate"><span class="pre">NCHW</span></code>. For the packed data <code class="docutils literal notranslate"><span class="pre">PackedX</span></code> here, we follow the convention defined in :cite:<code class="docutils literal notranslate"><span class="pre">Liu.Wang.Yu.ea.2019</span></code> to define its layout as <code class="docutils literal notranslate"><span class="pre">NCHW[x]c</span></code>, where <code class="docutils literal notranslate"><span class="pre">x</span></code> describes the size of <code class="docutils literal notranslate"><span class="pre">c</span></code>, which is 2 (the value of <code class="docutils literal notranslate"><span class="pre">tc</span></code> above) in this case.</p>
 </section>
 <section id="computation">
-<h2>Computation<a class="headerlink" href="#computation" title="永久链接至标题">#</a></h2>
+<h2>Computation<a class="headerlink" href="#computation" title="Permalink to this heading">#</a></h2>
 <p>Since we changed the data layout, we need to re-implement the convolution computation accordingly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -838,7 +844,7 @@ packed shape (2, 2, 2, 2)
 </div>
 </section>
 <section id="schedule">
-<h2>Schedule<a class="headerlink" href="#schedule" title="永久链接至标题">#</a></h2>
+<h2>Schedule<a class="headerlink" href="#schedule" title="Permalink to this heading">#</a></h2>
 <p>The optimization strategy here is similar to :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code>. The major differences are</p>
 <ol class="arabic simple">
 <li><p>the innermost axis is the inner axis split from the output channel because the elements have already sit on the last dimension after packing.</p></li>
@@ -908,13 +914,13 @@ packed shape (2, 2, 2, 2)
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>We often tile input and output channels to for better cache efficiency and pack data accordingly.</p></li>
 </ul>
 </section>
 <section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="永久链接至标题">#</a></h2>
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>What if the number of channels cannot be divided by the tiling size?</p></li>
 <li><p>Try different tiling sizes.</p></li>
@@ -967,13 +973,13 @@ packed shape (2, 2, 2, 2)
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

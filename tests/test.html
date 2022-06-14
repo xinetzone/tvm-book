@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>草稿 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
@@ -359,7 +360,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>草稿<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<h1>草稿<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.tvm</span> <span class="kn">import</span> <span class="n">set_env</span>
@@ -376,7 +377,7 @@ TVM 根目录： /media/pc/data/4tb/lxw/study/tvm
 </div>
 </div>
 <section id="relay">
-<h2>用 Relay 编译模型<a class="headerlink" href="#relay" title="永久链接至标题">#</a></h2>
+<h2>用 Relay 编译模型<a class="headerlink" href="#relay" title="Permalink to this heading">#</a></h2>
 <p>首先使用导入器将模型导入到 relay。然后，将模型与标准优化一起构建成 TVM 库。最后，从该库中创建 TVM 图运行时模块。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -410,7 +411,7 @@ TVM 根目录： /media/pc/data/4tb/lxw/study/tvm
 </div>
 </section>
 <section id="tvm">
-<h2>在 TVM 运行时上执行<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h2>
+<h2>在 TVM 运行时上执行<a class="headerlink" href="#tvm" title="Permalink to this heading">#</a></h2>
 <p>要使用 TVM 来运行模型并进行预测，我们需要两样东西：</p>
 <ul class="simple">
 <li><p>编译后的模型 <code class="docutils literal notranslate"><span class="pre">module</span></code></p></li>
@@ -429,7 +430,7 @@ TVM 根目录： /media/pc/data/4tb/lxw/study/tvm
 </div>
 </section>
 <section id="id2">
-<h2>收集基本性能数据<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<h2>收集基本性能数据<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>想收集一些与这个未优化的模型相关的基本性能数据，并在以后与调优后的模型进行比较。为了帮助说明 CPU 的噪音，在多个批次的重复中运行计算，然后收集一些关于平均值、中位数和标准差的基础统计数据。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -456,7 +457,7 @@ TVM 根目录： /media/pc/data/4tb/lxw/study/tvm
 </div>
 </section>
 <section id="id3">
-<h2>对输出进行后处理<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<h2>对输出进行后处理<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
 <p>将 ResNet-50 v2 的输出渲染成更适合人类阅读的形式。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -552,13 +553,13 @@ TVM 根目录： /media/pc/data/4tb/lxw/study/tvm
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>基准 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="relay/index.html">
-   Relay
+  <a class="reference internal" href="ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="relay/build.html">
+    <a class="reference internal" href="ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="relay/ir-module.html">
+    <a class="reference internal" href="ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -636,7 +642,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>基准<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<h1>基准<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
@@ -887,13 +893,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>神经网络推理 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -671,12 +677,11 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-from-mxnet">
-<span id="id1"></span><h1>神经网络推理<a class="headerlink" href="#ch-from-mxnet" title="永久链接至标题">#</a></h1>
+<span id="id1"></span><h1>神经网络推理<a class="headerlink" href="#ch-from-mxnet" title="Permalink to this heading">#</a></h1>
 <p>您已经了解了如何在 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中实现和编译简单的向量加法算子。现在要做一个大的跳跃，编译完整的由一组算子组成的预训练神经网络，来进行推理。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
@@ -687,7 +692,7 @@ function checkPageExistsAndRedirect(event) {
 <p>与前一章相比，这里导入了三个额外的模块。将使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">PIL</span></code> 读取图像，<a class="reference external" href="https://mxnet.incubator.apache.org/versions/1.9.0/api/python/docs/api/mxnet/index.html#module-mxnet" title="(在 Apache MXNet)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mxnet</span></code></a> 获取预训练的神经网络，以及在 TVM 中的 <code class="xref py py-mod docutils literal notranslate"><span class="pre">relay</span></code> 模块 <span id="id2">[<a class="reference internal" href="../zreferences.html#id5" title="Jared Roesch, Steven Lyubomirsky, Marisa Kirisame, Josh Pollock, Logan Weber, Ziheng Jiang, Tianqi Chen, Thierry Moreau, and Zachary Tatlock. Relay: a high-level ir for deep learning. arXiv preprint arXiv:1904.08368, 2019.">Roesch <em>et al.</em>, 2019</a>]</span> 转换和优化神经网络。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Relay</span></code> 是 TVM 中表示神经网络的高级中间表示（intermediate representation，简称 IR）。</p>
 <section id="id3">
-<h2>获得预训练模型<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<h2>获得预训练模型<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
 <p>预训练模型是指在数据集上训练好参数的神经网络。在这里，通过从 MXNet 的模型动物园 <span id="id4">[<a class="reference internal" href="../zreferences.html#id5" title="Jared Roesch, Steven Lyubomirsky, Marisa Kirisame, Josh Pollock, Logan Weber, Ziheng Jiang, Tianqi Chen, Thierry Moreau, and Zachary Tatlock. Relay: a high-level ir for deep learning. arXiv preprint arXiv:1904.08368, 2019.">Roesch <em>et al.</em>, 2019</a>]</span> 指定 <code class="docutils literal notranslate"><span class="pre">pretrained=True</span></code> 来下载和加载 ResNet-18 模型。如果你想了解该模型，可以参考 <a class="reference external" href="http://d2l.ai/chapter_convolutional-modern/resnet.html">Chapter 7.6 in D2L</a>。</p>
 <div class="admonition seealso">
 <p class="admonition-title">参见</p>
@@ -695,9 +700,11 @@ function checkPageExistsAndRedirect(event) {
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;resnet18_v2&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mxnet.gluon.model_zoo.vision</span> <span class="kn">import</span> <span class="n">get_model</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">gluon</span><span class="o">.</span><span class="n">model_zoo</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;resnet18_v2&#39;</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">output</span>
 </pre></div>
 </div>
@@ -720,7 +727,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id5">
-<h2>数据预处理<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
+<h2>数据预处理<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
 <p>首先读取一个样本图像。它被调整到大小，即 224 像素的宽度和高度，这是训练的神经网络的尺寸。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -730,7 +737,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;PIL.Image.Image image mode=RGB size=224x224 at 0x7F74CAA3A890&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;PIL.Image.Image image mode=RGB size=224x224&gt;
 </pre></div>
 </div>
 </div>
@@ -759,7 +766,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id6">
-<h2>编译预训练模型<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
+<h2>编译预训练模型<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
 <p>为了编译模型，首先在 Relay IR 中表示 MXNet 模型，<code class="docutils literal notranslate"><span class="pre">from_mxnet</span></code> 方法可能会有所帮助。在该方法为模型提供输入数据形状。一些神经网络可能需要稍后确定的数据形状的某些维数。然而，在 ResNet 模型中，数据形状是固定的，这使得编译器更容易实现高性能。在书中主要坚持固定的数据形状。在后面的章节中，只涉及动态数据形状（即在运行时确定的某些维度）。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -776,7 +783,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <p>这个方法将返回 program <code class="docutils literal notranslate"><span class="pre">relay_mod</span></code>，它是 <code class="docutils literal notranslate"><span class="pre">relay</span></code> 模块，以及 <code class="docutils literal notranslate"><span class="pre">relay_params</span></code> 参数字典，它将字符串键映射到 TVM ndarray。</p>
-<p>接下来，将模块降低到一些可以被 <code class="docutils literal notranslate"><span class="pre">llvm</span></code> 后端使用的低级 IR。LLVM 定义了被多种编程语言采用的 IR。然后，<a class="reference external" href="https://en.wikipedia.org/wiki/LLVM">LLVM</a> 编译器能够将生成的程序编译成 CPU 的机器码。<a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 已经使用它来编译向量加法算子，尽管没有显式地指定它。</p>
+<p>接下来，将模块 lower 到一些可以被 <code class="docutils literal notranslate"><span class="pre">llvm</span></code> 后端使用的低级 IR。LLVM 定义了被多种编程语言采用的 IR。然后，<a class="reference external" href="https://en.wikipedia.org/wiki/LLVM">LLVM</a> 编译器能够将生成的程序编译成 CPU 的机器码。<a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 已经使用它来编译向量加法算子，尽管没有显式地指定它。</p>
 <p>此外，将优化级别设置为最高级别 3。您可能会收到警告消息，并不是每个算子都得到了很好的优化，现在可以忽略它。稍后再谈。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -790,10 +797,12 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/workspace/anaconda3/envs/mxnetx/lib/python3.10/site-packages/tvm/driver/build_module.py:263: UserWarning: target_host parameter is going to be deprecated. Please pass in tvm.target.Target(target, host=target_host) instead.
+  warnings.warn(
+One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7f74c894ace0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fc75e707b80&gt;
 </pre></div>
 </div>
 </div>
@@ -814,28 +823,29 @@ function checkPageExistsAndRedirect(event) {
 <p>从 TVM 库中创建 TVM graph 运行时模块。包含已编译算子机器码的库，带有可以从目标构建的设备上下文（<code class="docutils literal notranslate"><span class="pre">ctx</span></code>）。这里的设备是 CPU，由 <code class="docutils literal notranslate"><span class="pre">llvm</span></code> 指定。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">module</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_executor</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">ctx</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib.graph_executor</span> <span class="kn">import</span> <span class="n">GraphModule</span>
+
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">GraphModule</span><span class="p">(</span><span class="n">lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">ctx</span><span class="p">))</span>
 <span class="n">module</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7f77afbbb5b0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7fca2557ae90&gt;
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="id7">
-<h2>推理<a class="headerlink" href="#id7" title="永久链接至标题">#</a></h2>
+<h2>推理<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
 <p>借由创建的运行时来运行模型推理，即神经网络的前向传播。使用 <code class="docutils literal notranslate"><span class="pre">set_input</span></code> 加载参数，并通过输入数据运行工作负载（workload）。由于此网络只有单个输出层，可以通过 <code class="docutils literal notranslate"><span class="pre">get_output(0)</span></code> 得到 <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1000)</span></code> 形状矩阵。最终输出长度为 1000 的 NumPy 向量。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
 <span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 <span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="c1"># output_shape = (1, 1000)</span>
 <span class="n">tvm_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 <span class="n">tvm_output</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
@@ -864,7 +874,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id8">
-<h2>保存已编译的库<a class="headerlink" href="#id8" title="永久链接至标题">#</a></h2>
+<h2>保存已编译的库<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
 <p>可以保存 <code class="docutils literal notranslate"><span class="pre">relay.build</span></code> 的输出到磁盘以便以后重用它们。下面的代码块保存了 json 字符串、库和参数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -881,9 +891,9 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 5月  24 22:22 outputs/resnet18_v2.params
--rw-rw-r-- 1 pc pc 36K 5月  24 22:22 outputs/resnet18_v2.json
--rw-rw-r-- 1 pc pc 42M 5月  24 22:22 outputs/resnet18_v2.tar
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 6月  14 17:20 outputs/resnet18_v2.params
+-rw-rw-r-- 1 pc pc 36K 6月  14 17:20 outputs/resnet18_v2.json
+-rw-rw-r-- 1 pc pc 42M 6月  14 17:20 outputs/resnet18_v2.tar
 </pre></div>
 </div>
 </div>
@@ -901,19 +911,22 @@ function checkPageExistsAndRedirect(event) {
 <p>然后像前面一样构造运行时来验证结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tvm.testing</span>
-<span class="n">loaded_rt</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_executor</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">loaded_graph</span><span class="p">,</span> <span class="n">loaded_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tvm.contrib.graph_executor</span> <span class="kn">import</span> <span class="n">create</span>
+
+
+<span class="n">loaded_rt</span> <span class="o">=</span> <span class="n">create</span><span class="p">(</span><span class="n">loaded_graph</span><span class="p">,</span> <span class="n">loaded_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
 <span class="n">loaded_rt</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">loaded_params</span><span class="p">)</span>
 <span class="n">loaded_rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="n">loaded_scores</span> <span class="o">=</span> <span class="n">loaded_rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">tvm</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">loaded_scores</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">loaded_scores</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="id9">
-<h2>小结<a class="headerlink" href="#id9" title="永久链接至标题">#</a></h2>
+<h2>小结<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>可以利用 TVM 的 <code class="docutils literal notranslate"><span class="pre">relay</span></code> 将神经网络转换并编译成模块以进行模型推理。</p></li>
 <li><p>可以将编译后的模块保存到磁盘中，以方便将来的部署。</p></li>
@@ -966,13 +979,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

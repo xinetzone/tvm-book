@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>在远程计算机上运行 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -671,7 +677,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-remote">
-<span id="id1"></span><h1>在远程计算机上运行<a class="headerlink" href="#ch-remote" title="永久链接至标题">#</a></h1>
+<span id="id1"></span><h1>在远程计算机上运行<a class="headerlink" href="#ch-remote" title="Permalink to this heading">#</a></h1>
 <p>在本书中，将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -702,7 +708,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 <p>注意，我们从 TVM 导入了 <code class="docutils literal notranslate"><span class="pre">rpc</span></code> 模块。<a class="reference external" href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a>，即远程过程调用（remote procedure call），允许在远程位置上执行程序。</p>
 <section id="id2">
-<h2>设置远程计算机<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<h2>设置远程计算机<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>首先需要在远程机器上安装 TVM <code class="docutils literal notranslate"><span class="pre">runtime</span></code> 模块。安装设置几乎与 TVM 相同（请参阅 <a class="reference internal" href="install.html#ch-install"><span class="std std-ref">安装</span></a>），但只需要构建运行时，即 <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">runtime</span></code>，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> 或 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code>。</p>
 <p>一旦安装了运行时，就可以通过在远程机器上运行以下命令来启动 daemon。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m tvm.exec.rpc_server --host <span class="m">0</span>.0.0.0 --port<span class="o">=</span><span class="m">9090</span>
@@ -728,7 +734,7 @@ function checkPageExistsAndRedirect(event) {
 <p>For example, it’s <code class="docutils literal notranslate"><span class="pre">x86_64-apple-darwin17.7.0</span></code> for the MacbookPro I’m using, and <code class="docutils literal notranslate"><span class="pre">armv6k-unknown-linux-gnueabihf</span></code> for the Raspberry Pi 4B.</p>
 </section>
 <section id="compile-the-program-for-the-remote-machine">
-<h2>Compile the Program for the Remote Machine<a class="headerlink" href="#compile-the-program-for-the-remote-machine" title="永久链接至标题">#</a></h2>
+<h2>Compile the Program for the Remote Machine<a class="headerlink" href="#compile-the-program-for-the-remote-machine" title="Permalink to this heading">#</a></h2>
 <p>Let’s run the vector addition defined :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add</span></code> on the remote machine. Note that we specified the remote machine target through the <code class="docutils literal notranslate"><span class="pre">-target</span></code> argument for LLVM.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -753,7 +759,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="evaluate-on-the-remote-machine">
-<h2>Evaluate on the Remote Machine<a class="headerlink" href="#evaluate-on-the-remote-machine" title="永久链接至标题">#</a></h2>
+<h2>Evaluate on the Remote Machine<a class="headerlink" href="#evaluate-on-the-remote-machine" title="Permalink to this heading">#</a></h2>
 <p>We first connect to the remote machine with the IP we checked before.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -798,7 +804,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="running-neural-network-inference">
-<h2>Running Neural Network Inference<a class="headerlink" href="#running-neural-network-inference" title="永久链接至标题">#</a></h2>
+<h2>Running Neural Network Inference<a class="headerlink" href="#running-neural-network-inference" title="Permalink to this heading">#</a></h2>
 <p>Let’s run the ResNet-18 used in :numref:<code class="docutils literal notranslate"><span class="pre">ch_from_mxnet</span></code> on the remote machine. As before, we load a sample image and Imagenet 1K labels.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -848,14 +854,14 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>We can install a TVM runtime on a remote machine to start an RPC server to accept workloads to run.</p></li>
 <li><p>A program can be compiled locally with specifying the remote machine’s architecture target (called cross-compilation), and then run on the remote machine via RPC.</p></li>
 </ul>
 </section>
 <section id="discussions">
-<h2><a class="reference external" href="https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709">Discussions</a><a class="headerlink" href="#discussions" title="永久链接至标题">#</a></h2>
+<h2><a class="reference external" href="https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709">Discussions</a><a class="headerlink" href="#discussions" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -904,13 +910,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

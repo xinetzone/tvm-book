@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Matrix Multiplication &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -519,8 +520,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -529,23 +530,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -680,7 +686,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="matrix-multiplication">
-<h1>Matrix Multiplication<a class="headerlink" href="#matrix-multiplication" title="永久链接至标题">#</a></h1>
+<h1>Matrix Multiplication<a class="headerlink" href="#matrix-multiplication" title="Permalink to this heading">#</a></h1>
 <p>In this section, we will extend :numref:<code class="docutils literal notranslate"><span class="pre">ch_block_matmul_cpu</span></code> to optimize matrix multiplication on GPUs.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -694,7 +700,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
 <p>We will use MXNet as our baseline, which calls cuBLAS to execute the matrix multiplication.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -735,10 +741,10 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="blocked-matrix-multiplication-on-gpu">
-<h2>Blocked Matrix Multiplication on GPU<a class="headerlink" href="#blocked-matrix-multiplication-on-gpu" title="永久链接至标题">#</a></h2>
+<h2>Blocked Matrix Multiplication on GPU<a class="headerlink" href="#blocked-matrix-multiplication-on-gpu" title="Permalink to this heading">#</a></h2>
 <p>We will follow :numref:<code class="docutils literal notranslate"><span class="pre">ch_block_matmul_cpu</span></code> to split the matrix <span class="math notranslate nohighlight">\(C\)</span> into blocks, and have each core (streaming multiprocessor) to compute a block at a time. It can be done by assigning a block to a thread block as we did in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_gpu</span></code> (don’t confuse the matrix block with thread block here). As mentioned in :numref:<code class="docutils literal notranslate"><span class="pre">ch_gpu_arch</span></code>, the GPU core has a finer architecture, we need to split a block further for every CUDA thread in the thread block. The simplest 1-D case was already illustrated in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_gpu</span></code>. This section will explore the local memory within a core using 2-D thread indexing.</p>
 <section id="shared-memory">
-<h3>Shared Memory<a class="headerlink" href="#shared-memory" title="永久链接至标题">#</a></h3>
+<h3>Shared Memory<a class="headerlink" href="#shared-memory" title="Permalink to this heading">#</a></h3>
 <p>Within a GPU core, there is a shared memory (or L1 cache) that can be accessed by all threads, which is managed by the compiler and hardware. Unlike CPU cache, we can allocate space directly on the shared memory just as the same as on the main memory and the global GPU memory.</p>
 <p>In the TVM abstraction, we also call it cache to simplify the concept. The TVM scheduling primitive <code class="docutils literal notranslate"><span class="pre">cache_read</span></code> can create a read-only cache for <span class="math notranslate nohighlight">\(A\)</span> that will be used by <span class="math notranslate nohighlight">\(C\)</span> on the shared memory, i.e. <code class="docutils literal notranslate"><span class="pre">s.cache_read(A,</span> <span class="pre">&quot;shared&quot;,</span> <span class="pre">[C])</span></code>.</p>
 <p><img alt="Blocked tiling for matrix multiplication with blocks denoted in blue on shared memory." src="../../../_images/matmul_block_gpu1.svg" />
@@ -768,19 +774,19 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="thread-block-and-registers">
-<h3>Thread Block and Registers<a class="headerlink" href="#thread-block-and-registers" title="永久链接至标题">#</a></h3>
+<h3>Thread Block and Registers<a class="headerlink" href="#thread-block-and-registers" title="Permalink to this heading">#</a></h3>
 <p>Next let’s explore how to compute an output block using one GPU core in parallel efficiently. We can use the same idea: further splitting the output block into smaller block tiles, and having each thread to compute one tile. :numref:<code class="docutils literal notranslate"><span class="pre">fig_matmul_thread_block</span></code> shows splitting a <span class="math notranslate nohighlight">\(128 \times 64\)</span> output block into 256 (<span class="math notranslate nohighlight">\(16 \times 16\)</span>) tiles, each of which is an <span class="math notranslate nohighlight">\(8\times 4\)</span> matrix. Then we will create 256 threads within this thread block. Since the output is a matrix, we use a 2-D thread indexing, with <code class="docutils literal notranslate"><span class="pre">blockDim.x</span> <span class="pre">=</span> <span class="pre">blockDim.y</span> <span class="pre">=</span> <span class="pre">16</span></code>. In addition, we will move the inputs, two vectors with lengths of 8 and 4, respectively, and the output, an <span class="math notranslate nohighlight">\(8\times 4\)</span> matrix, for each thread into the registers.</p>
 <p><img alt="Further blocked tiling for matrix multiplication to put small tiles into registers." src="../../../_images/matmul_thread_block.svg" />
 :label:<code class="docutils literal notranslate"><span class="pre">fig_matmul_thread_block</span></code></p>
 <p>Registers are local memory to a CUDA thread that is running. Accessing the registers are faster than the shared memory. So our goal is to make sure the data that we want to use each time can fit into the registers. In our case, each thread has three tensors with sizes <span class="math notranslate nohighlight">\(8\times 1\)</span>, <span class="math notranslate nohighlight">\(1\times 4\)</span> and <span class="math notranslate nohighlight">\(8\times 4\)</span>, respectively. These lead to in total 46 32-bit floats. In the Tesla T4 GPU that we are using, each block has 65,536 32-bit registers shared by up to 1024 threads. Therefore, we can easily fit the data to the registers.</p>
 </section>
 <section id="cooperative-fetching">
-<h3>Cooperative Fetching<a class="headerlink" href="#cooperative-fetching" title="永久链接至标题">#</a></h3>
+<h3>Cooperative Fetching<a class="headerlink" href="#cooperative-fetching" title="Permalink to this heading">#</a></h3>
 <p>Finally, loading the blocks of <code class="docutils literal notranslate"><span class="pre">A_shared</span></code> and <code class="docutils literal notranslate"><span class="pre">B_shared</span></code> into the shared memory is time consuming. We can accelerate it through multi-threading, namely using all threads in a thread block to load it.</p>
 </section>
 </section>
 <section id="implementation">
-<h2>Implementation<a class="headerlink" href="#implementation" title="永久链接至标题">#</a></h2>
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this heading">#</a></h2>
 <p>We first implement utility methods which split an axis with a list of factors, and bind a list of axes with threads.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -970,7 +976,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>We use a two-level block tiling to parallelize matrix multiplication on GPUs.</p></li>
 <li><p>We load data used by a thread block into share memory, and data used by a CUDA thread into registers.</p></li>
@@ -1024,13 +1030,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

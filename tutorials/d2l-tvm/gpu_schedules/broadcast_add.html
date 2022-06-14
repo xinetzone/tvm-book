@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Broadcast Add &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -666,11 +672,11 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="broadcast-add">
-<h1>Broadcast Add<a class="headerlink" href="#broadcast-add" title="永久链接至标题">#</a></h1>
+<h1>Broadcast Add<a class="headerlink" href="#broadcast-add" title="Permalink to this heading">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_bcast_add_gpu</span></code></p>
 <p>This section talks about scheduling the broadcast add computation defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_bcast_add</span></code> on GPU. Similar to the CPU case, we can extend what we have done for vector add on GPU in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_gpu</span></code> with some minor modification.</p>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
@@ -712,7 +718,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="continuous-scheduling">
-<h2>Continuous scheduling<a class="headerlink" href="#continuous-scheduling" title="永久链接至标题">#</a></h2>
+<h2>Continuous scheduling<a class="headerlink" href="#continuous-scheduling" title="Permalink to this heading">#</a></h2>
 <p>Like in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_gpu</span></code>, we will need to bind some axes to CUDA threads and blocks. For broadcast add depicted in :numref:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add</span></code>, the loop pattern is straightforward, where the inner loop goes through the columns of a particular row of <code class="docutils literal notranslate"><span class="pre">B</span></code>, and the outer loop goes through all rows. One way to think about the thread binding could be to bind the CUDA threads along column axis <code class="docutils literal notranslate"><span class="pre">y</span></code> and blocks along row axis <code class="docutils literal notranslate"><span class="pre">x</span></code>. However, when the number of columns exceeds 1024, it will return an error as violating the maximal number of threads in a block. Therefore, we will need to restrict the number of threads as <code class="docutils literal notranslate"><span class="pre">nt</span></code>. There is no constraint on the number of blocks (<code class="docutils literal notranslate"><span class="pre">nb</span></code>), but generally, we want one thread to take care of multiple calculations if the processed data is large to reduce the overhead.</p>
 <p>We first specify <code class="docutils literal notranslate"><span class="pre">nt</span></code> and <code class="docutils literal notranslate"><span class="pre">nb</span></code>.</p>
 <div class="cell docutils container">
@@ -785,7 +791,7 @@ function checkPageExistsAndRedirect(event) {
 <p>We see that the continuous scheduling outperforms MXNet only for small workloads due to lighter overhead. Its performance becomes inferior to MXNet while increasing the data size. This is because the continuous scheduling causes serious bank conflict, which we will discuss in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_gpu</span></code> and solve it in a more systematic way.</p>
 </section>
 <section id="alternate-scheduling">
-<h2>Alternate scheduling<a class="headerlink" href="#alternate-scheduling" title="永久链接至标题">#</a></h2>
+<h2>Alternate scheduling<a class="headerlink" href="#alternate-scheduling" title="Permalink to this heading">#</a></h2>
 <p>For now, let’s try to avoid one thread processing a continuous data chunk. Instead, we make each thread operate on the scattered data. :numref:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add_gpu</span></code> depicts the difference between continuous and alternate schedulings.</p>
 <p><img alt="Difference between continuous and alternate schedulings." src="../../../_images/bcast_add_gpu.svg" />
 :label:<code class="docutils literal notranslate"><span class="pre">fig_bcast_add_gpu</span></code></p>
@@ -850,13 +856,13 @@ function checkPageExistsAndRedirect(event) {
 <p>Lastly, it is worthwhile to note that the two values <code class="docutils literal notranslate"><span class="pre">nt</span></code> and <code class="docutils literal notranslate"><span class="pre">nb</span></code> are tunable based on the workload and platform. It is not guaranteed that what we have chosen here is best for all cases we tested out. And there is no combination which works well across all cases. Therefore, a good compiler will need to allow tuning on this kind of parameters.</p>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>It is favorable for CUDA threads to access data alternately.</p></li>
 </ul>
 </section>
 <section id="exercise">
-<h2>Exercise<a class="headerlink" href="#exercise" title="永久链接至标题">#</a></h2>
+<h2>Exercise<a class="headerlink" href="#exercise" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Vary <code class="docutils literal notranslate"><span class="pre">nt</span></code> and <code class="docutils literal notranslate"><span class="pre">nb</span></code> to observe the performance difference.</p></li>
 <li><p>Try to schedule other broadcast add patterns and observe the difference.</p></li>
@@ -909,13 +915,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

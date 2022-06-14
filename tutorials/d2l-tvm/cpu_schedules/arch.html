@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>CPU 架构 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -519,8 +520,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -529,23 +530,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -680,10 +686,10 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="cpu">
-<span id="ch-cpu-arch"></span><h1>CPU 架构<a class="headerlink" href="#cpu" title="永久链接至标题">#</a></h1>
+<span id="ch-cpu-arch"></span><h1>CPU 架构<a class="headerlink" href="#cpu" title="Permalink to this heading">#</a></h1>
 <p>在本节中，将简要介绍对 CPU 上的深度学习和科学计算性能至关重要的系统组件。为了进行更全面的调查，推荐 <a class="reference external" href="https://www.amazon.com/Computer-Architecture-Quantitative-John-Hennessy/dp/012383872X">这本经典教科书（textbook）</a>。假设读者了解基本的系统概念，如时钟速率（即 clock rate 或者 频率（frequency））、CPU cycle 和 cache。</p>
 <section id="id1">
-<h2>算术单元<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
+<h2>算术单元<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
 <p>Arithmetic Units</p>
 <p>典型的通用 CPU 有硬件单元来执行整数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Arithmetic_logic_unit">ALU</a>，中文：算术逻辑单元）和浮点数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Floating-point_unit">FPU</a>）上的运算。各种数据类型的性能取决于硬件。</p>
 <p>先检查一下使用的 CPU 型号。</p>
@@ -742,7 +748,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id2">
-<h2>并行执行<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<h2>并行执行<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>直到 21 世纪初，CPU 频率迅速增加。2003 年，英特尔发布 <a class="reference external" href="https://en.wikipedia.org/wiki/Pentium_4">Pentium 4</a>（奔腾） CPU，时钟频率高达 3.8 GHz。如果检查 CPU 时钟速率，</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -761,7 +767,7 @@ CPU min MHz:                     1200.0000
 </div>
 <p>可以看到它的时钟速率比 2003 年的产品低，但它可能比奔腾 4 CPU 快 100 倍。秘密来源是，新的 CPU 模型在并行执行领域探索了更多。接下来简要地讨论两种典型的并行化。</p>
 <section id="simd">
-<h3>SIMD<a class="headerlink" href="#simd" title="永久链接至标题">#</a></h3>
+<h3>SIMD<a class="headerlink" href="#simd" title="Permalink to this heading">#</a></h3>
 <p>单指令多数据流（Single instruction, multiple data，简称 <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD</a>）是指使用相同指令同时处理多个元素。</p>
 <figure class="align-default" id="id7">
 <img alt="../../../_images/cpu_parallel_arch.svg" src="../../../_images/cpu_parallel_arch.svg" /><figcaption>
@@ -789,7 +795,7 @@ cat: write error: Broken pipe
 <p>可以看出，支持的最强大的 SIMD 指令集是 AVX-512，它对 AVX 进行了扩展，支持对 512 位宽数据执行 SIMD，例如每次可以执行 16 个 float32 运算或 8 个 float64 运算。</p>
 </section>
 <section id="id3">
-<h3>多核<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h3>
+<h3>多核<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <p>SIMD 提高了单核的性能，另一种方法是向单个 CPU 处理器添加多个核。</p>
 <p>看起来我们的 CPU 有 48 核。</p>
 <div class="cell docutils container">
@@ -809,7 +815,7 @@ cat: write error: Broken pipe
 <p>让两个线程共享同一个核的资源可能会增加总吞吐量，但会以增加总体延迟为代价。此外，超线程的效果在很大程度上取决于应用程序。因此，一般不建议在深度学习工作负载中利用超线程。在本书后面，您将看到，即使我们的 CPU 有 48 个核，我们也只启动了 24 个线程。</p>
 </section>
 <section id="id4">
-<h3>性能<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h3>
+<h3>性能<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <p>我们经常使用每秒浮点运算次数（floating point operations per second，即 <a class="reference external" href="https://en.wikipedia.org/wiki/FLOPS">FLOPS</a>）来衡量硬件平台或可执行程序的性能。</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -851,7 +857,7 @@ cat: write error: Broken pipe
 </section>
 </section>
 <section id="id5">
-<h2>内存子系统<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
+<h2>内存子系统<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
 <p>另一个对性能有显著影响的组件是内存子系统。内存大小是系统的关键规格之一。我们使用的机器内存为 125 GB。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -913,7 +919,7 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
 <p>由于系统每次都会将一个值块带到缓存中（参见 <a class="reference external" href="https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES">缓存线</a> 的概念），当引用这些相邻的数据时，这些数据可能仍然在缓存中。利用数据局部性带来的优势是最重要的性能优化原则之一。</p>
 </section>
 <section id="id6">
-<h2>小结<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
+<h2>小结<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>CPU 有专门的单元来处理各种数据类型的计算。CPU 的峰值性能是由时钟速率、内核数和指令集决定的。</p></li>
 <li><p>CPU 使用多级缓存来弥补 CPU 计算能力和主存带宽之间的差距。</p></li>
@@ -967,13 +973,13 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

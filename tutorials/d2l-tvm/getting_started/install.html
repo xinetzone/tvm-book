@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>安装 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -667,9 +673,9 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-install">
-<span id="id1"></span><h1>安装<a class="headerlink" href="#ch-install" title="永久链接至标题">#</a></h1>
+<span id="id1"></span><h1>安装<a class="headerlink" href="#ch-install" title="Permalink to this heading">#</a></h1>
 <section id="id2">
-<h2>安装运行环境<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<h2>安装运行环境<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>本项目使用 Anaconda3 配置 Python 环境，还需要配置一些包：</p>
 <ul class="simple">
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">tvm_book</span></code> 和 <a class="reference external" href="https://mxnet.incubator.apache.org/versions/1.9.0/api/python/docs/api/mxnet/index.html#module-mxnet" title="(在 Apache MXNet)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mxnet</span></code></a></p></li>
@@ -694,7 +700,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id5">
-<h2>便捷安装<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
+<h2>便捷安装<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
 <div class="admonition attention">
 <p class="admonition-title">注意</p>
 <p>当前仅仅支持 Unubtu 平台。</p>
@@ -729,7 +735,7 @@ invoke doc
 </ol>
 </section>
 <section id="tvm-book">
-<h2>关于 <code class="docutils literal notranslate"><span class="pre">tvm_book</span></code> 库<a class="headerlink" href="#tvm-book" title="永久链接至标题">#</a></h2>
+<h2>关于 <code class="docutils literal notranslate"><span class="pre">tvm_book</span></code> 库<a class="headerlink" href="#tvm-book" title="Permalink to this heading">#</a></h2>
 <p>为了便于本项目程序的复用，定制了 <code class="docutils literal notranslate"><span class="pre">tvm_book</span></code> 库，可以直接在项目根目录直接安装：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install .
 </pre></div>
@@ -759,7 +765,7 @@ invoke doc
 </div>
 </section>
 <section id="faqs">
-<h2>安装的 FAQs<a class="headerlink" href="#faqs" title="永久链接至标题">#</a></h2>
+<h2>安装的 FAQs<a class="headerlink" href="#faqs" title="Permalink to this heading">#</a></h2>
 <p>安装 MXNet GPU 版本可能需要配置 NCCL，详细内容见：<a class="reference external" href="https://docs.nvidia.com/deeplearning/nccl/install-guide/index.html">安装 NCCL</a>。</p>
 </section>
 </section>
@@ -809,13 +815,13 @@ invoke doc
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

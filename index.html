@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>TVM 手册 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
@@ -306,7 +307,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="tvm">
-<h1>TVM 手册<a class="headerlink" href="#tvm" title="永久链接至标题">#</a></h1>
+<h1>TVM 手册<a class="headerlink" href="#tvm" title="Permalink to this heading">#</a></h1>
 <p><a class="reference external" href="https://github.com/xinetzone/tvm-book/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/xinetzone/tvm-book" /></a> <a class="reference external" href="https://github.com/xinetzone/tvm-book/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/xinetzone/tvm-book" /></a> <a class="reference external" href="https://github.com/xinetzone/tvm-book/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/xinetzone/tvm-book" /></a> <a class="reference external" href="https://github.com/xinetzone/tvm-book/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/xinetzone/tvm-book" /></a> <img alt="repo size" src="https://img.shields.io/github/repo-size/xinetzone/tvm-book.svg" /> <a class="reference external" href="https://github.com/xinetzone/tvm-book/graphs/contributors"><img alt="contributors" src="https://img.shields.io/github/contributors/xinetzone/tvm-book.svg" /></a> <a class="reference external" href="https://github.com/xinetzone/tvm-book/watchers"><img alt="watcher" src="https://img.shields.io/github/watchers/xinetzone/tvm-book.svg" /></a> <a class="reference external" href="https://mybinder.org/v2/gh/xinetzone/tvm-book/main"><img alt="Binder" src="https://mybinder.org/badge_logo.svg" /></a> <a class="reference external" href="https://tvm-book.readthedocs.io/zh/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/tvm-book/badge/?version=latest" /></a></p>
 <p>打造优质的 TVM 中文社区。</p>
 <div class="toctree-wrapper compound">
@@ -321,11 +322,12 @@ function checkPageExistsAndRedirect(event) {
 <li class="toctree-l3"><a class="reference internal" href="tutorials/d2l-tvm/zreferences.html">参考文献</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/relay/index.html">Relay</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/start.html">快速了解 Relay</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/viz.html">可视化 Relay 模块</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/build.html">构建模型</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/relay/ir-module.html">快速上手 IRModule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/ir/index.html">中间表示</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/ir/tedd.html">使用 TEDD 进行可视化</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/ir/build.html">构建模型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/ir/ir-module.html">快速上手 IRModule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/ir/relay.html">快速了解 Relay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/ir/relay_viz.html">可视化 Relay 模块</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/deploy.html">部署 TVM</a></li>
@@ -398,7 +400,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>索引与表格<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<h1>索引与表格<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">模块索引</span></a></p></li>
@@ -444,13 +446,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

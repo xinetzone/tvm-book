@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Pooling &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -519,8 +520,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -529,23 +530,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -682,7 +688,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="pooling">
-<h1>Pooling<a class="headerlink" href="#pooling" title="永久链接至标题">#</a></h1>
+<h1>Pooling<a class="headerlink" href="#pooling" title="Permalink to this heading">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_pooling_cpu</span></code></p>
 <p>In this section, we will optimize the vector add defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_pooling</span></code> on CPU.</p>
 <div class="cell docutils container">
@@ -703,9 +709,9 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="max-pooling">
-<h2>Max Pooling<a class="headerlink" href="#max-pooling" title="永久链接至标题">#</a></h2>
+<h2>Max Pooling<a class="headerlink" href="#max-pooling" title="Permalink to this heading">#</a></h2>
 <section id="schedule">
-<h3>Schedule<a class="headerlink" href="#schedule" title="永久链接至标题">#</a></h3>
+<h3>Schedule<a class="headerlink" href="#schedule" title="Permalink to this heading">#</a></h3>
 <p>By now, you should be familiar with the basic optimization tricks that we can do on CPU. Let’s print out the IR of <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> again to observe.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -791,7 +797,7 @@ produce PoolMax {
 <p>The optimized IR does both the parallelization and vectorization.</p>
 </section>
 <section id="benchmarking">
-<h3>Benchmarking<a class="headerlink" href="#benchmarking" title="永久链接至标题">#</a></h3>
+<h3>Benchmarking<a class="headerlink" href="#benchmarking" title="Permalink to this heading">#</a></h3>
 <p>We now benchmark the default and optimized scheduling of <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code>. In order to do this, we first define the benchmarking method of pooling. It is analogous to the benchmarking methods we defined in for other operators before. The main difference is that as <code class="docutils literal notranslate"><span class="pre">pooling</span></code> performs little computation, we use execution time instead of FLOPs to benchmark the results.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -878,9 +884,9 @@ produce PoolMax {
 </section>
 </section>
 <section id="avg-pooling">
-<h2>Avg Pooling<a class="headerlink" href="#avg-pooling" title="永久链接至标题">#</a></h2>
+<h2>Avg Pooling<a class="headerlink" href="#avg-pooling" title="Permalink to this heading">#</a></h2>
 <section id="id1">
-<h3>Schedule<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h3>
+<h3>Schedule<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <p>Now let’s move to <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code>. Again, we print out the IR of <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> to observe.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -982,7 +988,7 @@ As a side note, there is another compiling optimization already done in the defa
 <p>From the optimized IR we can see that the stage of <code class="docutils literal notranslate"><span class="pre">PoolSum</span></code> is merged into the stage of <code class="docutils literal notranslate"><span class="pre">PoolAvg</span></code>, which produces better data locality.</p>
 </section>
 <section id="id2">
-<h3>Benchmarking<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h3>
+<h3>Benchmarking<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
 <p>We now benchmark the default and optimized scheduling of <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code>, as well as the MXNet performance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1016,7 +1022,7 @@ As a side note, there is another compiling optimization already done in the defa
 </section>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Pooling can be optimized on CPUs via parallelization and vectorization.</p></li>
 <li><p>The padding stage can be computed inline in the latter stage using <code class="docutils literal notranslate"><span class="pre">AutoInlineInjective</span></code>.</p></li>
@@ -1070,13 +1076,13 @@ As a side note, there is another compiling optimization already done in the defa
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>索引和形状表达式 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -519,8 +520,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -529,23 +530,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -663,7 +669,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>索引和形状表达式<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<h1>索引和形状表达式<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <p>你已经知道形状可以是符号元组，例如 <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>，元素可以通过索引访问，例如 <code class="docutils literal notranslate"><span class="pre">a[i,</span> <span class="pre">j]</span></code>。在实践中，形状和索引都可以通过复杂的表达式来计算。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -676,7 +682,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="id2">
-<h2>矩阵转置<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<h2>矩阵转置<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>第一个例子是矩阵转置 <code class="docutils literal notranslate"><span class="pre">a.T</span></code>，按列访问 <code class="docutils literal notranslate"><span class="pre">a</span></code> 中的元素。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -732,7 +738,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>重构形状<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<h2>重构形状<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
 <p>接下来使用表达式进行索引。下面的代码块将2-D 数组 <code class="docutils literal notranslate"><span class="pre">a</span></code>（上面定义的 <span class="math notranslate nohighlight">\(n \times m\)</span>）重构为 1-D（就像 NumPy 中的<code class="docutils literal notranslate"><span class="pre">a.reshape(-1)</span></code>）。注意如何将 1-D 索引 <code class="docutils literal notranslate"><span class="pre">i</span></code> 转换为 2-D 索引 <code class="docutils literal notranslate"><span class="pre">[i//m,</span> <span class="pre">i%m]</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -802,7 +808,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>切片<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
+<h2>切片<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
 <p>考虑特殊的切片算子 <code class="docutils literal notranslate"><span class="pre">a[bi::si,</span> <span class="pre">bj::sj]</span></code>，其中 <code class="docutils literal notranslate"><span class="pre">bi</span></code>，<code class="docutils literal notranslate"><span class="pre">bj</span></code>，<code class="docutils literal notranslate"><span class="pre">si</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sj</span></code> 可以稍后指定。现在需要根据参数计算输出形状。此外，需要在编译模块时将变量 <code class="docutils literal notranslate"><span class="pre">bi</span></code>，<code class="docutils literal notranslate"><span class="pre">bj</span></code>，<code class="docutils literal notranslate"><span class="pre">si</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sj</span></code> 作为参数传递。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -832,7 +838,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id5">
-<h2>小结<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
+<h2>小结<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>形状维度和索引都可以是带有变量的表达式。</p></li>
 <li><p>如果变量不仅出现在形状元组中，那么需要在编译时将其作为参数传递。</p></li>
@@ -885,13 +891,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

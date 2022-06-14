@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>卷积 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -519,8 +520,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -529,23 +530,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -658,7 +664,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-conv">
-<span id="id1"></span><h1>卷积<a class="headerlink" href="#ch-conv" title="永久链接至标题">#</a></h1>
+<span id="id1"></span><h1>卷积<a class="headerlink" href="#ch-conv" title="Permalink to this heading">#</a></h1>
 <p>卷积（convolution，简称 <em>CONV</em>）算子是神经网络中最昂贵、最流行的算子之一。在本节中，将介绍具有单个输入和输出通道的算子。请参阅 D2L 的 <a class="reference external" href="https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html">6.2</a>、<a class="reference external" href="http://d2l.ai/chapter_convolutional-neural-networks/padding-and-strides.html">6.3</a> 和 <a class="reference external" href="http://d2l.ai/chapter_convolutional-neural-networks/channels.html">6.4</a> 章，了解更多关于该算子的说明。在这里，不会解释太多与卷积相关的术语，如填充、通道、步幅、卷积核等。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -671,7 +677,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="padding">
-<h2>Padding<a class="headerlink" href="#padding" title="永久链接至标题">#</a></h2>
+<h2>Padding<a class="headerlink" href="#padding" title="Permalink to this heading">#</a></h2>
 <p>作为卷积的先决条件，首先实现填充，它在视觉上用 “shell” 包围目标张量。填充值通常为 0。</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -732,7 +738,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id2">
-<h2>卷积<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<h2>卷积<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>首先考虑简单的单通道卷积。给定 <span class="math notranslate nohighlight">\(n_h\times n_w\)</span> 数据矩阵 <span class="math notranslate nohighlight">\(X\)</span>，首先填充 0 到 <span class="math notranslate nohighlight">\((n_h+2p_h) \times (n_w+2p_w)\)</span>。若核矩阵 <span class="math notranslate nohighlight">\(K\)</span> 尺寸为 <span class="math notranslate nohighlight">\(k_h\times k_w\)</span>，使用 stride 的高度 <span class="math notranslate nohighlight">\(s_h\)</span> 和宽度 <span class="math notranslate nohighlight">\(s_w\)</span>，输出 <span class="math notranslate nohighlight">\(Y = X \star K\)</span>  将有形状</p>
 <div class="math notranslate nohighlight">
 \[ \lfloor (n_h-k_h+2p_h)/s_h+1\rfloor  \times \lfloor (n_w-k_w+2p_w)/s_w+1\rfloor.\]</div>
@@ -909,7 +915,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>小结<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<h2>小结<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>可以用一种相当简单的方式来表示 TVM 中二维卷积的计算。
 — 深度学习工作负载通常是在 4-D 数据张量和卷积核张量上进行二维卷积。</p></li>
@@ -963,13 +969,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

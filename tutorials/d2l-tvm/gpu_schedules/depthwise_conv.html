@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Depthwise Convolution &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -666,7 +672,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="depthwise-convolution">
-<h1>Depthwise Convolution<a class="headerlink" href="#depthwise-convolution" title="永久链接至标题">#</a></h1>
+<h1>Depthwise Convolution<a class="headerlink" href="#depthwise-convolution" title="Permalink to this heading">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_depthwise_conv_gpu</span></code></p>
 <p>In this section, we will talk about how to optimize depthwise convolution on GPUs.</p>
 <div class="cell docutils container">
@@ -683,7 +689,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
 <p>The baseline of depthwise convolution on GPUs is given by MXNet, which relies on cuDNN for high performance. Again, we benchmark the performance with various numbers of channels, when the input and kernel width/height are fixed to be 64 and 3, respectively.
 The benchmark method <code class="docutils literal notranslate"><span class="pre">depthwise_conv_timer_mxnet</span></code> has already been defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_depthwise_conv_cpu</span></code>.
 The only change that we need to make is to specify to the method that the target device is <code class="docutils literal notranslate"><span class="pre">GPU</span></code>.</p>
@@ -714,7 +720,7 @@ The only change that we need to make is to specify to the method that the target
 <p>It is expected to see that the performance of depthwise convoluyion on GPUs increases while the number of channels increases.</p>
 </section>
 <section id="default-schedule-of-depthwise-convolution">
-<h2>Default schedule of Depthwise Convolution<a class="headerlink" href="#default-schedule-of-depthwise-convolution" title="永久链接至标题">#</a></h2>
+<h2>Default schedule of Depthwise Convolution<a class="headerlink" href="#default-schedule-of-depthwise-convolution" title="Permalink to this heading">#</a></h2>
 <p>In order to show the effectiveness of scheduling, we first apply a default schedule, which does nothing but only binds the axes to GPU thread and block.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -745,7 +751,7 @@ The only change that we need to make is to specify to the method that the target
 <p>The default scheduling gives us the performance around 25 GFLOPS for every data shape we investigate, indicating that the compute power is not actually used.</p>
 </section>
 <section id="scheduling-of-depthwise-convolution">
-<h2>Scheduling of Depthwise Convolution<a class="headerlink" href="#scheduling-of-depthwise-convolution" title="永久链接至标题">#</a></h2>
+<h2>Scheduling of Depthwise Convolution<a class="headerlink" href="#scheduling-of-depthwise-convolution" title="Permalink to this heading">#</a></h2>
 <p>We work on the scheduling of depthwise convolution from the following aspects. Note that none of them is new, all covered in the previous sections.</p>
 <p>Remember that the depthwise convolution convolves each input channel with a dedicated kernel, we can simply assign each channel to a different CUDA block. By doing this, we make different SMs work on different portions of the data, avoiding data contention across channels.</p>
 <p>In terms of tiling, we followed the same trick done in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_gpu</span></code> to bring some data to the shared and local memory of the GPU. You can follow the analytics approach described in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_gpu</span></code> to calculate the cached data size and make sure the data fits in the cache. And we continue doing the cooperative fetching as before.</p>
@@ -822,13 +828,13 @@ The only change that we need to make is to specify to the method that the target
 <p>It is worthwhile noting that, in the real workloads, depthwise convolution consumes only a little computation, which can be finished in microseconds. Therefore, although TVM outperforms MXNet for quite a lot, the real executing time difference is marginal. This somewhat reflects the famous <a class="reference external" href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl’s law</a>, i.e. in the real use case, we should first focus on optimizing the hot spots which takes the majority of executing time.</p>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Optimizing the depthwise convolution on GPUs has no major difference from optimizing other operators. The same techniques, e.g. parallelization, tiling, apply.</p></li>
 </ul>
 </section>
 <section id="exercise">
-<h2>Exercise<a class="headerlink" href="#exercise" title="永久链接至标题">#</a></h2>
+<h2>Exercise<a class="headerlink" href="#exercise" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Try to use virtual thread to mitigate the bank conflict in depthwise convolution.</p></li>
 <li><p>Vary the size of input data and observe the performance difference.</p></li>
@@ -881,13 +887,13 @@ The only change that we need to make is to specify to the method that the target
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

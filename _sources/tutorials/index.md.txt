@@ -4,7 +4,7 @@
 :maxdepth: 3
 
 d2l-tvm/index
-relay/index
+ir/index
 deploy
 benchmark
 deploy_ssd_gluoncv

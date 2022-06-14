@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Convolution &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -519,8 +520,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -529,23 +530,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -663,11 +669,11 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="convolution">
-<h1>Convolution<a class="headerlink" href="#convolution" title="永久链接至标题">#</a></h1>
+<h1>Convolution<a class="headerlink" href="#convolution" title="Permalink to this heading">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code></p>
 <p>In this section, we will optimize the convolution operator defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code> on CPUs. Specifically, this is a 2-D convolution operator.</p>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
@@ -777,7 +783,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="blocked-convolution">
-<h2>Blocked Convolution<a class="headerlink" href="#blocked-convolution" title="永久链接至标题">#</a></h2>
+<h2>Blocked Convolution<a class="headerlink" href="#blocked-convolution" title="Permalink to this heading">#</a></h2>
 <p>Just as we tiled matrices into blocks to improve the cache efficiency for matrix multiplication in :numref:<code class="docutils literal notranslate"><span class="pre">ch_block_matmul_cpu</span></code>, we can do the same thing for convolution. Let’s consider the case with a single output channel for simplicity.</p>
 <p>Consider a block of <span class="math notranslate nohighlight">\(Y\)</span>, denoted as <code class="docutils literal notranslate"><span class="pre">Y[i:i+tw,</span> <span class="pre">j:j+th]</span></code>, where <code class="docutils literal notranslate"><span class="pre">th</span></code> and <code class="docutils literal notranslate"><span class="pre">tw</span></code> are the tile sizes for height and width, respectively. We know the it can be computed by applying the convolution on a block of <span class="math notranslate nohighlight">\(X\)</span> with kernel <span class="math notranslate nohighlight">\(K\)</span>. In particular, assuming the width and height of <span class="math notranslate nohighlight">\(K\)</span> are <code class="docutils literal notranslate"><span class="pre">kw</span></code> and <code class="docutils literal notranslate"><span class="pre">kh</span></code>, then</p>
 <p><code class="docutils literal notranslate"><span class="pre">Y[i:i+tw,</span> <span class="pre">j:j+th]</span> <span class="pre">=</span> <span class="pre">conv(X[i:i+tw+kw-1,</span> <span class="pre">j:j+th+kh-1],</span> <span class="pre">K)</span></code></p>
@@ -889,13 +895,13 @@ produce Y {
 <p>As we can seen that our schedule does well for small channel sizes, while its performance decrease for large channel sizes. We will optimize the later in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>.</p>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>We tile the input and output data of convolution as we did for matrix multiplication for better cache efficiency.</p></li>
 </ul>
 </section>
 <section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="永久链接至标题">#</a></h2>
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Try different tiling sizes.</p></li>
 </ul>
@@ -947,13 +953,13 @@ produce Y {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   

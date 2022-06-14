@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="zh_CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>数据类型 &#8212; tvm-book 0.0.2 文档</title>
 <script>
@@ -38,6 +38,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -517,8 +518,8 @@ function checkPageExistsAndRedirect(event) {
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../relay/index.html">
-   Relay
+  <a class="reference internal" href="../../ir/index.html">
+   中间表示
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
   <label for="toctree-checkbox-7">
@@ -527,23 +528,28 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/start.html">
-     快速了解 Relay
+    <a class="reference internal" href="../../ir/tedd.html">
+     使用 TEDD 进行可视化
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/viz.html">
-     可视化 Relay 模块
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/build.html">
+    <a class="reference internal" href="../../ir/build.html">
      构建模型
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../../relay/ir-module.html">
+    <a class="reference internal" href="../../ir/ir-module.html">
      快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/relay_viz.html">
+     可视化 Relay 模块
     </a>
    </li>
   </ul>
@@ -656,10 +662,10 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>数据类型<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<h1>数据类型<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <p>每个张量都有数据类型，在深度学习中通常是 <code class="docutils literal notranslate"><span class="pre">float32</span></code>，但也可以是 <code class="docutils literal notranslate"><span class="pre">int8</span></code>（例如，用于模型量化）和其他数据类型。在 <a class="reference internal" href="../getting_started/vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中创建的 <code class="docutils literal notranslate"><span class="pre">tvm_vector_add</span></code>  模块只接受 <code class="docutils literal notranslate"><span class="pre">float32</span></code> 张量。在本节将其扩展到其他数据类型。</p>
 <section id="id2">
-<h2>指定数据类型<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
+<h2>指定数据类型<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>要使用与默认值 <code class="docutils literal notranslate"><span class="pre">float32</span></code> 不同的数据类型，可以在创建占位符时显式指定。在下面的代码块中将定义在 <a class="reference internal" href="../getting_started/vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中的泛型向量加法表达式，以接受参数 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 来指定数据类型。特别地，当创建 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 时，将 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 传递给 <code class="docutils literal notranslate"><span class="pre">te.placeholder</span></code> 占位符。结果 <code class="docutils literal notranslate"><span class="pre">C</span></code> 将获得与 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 相同的数据类型。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -741,7 +747,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>转换元素数据类型<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
+<h2>转换元素数据类型<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
 <p>除了构造具有特定数据类型的张量外，还可以在计算过程中强制转换张量元素的数据类型。下面的方法与 <code class="docutils literal notranslate"><span class="pre">tvm_vector_add</span></code> 相同，只是它在 <code class="docutils literal notranslate"><span class="pre">te.compute</span></code> 中强制转换了 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 的数据类型，而 <code class="docutils literal notranslate"><span class="pre">te.</span> <span class="pre">placeholder</span></code> 中定义的数据类型保留为默认值（<code class="docutils literal notranslate"><span class="pre">float32</span></code>）。由于 <code class="docutils literal notranslate"><span class="pre">astype</span></code> 执行了类型转换，结果 <code class="docutils literal notranslate"><span class="pre">C</span></code> 将具有 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 指定的数据类型。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -783,7 +789,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>小结<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
+<h2>小结<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>在创建 TVM 占位符时，可以通过 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 指定数据类型。</p></li>
 <li><p>在 TVM compute 中，张量元素的数据类型可以通过 <code class="docutils literal notranslate"><span class="pre">astype</span></code> 进行转换。</p></li>
@@ -836,13 +842,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:53:44.<br>
+最后更新于 2022-06-14, 11:12:33.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
 </p>
   </div>
   
