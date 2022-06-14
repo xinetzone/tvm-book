@@ -699,7 +699,7 @@ function checkPageExistsAndRedirect(event) {
 <p class="admonition-title">注意</p>
 <p>当前仅仅支持 Unubtu 平台。</p>
 </div>
-<p>可以直接利用脚本 <a class="reference download external" download="" href="https://github.com/daobook/tvm/blob/doc/xinetzone/tasks.py"><code class="xref download docutils literal notranslate"><span class="pre">task.py</span></code></a> （需要安装 <code class="docutils literal notranslate"><span class="pre">d2py</span></code> 和 <code class="docutils literal notranslate"><span class="pre">invoke</span></code>）编译 TVM。</p>
+<p>可以直接利用脚本 <a class="reference download external" download="" href="https://github.com/daobook/tvm/blob/xin/xinetzone/tasks.py"><code class="xref download docutils literal notranslate"><span class="pre">task.py</span></code></a> （需要安装 <code class="docutils literal notranslate"><span class="pre">d2py</span></code> 和 <code class="docutils literal notranslate"><span class="pre">invoke</span></code>）编译 TVM。</p>
 <ol class="arabic">
 <li><p>构建 <code class="docutils literal notranslate"><span class="pre">build/</span></code> 目录，且创建并配置 <code class="docutils literal notranslate"><span class="pre">build/cmake/config.cmake</span></code> 文件。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke config
@@ -748,12 +748,14 @@ invoke doc
 
     <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
-    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
+    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm.set_env</span> <span class="kn">import</span> <span class="n">set_tvm</span> 
+    <span class="c1"># 设置 TVM 环境</span>
+    <span class="n">set_tvm</span><span class="p">(</span><span class="n">TVM_ROOT</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
-<p><code class="docutils literal notranslate"><span class="pre">set_env</span></code> 模块需要自行配置以适配您的设备。</p>
+<p><code class="docutils literal notranslate"><span class="pre">set_tvm</span></code> 需要自行配置以适配您的设备。</p>
 </div>
 </section>
 <section id="faqs">
@@ -807,7 +809,7 @@ invoke doc
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 08:34:20.<br>
+最后更新于 2022-06-14, 08:53:44.<br>
 </p>
   </div>
   

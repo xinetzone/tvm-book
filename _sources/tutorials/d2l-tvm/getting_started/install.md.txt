@@ -38,7 +38,7 @@ pip install mxnet-cu112
 当前仅仅支持 Unubtu 平台。
 ```
 
-可以直接利用脚本 {download}`task.py <https://github.com/daobook/tvm/blob/doc/xinetzone/tasks.py>` （需要安装 `d2py` 和 `invoke`）编译 TVM。
+可以直接利用脚本 {download}`task.py <https://github.com/daobook/tvm/blob/xin/xinetzone/tasks.py>` （需要安装 `d2py` 和 `invoke`）编译 TVM。
 
 1. 构建 `build/` 目录，且创建并配置 `build/cmake/config.cmake` 文件。
 
@@ -97,11 +97,13 @@ def set_env(num, current_path='.'):
 
     ROOT = Path(current_path).resolve().parents[num]
     sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境
-    from tvm_book.contrib.tvm import set_env # 设置 TVM 环境
+    from tvm_book.contrib.tvm.set_env import set_tvm 
+    # 设置 TVM 环境
+    set_tvm(TVM_ROOT)
 ```
 
 ```{note}
-`set_env` 模块需要自行配置以适配您的设备。
+`set_tvm` 需要自行配置以适配您的设备。
 ```
 
 ## 安装的 FAQs
