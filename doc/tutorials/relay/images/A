@@ -1,0 +1,49 @@
+digraph {
+	subgraph cluster_AddFunc {
+		graph [color=red]
+		node [color=blue]
+		edge [color=black]
+		label=AddFunc
+		7 [label="Var(Input)
+name_hint: data" shape=ellipse]
+		8 [label="Var(Input)
+name_hint: bias" shape=ellipse]
+		9 [label=add
+ shape=box]
+		10 [label=Call
+ shape=box]
+		9 -> 10
+		7 -> 10
+		8 -> 10
+		11 [label="Func
+[Var(data), Var(bias)]" shape=box]
+		10 -> 11
+	}
+	subgraph cluster_main {
+		graph [color=red]
+		node [color=blue]
+		edge [color=black]
+		label=main
+		0 [label="Var(Input)
+name_hint: x" shape=ellipse]
+		1 [label="Var(Input)
+name_hint: y" shape=ellipse]
+		2 [label="Var(Input)
+name_hint: z" shape=ellipse]
+		3 [label="GlobalVar
+AddFunc" shape=ellipse]
+		4 [label=Call
+ shape=box]
+		3 -> 4
+		0 -> 4
+		1 -> 4
+		5 [label=Call
+ shape=box]
+		3 -> 5
+		2 -> 5
+		4 -> 5
+		6 [label="Func
+[Var(x), Var(y), Var(z)]" shape=box]
+		5 -> 6
+	}
+}

@@ -1,0 +1,67 @@
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.4,<4"]
+
+[project]
+authors = [{name = "xinetzone", email = "735613050@qq.com"}]
+dynamic = ["version", "description"]
+license = {file = "LICENSE"}
+name = "tvm_book"
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+  "d2py",
+  "xyzstyle"
+]
+
+maintainers = [
+  {name = "xinetzone", email = "735613050@qq.com"},
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Framework :: Sphinx",
+  "Framework :: Sphinx :: Theme",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Home = "https://github.com/xinetzone/tvm-book"
+
+[project.optional-dependencies]
+doc = [
+  "myst-nb",
+  "pytest-regressions",
+  "sphinxext-rediraffe",
+  "sphinx-copybutton",
+  "sphinxcontrib-bibtex",
+  # "sphinx-thebe",
+  "sphinx-design",
+  "sphinx-automodapi",
+  # "sphinx_tabs",
+]
+
+coverage = [
+  "pytest-cov",
+  "codecov",
+  "tvm_book[test]",
+]
+dev = [
+  "pyyaml",
+  "pre-commit",
+  "tvm_book[coverage]",
+]
+test = [
+  "pytest",
+  "tvm_book[doc]",
+]
+
+[project.entry-points]
+"sphinx.html_themes" = {tvm_book = "tvm_book"}
+
+[tool.flit.sdist]
+# include = ["docs/"]
+exclude = ['doc', '.git', '.github']
