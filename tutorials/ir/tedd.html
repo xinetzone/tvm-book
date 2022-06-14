@@ -52,7 +52,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
-    <link rel="next" title="构建模型" href="build.html" />
+    <link rel="next" title="快速了解 Relay" href="relay.html" />
     <link rel="prev" title="中间表示" href="index.html" />
     <link rel="stylesheet" href="../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../_static/css/custom.css"/>
@@ -533,16 +533,6 @@ function checkPageExistsAndRedirect(event) {
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="build.html">
-     构建模型
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="ir-module.html">
-     快速上手 IRModule
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="relay.html">
      快速了解 Relay
     </a>
@@ -550,6 +540,16 @@ function checkPageExistsAndRedirect(event) {
    <li class="toctree-l2">
     <a class="reference internal" href="relay_viz.html">
      可视化 Relay 模块
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="build.html">
+     构建模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ir-module.html">
+     快速上手 IRModule
     </a>
    </li>
   </ul>
@@ -630,6 +630,11 @@ function checkPageExistsAndRedirect(event) {
    调度树
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   迭代关系图
+  </a>
+ </li>
 </ul>
 
 </nav>
@@ -665,6 +670,7 @@ function checkPageExistsAndRedirect(event) {
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span>
 <span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">tedd</span>
+<span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">Source</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display_svg</span>
 </pre></div>
 </div>
@@ -673,11 +679,12 @@ function checkPageExistsAndRedirect(event) {
 <p>定义 <code class="docutils literal notranslate"><span class="pre">add</span></code> 计算和调度:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="mi">1</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="mi">1</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span>
-<span class="n">C</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">B</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="p">[</span><span class="n">te</span><span class="o">.</span><span class="n">placeholder</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="s2">&quot;ABC&quot;</span><span class="p">]</span>
 
-<span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">B</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">+</span> <span class="n">C</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -687,15 +694,14 @@ function checkPageExistsAndRedirect(event) {
 <p>查看计算过程以及调度的流程图:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tedd</span><span class="o">.</span><span class="n">viz_dataflow_graph</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">show_svg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dot_string</span> <span class="o">=</span> <span class="n">tedd</span><span class="o">.</span><span class="n">viz_dataflow_graph</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">output_dot_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">dot_string</span><span class="p">)</span>
+<span class="n">display_svg</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;IPython.core.display.SVG object&gt;
-</pre></div>
-</div>
-</div>
+<img alt="../../_images/8d3bb54f56353750606ccbbea8eb3dc4e46ed392357e2c1bc8ff6f335294513d.svg" src="../../_images/8d3bb54f56353750606ccbbea8eb3dc4e46ed392357e2c1bc8ff6f335294513d.svg" /></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
@@ -706,46 +712,46 @@ function checkPageExistsAndRedirect(event) {
 <h2>调度树<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tree</span> <span class="o">=</span> <span class="n">tedd</span><span class="o">.</span><span class="n">viz_schedule_tree</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">show_svg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dot_string</span> <span class="o">=</span> <span class="n">tedd</span><span class="o">.</span><span class="n">viz_schedule_tree</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">output_dot_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># tedd.viz_schedule_tree(s, dot_file_path=&quot;/tmp/scheduletree.dot&quot;) # 保存到本地</span>
-<span class="n">display_svg</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">dot_string</span><span class="p">)</span>
+<span class="n">display_svg</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;IPython.core.display.SVG object&gt;
-</pre></div>
+<img alt="../../_images/5056e34a22dc8c02408ba167fdb1d784ded2c273a4d426e7da7eb9597ef5e12b.svg" src="../../_images/5056e34a22dc8c02408ba167fdb1d784ded2c273a4d426e7da7eb9597ef5e12b.svg" /></div>
 </div>
-</div>
-</div>
+<p>建议调用 <code class="docutils literal notranslate"><span class="pre">normalize()</span></code> 来推断范围信息。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
 <span class="c1"># tedd.viz_schedule_tree(s, dot_file_path=&quot;/tmp/scheduletree2.dot&quot;)</span>
-<span class="n">tree</span> <span class="o">=</span> <span class="n">tedd</span><span class="o">.</span><span class="n">viz_schedule_tree</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">show_svg</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">display_svg</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="n">dot_string</span> <span class="o">=</span> <span class="n">tedd</span><span class="o">.</span><span class="n">viz_schedule_tree</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">output_dot_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">dot_string</span><span class="p">)</span>
+<span class="n">display_svg</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;IPython.core.display.SVG object&gt;
-</pre></div>
+<img alt="../../_images/a7ce268698fe7acd141e39ad5c62c3de2ce97155b7c66732c52d809537ba4e39.svg" src="../../_images/a7ce268698fe7acd141e39ad5c62c3de2ce97155b7c66732c52d809537ba4e39.svg" /></div>
 </div>
-</div>
-</div>
+<p>ROOT 下的每个块代表一个阶段。阶段名称显示在顶部行，计算显示在底部行。中间的行是 IterVars，外部越高，内部越低。</p>
+</section>
+<section id="id3">
+<h2>迭代关系图<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>迭代关系图(IterVar Relationship Graph)。每个子图表示一个阶段，并包含 IterVar 节点和变换节点。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># tedd.viz_itervar_relationship_graph(s, dot_file_path=&quot;/tmp/itervar.dot&quot;)</span>
-<span class="n">graph</span> <span class="o">=</span> <span class="n">tedd</span><span class="o">.</span><span class="n">viz_itervar_relationship_graph</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">show_svg</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">display_svg</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+<span class="n">dot_string</span> <span class="o">=</span> <span class="n">tedd</span><span class="o">.</span><span class="n">viz_itervar_relationship_graph</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">output_dot_string</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">dot_string</span><span class="p">)</span>
+<span class="n">display_svg</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;IPython.core.display.SVG object&gt;
-</pre></div>
-</div>
-</div>
+<img alt="../../_images/52fbde24d44300ac348cb17fa6774f98f1f5a79b0fb84abdfdaf7e5bdf2bc076.svg" src="../../_images/52fbde24d44300ac348cb17fa6774f98f1f5a79b0fb84abdfdaf7e5bdf2bc076.svg" /></div>
 </div>
 </section>
 </section>
@@ -765,10 +771,10 @@ function checkPageExistsAndRedirect(event) {
           <p class="prev-next-title">中间表示</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="build.html" title="下一页 页">
+  <a class='right-next' id="next-link" href="relay.html" title="下一页 页">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">下一页</p>
-      <p class="prev-next-title">构建模型</p>
+      <p class="prev-next-title">快速了解 Relay</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>
@@ -795,7 +801,7 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 11:12:33.<br>
+最后更新于 2022-06-14, 12:30:51.<br>
 </p>
   </div>
   

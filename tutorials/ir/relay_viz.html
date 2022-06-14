@@ -52,7 +52,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
-    <link rel="next" title="部署 TVM" href="../deploy.html" />
+    <link rel="next" title="构建模型" href="build.html" />
     <link rel="prev" title="快速了解 Relay" href="relay.html" />
     <link rel="stylesheet" href="../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../_static/css/custom.css"/>
@@ -533,16 +533,6 @@ function checkPageExistsAndRedirect(event) {
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="build.html">
-     构建模型
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="ir-module.html">
-     快速上手 IRModule
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="relay.html">
      快速了解 Relay
     </a>
@@ -550,6 +540,16 @@ function checkPageExistsAndRedirect(event) {
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      可视化 Relay 模块
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="build.html">
+     构建模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ir-module.html">
+     快速上手 IRModule
     </a>
    </li>
   </ul>
@@ -915,9 +915,10 @@ function checkPageExistsAndRedirect(event) {
 <p>也可以用于可视化神经网络：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.relay.testing</span> <span class="kn">import</span> <span class="n">resnet</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.relay.testing</span> <span class="kn">import</span> <span class="n">vgg</span>
 
-<span class="n">mod</span><span class="p">,</span> <span class="n">param</span> <span class="o">=</span> <span class="n">resnet</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span><span class="n">num_layers</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">mod</span><span class="p">,</span> <span class="n">param</span> <span class="o">=</span> <span class="n">vgg</span><span class="o">.</span><span class="n">get_workload</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                              <span class="n">num_layers</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
 <span class="c1"># graphviz attributes</span>
 <span class="n">graph_attr</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">}</span>
 <span class="n">node_attr</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">}</span>
@@ -925,6 +926,8 @@ function checkPageExistsAndRedirect(event) {
 
 <span class="c1"># VizNode is passed to the callback.</span>
 <span class="c1"># We want to color NCHW conv2d nodes. Also give Var a different shape.</span>
+
+
 <span class="k">def</span> <span class="nf">get_node_attr</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="k">if</span> <span class="s2">&quot;nn.conv2d&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">type_name</span> <span class="ow">and</span> <span class="s2">&quot;NCHW&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">detail</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -955,7 +958,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9c9b61ee9f472ec5ee18fe78e67a07fc5031acc25f1d6ccbcfc2de01246458cb.svg" src="../../_images/9c9b61ee9f472ec5ee18fe78e67a07fc5031acc25f1d6ccbcfc2de01246458cb.svg" /></div>
+<img alt="../../_images/06fe6086af3d58ecd50601b23c7f7e34288a01075de538f000baaf53bb0afc34.svg" src="../../_images/06fe6086af3d58ecd50601b23c7f7e34288a01075de538f000baaf53bb0afc34.svg" /></div>
 </div>
 </section>
 </section>
@@ -975,10 +978,10 @@ function checkPageExistsAndRedirect(event) {
           <p class="prev-next-title">快速了解 Relay</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="../deploy.html" title="下一页 页">
+  <a class='right-next' id="next-link" href="build.html" title="下一页 页">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">下一页</p>
-      <p class="prev-next-title">部署 TVM</p>
+      <p class="prev-next-title">构建模型</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>
@@ -1005,7 +1008,7 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 11:12:33.<br>
+最后更新于 2022-06-14, 12:30:51.<br>
 </p>
   </div>
   
