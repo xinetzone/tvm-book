@@ -2,8 +2,8 @@
 
 ```{toctree}
 tedd
-build
-ir-module
 relay
 relay_viz
+build
+ir-module
 ```
