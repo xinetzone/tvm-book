@@ -552,6 +552,11 @@ function checkPageExistsAndRedirect(event) {
      快速上手 IRModule
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/test.html">
+     测试
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1">
@@ -743,7 +748,8 @@ function checkPageExistsAndRedirect(event) {
 <p>为了加载 TVM 环境，需要：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm.set_env</span> <span class="kn">import</span> <span class="n">set_tvm</span> <span class="c1"># 设置 TVM 环境</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置 TVM 环境</span>
+<span class="kn">from</span> <span class="nn">tvm_book.tvm.env</span> <span class="kn">import</span> <span class="n">set_tvm</span> 
 <span class="n">tvm_root</span> <span class="o">=</span> <span class="s2">&quot;/media/pc/data/4tb/lxw/books/tvm&quot;</span>
 <span class="n">set_tvm</span><span class="p">(</span><span class="n">tvm_root</span><span class="p">)</span>
 </pre></div>
@@ -1116,7 +1122,7 @@ For more information, please see: https://tvm.apache.org/docs/errors.html
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 12:30:51.<br>
+最后更新于 2022-06-16, 11:58:49.<br>
 </p>
   </div>
   

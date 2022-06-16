@@ -1,0 +1,689 @@
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>多输出 &#8212; tvm-book 0.0.2 文档</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="stylesheet" href="../../_static/css/default.css"/>
+    <link rel="stylesheet" href="../../_static/css/custom.css"/>
+
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../index.html">
+  <img src="../../_static/logo.jpg" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  教程
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../computer-vision/index.html">
+  计算机视觉
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../tests/index.html">
+  测试
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../chaos/index.html">
+  混沌
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../api/index.html">
+  API 参考
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../about/index.html">
+  关于
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="dropdown" id="version_switcher">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
+        v0.0.2  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+
+<!-- NOTE: this JS must live here (not in our global JS file) because it relies
+     on being processed by Jinja before it is run (specifically for replacing
+     variables tutorials/dl/multiple-outputs and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.2', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+-->
+
+<script type="text/javascript">
+// Check if corresponding page path exists in other version of docs
+// and, if so, go there instead of the homepage of the other docs version
+function checkPageExistsAndRedirect(event) {
+    const currentFilePath = "tutorials/dl/multiple-outputs.html",
+          tryUrl = event.target.getAttribute("href");
+    let otherDocsHomepage = tryUrl.replace(currentFilePath, "");
+    $.ajax({
+        type: 'HEAD',
+        url: tryUrl,
+        // if the page exists, go there
+        success: function() {
+            location.href = tryUrl;
+        }
+    }).fail(function() {
+        location.href = otherDocsHomepage;
+    });
+    // this prevents the browser from following the href of the clicked node
+    // (which is fine because this function takes care of redirecting)
+    return false;
+}
+
+// Populate the version switcher from the JSON config file
+(function () {
+    $.getJSON("https://xinetzone.github.io/tvm-book/_static/switcher.json", function(data, textStatus, jqXHR) {
+        const currentFilePath = "tutorials/dl/multiple-outputs.html";
+        // create links to the corresponding page in the other docs versions
+        $.each(data, function(index, entry) {
+            // if no custom name specified (e.g., "latest"), use version string
+            if (!("name" in entry)) {
+                entry.name = entry.version;
+            }
+            // create the node
+            const node = document.createElement("a");
+            node.setAttribute("class", "list-group-item list-group-item-action py-1");
+            node.textContent = `${entry.name}`;
+            node.setAttribute("href", `${entry.url}${currentFilePath}`);
+            // on click, AJAX calls will check if the linked page exists before
+            // trying to redirect, and if not, will redirect to the homepage
+            // for that version of the docs.
+            node.onclick = checkPageExistsAndRedirect;
+            // Add dataset values for the version and name in case people want
+            // to apply CSS styling based on this information.
+            node.dataset["versionName"] = entry.name;
+            node.dataset["version"] = entry.version;
+
+            $("#version_switcher_menu").append(node);
+            // replace dropdown button text with the preferred display name of
+            // this version, rather than using sphinx's 0.0.2 variable.
+            // also highlight the dropdown entry for the currently-viewed
+            // version's entry
+            if (entry.version == "v0.0.2") {
+                node.classList.add("active");
+                let btn = document.getElementById("version_switcher_button");
+                btn.innerText = btn.dataset["activeVersionName"] = entry.name;
+                btn.dataset["activeVersion"] = entry.version;
+            }
+        });
+    });
+})();
+</script>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/xinetzone/tvm-book" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/xinetzone/tvm-book/edit/main/doc/tutorials/dl/multiple-outputs.ipynb">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>多输出<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<p>参考：<a class="reference external" href="https://discuss.tvm.apache.org/t/relay-generate-sub-graphs-from-existing-graph/11594/3">Generate sub graphs from existing graph</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+<span class="kn">from</span> <span class="nn">tvm.tir</span> <span class="kn">import</span> <span class="n">IntImm</span>
+<span class="kn">from</span> <span class="nn">tvm.ir</span> <span class="kn">import</span> <span class="n">IRModule</span><span class="p">,</span> <span class="n">structural_equal</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.op.annotation</span> <span class="kn">import</span> <span class="n">compiler_begin</span><span class="p">,</span> <span class="n">compiler_end</span>
+
+
+<span class="k">def</span> <span class="nf">set_func_attr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">compile_name</span><span class="p">,</span> <span class="n">symbol_name</span><span class="p">):</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">with_attr</span><span class="p">(</span><span class="s2">&quot;Primitive&quot;</span><span class="p">,</span> <span class="n">IntImm</span><span class="p">(</span><span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">with_attr</span><span class="p">(</span><span class="s2">&quot;Inline&quot;</span><span class="p">,</span> <span class="n">IntImm</span><span class="p">(</span><span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">with_attr</span><span class="p">(</span><span class="s2">&quot;Compiler&quot;</span><span class="p">,</span> <span class="n">compile_name</span><span class="p">)</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">with_attr</span><span class="p">(</span><span class="s2">&quot;global_symbol&quot;</span><span class="p">,</span> <span class="n">symbol_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+
+<span class="k">def</span> <span class="nf">create_graph</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_gamma</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_gamma&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_beta</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_beta&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_mean</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_mean&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_var</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_var&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+
+    <span class="n">data_cb</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">weight_cb</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">bn_gamma_cb</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">bn_gamma</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">bn_beta_cb</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">bn_beta</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">bn_mean_cb</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">bn_mean</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">bn_var_cb</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">bn_var</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+
+    <span class="n">conv_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_cb</span><span class="p">,</span>
+                             <span class="n">weight</span><span class="o">=</span><span class="n">weight_cb</span><span class="p">,</span>
+                             <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                             <span class="n">channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                             <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">bn_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">batch_norm</span><span class="p">(</span><span class="n">conv_o</span><span class="p">,</span>
+                               <span class="n">bn_gamma_cb</span><span class="p">,</span>
+                               <span class="n">bn_beta_cb</span><span class="p">,</span>
+                               <span class="n">bn_mean_cb</span><span class="p">,</span>
+                               <span class="n">bn_var_cb</span><span class="p">)</span>
+
+    <span class="n">relu_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">bn_o</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">relu_o_ce</span> <span class="o">=</span> <span class="n">compiler_end</span><span class="p">(</span><span class="n">relu_o</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+
+    <span class="n">bn_omean</span> <span class="o">=</span> <span class="n">bn_o</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">rebn_omean_ce</span> <span class="o">=</span> <span class="n">compiler_end</span><span class="p">(</span><span class="n">bn_omean</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">bn_ovar</span> <span class="o">=</span> <span class="n">bn_o</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">bn_ovar_ce</span> <span class="o">=</span> <span class="n">compiler_end</span><span class="p">(</span><span class="n">bn_ovar</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">dummy_mean_abs</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rebn_omean_ce</span><span class="p">)</span>
+    <span class="n">dummy_ovar_abs</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">bn_ovar_ce</span><span class="p">)</span>
+    <span class="n">dummy_tuple</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Tuple</span><span class="p">((</span><span class="n">relu_o_ce</span><span class="p">,</span>
+                               <span class="n">dummy_mean_abs</span><span class="p">,</span>
+                               <span class="n">dummy_ovar_abs</span><span class="p">))</span>
+
+    <span class="n">func</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">data</span><span class="p">,</span>
+                           <span class="n">weight</span><span class="p">,</span>
+                           <span class="n">bn_gamma</span><span class="p">,</span>
+                           <span class="n">bn_beta</span><span class="p">,</span>
+                           <span class="n">bn_mean</span><span class="p">,</span>
+                           <span class="n">bn_var</span><span class="p">],</span>
+                          <span class="n">dummy_tuple</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+
+<span class="k">def</span> <span class="nf">expected</span><span class="p">():</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">IRModule</span><span class="p">()</span>
+    <span class="c1"># function 0</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_0_i0&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_0_i1&quot;</span><span class="p">,</span>
+                       <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_gamma</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_0_i2&quot;</span><span class="p">,</span>
+                         <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_beta</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_0_i3&quot;</span><span class="p">,</span>
+                        <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_mean</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_0_i4&quot;</span><span class="p">,</span>
+                        <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_var</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_0_i5&quot;</span><span class="p">,</span>
+                       <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+
+    <span class="n">conv_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="n">channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">bn_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">batch_norm</span><span class="p">(</span><span class="n">conv_o</span><span class="p">,</span> <span class="n">bn_gamma</span><span class="p">,</span> <span class="n">bn_beta</span><span class="p">,</span> <span class="n">bn_mean</span><span class="p">,</span> <span class="n">bn_var</span><span class="p">)</span>
+
+    <span class="n">relu_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">bn_o</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">tuple_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Tuple</span><span class="p">((</span><span class="n">relu_o</span><span class="p">,</span> <span class="n">bn_o</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bn_o</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="n">func0</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">bn_gamma</span><span class="p">,</span> <span class="n">bn_beta</span><span class="p">,</span> <span class="n">bn_mean</span><span class="p">,</span> <span class="n">bn_var</span><span class="p">],</span> <span class="n">tuple_o</span><span class="p">)</span>
+    <span class="n">func0</span> <span class="o">=</span> <span class="n">set_func_attr</span><span class="p">(</span><span class="n">func0</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;tvmgen_default_test_target_main_0&quot;</span><span class="p">)</span>
+    <span class="n">gv0</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">GlobalVar</span><span class="p">(</span><span class="s2">&quot;tvmgen_default_test_target_main_0&quot;</span><span class="p">)</span>
+    <span class="n">mod</span><span class="p">[</span><span class="n">gv0</span><span class="p">]</span> <span class="o">=</span> <span class="n">func0</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+
+    <span class="c1"># body</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">(</span>
+        <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_gamma</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_gamma&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_beta</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_beta&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_mean</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_mean&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+    <span class="n">bn_var</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;bn_var&quot;</span><span class="p">,</span> <span class="n">relay</span><span class="o">.</span><span class="n">TensorType</span><span class="p">((</span><span class="mi">16</span><span class="p">,),</span> <span class="s2">&quot;float32&quot;</span><span class="p">))</span>
+
+    <span class="n">f0_o</span> <span class="o">=</span> <span class="n">gv0</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">bn_gamma</span><span class="p">,</span> <span class="n">bn_beta</span><span class="p">,</span> <span class="n">bn_mean</span><span class="p">,</span> <span class="n">bn_var</span><span class="p">)</span>
+    <span class="n">f0_relu_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">TupleGetItem</span><span class="p">(</span><span class="n">f0_o</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">f0_mean_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">TupleGetItem</span><span class="p">(</span><span class="n">f0_o</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">f0_var_o</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">TupleGetItem</span><span class="p">(</span><span class="n">f0_o</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">f0_mean_abs</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f0_mean_o</span><span class="p">)</span>
+    <span class="n">f0_var_abs</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f0_var_o</span><span class="p">)</span>
+    <span class="n">main_tuple</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Tuple</span><span class="p">((</span><span class="n">f0_relu_o</span><span class="p">,</span> <span class="n">f0_mean_abs</span><span class="p">,</span> <span class="n">f0_var_abs</span><span class="p">))</span>
+
+    <span class="n">func</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">bn_gamma</span><span class="p">,</span> <span class="n">bn_beta</span><span class="p">,</span> <span class="n">bn_mean</span><span class="p">,</span> <span class="n">bn_var</span><span class="p">],</span> <span class="n">main_tuple</span><span class="p">)</span>
+    <span class="n">mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mod</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">IRModule</span><span class="p">()</span>
+<span class="n">mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">create_graph</span><span class="p">()</span>
+<span class="n">ref_mod</span> <span class="o">=</span> <span class="n">expected</span><span class="p">()</span>
+
+<span class="n">partitioned</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PartitionGraph</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">structural_equal</span><span class="p">(</span><span class="n">partitioned</span><span class="p">,</span> <span class="n">ref_mod</span><span class="p">,</span> <span class="n">map_free_vars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.testing.relay.viz</span> <span class="kn">import</span> <span class="n">graphviz_relay</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphviz_relay</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;graphviz.dot.Digraph at 0x7f51d0bef2e0&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">partitioned</span><span class="o">.</span><span class="n">get_global_vars</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[GlobalVar(main), GlobalVar(tvmgen_default_test_target_main_0)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphviz_relay</span><span class="p">(</span><span class="n">partitioned</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;graphviz.dot.Digraph at 0x7f52f6dca500&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphviz_relay</span><span class="p">(</span><span class="n">partitioned</span><span class="p">,</span> <span class="s2">&quot;tvmgen_default_test_target_main_0&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;graphviz.dot.Digraph at 0x7f51d0bd9c30&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphviz_relay</span><span class="p">(</span><span class="n">partitioned</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">tvm</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.backend</span> <span class="kn">import</span> <span class="n">te_compiler</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.backend.runtime</span> <span class="kn">import</span> <span class="n">Runtime</span>
+<span class="kn">import</span> <span class="nn">tvm.relay.testing</span>
+<span class="kn">import</span> <span class="nn">tvm.relay.op</span> <span class="k">as</span> <span class="nn">reg</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">relay</span>
+<span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">runtime</span> <span class="k">as</span> <span class="n">tvm_runtime</span>
+<span class="kn">from</span> <span class="nn">tvm.relay</span> <span class="kn">import</span> <span class="n">transform</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.testing</span> <span class="kn">import</span> <span class="n">byoc</span>
+<span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.expr_functor</span> <span class="kn">import</span> <span class="n">ExprMutator</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.op.annotation</span> <span class="kn">import</span> <span class="n">compiler_begin</span><span class="p">,</span> <span class="n">compiler_end</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.op.contrib.register</span> <span class="kn">import</span> <span class="n">get_pattern_table</span>
+<span class="kn">from</span> <span class="nn">tvm.relay.build_module</span> <span class="kn">import</span> <span class="n">bind_params_by_name</span>
+
+<span class="c1"># Leverage the pass manager to write a simple allowed list based annotator</span>
+<span class="nd">@transform</span><span class="o">.</span><span class="n">function_pass</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">AllowedListAnnotator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op_list</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op_list</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op_list</span> <span class="o">=</span> <span class="n">op_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compiler</span> <span class="o">=</span> <span class="n">compiler</span>
+
+    <span class="k">def</span> <span class="nf">transform_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+
+        <span class="n">annotator</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="k">class</span> <span class="nc">Annotator</span><span class="p">(</span><span class="n">tvm</span><span class="o">.</span><span class="n">relay</span><span class="o">.</span><span class="n">ExprMutator</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">visit_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+                <span class="n">op_name</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">if</span> <span class="n">op_name</span> <span class="ow">in</span> <span class="n">annotator</span><span class="o">.</span><span class="n">op_list</span><span class="p">:</span>
+                    <span class="n">new_args</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">call</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+                        <span class="n">ann</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">arg</span><span class="p">),</span> <span class="n">annotator</span><span class="o">.</span><span class="n">compiler</span><span class="p">)</span>
+                        <span class="n">new_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+                    <span class="n">new_call</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">new_args</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">attrs</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">type_args</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">compiler_end</span><span class="p">(</span><span class="n">new_call</span><span class="p">,</span> <span class="n">annotator</span><span class="o">.</span><span class="n">compiler</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_call</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Annotator</span><span class="p">()</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_graph</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+    <span class="n">cb_1</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">O_1</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cb_1</span><span class="p">)</span>
+    <span class="n">ce_2</span> <span class="o">=</span> <span class="n">compiler_end</span><span class="p">(</span><span class="n">O_1</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">O_2</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">O_1</span><span class="p">)</span>
+    <span class="n">ce_3</span> <span class="o">=</span> <span class="n">compiler_end</span><span class="p">(</span><span class="n">O_2</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">ce_2</span><span class="p">)</span>
+
+    <span class="n">cb_3</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">ce_3</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">cb_4</span> <span class="o">=</span> <span class="n">compiler_begin</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+    <span class="n">O_3</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cb_3</span><span class="p">,</span> <span class="n">cb_4</span><span class="p">)</span>
+    <span class="n">ce_4</span> <span class="o">=</span> <span class="n">compiler_end</span><span class="p">(</span><span class="n">O_3</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">)</span>
+
+    <span class="n">func</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">data</span><span class="p">],</span> <span class="n">ce_4</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func</span>
+
+<span class="k">def</span> <span class="nf">expected</span><span class="p">():</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">IRModule</span><span class="p">()</span>
+
+    <span class="c1"># function 1</span>
+    <span class="n">f1_cb1</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_0_i0&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">f1_O_1</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f1_cb1</span><span class="p">)</span>
+    <span class="n">f1_O_2</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">f1_O_1</span><span class="p">)</span>
+    <span class="n">f1_out</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Tuple</span><span class="p">((</span><span class="n">f1_O_2</span><span class="p">,</span> <span class="n">f1_O_1</span><span class="p">))</span>
+    <span class="n">func1</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">f1_cb1</span><span class="p">],</span> <span class="n">f1_out</span><span class="p">)</span>
+    <span class="n">func1</span> <span class="o">=</span> <span class="n">set_func_attr</span><span class="p">(</span><span class="n">func1</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">,</span> <span class="s2">&quot;tvmgen_default_test_target_main_0&quot;</span><span class="p">)</span>
+    <span class="n">gv1</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">GlobalVar</span><span class="p">(</span><span class="s2">&quot;tvmgen_default_test_target_main_0&quot;</span><span class="p">)</span>
+    <span class="n">mod</span><span class="p">[</span><span class="n">gv1</span><span class="p">]</span> <span class="o">=</span> <span class="n">func1</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+
+    <span class="c1"># function 0</span>
+    <span class="n">f2_cb3</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_1_i0&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">f2_cb4</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;test_target_1_i1&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">f2_O_3</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f2_cb3</span><span class="p">,</span> <span class="n">f2_cb4</span><span class="p">)</span>
+    <span class="n">func0</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">f2_cb3</span><span class="p">,</span> <span class="n">f2_cb4</span><span class="p">],</span> <span class="n">f2_O_3</span><span class="p">)</span>
+    <span class="n">func0</span> <span class="o">=</span> <span class="n">set_func_attr</span><span class="p">(</span><span class="n">func0</span><span class="p">,</span> <span class="s2">&quot;test_target&quot;</span><span class="p">,</span> <span class="s2">&quot;tvmgen_default_test_target_main_1&quot;</span><span class="p">)</span>
+    <span class="n">gv0</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">GlobalVar</span><span class="p">(</span><span class="s2">&quot;tvmgen_default_test_target_main_1&quot;</span><span class="p">)</span>
+    <span class="n">mod</span><span class="p">[</span><span class="n">gv0</span><span class="p">]</span> <span class="o">=</span> <span class="n">func0</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+
+    <span class="c1"># body</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">tuple_out</span> <span class="o">=</span> <span class="n">gv1</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">ce_2</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">TupleGetItem</span><span class="p">(</span><span class="n">tuple_out</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ce_3</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">TupleGetItem</span><span class="p">(</span><span class="n">tuple_out</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">ce_2</span><span class="p">)</span>
+    <span class="n">ce_4</span> <span class="o">=</span> <span class="n">gv0</span><span class="p">(</span><span class="n">ce_3</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">Function</span><span class="p">([</span><span class="n">data</span><span class="p">],</span> <span class="n">ce_4</span><span class="p">)</span>
+    <span class="n">mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mod</span>
+
+<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">IRModule</span><span class="p">()</span>
+<span class="n">mod</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">create_graph</span><span class="p">()</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">InferType</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+
+<span class="n">ref_mod</span> <span class="o">=</span> <span class="n">expected</span><span class="p">()</span>
+
+<span class="n">partitioned</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">PartitionGraph</span><span class="p">()(</span><span class="n">mod</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">tvm</span><span class="o">.</span><span class="n">ir</span><span class="o">.</span><span class="n">structural_equal</span><span class="p">(</span><span class="n">partitioned</span><span class="p">,</span> <span class="n">ref_mod</span><span class="p">,</span> <span class="n">map_free_vars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphviz_relay</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;graphviz.dot.Digraph at 0x7f51cffb0760&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphviz_relay</span><span class="p">(</span><span class="n">partitioned</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;graphviz.dot.Digraph at 0x7f51cffb27d0&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+
+              </article>
+              
+
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              </footer>
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, xinetzone.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+最后更新于 2022-06-16, 11:58:49.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

@@ -552,6 +552,11 @@ function checkPageExistsAndRedirect(event) {
      快速上手 IRModule
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="test.html">
+     测试
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1">
@@ -926,8 +931,6 @@ function checkPageExistsAndRedirect(event) {
 
 <span class="c1"># VizNode is passed to the callback.</span>
 <span class="c1"># We want to color NCHW conv2d nodes. Also give Var a different shape.</span>
-
-
 <span class="k">def</span> <span class="nf">get_node_attr</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="k">if</span> <span class="s2">&quot;nn.conv2d&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">type_name</span> <span class="ow">and</span> <span class="s2">&quot;NCHW&quot;</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">detail</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -1008,7 +1011,7 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-14, 12:30:51.<br>
+最后更新于 2022-06-16, 11:58:49.<br>
 </p>
   </div>
   

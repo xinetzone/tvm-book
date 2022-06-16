@@ -428,8 +428,6 @@
     "\n",
     "# VizNode is passed to the callback.\n",
     "# We want to color NCHW conv2d nodes. Also give Var a different shape.\n",
-    "\n",
-    "\n",
     "def get_node_attr(node):\n",
     "    if \"nn.conv2d\" in node.type_name and \"NCHW\" in node.detail:\n",
     "        return {\n",
