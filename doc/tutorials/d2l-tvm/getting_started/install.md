@@ -97,7 +97,7 @@ def set_env(num, current_path='.'):
 
     ROOT = Path(current_path).resolve().parents[num]
     sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境
-    from tvm_book.contrib.tvm.set_env import set_tvm 
+    from tvm_book.tvm.env import set_tvm 
     # 设置 TVM 环境
     set_tvm(TVM_ROOT)
 ```

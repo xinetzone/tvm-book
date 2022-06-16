@@ -9,7 +9,7 @@ from tvm_book.tvm.viz_relay import Visualizer
 
 
 def graphviz_relay(ir_mod,
-                   graph_name,
+                   graph_name="main",
                    graph_attr={"color": "red"},
                    node_attr={"color": "blue"},
                    edge_attr={"color": "black"}):

@@ -8,10 +8,12 @@ def set_tvm(tvm_root):
     tvm_root = Path(tvm_root)
     TVM_PATH = str(tvm_root/'python')
     VTA_PATH = str(tvm_root/'vta/python')
-    sys.path.extend([TVM_PATH, VTA_PATH])
-    # for path in [TVM_PATH, VTA_PATH]:
-    #     if path not in sys.path:
-    #         sys.path.extend([path])
+    # sys.path.extend([TVM_PATH, VTA_PATH])
+    for path in [TVM_PATH, VTA_PATH]:
+        if path not in sys.path:
+            sys.path.extend([path])
+    vta_path = str(tvm_root/"3rdparty/vta-hw")
+    os.environ['VTA_HW_PATH'] = os.environ.get('VTA_HW_PATH', vta_path)
 
 
 def set_mxnet():

@@ -17,3 +17,5 @@ whatever
 *.o
 *.csv
 *.pdf
+*.params
+*.json
