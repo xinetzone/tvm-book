@@ -52,7 +52,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
-    <link rel="next" title="使用 TEDD 进行可视化" href="tedd.html" />
+    <link rel="next" title="PackedFunc" href="packed-func.html" />
     <link rel="prev" title="参考文献" href="../d2l-tvm/zreferences.html" />
     <link rel="stylesheet" href="../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../_static/css/custom.css"/>
@@ -249,6 +249,11 @@ function checkPageExistsAndRedirect(event) {
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../roadmap.html">
+   学习路径
+  </a>
+ </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../d2l-tvm/index.html">
    d2l-tvm 教程
@@ -261,7 +266,7 @@ function checkPageExistsAndRedirect(event) {
   <ul>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="../d2l-tvm/getting_started/index.html">
-     入门
+     TVM 入门
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
     <label for="toctree-checkbox-2">
@@ -528,6 +533,11 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="packed-func.html">
+     PackedFunc
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="tedd.html">
      使用 TEDD 进行可视化
     </a>
@@ -559,6 +569,33 @@ function checkPageExistsAndRedirect(event) {
    </li>
   </ul>
  </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../dl/index.html">
+   深度学习
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../dl/mxnet-viz.html">
+     MXNet 模型可视化
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../dl/mxnet.html">
+     编译深度学习模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../dl/multiple-outputs.html">
+     多输出
+    </a>
+   </li>
+  </ul>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../deploy.html">
    部署 TVM
@@ -583,8 +620,8 @@ function checkPageExistsAndRedirect(event) {
   <a class="reference internal" href="../vta/index.html">
    VTA
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-  <label for="toctree-checkbox-8">
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -650,6 +687,10 @@ function checkPageExistsAndRedirect(event) {
 <h1>中间表示<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="packed-func.html">PackedFunc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packed-func.html#global-func">全局函数</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="tedd.html">使用 TEDD 进行可视化</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tedd.html#id1">数据流图</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tedd.html#id2">调度树</a></li>
@@ -695,10 +736,10 @@ function checkPageExistsAndRedirect(event) {
           <p class="prev-next-title">参考文献</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="tedd.html" title="下一页 页">
+  <a class='right-next' id="next-link" href="packed-func.html" title="下一页 页">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">下一页</p>
-      <p class="prev-next-title">使用 TEDD 进行可视化</p>
+      <p class="prev-next-title">PackedFunc</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>
@@ -725,13 +766,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-16, 11:58:49.<br>
+最后更新于 2022-06-17, 12:08:03.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
 </p>
   </div>
   

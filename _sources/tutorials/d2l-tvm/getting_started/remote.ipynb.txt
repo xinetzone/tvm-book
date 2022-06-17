@@ -9,7 +9,7 @@
     "(ch_remote)=\n",
     "# 在远程计算机上运行\n",
     "\n",
-    "在本书中，将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。"
+    "将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。"
    ]
   },
   {
@@ -26,29 +26,10 @@
      "tvm"
     ]
    },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Python: 3.10.4\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
-    "def set_env(num, current_path='.'):\n",
-    "    import sys\n",
-    "    from pathlib import Path\n",
-    "\n",
-    "    ROOT = Path(current_path).resolve().parents[num]\n",
-    "    sys.path.extend([str(ROOT/'src')]) # 设置 `tvm_book` 环境\n",
-    "    from tvm_book.contrib.tvm import set_env # 设置 TVM 环境\n",
-    "\n",
-    "set_env(2)\n",
-    "\n",
     "from tvm_book.contrib import d2ltvm\n",
     "import numpy as np\n",
-    "import mxnet as mx\n",
     "import tvm\n",
     "from tvm import te, rpc, relay\n",
     "from PIL import Image"
@@ -58,11 +39,11 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "注意，我们从 TVM 导入了 `rpc` 模块。[RPC](https://en.wikipedia.org/wiki/Remote_procedure_call)，即远程过程调用（remote procedure call），允许在远程位置上执行程序。\n",
+    "注意，从 TVM 导入 `rpc` 模块。[RPC](https://en.wikipedia.org/wiki/Remote_procedure_call)，即远程过程调用（remote procedure call），允许在远程位置上执行程序。\n",
     "\n",
     "## 设置远程计算机\n",
     "\n",
-    "首先需要在远程机器上安装 TVM `runtime` 模块。安装设置几乎与 TVM 相同（请参阅 {ref}`ch_install`），但只需要构建运行时，即 `make runtime`，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 `CUDA` 或 `OpenCL`。\n",
+    "需要在远程机器上安装 TVM `runtime` 模块。安装设置几乎与 TVM 相同（请参阅 {ref}`ch_install`），但只需要构建运行时，即 `make runtime`，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 `CUDA` 或 `OpenCL`。\n",
     "\n",
     "一旦安装了运行时，就可以通过在远程机器上运行以下命令来启动 daemon。\n",
     "\n",
@@ -88,8 +69,7 @@
     "origin_pos": 2
    },
    "source": [
-    "\n",
-    "This target triplet has the general format `<arch><sub>-<vendor>-<sys>-<abi>`, where\n",
+    "此 target 三元组具有一般格式 `<arch><sub>-<vendor>-<sys>-<abi>`，这里\n",
     "\n",
     "- arch: x86, x86_64, arm, thumb, mips, etc.\n",
     "- sub: for ARM, there are v5, v6m, v7a, v7m, v8, etc.\n",
@@ -97,50 +77,68 @@
     "- sys: linux, win32, darwin, cuda, none, unknown, etc.\n",
     "- abi: eabi, gnu, android, macho, elf, etc.\n",
     "\n",
-    "For example, it's `x86_64-apple-darwin17.7.0` for the MacbookPro I'm using, and `armv6k-unknown-linux-gnueabihf` for the Raspberry Pi 4B.\n",
+    "例如，`x86_64-apple-darwin17.7.0` 即 MacbookPro，而 `armv6k-unknown-linux-gnueabihf` 指的是 Raspberry Pi 4B.\n",
     "\n",
     "\n",
-    "## Compile the Program for the Remote Machine\n",
+    "## 编译远程计算机的程序\n",
     "\n",
-    "Let's run the vector addition defined :numref:`ch_vector_add` on the remote machine. Note that we specified the remote machine target through the `-target` argument for LLVM.\n"
+    "在远程机器上运行 {ref}`ch_vector_add`。注意，通过 LLVM 的 `-target` 参数指定了远程机器目标。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
-   "metadata": {
-    "attributes": {
-     "classes": [],
-     "id": "",
-     "n": "2"
-    },
-    "origin_pos": 3,
-    "tab": [
-     "tvm"
-    ]
-   },
+   "execution_count": 2,
+   "metadata": {},
    "outputs": [],
    "source": [
-    "n = 100\n",
-    "target = 'llvm -target=x86_64-pc-linux-gnu'\n",
+    "local_demo = True\n",
     "\n",
+    "n = 100\n",
     "args = d2ltvm.vector_add(n)\n",
+    "\n",
+    "if local_demo:\n",
+    "    target = \"llvm\"\n",
+    "else:\n",
+    "    target = \"llvm -target=x86_64-linux-gnu\"\n",
     "s = te.create_schedule(args[-1].op)\n",
-    "mod = tvm.build(s, args, target)"
+    "rt_mod = tvm.build(s, args, target)"
    ]
   },
   {
    "cell_type": "markdown",
-   "metadata": {
-    "origin_pos": 4
-   },
+   "metadata": {},
    "source": [
-    "Then we save the compiled module to disk, which will be uploaded to the remote machine later.\n"
+    "```{note}\n",
+    "在这里使用 `'llvm'` 来使这个教程可以在网页构建服务器上运行。要在真正的远程设备上运行本教程，请将 `local_demo` 改为 `False`，并将 `target` 改为适合你设备的目标。\n",
+    "```\n",
+    "\n",
+    "然后将编译后的模块保存到磁盘，稍后将其上传到远程计算机。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from tvm.contrib.utils import TempDirectory\n",
+    "\n",
+    "\n",
+    "class TempModule(TempDirectory):\n",
+    "    def __init__(self, custom_path=None, keep_for_debug=None):\n",
+    "        super().__init__(custom_path, keep_for_debug)\n",
+    "\n",
+    "    def export_library(self, module, filename):\n",
+    "        \"\"\"将该 module 保存在本地临时文件夹中\n",
+    "        \"\"\"\n",
+    "        path = self.relpath(filename)\n",
+    "        module.export_library(path)\n",
+    "        return path"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -154,8 +152,9 @@
    },
    "outputs": [],
    "source": [
+    "temp_module = TempModule()\n",
     "mod_fname = 'vector-add.tar'\n",
-    "mod.export_library(mod_fname)"
+    "mod_path = temp_module.export_library(rt_mod, mod_fname)"
    ]
   },
   {
@@ -164,28 +163,24 @@
     "origin_pos": 6
    },
    "source": [
-    "## Evaluate on the Remote Machine\n",
+    "## 在远程计算机上评估\n",
     "\n",
-    "We first connect to the remote machine with the IP we checked before.\n"
+    "使用之前检查的 IP 连接到远程机器。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
-   "metadata": {
-    "attributes": {
-     "classes": [],
-     "id": "",
-     "n": "4"
-    },
-    "origin_pos": 7,
-    "tab": [
-     "tvm"
-    ]
-   },
+   "execution_count": 5,
+   "metadata": {},
    "outputs": [],
    "source": [
-    "remote = rpc.connect('172.31.0.149', 9090)"
+    "if local_demo:\n",
+    "    remote = rpc.LocalSession()\n",
+    "else:\n",
+    "    # 将其改为你的目标设备的 IP 地址\n",
+    "    host = \"10.77.1.162\"\n",
+    "    port = 9090\n",
+    "    remote = rpc.connect(host, port)"
    ]
   },
   {
@@ -194,12 +189,12 @@
     "origin_pos": 8
    },
    "source": [
-    "Next, we send the compiled library to the machine and load it into the memory of the remote machine.\n"
+    "将编译好的库上传至远程机器，并将其加载到远程机器的内存中。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 6,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -213,8 +208,15 @@
    },
    "outputs": [],
    "source": [
-    "remote.upload(mod_fname)\n",
+    "remote.upload(mod_path)\n",
     "remote_mod = remote.load_module(mod_fname)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "现在 `remote_mod` 是远程模块对象。"
    ]
   },
   {
@@ -223,12 +225,12 @@
     "origin_pos": 10
    },
    "source": [
-    "When creating the data, we specify the device context as CPU on the remote machine. The data will be created on the local machine as before, but will be sent to the remote machine later. Note that we used NumPy to create the data, but there is no need to have the remote machine also installed NumPy.\n"
+    "在创建数据时，将设备上下文指定为远程机器上的 CPU。与之前一样，数据将在本地机器上创建，但稍后将发送到远程机器。注意，使用 NumPy 创建数据，但是不需要让远程机器也安装 NumPy。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 7,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -243,7 +245,7 @@
    "outputs": [],
    "source": [
     "ctx = remote.cpu()\n",
-    "a, b, c = d2ltvm.get_abc(n, lambda x: tvm.nd.array(x, ctx=ctx))"
+    "a, b, c = d2ltvm.get_abc(n, lambda x: tvm.nd.array(x, ctx))"
    ]
   },
   {
@@ -252,12 +254,12 @@
     "origin_pos": 12
    },
    "source": [
-    "Since both data and library are ready on the remote machine, let's execute the program on it as well.\n"
+    "由于数据和库在远程机器上都已经准备好了，让我们也在其上执行程序。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 8,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -280,12 +282,12 @@
     "origin_pos": 14
    },
    "source": [
-    "Finally, the `.asnumpy()` method will send the data back to the local machine and convert to a NumPy array. So we can verify the results as before.\n"
+    "最后，`.numpy` 方法将数据发送回本地机器，并转换为 NumPy 数组。所以可以像之前一样验证结果。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 9,
    "metadata": {
     "origin_pos": 15,
     "tab": [
@@ -303,14 +305,14 @@
     "origin_pos": 16
    },
    "source": [
-    "## Running Neural Network Inference\n",
+    "## 运行神经网络推理\n",
     "\n",
-    "Let's run the ResNet-18 used in :numref:`ch_from_mxnet` on the remote machine. As before, we load a sample image and Imagenet 1K labels.\n"
+    "在远程机器上运行 {mod}`ch_from_mxnet` 中使用的 ResNet-18。和前面一样，加载样本图像和 Imagenet 1K 标签。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 10,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -336,12 +338,12 @@
     "origin_pos": 18
    },
    "source": [
-    "Then we convert, compile and save the module. Note that we just need to save the shared library which contains the machine code of the compiled operators to the disk.\n"
+    "然后，变换、编译和保存模块。注意，只需要将包含编译的算子共享库保存到磁盘。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 11,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -353,14 +355,26 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/media/workspace/anaconda3/envs/mxnetx/lib/python3.10/site-packages/tvm/driver/build_module.py:263: UserWarning: target_host parameter is going to be deprecated. Please pass in tvm.target.Target(target, host=target_host) instead.\n",
+      "  warnings.warn(\n",
+      "One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.\n"
+     ]
+    }
+   ],
    "source": [
+    "from mxnet.gluon.model_zoo.vision import get_model\n",
+    "\n",
     "mod_fname = 'resnet18.tar'\n",
-    "model = mx.gluon.model_zoo.vision.resnet18_v2(pretrained=True)\n",
+    "model = get_model(\"resnet18_v2\", pretrained=True)\n",
     "relay_mod, relay_params = relay.frontend.from_mxnet(model, {'data': x.shape})\n",
-    "with relay.build_config(opt_level=3):\n",
-    "    graph, mod, params = relay.build(relay_mod, target, params=relay_params)\n",
-    "mod.export_library(mod_fname)"
+    "with tvm.transform.PassContext(opt_level=3):\n",
+    "    rt_mod = relay.build(relay_mod, target, params=relay_params)\n",
+    "mod_path = temp_module.export_library(rt_mod, mod_fname)"
    ]
   },
   {
@@ -369,12 +383,12 @@
     "origin_pos": 20
    },
    "source": [
-    "Next, we upload the saved library to the remote machine and load it into memory. Then we can create a runtime using the model definition, the remote library and the remote context.\n"
+    "接下来，将保存的库上传到远程机器，并将其加载到内存中。然后，可以使用模型定义、远程库和远程上下文创建运行时。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 12,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -388,9 +402,12 @@
    },
    "outputs": [],
    "source": [
-    "remote.upload(mod_fname)\n",
+    "from tvm.contrib import graph_executor\n",
+    "\n",
+    "remote.upload(mod_path)\n",
     "remote_mod = remote.load_module(mod_fname)\n",
-    "remote_rt =  tvm.contrib.graph_runtime.create(graph, remote_mod, ctx)\n"
+    "remote_fuc = remote_mod[\"default\"]\n",
+    "remote_rt =  graph_executor.GraphModule(remote_fuc(ctx))"
    ]
   },
   {
@@ -399,12 +416,12 @@
     "origin_pos": 22
    },
    "source": [
-    "The inference is identical to :numref:`ch_from_mxnet`, where both parameters and input are on the local machine. The runtime will upload them into the remote machine properly.\n"
+    "推断与 {ref}`ch_from_mxnet` 相同，其中参数和输入都在本地机器上。运行时将正确地将它们 upload 到远程计算机。"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 14,
    "metadata": {
     "attributes": {
      "classes": [],
@@ -416,9 +433,19 @@
      "tvm"
     ]
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "('tiger cat', 'Egyptian cat')"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
-    "remote_rt.set_input(**params)\n",
     "remote_rt.run(data=tvm.nd.array(x))\n",
     "scores = remote_rt.get_output(0).asnumpy()[0]\n",
     "scores.shape\n",
@@ -432,21 +459,18 @@
     "origin_pos": 24
    },
    "source": [
-    "## Summary\n",
+    "## 小结\n",
     "\n",
-    "- We can install a TVM runtime on a remote machine to start an RPC server to accept workloads to run.\n",
-    "- A program can be compiled locally with specifying the remote machine's architecture target (called cross-compilation), and then run on the remote machine via RPC.\n",
+    "- 可以在远程机器上安装 TVM 运行时来启动 RPC 服务器，以接受要运行的工作负载。\n",
+    "- 通过指定远程机器的 architecture target（称为交叉编译（cross-compilation）），可以在本地编译程序，然后通过 RPC 在远程机器上运行。\n",
     "\n",
-    "## [Discussions](https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709)\n"
+    "## [讨论](https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709)\n"
    ]
   }
  ],
  "metadata": {
-  "interpreter": {
-   "hash": "f0a0fcc4cb7375f8ee907b3c51d5b9d65107fda1aab037a85df7b0c09b870b98"
-  },
   "kernelspec": {
-   "display_name": "Python 3.10.4 ('tvm-mxnet': conda)",
+   "display_name": "Python 3.10.4 ('mxnetx')",
    "language": "python",
    "name": "python3"
   },
@@ -461,6 +485,11 @@
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
    "version": "3.10.4"
+  },
+  "vscode": {
+   "interpreter": {
+    "hash": "aa67ff675248b5ab29dcd2f00c1422844307085c8ca7c8ce7eddecd21b9c2975"
+   }
   }
  },
  "nbformat": 4,

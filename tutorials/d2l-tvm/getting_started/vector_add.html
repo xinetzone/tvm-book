@@ -249,6 +249,11 @@ function checkPageExistsAndRedirect(event) {
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../roadmap.html">
+   学习路径
+  </a>
+ </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="../index.html">
    d2l-tvm 教程
@@ -261,7 +266,7 @@ function checkPageExistsAndRedirect(event) {
   <ul class="current">
    <li class="toctree-l2 current active has-children">
     <a class="reference internal" href="index.html">
-     入门
+     TVM 入门
     </a>
     <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
     <label for="toctree-checkbox-2">
@@ -528,6 +533,11 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/packed-func.html">
+     PackedFunc
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../ir/tedd.html">
      使用 TEDD 进行可视化
     </a>
@@ -559,6 +569,33 @@ function checkPageExistsAndRedirect(event) {
    </li>
   </ul>
  </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../dl/index.html">
+   深度学习
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/mxnet-viz.html">
+     MXNet 模型可视化
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/mxnet.html">
+     编译深度学习模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/multiple-outputs.html">
+     多输出
+    </a>
+   </li>
+  </ul>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../deploy.html">
    部署 TVM
@@ -583,8 +620,8 @@ function checkPageExistsAndRedirect(event) {
   <a class="reference internal" href="../../vta/index.html">
    VTA
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-  <label for="toctree-checkbox-8">
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -705,7 +742,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <p>这里，创建了两个长度为 100 的随机向量，并对它们进行元素求和。注意，NumPy 在默认情况下使用 64 位浮点数或 64 位整数，这与深度学习中通常使用的 32 位浮点数不同，因此需要显式转换数据类型。</p>
-<p>虽然可以在 NumPy 中使用内置的 <code class="docutils literal notranslate"><span class="pre">+</span></code> 算子（operator）来实现元素级的加法，但让我们尝试仅使用标量算子来实现它。它将帮助理解 TVM 的实现。下面的函数使用 <code class="docutils literal notranslate"><span class="pre">for</span></code> 循环迭代向量中的每个元素，然后每次使用标量（scalar） <code class="docutils literal notranslate"><span class="pre">+</span></code> 算子将两个元素相加。</p>
+<p>虽然可以在 NumPy 中使用内置的 <code class="docutils literal notranslate"><span class="pre">+</span></code> 算子（operator）来实现元素级的加法，但这里尝试仅使用标量算子来实现它。它将帮助理解 TVM 的实现。下面的函数使用 <code class="docutils literal notranslate"><span class="pre">for</span></code> 循环迭代向量中的每个元素，然后每次使用标量（scalar） <code class="docutils literal notranslate"><span class="pre">+</span></code> 算子将两个元素相加。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vector_add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
@@ -748,8 +785,7 @@ function checkPageExistsAndRedirect(event) {
 <p>为了加载 TVM 环境，需要：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置 TVM 环境</span>
-<span class="kn">from</span> <span class="nn">tvm_book.tvm.env</span> <span class="kn">import</span> <span class="n">set_tvm</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.tvm.env</span> <span class="kn">import</span> <span class="n">set_tvm</span> <span class="c1"># 设置 TVM 环境</span>
 <span class="n">tvm_root</span> <span class="o">=</span> <span class="s2">&quot;/media/pc/data/4tb/lxw/books/tvm&quot;</span>
 <span class="n">set_tvm</span><span class="p">(</span><span class="n">tvm_root</span><span class="p">)</span>
 </pre></div>
@@ -852,7 +888,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>schedule(0x563aabc46b90)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>schedule(0x56108a67af20)
 </pre></div>
 </div>
 </div>
@@ -1122,13 +1158,13 @@ For more information, please see: https://tvm.apache.org/docs/errors.html
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-16, 11:58:49.<br>
+最后更新于 2022-06-17, 12:08:03.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
 </p>
   </div>
   

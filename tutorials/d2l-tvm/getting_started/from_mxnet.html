@@ -249,6 +249,11 @@ function checkPageExistsAndRedirect(event) {
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../roadmap.html">
+   学习路径
+  </a>
+ </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="../index.html">
    d2l-tvm 教程
@@ -261,7 +266,7 @@ function checkPageExistsAndRedirect(event) {
   <ul class="current">
    <li class="toctree-l2 current active has-children">
     <a class="reference internal" href="index.html">
-     入门
+     TVM 入门
     </a>
     <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
     <label for="toctree-checkbox-2">
@@ -528,6 +533,11 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/packed-func.html">
+     PackedFunc
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../ir/tedd.html">
      使用 TEDD 进行可视化
     </a>
@@ -559,6 +569,33 @@ function checkPageExistsAndRedirect(event) {
    </li>
   </ul>
  </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../dl/index.html">
+   深度学习
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/mxnet-viz.html">
+     MXNet 模型可视化
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/mxnet.html">
+     编译深度学习模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/multiple-outputs.html">
+     多输出
+    </a>
+   </li>
+  </ul>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../deploy.html">
    部署 TVM
@@ -583,8 +620,8 @@ function checkPageExistsAndRedirect(event) {
   <a class="reference internal" href="../../vta/index.html">
    VTA
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-  <label for="toctree-checkbox-8">
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -683,7 +720,7 @@ function checkPageExistsAndRedirect(event) {
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-from-mxnet">
 <span id="id1"></span><h1>神经网络推理<a class="headerlink" href="#ch-from-mxnet" title="Permalink to this heading">#</a></h1>
-<p>您已经了解了如何在 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中实现和编译简单的向量加法算子。现在要做一个大的跳跃，编译完整的由一组算子组成的预训练神经网络，来进行推理。</p>
+<p>您已经了解了如何在 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中实现和编译简单的向量加法算子。现在要做个大跳跃，编译完整的由一组算子组成的预训练神经网络，来进行推理。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -708,7 +745,6 @@ function checkPageExistsAndRedirect(event) {
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mxnet.gluon.model_zoo.vision</span> <span class="kn">import</span> <span class="n">get_model</span>
 
 <span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;resnet18_v2&#39;</span>
-
 <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">output</span>
 </pre></div>
@@ -733,16 +769,11 @@ function checkPageExistsAndRedirect(event) {
 </section>
 <section id="id5">
 <h2>数据预处理<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
-<p>首先读取一个样本图像。它被调整到大小，即 224 像素的宽度和高度，这是训练的神经网络的尺寸。</p>
+<p>读取样本图像并调整其大小，即 224 像素的宽度和高度，这是训练的神经网络的尺寸。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;../data/cat.jpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
-<span class="n">image</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;PIL.Image.Image image mode=RGB size=224x224&gt;
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;../data/cat.jpg&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">im</span><span class="p">:</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -752,8 +783,10 @@ function checkPageExistsAndRedirect(event) {
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save to the d2ltvm package</span>
 <span class="k">def</span> <span class="nf">image_preprocessing</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
-    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">123.</span><span class="p">,</span> <span class="mf">117.</span><span class="p">,</span> <span class="mf">104.</span><span class="p">])</span>
-    <span class="n">image</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">58.395</span><span class="p">,</span> <span class="mf">57.12</span><span class="p">,</span> <span class="mf">57.375</span><span class="p">])</span>
+    <span class="n">mean_rgb</span> <span class="o">=</span> <span class="p">[</span><span class="mf">123.68</span><span class="p">,</span> <span class="mf">116.779</span><span class="p">,</span> <span class="mf">103.939</span><span class="p">]</span>
+    <span class="n">std_rgb</span> <span class="o">=</span> <span class="p">[</span><span class="mf">58.393</span><span class="p">,</span> <span class="mf">57.12</span><span class="p">,</span> <span class="mf">57.375</span><span class="p">]</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mean_rgb</span><span class="p">])</span>
+    <span class="n">image</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">std_rgb</span><span class="p">])</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
@@ -772,7 +805,7 @@ function checkPageExistsAndRedirect(event) {
 </section>
 <section id="id6">
 <h2>编译预训练模型<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
-<p>为了编译模型，首先在 Relay IR 中表示 MXNet 模型，<code class="docutils literal notranslate"><span class="pre">from_mxnet</span></code> 方法可能会有所帮助。在该方法为模型提供输入数据形状。一些神经网络可能需要稍后确定的数据形状的某些维数。然而，在 ResNet 模型中，数据形状是固定的，这使得编译器更容易实现高性能。在书中主要坚持固定的数据形状。在后面的章节中，只涉及动态数据形状（即在运行时确定的某些维度）。</p>
+<p>为了编译模型，使用 <code class="docutils literal notranslate"><span class="pre">from_mxnet</span></code> 方法导入 MXNet 模型并变换为 Relay IR。在该方法为模型提供输入数据形状。一些神经网络可能需要稍后确定的数据形状的某些维数。然而，在 ResNet 模型中，数据形状是固定的，这使得编译器更容易实现高性能。推荐固定的数据形状。在后面的章节中，只涉及动态数据形状（即在运行时确定的某些维度）。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_name</span> <span class="o">=</span> <span class="s1">&#39;data&#39;</span>
@@ -787,9 +820,22 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>这个方法将返回 program <code class="docutils literal notranslate"><span class="pre">relay_mod</span></code>，它是 <code class="docutils literal notranslate"><span class="pre">relay</span></code> 模块，以及 <code class="docutils literal notranslate"><span class="pre">relay_params</span></code> 参数字典，它将字符串键映射到 TVM ndarray。</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_mxnet()</span></code> 方法将返回 program <code class="docutils literal notranslate"><span class="pre">relay_mod</span></code>，它是 <code class="docutils literal notranslate"><span class="pre">relay</span></code> 模块，以及 <code class="docutils literal notranslate"><span class="pre">relay_params</span></code> 参数字典，它将字符串键映射到 TVM ndarray。</p>
+<p>查看每个参数：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">relay_params</span><span class="p">[</span><span class="s1">&#39;resnetv20_dense0_weight&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tvm.runtime.ndarray.NDArray
+</pre></div>
+</div>
+</div>
+</div>
 <p>接下来，将模块 lower 到一些可以被 <code class="docutils literal notranslate"><span class="pre">llvm</span></code> 后端使用的低级 IR。LLVM 定义了被多种编程语言采用的 IR。然后，<a class="reference external" href="https://en.wikipedia.org/wiki/LLVM">LLVM</a> 编译器能够将生成的程序编译成 CPU 的机器码。<a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 已经使用它来编译向量加法算子，尽管没有显式地指定它。</p>
-<p>此外，将优化级别设置为最高级别 3。您可能会收到警告消息，并不是每个算子都得到了很好的优化，现在可以忽略它。稍后再谈。</p>
+<p>此外，将优化级别设置为最高级别 3。您可能会收到警告消息，并不是每个算子都得到了很好的优化，现在可以忽略它。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm&#39;</span>
@@ -807,12 +853,20 @@ function checkPageExistsAndRedirect(event) {
 One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fc75e707b80&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fd5e42b7ee0&gt;
 </pre></div>
 </div>
 </div>
 </div>
-<p>编译模块 <code class="docutils literal notranslate"><span class="pre">lib</span></code> 有：<code class="docutils literal notranslate"><span class="pre">graph_json</span></code> 是描述神经网络的 JSON 字符串，<code class="docutils literal notranslate"><span class="pre">params</span></code> 是映射参数名到权重的字典。</p>
+<p>编译模块 <code class="docutils literal notranslate"><span class="pre">lib</span></code> 有：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>：映射参数名到权重的字典。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graph_json</span></code>：将被 graph compiler 部署成 JSON 格式输出的 json graph。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function_metadata</span></code>：字符串到 FunctionInfo 的 <code class="xref py py-class docutils literal notranslate"><span class="pre">Map</span></code>。这保存了映射函数名称到它们的信息。graph 中可以包含指向 libmod 中 PackedFunc 名称的算子 (tvm_op)。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ir_mod</span></code>：构建的 IR 模块。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor</span></code>：Executor 的内部表示。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libmod_name</span></code>：模块名称。</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">graph_json</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
@@ -825,19 +879,76 @@ One or more operators have not been tuned. Please tune your model for better per
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">params</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">relay_params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(43, 98)
+</pre></div>
+</div>
+</div>
+</div>
+<p>可以将 <code class="docutils literal notranslate"><span class="pre">lib.graph_json</span></code> 中间转化为 Python 字典：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_bunch</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">graph_json</span><span class="p">)</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">graph_bunch</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lib</span><span class="o">.</span><span class="n">libmod_name</span> <span class="c1"># 模块名称</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;default&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>获取模块所对应的函数：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="o">=</span> <span class="n">lib</span><span class="p">[</span><span class="n">lib</span><span class="o">.</span><span class="n">libmod_name</span><span class="p">]</span>
+<span class="n">func</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.runtime.packed_func.PackedFunc at 0x7fd5e42df900&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">func</span></code> 是在 TVM 中使用的 <code class="xref py py-class docutils literal notranslate"><span class="pre">PackedFunc</span></code> 对象。</p>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p>更多信息可参考：<a class="reference internal" href="../../ir/packed-func.html#global-func"><span class="std std-ref">全局函数</span></a>。</p>
+</div>
 <p>从 TVM 库中创建 TVM graph 运行时模块。包含已编译算子机器码的库，带有可以从目标构建的设备上下文（<code class="docutils literal notranslate"><span class="pre">ctx</span></code>）。这里的设备是 CPU，由 <code class="docutils literal notranslate"><span class="pre">llvm</span></code> 指定。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib.graph_executor</span> <span class="kn">import</span> <span class="n">GraphModule</span>
 
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">module</span> <span class="o">=</span> <span class="n">GraphModule</span><span class="p">(</span><span class="n">lib</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">ctx</span><span class="p">))</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">GraphModule</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
 <span class="n">module</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7fca2557ae90&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7fd95c41d300&gt;
 </pre></div>
 </div>
 </div>
@@ -845,13 +956,28 @@ One or more operators have not been tuned. Please tune your model for better per
 </section>
 <section id="id7">
 <h2>推理<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
-<p>借由创建的运行时来运行模型推理，即神经网络的前向传播。使用 <code class="docutils literal notranslate"><span class="pre">set_input</span></code> 加载参数，并通过输入数据运行工作负载（workload）。由于此网络只有单个输出层，可以通过 <code class="docutils literal notranslate"><span class="pre">get_output(0)</span></code> 得到 <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1000)</span></code> 形状矩阵。最终输出长度为 1000 的 NumPy 向量。</p>
+<p>借由创建的运行时模块来运行模型推理，即神经网络的前向传播。使用 <code class="docutils literal notranslate"><span class="pre">set_input</span></code> 加载参数，并通过输入数据运行工作负载（workload）。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># dtype = &quot;float32&quot;</span>
 <span class="n">module</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 <span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">tvm_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>也可以直接使用 <code class="docutils literal notranslate"><span class="pre">run</span></code> 加载参数：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">input_name</span><span class="p">:</span><span class="n">x</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>由于此网络只有单个输出层，可以通过 <code class="docutils literal notranslate"><span class="pre">get_output(0)</span></code> 得到 <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1000)</span></code> 形状矩阵。最终输出长度为 1000 的 NumPy 向量。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tvm_output</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 <span class="n">tvm_output</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
@@ -896,9 +1022,9 @@ One or more operators have not been tuned. Please tune your model for better per
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 6月  14 17:20 outputs/resnet18_v2.params
--rw-rw-r-- 1 pc pc 36K 6月  14 17:20 outputs/resnet18_v2.json
--rw-rw-r-- 1 pc pc 42M 6月  14 17:20 outputs/resnet18_v2.tar
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 6月  17 12:44 outputs/resnet18_v2.params
+-rw-rw-r-- 1 pc pc 36K 6月  17 12:44 outputs/resnet18_v2.json
+-rw-rw-r-- 1 pc pc 42M 6月  17 12:44 outputs/resnet18_v2.tar
 </pre></div>
 </div>
 </div>
@@ -906,21 +1032,41 @@ One or more operators have not been tuned. Please tune your model for better per
 <p>加载已保存的模块。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loaded_graph</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_fn</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">graph_fn</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+    <span class="n">loaded_graph</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
 <span class="n">loaded_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">mod_fn</span><span class="p">)</span>
-<span class="n">loaded_params</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_fn</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_fn</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+    <span class="n">loaded_params</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>然后像前面一样构造运行时来验证结果。</p>
+<p>可以使用 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/graph_executor.html#tvm.contrib.graph_executor.create" title="(在 TVM)"><code class="xref py py-func docutils literal notranslate"><span class="pre">create()</span></code></a> 加载运行时模块：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib.graph_executor</span> <span class="kn">import</span> <span class="n">create</span>
+
+<span class="n">loaded_rt</span> <span class="o">=</span> <span class="n">create</span><span class="p">(</span><span class="n">loaded_graph</span><span class="p">,</span> <span class="n">loaded_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>也可以像前面一样构造运行时模块：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loaded_rt</span> <span class="o">=</span> <span class="n">GraphModule</span><span class="p">(</span><span class="n">loaded_mod</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">](</span><span class="n">ctx</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>验证结果：</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">tvm.contrib.graph_executor</span> <span class="kn">import</span> <span class="n">create</span>
 
 
-<span class="n">loaded_rt</span> <span class="o">=</span> <span class="n">create</span><span class="p">(</span><span class="n">loaded_graph</span><span class="p">,</span> <span class="n">loaded_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
 <span class="n">loaded_rt</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">loaded_params</span><span class="p">)</span>
 <span class="n">loaded_rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="n">loaded_scores</span> <span class="o">=</span> <span class="n">loaded_rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -984,13 +1130,13 @@ One or more operators have not been tuned. Please tune your model for better per
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-16, 11:58:49.<br>
+最后更新于 2022-06-17, 12:08:03.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
 </p>
   </div>
   

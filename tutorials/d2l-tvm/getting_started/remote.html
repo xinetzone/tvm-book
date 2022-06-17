@@ -249,6 +249,11 @@ function checkPageExistsAndRedirect(event) {
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../roadmap.html">
+   学习路径
+  </a>
+ </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="../index.html">
    d2l-tvm 教程
@@ -261,7 +266,7 @@ function checkPageExistsAndRedirect(event) {
   <ul class="current">
    <li class="toctree-l2 current active has-children">
     <a class="reference internal" href="index.html">
-     入门
+     TVM 入门
     </a>
     <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
     <label for="toctree-checkbox-2">
@@ -528,6 +533,11 @@ function checkPageExistsAndRedirect(event) {
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/packed-func.html">
+     PackedFunc
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../ir/tedd.html">
      使用 TEDD 进行可视化
     </a>
@@ -559,6 +569,33 @@ function checkPageExistsAndRedirect(event) {
    </li>
   </ul>
  </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../dl/index.html">
+   深度学习
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/mxnet-viz.html">
+     MXNet 模型可视化
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/mxnet.html">
+     编译深度学习模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../dl/multiple-outputs.html">
+     多输出
+    </a>
+   </li>
+  </ul>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../deploy.html">
    部署 TVM
@@ -583,8 +620,8 @@ function checkPageExistsAndRedirect(event) {
   <a class="reference internal" href="../../vta/index.html">
    VTA
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-  <label for="toctree-checkbox-8">
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -631,28 +668,28 @@ function checkPageExistsAndRedirect(event) {
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#compile-the-program-for-the-remote-machine">
-   Compile the Program for the Remote Machine
+  <a class="reference internal nav-link" href="#id3">
+   编译远程计算机的程序
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#evaluate-on-the-remote-machine">
-   Evaluate on the Remote Machine
+  <a class="reference internal nav-link" href="#id4">
+   在远程计算机上评估
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#running-neural-network-inference">
-   Running Neural Network Inference
+  <a class="reference internal nav-link" href="#id5">
+   运行神经网络推理
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#summary">
-   Summary
+  <a class="reference internal nav-link" href="#id6">
+   小结
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#discussions">
-   Discussions
+  <a class="reference internal nav-link" href="#id7">
+   讨论
   </a>
  </li>
 </ul>
@@ -683,38 +720,22 @@ function checkPageExistsAndRedirect(event) {
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-remote">
 <span id="id1"></span><h1>在远程计算机上运行<a class="headerlink" href="#ch-remote" title="Permalink to this heading">#</a></h1>
-<p>在本书中，将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。</p>
+<p>将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">sys</span>
-    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-    <span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">ROOT</span><span class="o">/</span><span class="s1">&#39;src&#39;</span><span class="p">)])</span> <span class="c1"># 设置 `tvm_book` 环境</span>
-    <span class="kn">from</span> <span class="nn">tvm_book.contrib.tvm</span> <span class="kn">import</span> <span class="n">set_env</span> <span class="c1"># 设置 TVM 环境</span>
-
-<span class="n">set_env</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">mxnet</span> <span class="k">as</span> <span class="nn">mx</span>
 <span class="kn">import</span> <span class="nn">tvm</span>
 <span class="kn">from</span> <span class="nn">tvm</span> <span class="kn">import</span> <span class="n">te</span><span class="p">,</span> <span class="n">rpc</span><span class="p">,</span> <span class="n">relay</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Python: 3.10.4
-</pre></div>
 </div>
-</div>
-</div>
-<p>注意，我们从 TVM 导入了 <code class="docutils literal notranslate"><span class="pre">rpc</span></code> 模块。<a class="reference external" href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a>，即远程过程调用（remote procedure call），允许在远程位置上执行程序。</p>
+<p>注意，从 TVM 导入 <code class="docutils literal notranslate"><span class="pre">rpc</span></code> 模块。<a class="reference external" href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a>，即远程过程调用（remote procedure call），允许在远程位置上执行程序。</p>
 <section id="id2">
 <h2>设置远程计算机<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
-<p>首先需要在远程机器上安装 TVM <code class="docutils literal notranslate"><span class="pre">runtime</span></code> 模块。安装设置几乎与 TVM 相同（请参阅 <a class="reference internal" href="install.html#ch-install"><span class="std std-ref">安装</span></a>），但只需要构建运行时，即 <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">runtime</span></code>，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> 或 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code>。</p>
+<p>需要在远程机器上安装 TVM <code class="docutils literal notranslate"><span class="pre">runtime</span></code> 模块。安装设置几乎与 TVM 相同（请参阅 <a class="reference internal" href="install.html#ch-install"><span class="std std-ref">安装</span></a>），但只需要构建运行时，即 <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">runtime</span></code>，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> 或 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code>。</p>
 <p>一旦安装了运行时，就可以通过在远程机器上运行以下命令来启动 daemon。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m tvm.exec.rpc_server --host <span class="m">0</span>.0.0.0 --port<span class="o">=</span><span class="m">9090</span>
 </pre></div>
@@ -728,7 +749,7 @@ function checkPageExistsAndRedirect(event) {
 <li><p>一个是远程机器的 IP。在 Linux 或 macOS 上，你可以通过 <code class="docutils literal notranslate"><span class="pre">ifconfig</span>&#160; <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">inet</span></code> 获取它。如果有防火墙，也要记得打开 9090 端口。</p></li>
 <li><p>另一个是目标架构。这对于 GPU 来说很简单，我们稍后会讨论它。对于 CPU，最简单的方法是在远程机器上安装 LLVM，然后检查 <code class="docutils literal notranslate"><span class="pre">llvm-config</span> <span class="pre">--host-target</span></code>。我们所使用的远程机器的返回值是 <code class="docutils literal notranslate"><span class="pre">x86_64-pc-linux-gnu</span></code>。</p></li>
 </ul>
-<p>This target triplet has the general format <code class="docutils literal notranslate"><span class="pre">&lt;arch&gt;&lt;sub&gt;-&lt;vendor&gt;-&lt;sys&gt;-&lt;abi&gt;</span></code>, where</p>
+<p>此 target 三元组具有一般格式 <code class="docutils literal notranslate"><span class="pre">&lt;arch&gt;&lt;sub&gt;-&lt;vendor&gt;-&lt;sys&gt;-&lt;abi&gt;</span></code>，这里</p>
 <ul class="simple">
 <li><p>arch: x86, x86_64, arm, thumb, mips, etc.</p></li>
 <li><p>sub: for ARM, there are v5, v6m, v7a, v7m, v8, etc.</p></li>
@@ -736,62 +757,98 @@ function checkPageExistsAndRedirect(event) {
 <li><p>sys: linux, win32, darwin, cuda, none, unknown, etc.</p></li>
 <li><p>abi: eabi, gnu, android, macho, elf, etc.</p></li>
 </ul>
-<p>For example, it’s <code class="docutils literal notranslate"><span class="pre">x86_64-apple-darwin17.7.0</span></code> for the MacbookPro I’m using, and <code class="docutils literal notranslate"><span class="pre">armv6k-unknown-linux-gnueabihf</span></code> for the Raspberry Pi 4B.</p>
+<p>例如，<code class="docutils literal notranslate"><span class="pre">x86_64-apple-darwin17.7.0</span></code> 即 MacbookPro，而 <code class="docutils literal notranslate"><span class="pre">armv6k-unknown-linux-gnueabihf</span></code> 指的是 Raspberry Pi 4B.</p>
 </section>
-<section id="compile-the-program-for-the-remote-machine">
-<h2>Compile the Program for the Remote Machine<a class="headerlink" href="#compile-the-program-for-the-remote-machine" title="Permalink to this heading">#</a></h2>
-<p>Let’s run the vector addition defined :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add</span></code> on the remote machine. Note that we specified the remote machine target through the <code class="docutils literal notranslate"><span class="pre">-target</span></code> argument for LLVM.</p>
+<section id="id3">
+<h2>编译远程计算机的程序<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<p>在远程机器上运行 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a>。注意，通过 LLVM 的 <code class="docutils literal notranslate"><span class="pre">-target</span></code> 参数指定了远程机器目标。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;llvm -target=x86_64-pc-linux-gnu&#39;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">local_demo</span> <span class="o">=</span> <span class="kc">True</span>
 
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">args</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">vector_add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">local_demo</span><span class="p">:</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;llvm&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;llvm -target=x86_64-linux-gnu&quot;</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">create_schedule</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">rt_mod</span> <span class="o">=</span> <span class="n">tvm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Then we save the compiled module to disk, which will be uploaded to the remote machine later.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>在这里使用 <code class="docutils literal notranslate"><span class="pre">'llvm'</span></code> 来使这个教程可以在网页构建服务器上运行。要在真正的远程设备上运行本教程，请将 <code class="docutils literal notranslate"><span class="pre">local_demo</span></code> 改为 <code class="docutils literal notranslate"><span class="pre">False</span></code>，并将 <code class="docutils literal notranslate"><span class="pre">target</span></code> 改为适合你设备的目标。</p>
+</div>
+<p>然后将编译后的模块保存到磁盘，稍后将其上传到远程计算机。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;vector-add.tar&#39;</span>
-<span class="n">mod</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib.utils</span> <span class="kn">import</span> <span class="n">TempDirectory</span>
+
+
+<span class="k">class</span> <span class="nc">TempModule</span><span class="p">(</span><span class="n">TempDirectory</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_for_debug</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">custom_path</span><span class="p">,</span> <span class="n">keep_for_debug</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">export_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;将该 module 保存在本地临时文件夹中</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">module</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">temp_module</span> <span class="o">=</span> <span class="n">TempModule</span><span class="p">()</span>
+<span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;vector-add.tar&#39;</span>
+<span class="n">mod_path</span> <span class="o">=</span> <span class="n">temp_module</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">rt_mod</span><span class="p">,</span> <span class="n">mod_fname</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="evaluate-on-the-remote-machine">
-<h2>Evaluate on the Remote Machine<a class="headerlink" href="#evaluate-on-the-remote-machine" title="Permalink to this heading">#</a></h2>
-<p>We first connect to the remote machine with the IP we checked before.</p>
+<section id="id4">
+<h2>在远程计算机上评估<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>使用之前检查的 IP 连接到远程机器。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;172.31.0.149&#39;</span><span class="p">,</span> <span class="mi">9090</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">local_demo</span><span class="p">:</span>
+    <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">LocalSession</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># 将其改为你的目标设备的 IP 地址</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;10.77.1.162&quot;</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="mi">9090</span>
+    <span class="n">remote</span> <span class="o">=</span> <span class="n">rpc</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Next, we send the compiled library to the machine and load it into the memory of the remote machine.</p>
+<p>将编译好的库上传至远程机器，并将其加载到远程机器的内存中。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_path</span><span class="p">)</span>
 <span class="n">remote_mod</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>When creating the data, we specify the device context as CPU on the remote machine. The data will be created on the local machine as before, but will be sent to the remote machine later. Note that we used NumPy to create the data, but there is no need to have the remote machine also installed NumPy.</p>
+<p>现在 <code class="docutils literal notranslate"><span class="pre">remote_mod</span></code> 是远程模块对象。</p>
+<p>在创建数据时，将设备上下文指定为远程机器上的 CPU。与之前一样，数据将在本地机器上创建，但稍后将发送到远程机器。注意，使用 NumPy 创建数据，但是不需要让远程机器也安装 NumPy。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
-<span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">))</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d2ltvm</span><span class="o">.</span><span class="n">get_abc</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ctx</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Since both data and library are ready on the remote machine, let’s execute the program on it as well.</p>
+<p>由于数据和库在远程机器上都已经准备好了，让我们也在其上执行程序。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote_mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
@@ -799,7 +856,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Finally, the <code class="docutils literal notranslate"><span class="pre">.asnumpy()</span></code> method will send the data back to the local machine and convert to a NumPy array. So we can verify the results as before.</p>
+<p>最后，<code class="docutils literal notranslate"><span class="pre">.numpy</span></code> 方法将数据发送回本地机器，并转换为 NumPy 数组。所以可以像之前一样验证结果。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">+</span><span class="n">b</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">())</span>
@@ -808,9 +865,9 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </section>
-<section id="running-neural-network-inference">
-<h2>Running Neural Network Inference<a class="headerlink" href="#running-neural-network-inference" title="Permalink to this heading">#</a></h2>
-<p>Let’s run the ResNet-18 used in :numref:<code class="docutils literal notranslate"><span class="pre">ch_from_mxnet</span></code> on the remote machine. As before, we load a sample image and Imagenet 1K labels.</p>
+<section id="id5">
+<h2>运行神经网络推理<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>在远程机器上运行 <code class="xref py py-mod docutils literal notranslate"><span class="pre">ch_from_mxnet</span></code> 中使用的 ResNet-18。和前面一样，加载样本图像和 Imagenet 1K 标签。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;../data/cat.jpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">))</span>
@@ -821,34 +878,45 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 </div>
-<p>Then we convert, compile and save the module. Note that we just need to save the shared library which contains the machine code of the compiled operators to the disk.</p>
+<p>然后，变换、编译和保存模块。注意，只需要将包含编译的算子共享库保存到磁盘。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;resnet18.tar&#39;</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">gluon</span><span class="o">.</span><span class="n">model_zoo</span><span class="o">.</span><span class="n">vision</span><span class="o">.</span><span class="n">resnet18_v2</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mxnet.gluon.model_zoo.vision</span> <span class="kn">import</span> <span class="n">get_model</span>
+
+<span class="n">mod_fname</span> <span class="o">=</span> <span class="s1">&#39;resnet18.tar&#39;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="s2">&quot;resnet18_v2&quot;</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">relay_mod</span><span class="p">,</span> <span class="n">relay_params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">frontend</span><span class="o">.</span><span class="n">from_mxnet</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">})</span>
-<span class="k">with</span> <span class="n">relay</span><span class="o">.</span><span class="n">build_config</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-    <span class="n">graph</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">relay_params</span><span class="p">)</span>
-<span class="n">mod</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tvm</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">PassContext</span><span class="p">(</span><span class="n">opt_level</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">rt_mod</span> <span class="o">=</span> <span class="n">relay</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">relay_mod</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">relay_params</span><span class="p">)</span>
+<span class="n">mod_path</span> <span class="o">=</span> <span class="n">temp_module</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">rt_mod</span><span class="p">,</span> <span class="n">mod_fname</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/workspace/anaconda3/envs/mxnetx/lib/python3.10/site-packages/tvm/driver/build_module.py:263: UserWarning: target_host parameter is going to be deprecated. Please pass in tvm.target.Target(target, host=target_host) instead.
+  warnings.warn(
+One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
 </pre></div>
 </div>
 </div>
 </div>
-<p>Next, we upload the saved library to the remote machine and load it into memory. Then we can create a runtime using the model definition, the remote library and the remote context.</p>
+<p>接下来，将保存的库上传到远程机器，并将其加载到内存中。然后，可以使用模型定义、远程库和远程上下文创建运行时。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm.contrib</span> <span class="kn">import</span> <span class="n">graph_executor</span>
+
+<span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">mod_path</span><span class="p">)</span>
 <span class="n">remote_mod</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">mod_fname</span><span class="p">)</span>
-<span class="n">remote_rt</span> <span class="o">=</span>  <span class="n">tvm</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">graph_runtime</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">remote_mod</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+<span class="n">remote_fuc</span> <span class="o">=</span> <span class="n">remote_mod</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span>
+<span class="n">remote_rt</span> <span class="o">=</span>  <span class="n">graph_executor</span><span class="o">.</span><span class="n">GraphModule</span><span class="p">(</span><span class="n">remote_fuc</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>The inference is identical to :numref:<code class="docutils literal notranslate"><span class="pre">ch_from_mxnet</span></code>, where both parameters and input are on the local machine. The runtime will upload them into the remote machine properly.</p>
+<p>推断与 <a class="reference internal" href="from_mxnet.html#ch-from-mxnet"><span class="std std-ref">神经网络推理</span></a> 相同，其中参数和输入都在本地机器上。运行时将正确地将它们 upload 到远程计算机。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote_rt</span><span class="o">.</span><span class="n">set_input</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
-<span class="n">remote_rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remote_rt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tvm</span><span class="o">.</span><span class="n">nd</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="n">scores</span> <span class="o">=</span> <span class="n">remote_rt</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">scores</span><span class="o">.</span><span class="n">shape</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">scores</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -856,17 +924,22 @@ function checkPageExistsAndRedirect(event) {
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;tiger cat&#39;, &#39;Egyptian cat&#39;)
+</pre></div>
+</div>
+</div>
 </div>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<section id="id6">
+<h2>小结<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>We can install a TVM runtime on a remote machine to start an RPC server to accept workloads to run.</p></li>
-<li><p>A program can be compiled locally with specifying the remote machine’s architecture target (called cross-compilation), and then run on the remote machine via RPC.</p></li>
+<li><p>可以在远程机器上安装 TVM 运行时来启动 RPC 服务器，以接受要运行的工作负载。</p></li>
+<li><p>通过指定远程机器的 architecture target（称为交叉编译（cross-compilation）），可以在本地编译程序，然后通过 RPC 在远程机器上运行。</p></li>
 </ul>
 </section>
-<section id="discussions">
-<h2><a class="reference external" href="https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709">Discussions</a><a class="headerlink" href="#discussions" title="Permalink to this heading">#</a></h2>
+<section id="id7">
+<h2><a class="reference external" href="https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709">讨论</a><a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -915,13 +988,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-16, 11:58:49.<br>
+最后更新于 2022-06-17, 12:08:03.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
 </p>
   </div>
   

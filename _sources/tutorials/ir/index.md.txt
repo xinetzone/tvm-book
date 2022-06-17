@@ -1,8 +1,8 @@
 # 中间表示
 
 ```{toctree}
+packed-func
 tedd
-dl/index
 relay
 relay_viz
 build

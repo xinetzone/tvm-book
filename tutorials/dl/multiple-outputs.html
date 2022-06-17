@@ -52,6 +52,8 @@
     <link rel="shortcut icon" href="../../_static/favicon.jpg"/>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="部署 TVM" href="../deploy.html" />
+    <link rel="prev" title="编译深度学习模型" href="mxnet.html" />
     <link rel="stylesheet" href="../../_static/css/default.css"/>
     <link rel="stylesheet" href="../../_static/css/custom.css"/>
 
@@ -89,7 +91,7 @@
       
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
+    <li class="toctree-l1 current active nav-item">
  <a class="reference internal nav-link" href="../index.html">
   教程
  </a>
@@ -246,7 +248,398 @@ function checkPageExistsAndRedirect(event) {
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../roadmap.html">
+   学习路径
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../d2l-tvm/index.html">
+   d2l-tvm 教程
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../d2l-tvm/getting_started/index.html">
+     TVM 入门
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/getting_started/install.html">
+       安装
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/getting_started/vector_add.html">
+       向量加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/getting_started/from_mxnet.html">
+       神经网络推理
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/getting_started/remote.html">
+       在远程计算机上运行
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../d2l-tvm/expressions/index.html">
+     表达式算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/expressions/data_types.html">
+       数据类型
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/expressions/shapes.html">
+       形状
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/expressions/index_shape_expressions.html">
+       索引和形状表达式
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/expressions/reductions.html">
+       归约运算
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/expressions/if_then_else.html">
+       条件表达式：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         if-then-else
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/expressions/all_any.html">
+       真值测试：
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         all
+        </span>
+       </code>
+       和
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         any
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../d2l-tvm/common_operators/index.html">
+     常见的算子
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/common_operators/broadcast_add.html">
+       广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/common_operators/matmul.html">
+       矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/common_operators/conv.html">
+       卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/common_operators/depthwise_conv.html">
+       深度可分离卷积
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/common_operators/pooling.html">
+       池化
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/common_operators/batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../d2l-tvm/cpu_schedules/index.html">
+     CPU 上的算子优化
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/arch.html">
+       CPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/call_overhead.html">
+       函数调用的开销
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/vector_add.html">
+       CPU 向量加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/broadcast_add.html">
+       CPU 广播加法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/matmul.html">
+       CPU 矩阵乘法
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/block_matmul.html">
+       Improve Cache Efficiency by Blocking
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/conv.html">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/packed_conv.html">
+       Packed Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/cpu_schedules/batch_norm.html">
+       Batch Normalization
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../d2l-tvm/gpu_schedules/index.html">
+     GPU 上的算子优化
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/arch.html">
+       GPU 架构
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/vector_add.html">
+       Vector Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/broadcast_add.html">
+       Broadcast Add
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/matmul.html">
+       Matrix Multiplication
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/conv.html">
+       Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/depthwise_conv.html">
+       Depthwise Convolution
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/pooling.html">
+       Pooling
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../d2l-tvm/gpu_schedules/batch_norm.html">
+       Batch Norm
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../d2l-tvm/zreferences.html">
+     参考文献
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../ir/index.html">
+   中间表示
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ir/packed-func.html">
+     PackedFunc
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ir/tedd.html">
+     使用 TEDD 进行可视化
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ir/relay.html">
+     快速了解 Relay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ir/relay_viz.html">
+     可视化 Relay 模块
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ir/build.html">
+     构建模型
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ir/ir-module.html">
+     快速上手 IRModule
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../ir/test.html">
+     测试
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   深度学习
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="mxnet-viz.html">
+     MXNet 模型可视化
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mxnet.html">
+     编译深度学习模型
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     多输出
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../deploy.html">
+   部署 TVM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../benchmark.html">
+   基准
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../deploy_ssd_gluoncv.html">
+   部署 Single Shot Multibox Detector(SSD) 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../test.html">
+   测试
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../vta/index.html">
+   VTA
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../vta/config.html">
+     VTA 配置
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../vta/test.html">
+     VTA 测试
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
   </div>
 </nav>
   </div>
@@ -650,6 +1043,20 @@ function checkPageExistsAndRedirect(event) {
               <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="mxnet.html" title="上一页 页">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">上一页</p>
+          <p class="prev-next-title">编译深度学习模型</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../deploy.html" title="下一页 页">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">下一页</p>
+      <p class="prev-next-title">部署 TVM</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
 </div>
               </footer>
               
@@ -673,13 +1080,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-16, 11:58:49.<br>
+最后更新于 2022-06-17, 12:08:03.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
 </p>
   </div>
   

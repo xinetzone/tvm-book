@@ -45,7 +45,7 @@
    "source": [
     "这里，创建了两个长度为 100 的随机向量，并对它们进行元素求和。注意，NumPy 在默认情况下使用 64 位浮点数或 64 位整数，这与深度学习中通常使用的 32 位浮点数不同，因此需要显式转换数据类型。\n",
     "\n",
-    "虽然可以在 NumPy 中使用内置的 `+` 算子（operator）来实现元素级的加法，但让我们尝试仅使用标量算子来实现它。它将帮助理解 TVM 的实现。下面的函数使用 `for` 循环迭代向量中的每个元素，然后每次使用标量（scalar） `+` 算子将两个元素相加。"
+    "虽然可以在 NumPy 中使用内置的 `+` 算子（operator）来实现元素级的加法，但这里尝试仅使用标量算子来实现它。它将帮助理解 TVM 的实现。下面的函数使用 `for` 循环迭代向量中的每个元素，然后每次使用标量（scalar） `+` 算子将两个元素相加。"
    ]
   },
   {
@@ -131,8 +131,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# 设置 TVM 环境\n",
-    "from tvm_book.tvm.env import set_tvm \n",
+    "from tvm_book.tvm.env import set_tvm # 设置 TVM 环境\n",
     "tvm_root = \"/media/pc/data/4tb/lxw/books/tvm\"\n",
     "set_tvm(tvm_root)"
    ]
@@ -357,7 +356,7 @@
     {
      "data": {
       "text/plain": [
-       "schedule(0x563aabc46b90)"
+       "schedule(0x56108a67af20)"
       ]
      },
      "execution_count": 10,
@@ -844,7 +843,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 23,
    "metadata": {
     "attributes": {
      "classes": [],

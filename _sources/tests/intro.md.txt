@@ -8,33 +8,25 @@ Apache TVM 项目的愿景是为机器学习、编译器和系统架构领域的
 - 将深度学习模型编译为最小可部署模块。
 - 基础设施（Infrastructure），以自动生成和优化具有更好性能的更多后端模型。
 
-````{panels}
-:container: container pb-4
-:column: col-lg-6 col-md-6 col-sm-6 col-xs-12 p-2
-:card: + bg-info
-:body: bg-info
-:header: bg-success
-:footer: bg-secondary
+:::::{grid} 1 1 1 1
 
-性能
-^^^
+::::{grid-item-card} 性能
 编译和最小化运行时（runtime）
----
+::::
 
-Run Everywhere
-^^^
+::::{grid-item-card} Run Everywhere
 CPUs, GPUs, browsers, microcontrollers, FPGAs and more.
 +++
 Automatically generate and optimize tensor operators on more backends.
----
-Flexibility
-^^^
+::::
+
+::::{grid-item-card} Flexibility
 Need support for block sparsity, quantization (1,2,4,8 bit integers, posit), random forests/classical ML, memory planning, MISRA-C compatibility, Python prototyping or all of the above?
 +++
 TVM’s flexible design enables all of these things and more.
----
-Ease of Use
-^^^
-Compilation of deep learning models in Keras, MXNet, PyTorch, Tensorflow, CoreML, DarkNet and more. Start using TVM with Python today, build out production stacks using C++, Rust, or Java the next day.
-````
+::::
 
+::::{grid-item-card} Ease of Use
+Compilation of deep learning models in Keras, MXNet, PyTorch, Tensorflow, CoreML, DarkNet and more. Start using TVM with Python today, build out production stacks using C++, Rust, or Java the next day.
+::::
+:::::
