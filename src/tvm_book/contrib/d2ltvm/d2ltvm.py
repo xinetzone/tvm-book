@@ -62,7 +62,7 @@ def broadcast_add(shape1, shape2):
     B = te.placeholder(shape2, name='B')
     m = shape1[0] if shape2[0] == 1 else shape2[0]
     n = shape1[1] if shape2[1] == 1 else shape2[1]
-    f = lambda x, y: A[0 if shape1[0] == 1 else x, 0 if shape1[1] == 1 else y] + \
+    def f(x, y): return A[0 if shape1[0] == 1 else x, 0 if shape1[1] == 1 else y] + \
         B[0 if shape2[0] == 1 else x, 0 if shape2[1] == 1 else y]
     C = te.compute((m, n), f, name='C')
     return A, B, C
@@ -637,10 +637,10 @@ def matmul_timer_mxnet(n, ctx):
 
 
 def split_axis(factors, sch, op, axis):
-     """Splitting an axis into factors
+    """Splitting an axis into factors
 
-        Parameters
-        ----------
+    Parameters
+    ----------
         factors: array of integers
             The factors that the split applies
         sch: tvm.te.schedule.Schedule
@@ -655,9 +655,9 @@ def split_axis(factors, sch, op, axis):
         axes : list of Axis
             The transformed axes.
         """
-      ret = []
-       for i in range(0, len(factors)):
-            ax0, ax1 = sch[op].split(axis, factor=int(np.prod(factors[i:])))
-            ret.append(ax0)
-            axis = ax1
-        return ret + [axis]
+    ret = []
+    for i in range(0, len(factors)):
+        ax0, ax1 = sch[op].split(axis, factor=int(np.prod(factors[i:])))
+        ret.append(ax0)
+        axis = ax1
+    return ret + [axis]

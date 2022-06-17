@@ -2,7 +2,6 @@
 
 ```{toctree}
 tedd
-dl/index
 relay
 relay_viz
 build

@@ -5,6 +5,7 @@
 
 d2l-tvm/index
 ir/index
+dl/index
 deploy
 benchmark
 deploy_ssd_gluoncv

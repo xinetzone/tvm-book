@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 .pkl_memoize_py3/
 draft/
+*.tar
+*.so
+*.o
