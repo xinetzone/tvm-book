@@ -1,6 +1,7 @@
 # 中间表示
 
 ```{toctree}
+packed-func
 tedd
 relay
 relay_viz

@@ -3,6 +3,7 @@
 ```{toctree}
 :maxdepth: 3
 
+roadmap
 d2l-tvm/index
 ir/index
 dl/index
