@@ -6,8 +6,6 @@ _build/
 *.pickle
 *.tar
 outputs/
-*.json
-*.params
 _models/
 model/
 *.npz
@@ -18,4 +16,3 @@ whatever
 *.csv
 *.pdf
 *.params
-*.json
