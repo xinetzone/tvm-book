@@ -790,15 +790,33 @@ function checkPageExistsAndRedirect(event) {
 
 
 <span class="k">class</span> <span class="nc">TempModule</span><span class="p">(</span><span class="n">TempDirectory</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_for_debug</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">custom_path</span><span class="p">,</span> <span class="n">keep_for_debug</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Create temp dir which deletes the contents when exit.</span>
 
-    <span class="k">def</span> <span class="nf">export_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    custom_path : str, optional</span>
+<span class="sd">        Manually specify the exact temp dir path</span>
+
+<span class="sd">    keep_for_debug : bool</span>
+<span class="sd">        Keep temp directory for debugging purposes</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    temp : TempDirectory</span>
+<span class="sd">        The temp directory object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">export_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;将该 module 保存在本地临时文件夹中</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="n">module</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">module</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">path</span>
+
+    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;将 module 上传至 remote 并返回远程模块&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_library</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">remote</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># remote_module</span>
+        <span class="k">return</span> <span class="n">remote</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -988,7 +1006,7 @@ One or more operators have not been tuned. Please tune your model for better per
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-17, 12:08:03.<br>
+最后更新于 2022-06-19, 14:14:24.<br>
 </p>
   </div>
   
