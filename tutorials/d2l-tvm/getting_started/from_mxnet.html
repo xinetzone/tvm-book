@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>神经网络推理 &#8212; tvm-book 0.0.2 文档</title>
+    <title>神经网络推理 &#8212; tvm-book 0.0.3 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -146,7 +146,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.2  <!-- this text may get changed later by javascript -->
+        v0.0.3  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +156,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/getting_started/from_mxnet and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.2', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/getting_started/from_mxnet and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +207,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.2 variable.
+            // this version, rather than using sphinx's 0.0.3 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.2") {
+            if (entry.version == "v0.0.3") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -563,6 +563,11 @@ function checkPageExistsAndRedirect(event) {
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../ir/other.html">
+     测试 TVM 结构
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../ir/test.html">
      测试
     </a>
@@ -751,6 +756,9 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading /home/pc/.mxnet/models/resnet18_v2-a81db45f.zip60a0843a-a3bd-4eaf-91aa-27ef6fcde3bb from https://apache-mxnet.s3-accelerate.dualstack.amazonaws.com/gluon/models/resnet18_v2-a81db45f.zip...
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(13, Dense(512 -&gt; 1000, linear))
 </pre></div>
 </div>
@@ -848,12 +856,12 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/workspace/anaconda3/envs/mxnetx/lib/python3.10/site-packages/tvm/driver/build_module.py:263: UserWarning: target_host parameter is going to be deprecated. Please pass in tvm.target.Target(target, host=target_host) instead.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/media/pc/data/4tb/lxw/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/driver/build_module.py:267: UserWarning: target_host parameter is going to be deprecated. Please pass in tvm.target.Target(target, host=target_host) instead.
   warnings.warn(
-One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
+WARNING:autotvm:One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fd5e42b7ee0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7f422c17ff40&gt;
 </pre></div>
 </div>
 </div>
@@ -926,7 +934,7 @@ One or more operators have not been tuned. Please tune your model for better per
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.runtime.packed_func.PackedFunc at 0x7fd5e42df900&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.runtime.packed_func.PackedFunc at 0x7f423602a200&gt;
 </pre></div>
 </div>
 </div>
@@ -948,7 +956,7 @@ One or more operators have not been tuned. Please tune your model for better per
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7fd95c41d300&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;tvm.contrib.graph_executor.GraphModule at 0x7f4236017f70&gt;
 </pre></div>
 </div>
 </div>
@@ -1022,9 +1030,9 @@ One or more operators have not been tuned. Please tune your model for better per
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 6月  17 12:44 outputs/resnet18_v2.params
--rw-rw-r-- 1 pc pc 36K 6月  17 12:44 outputs/resnet18_v2.json
--rw-rw-r-- 1 pc pc 42M 6月  17 12:44 outputs/resnet18_v2.tar
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 pc pc 45M 6月  28 14:57 outputs/resnet18_v2.params
+-rw-rw-r-- 1 pc pc 36K 6月  28 14:57 outputs/resnet18_v2.json
+-rw-rw-r-- 1 pc pc 42M 6月  28 14:57 outputs/resnet18_v2.tar
 </pre></div>
 </div>
 </div>
@@ -1130,7 +1138,7 @@ One or more operators have not been tuned. Please tune your model for better per
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-06-19, 15:07:15.<br>
+最后更新于 2022-07-04, 10:45:13.<br>
 </p>
   </div>
   

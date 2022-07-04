@@ -67,6 +67,13 @@
    },
    "outputs": [
     {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Downloading /home/pc/.mxnet/models/resnet18_v2-a81db45f.zip60a0843a-a3bd-4eaf-91aa-27ef6fcde3bb from https://apache-mxnet.s3-accelerate.dualstack.amazonaws.com/gluon/models/resnet18_v2-a81db45f.zip...\n"
+     ]
+    },
+    {
      "data": {
       "text/plain": [
        "(13, Dense(512 -> 1000, linear))"
@@ -302,15 +309,15 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "/media/workspace/anaconda3/envs/mxnetx/lib/python3.10/site-packages/tvm/driver/build_module.py:263: UserWarning: target_host parameter is going to be deprecated. Please pass in tvm.target.Target(target, host=target_host) instead.\n",
+      "/media/pc/data/4tb/lxw/anaconda3/envs/mx/lib/python3.10/site-packages/tvm/driver/build_module.py:267: UserWarning: target_host parameter is going to be deprecated. Please pass in tvm.target.Target(target, host=target_host) instead.\n",
       "  warnings.warn(\n",
-      "One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.\n"
+      "WARNING:autotvm:One or more operators have not been tuned. Please tune your model for better performance. Use DEBUG logging level to see more details.\n"
      ]
     },
     {
      "data": {
       "text/plain": [
-       "<tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7fd5e42b7ee0>"
+       "<tvm.relay.backend.executor_factory.GraphExecutorFactoryModule at 0x7f422c17ff40>"
       ]
      },
      "execution_count": 8,
@@ -444,7 +451,7 @@
     {
      "data": {
       "text/plain": [
-       "<tvm.runtime.packed_func.PackedFunc at 0x7fd5e42df900>"
+       "<tvm.runtime.packed_func.PackedFunc at 0x7f423602a200>"
       ]
      },
      "execution_count": 13,
@@ -483,7 +490,7 @@
     {
      "data": {
       "text/plain": [
-       "<tvm.contrib.graph_executor.GraphModule at 0x7fd95c41d300>"
+       "<tvm.contrib.graph_executor.GraphModule at 0x7f4236017f70>"
       ]
      },
      "execution_count": 14,
@@ -624,9 +631,9 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "-rw-rw-r-- 1 pc pc 45M 6月  17 12:44 outputs/resnet18_v2.params\n",
-      "-rw-rw-r-- 1 pc pc 36K 6月  17 12:44 outputs/resnet18_v2.json\n",
-      "-rw-rw-r-- 1 pc pc 42M 6月  17 12:44 outputs/resnet18_v2.tar\n"
+      "-rw-rw-r-- 1 pc pc 45M 6月  28 14:57 outputs/resnet18_v2.params\n",
+      "-rw-rw-r-- 1 pc pc 36K 6月  28 14:57 outputs/resnet18_v2.json\n",
+      "-rw-rw-r-- 1 pc pc 42M 6月  28 14:57 outputs/resnet18_v2.tar\n"
      ]
     }
    ],
@@ -757,7 +764,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": "Python 3.10.4 ('mxnetx')",
+   "display_name": "Python 3.10.4 ('mx': conda)",
    "language": "python",
    "name": "python3"
   },
@@ -775,7 +782,7 @@
   },
   "vscode": {
    "interpreter": {
-    "hash": "aa67ff675248b5ab29dcd2f00c1422844307085c8ca7c8ce7eddecd21b9c2975"
+    "hash": "6ab843168d80d896ff230380afa7f24ef0bc94d0d31e7cbe07a4717b9b9b5212"
    }
   }
  },

@@ -7,5 +7,7 @@ relay
 relay_viz
 build
 ir-module
+other
+vm
 test
 ```

@@ -133,7 +133,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": "Python 3.10.4 ('mxnetx')",
+   "display_name": "Python 3.10.4 ('torch': conda)",
    "language": "python",
    "name": "python3"
   },
@@ -152,7 +152,7 @@
   "orig_nbformat": 4,
   "vscode": {
    "interpreter": {
-    "hash": "aa67ff675248b5ab29dcd2f00c1422844307085c8ca7c8ce7eddecd21b9c2975"
+    "hash": "20e538bd0bbffa4ce75068aaf85df10d4944f3fdb705eeec6781a4702773116f"
    }
   }
  },
