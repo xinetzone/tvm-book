@@ -12,7 +12,8 @@ requires-python = ">=3.8"
 
 dependencies = [
   "d2py",
-  "xyzstyle"
+  "xyzstyle",
+  "attrs"
 ]
 
 maintainers = [
