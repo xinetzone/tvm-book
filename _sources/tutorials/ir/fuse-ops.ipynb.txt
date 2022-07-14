@@ -1,0 +1,189 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 算子融合"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pytest\n",
+    "\n",
+    "import tvm\n",
+    "from tvm import relay\n",
+    "from tvm.relay import transform\n",
+    "from tvm.relay.testing import run_opt_pass\n",
+    "import tvm.testing\n",
+    "import tvm.topi.testing"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 简单的例子"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def before():\n",
+    "    x = relay.var(\"x\", shape=(10, 20))\n",
+    "    y = relay.add(x, relay.const(1, \"float32\"))\n",
+    "    z = relay.exp(y)\n",
+    "    w = relay.squeeze(z)\n",
+    "    return relay.Function([x], w)\n",
+    "\n",
+    "def expected():\n",
+    "    x = relay.var(\"p\", shape=(10, 20))\n",
+    "    y = relay.add(x, relay.const(1, \"float32\"))\n",
+    "    z = relay.exp(y)\n",
+    "    w = relay.squeeze(z)\n",
+    "    f1 = relay.Function([x], w)\n",
+    "    f1 = f1.with_attr(\"Primitive\", tvm.tir.IntImm(\"int32\", 1))\n",
+    "    x = relay.var(\"x\", shape=(10, 20))\n",
+    "    y = relay.Call(f1, [x])\n",
+    "    return relay.Function([x], y)\n",
+    "\n",
+    "z = before()\n",
+    "zz = run_opt_pass(z, transform.FuseOps())\n",
+    "after = run_opt_pass(expected(), transform.InferType())\n",
+    "assert tvm.ir.structural_equal(zz, after)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dshape = (1, 16, 64, 64)\n",
+    "x = relay.var(\"x\", shape=dshape)\n",
+    "x = relay.add(x, relay.const(1, \"float32\"))\n",
+    "y = relay.nn.conv2d(x, relay.var(\"w1\"), kernel_size=(3, 3), padding=(1, 1), channels=16)\n",
+    "# this is the next dominator.\n",
+    "y1 = relay.add(relay.const(1, \"float32\"), y)\n",
+    "y = relay.add(y, y1)\n",
+    "# second path\n",
+    "z2 = relay.nn.conv2d(y, relay.var(\"w2\"), kernel_size=(1, 1), padding=(0, 0), channels=16)\n",
+    "z3 = relay.nn.conv2d(y, relay.var(\"w3\"), kernel_size=(3, 3), padding=(1, 1), channels=16)\n",
+    "# add can only be fused to z1\n",
+    "z = relay.add(z2, z3)\n",
+    "f = relay.Function(relay.analysis.free_vars(z), z)\n",
+    "zz = run_opt_pass(f, transform.FuseOps(fuse_opt_level=2))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%x: Tensor[(1, 16, 64, 64), float32], %w1, %w2, %w3) {\n",
+       "  %0 = add(%x, 1f);\n",
+       "  %1 = nn.conv2d(%0, %w1, padding=[1, 1, 1, 1], channels=16, kernel_size=[3, 3]);\n",
+       "  %2 = add(1f, %1);\n",
+       "  %3 = add(%1, %2);\n",
+       "  %4 = nn.conv2d(%3, %w2, padding=[0, 0, 0, 0], channels=16, kernel_size=[1, 1]);\n",
+       "  %5 = nn.conv2d(%3, %w3, padding=[1, 1, 1, 1], channels=16, kernel_size=[3, 3]);\n",
+       "  add(%4, %5)\n",
+       "}"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "f"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fn (%x: Tensor[(1, 16, 64, 64), float32] /* ty=Tensor[(1, 16, 64, 64), float32] */, %w1: Tensor[(16, 16, 3, 3), float32] /* ty=Tensor[(16, 16, 3, 3), float32] */, %w2: Tensor[(16, 16, 1, 1), float32] /* ty=Tensor[(16, 16, 1, 1), float32] */, %w3: Tensor[(16, 16, 3, 3), float32] /* ty=Tensor[(16, 16, 3, 3), float32] */) -> Tensor[(1, 16, 64, 64), float32] {\n",
+       "  %3 = fn (%p02: Tensor[(1, 16, 64, 64), float32] /* ty=Tensor[(1, 16, 64, 64), float32] */, Primitive=1) -> Tensor[(1, 16, 64, 64), float32] {\n",
+       "    add(%p02, 1f /* ty=float32 */) /* ty=Tensor[(1, 16, 64, 64), float32] */\n",
+       "  } /* ty=fn (Tensor[(1, 16, 64, 64), float32]) -> Tensor[(1, 16, 64, 64), float32] */;\n",
+       "  %4 = %3(%x) /* ty=Tensor[(1, 16, 64, 64), float32] */;\n",
+       "  %5 = fn (%p01: Tensor[(1, 16, 64, 64), float32] /* ty=Tensor[(1, 16, 64, 64), float32] */, %p11: Tensor[(16, 16, 3, 3), float32] /* ty=Tensor[(16, 16, 3, 3), float32] */, Primitive=1) -> Tensor[(1, 16, 64, 64), float32] {\n",
+       "    %1 = nn.conv2d(%p01, %p11, padding=[1, 1, 1, 1], channels=16, kernel_size=[3, 3]) /* ty=Tensor[(1, 16, 64, 64), float32] */;\n",
+       "    %2 = add(1f /* ty=float32 */, %1) /* ty=Tensor[(1, 16, 64, 64), float32] */;\n",
+       "    add(%1, %2) /* ty=Tensor[(1, 16, 64, 64), float32] */\n",
+       "  } /* ty=fn (Tensor[(1, 16, 64, 64), float32], Tensor[(16, 16, 3, 3), float32]) -> Tensor[(1, 16, 64, 64), float32] */;\n",
+       "  %6 = %5(%4, %w1) /* ty=Tensor[(1, 16, 64, 64), float32] */;\n",
+       "  %7 = fn (%p03: Tensor[(1, 16, 64, 64), float32] /* ty=Tensor[(1, 16, 64, 64), float32] */, %p12: Tensor[(16, 16, 3, 3), float32] /* ty=Tensor[(16, 16, 3, 3), float32] */, Primitive=1) -> Tensor[(1, 16, 64, 64), float32] {\n",
+       "    nn.conv2d(%p03, %p12, padding=[1, 1, 1, 1], channels=16, kernel_size=[3, 3]) /* ty=Tensor[(1, 16, 64, 64), float32] */\n",
+       "  } /* ty=fn (Tensor[(1, 16, 64, 64), float32], Tensor[(16, 16, 3, 3), float32]) -> Tensor[(1, 16, 64, 64), float32] */;\n",
+       "  %8 = %7(%6, %w3) /* ty=Tensor[(1, 16, 64, 64), float32] */;\n",
+       "  %9 = fn (%p0: Tensor[(1, 16, 64, 64), float32] /* ty=Tensor[(1, 16, 64, 64), float32] */, %p1: Tensor[(16, 16, 1, 1), float32] /* ty=Tensor[(16, 16, 1, 1), float32] */, %p2: Tensor[(1, 16, 64, 64), float32] /* ty=Tensor[(1, 16, 64, 64), float32] */, Primitive=1) -> Tensor[(1, 16, 64, 64), float32] {\n",
+       "    %0 = nn.conv2d(%p0, %p1, padding=[0, 0, 0, 0], channels=16, kernel_size=[1, 1]) /* ty=Tensor[(1, 16, 64, 64), float32] */;\n",
+       "    add(%0, %p2) /* ty=Tensor[(1, 16, 64, 64), float32] */\n",
+       "  } /* ty=fn (Tensor[(1, 16, 64, 64), float32], Tensor[(16, 16, 1, 1), float32], Tensor[(1, 16, 64, 64), float32]) -> Tensor[(1, 16, 64, 64), float32] */;\n",
+       "  %9(%6, %w2, %8) /* ty=Tensor[(1, 16, 64, 64), float32] */\n",
+       "} /* ty=fn (Tensor[(1, 16, 64, 64), float32], Tensor[(16, 16, 3, 3), float32], Tensor[(16, 16, 1, 1), float32], Tensor[(16, 16, 3, 3), float32]) -> Tensor[(1, 16, 64, 64), float32] */"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "zz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('torch': conda)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "20e538bd0bbffa4ce75068aaf85df10d4944f3fdb705eeec6781a4702773116f"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

@@ -1,0 +1,771 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 数据流图模式"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "import tvm\n",
+    "from tvm import relay\n",
+    "from tvm.relay.build_module import bind_params_by_name\n",
+    "from tvm.relay.dataflow_pattern import *\n",
+    "from tvm.relay.testing import run_opt_pass"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```{tip}\n",
+    "`1` 对应于指定此值的 C++ enum，由于 Python/C++ 调用约定，失去了类型安全。\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "K_ELEMWISE = 0\n",
+    "K_BROADCAST = 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 节点"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def test_expr_pattern():\n",
+    "    ep = is_expr(relay.var(\"x\", shape=(4, 1)))\n",
+    "    assert isinstance(ep, ExprPattern)\n",
+    "    assert isinstance(ep.expr, relay.Var)\n",
+    "\n",
+    "\n",
+    "def test_var_pattern():\n",
+    "    v = is_var(\"x\")\n",
+    "    assert isinstance(v, VarPattern)\n",
+    "    assert v.name == \"x\"\n",
+    "\n",
+    "\n",
+    "def test_constant_pattern():\n",
+    "    c = is_constant()\n",
+    "    assert isinstance(c, ConstantPattern)\n",
+    "\n",
+    "\n",
+    "def test_wildcard_pattern():\n",
+    "    wc = wildcard()\n",
+    "    assert isinstance(wc, WildcardPattern)\n",
+    "\n",
+    "\n",
+    "def test_CallPattern():\n",
+    "    wc1 = wildcard()\n",
+    "    wc2 = wildcard()\n",
+    "    c = is_op(\"add\")(wc1, wc2)\n",
+    "    assert isinstance(c, CallPattern)\n",
+    "    assert isinstance(c.args[0], WildcardPattern)\n",
+    "    assert isinstance(c.args[1], WildcardPattern)\n",
+    "\n",
+    "\n",
+    "def test_FunctionPattern():\n",
+    "    wc1 = wildcard()\n",
+    "    wc2 = wildcard()\n",
+    "    c = is_op(\"add\")(wc1, wc2)\n",
+    "    f = FunctionPattern([wc1, wc2], c)\n",
+    "    assert isinstance(f, FunctionPattern)\n",
+    "    assert isinstance(f.params[0], WildcardPattern)\n",
+    "    assert isinstance(f.params[1], WildcardPattern)\n",
+    "    assert isinstance(f.body, CallPattern)\n",
+    "    assert isinstance(f.body.args[0], WildcardPattern)\n",
+    "    assert isinstance(f.body.args[1], WildcardPattern)\n",
+    "\n",
+    "\n",
+    "def test_TuplePattern():\n",
+    "    wc1 = wildcard()\n",
+    "    wc2 = wildcard()\n",
+    "    t = is_tuple([wc1, wc2])\n",
+    "    assert isinstance(t, TuplePattern)\n",
+    "    assert isinstance(t.fields[0], WildcardPattern)\n",
+    "    assert isinstance(t.fields[1], WildcardPattern)\n",
+    "\n",
+    "\n",
+    "def test_TupleGetItemPattern():\n",
+    "    wc1 = wildcard()\n",
+    "    wc2 = wildcard()\n",
+    "    t = is_tuple([wc1, wc2])\n",
+    "    tgi = is_tuple_get_item(t, 1)\n",
+    "    assert isinstance(tgi, TupleGetItemPattern)\n",
+    "    assert isinstance(tgi.tuple, TuplePattern)\n",
+    "    assert isinstance(tgi.tuple.fields[0], WildcardPattern)\n",
+    "    assert isinstance(tgi.tuple.fields[1], WildcardPattern)\n",
+    "\n",
+    "\n",
+    "def test_AltPattern():\n",
+    "    is_add_or_sub = is_op(\"add\") | is_op(\"subtract\")\n",
+    "    assert isinstance(is_add_or_sub, AltPattern)\n",
+    "\n",
+    "\n",
+    "def test_TypePattern():\n",
+    "    ttype = relay.TensorType((10, 10), \"float32\")\n",
+    "    ty_pat = has_type(ttype)\n",
+    "    assert isinstance(ty_pat, TypePattern)\n",
+    "    assert ty_pat.type == ttype\n",
+    "\n",
+    "\n",
+    "def test_DataTypePattern():\n",
+    "    dtype = \"float16\"\n",
+    "    pattern = has_dtype(dtype)\n",
+    "    assert isinstance(pattern, DataTypePattern)\n",
+    "    assert pattern.dtype == dtype\n",
+    "\n",
+    "\n",
+    "def test_ShapePattern():\n",
+    "    shape = [10, 10]\n",
+    "    pattern = has_shape(shape)\n",
+    "    assert isinstance(pattern, ShapePattern)\n",
+    "    assert tvm.ir.structural_equal(pattern.shape, shape)\n",
+    "\n",
+    "\n",
+    "def test_AttrPattern():\n",
+    "    op = is_op(\"add\").has_attr({\"TOpPattern\": K_ELEMWISE})\n",
+    "    assert isinstance(op, AttrPattern)\n",
+    "    assert op.attrs[\"TOpPattern\"] == K_ELEMWISE\n",
+    "\n",
+    "\n",
+    "def test_IfPattern():\n",
+    "    x = is_var(\"x\")\n",
+    "    y = is_var(\"y\")\n",
+    "    pat = is_if(is_op(\"less\")(x, y), x, y)\n",
+    "\n",
+    "    assert isinstance(pat, IfPattern)\n",
+    "    assert isinstance(pat.cond, CallPattern)\n",
+    "    assert isinstance(pat.true_branch, VarPattern)\n",
+    "    assert isinstance(pat.false_branch, VarPattern)\n",
+    "\n",
+    "\n",
+    "def test_LetPattern():\n",
+    "    x = is_var(\"x\")\n",
+    "    y = is_var(\"y\")\n",
+    "    let_var = is_var(\"let\")\n",
+    "    pat = is_let(let_var, is_op(\"less\")(x, y), let_var)\n",
+    "\n",
+    "    assert isinstance(pat, LetPattern)\n",
+    "    assert isinstance(pat.var, VarPattern)\n",
+    "    assert isinstance(pat.value, CallPattern)\n",
+    "    assert isinstance(pat.body, VarPattern)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## matcher"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "assert is_op(\"add\").match(relay.op.op.get(\"add\"))\n",
+    "\n",
+    "assert not is_op(\"add\").match(relay.op.op.get(\"subtract\"))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "is_add_or_sub = is_op(\"add\") | is_op(\"subtract\")\n",
+    "assert is_add_or_sub.match(relay.op.op.get(\"add\"))\n",
+    "assert is_add_or_sub.match(relay.op.op.get(\"subtract\"))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`call_commutive`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "add_pattern = is_op(\"add\")(is_var(\"x\"), is_var(\"y\"))\n",
+    "assert add_pattern.match(x + y)\n",
+    "assert add_pattern.match(y + x)\n",
+    "mul_pattern = is_op(\"multiply\")(is_var(\"x\"), is_var(\"y\"))\n",
+    "assert mul_pattern.match(x * y)\n",
+    "assert mul_pattern.match(y * x)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "add_pattern = is_op(\"subtract\")(is_var(\"x\"), is_var(\"y\"))\n",
+    "assert add_pattern.match(x - y)\n",
+    "assert not add_pattern.match(y - x)\n",
+    "add_pattern = is_op(\"divide\")(is_var(\"x\"), is_var(\"y\"))\n",
+    "assert add_pattern.match(x / y)\n",
+    "assert not add_pattern.match(y / x)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`call`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "add_pattern = is_op(\"add\")(wildcard(), wildcard())\n",
+    "assert add_pattern.match(x + y)\n",
+    "\n",
+    "# Match call with any number of inputs\n",
+    "call_pattern = wildcard()(None)\n",
+    "assert call_pattern.match(relay.op.nn.relu(x))\n",
+    "assert call_pattern.match(relay.op.add(x, y))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "add_pattern = is_op(\"add\")(wildcard(), wildcard())\n",
+    "assert not add_pattern.match(x - y)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`func`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "wc1 = wildcard()\n",
+    "wc2 = wildcard()\n",
+    "func_pattern = FunctionPattern([wc1, wc2], wc1 + wc2)\n",
+    "assert func_pattern.match(relay.Function([x, y], x + y))\n",
+    "\n",
+    "# Match Function with any number of inputs\n",
+    "func_pattern = FunctionPattern(None, wildcard())\n",
+    "assert func_pattern.match(relay.Function([x], x))\n",
+    "assert func_pattern.match(relay.Function([x, y], x + y))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "wc1 = wildcard()\n",
+    "wc2 = wildcard()\n",
+    "func_pattern = FunctionPattern([wc1, wc2], wc1 + wc2)\n",
+    "assert not func_pattern.match(relay.Function([x, y], x - y))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`if`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = is_var(\"x\")\n",
+    "y = is_var(\"y\")\n",
+    "pat = is_if(is_op(\"less\")(x, y), x, y)\n",
+    "\n",
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "cond = x < y\n",
+    "\n",
+    "assert pat.match(relay.expr.If(cond, x, y))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = is_var(\"x\")\n",
+    "y = is_var(\"y\")\n",
+    "pat = is_if(is_op(\"less\")(x, y), x, y)\n",
+    "\n",
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "\n",
+    "assert not pat.match(relay.expr.If(x > y, x, y))\n",
+    "assert not pat.match(relay.expr.If(x < y, y, x))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`let`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = is_var(\"x\")\n",
+    "y = is_var(\"y\")\n",
+    "let_var = is_var(\"let\")\n",
+    "pat = is_let(let_var, is_op(\"less\")(x, y), let_var)\n",
+    "\n",
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "lv = relay.var(\"let\")\n",
+    "cond = x < y\n",
+    "assert pat.match(relay.expr.Let(lv, cond, lv))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = is_var(\"x\")\n",
+    "y = is_var(\"y\")\n",
+    "let_var = is_var(\"let\")\n",
+    "pat = is_let(let_var, is_op(\"less\")(x, y), let_var)\n",
+    "\n",
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "lv = relay.var(\"let\")\n",
+    "\n",
+    "assert not pat.match(relay.expr.Let(lv, x > y, lv))\n",
+    "assert not pat.match(relay.expr.Let(lv, x < y, lv * x))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "`option`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "w = relay.var(\"w\")\n",
+    "b = relay.var(\"b\")\n",
+    "pattern = is_op(\"nn.relu\")(\n",
+    "    is_op(\"nn.conv2d\")(wildcard(), wildcard()).optional(\n",
+    "        lambda x: is_op(\"nn.bias_add\")(x, wildcard())\n",
+    "    )\n",
+    ")\n",
+    "\n",
+    "conv2d = relay.op.nn.conv2d(x, w)\n",
+    "relu = relay.op.nn.relu(conv2d)\n",
+    "assert pattern.match(relu)\n",
+    "\n",
+    "conv2d = relay.op.nn.conv2d(x, w)\n",
+    "bias_add = relay.op.nn.bias_add(conv2d, b)\n",
+    "relu = relay.op.nn.relu(bias_add)\n",
+    "assert pattern.match(relu)\n",
+    "\n",
+    "pattern = is_op(\"nn.conv2d\")(wildcard(), wildcard())\n",
+    "pattern = pattern.optional(is_op(\"nn.relu\")).optional(is_op(\"tanh\"))\n",
+    "\n",
+    "conv2d = relay.op.nn.conv2d(x, w)\n",
+    "relu = relay.op.nn.relu(conv2d)\n",
+    "tanh = relay.op.tanh(conv2d)\n",
+    "tanh2 = relay.op.tanh(relu)\n",
+    "relu2 = relay.op.nn.relu(tanh)\n",
+    "assert pattern.match(conv2d)\n",
+    "assert pattern.match(relu)\n",
+    "assert pattern.match(tanh)\n",
+    "assert pattern.match(tanh2)\n",
+    "assert not pattern.match(relu2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "w = relay.var(\"w\")\n",
+    "b = relay.var(\"b\")\n",
+    "pattern = is_op(\"nn.relu\")(\n",
+    "    is_op(\"nn.conv2d\")(wildcard(), wildcard()).optional(\n",
+    "        lambda x: is_op(\"nn.bias_add\")(x, wildcard())\n",
+    "    )\n",
+    ")\n",
+    "\n",
+    "conv2d = relay.op.nn.conv2d(x, w)\n",
+    "relu = relay.op.tanh(conv2d)\n",
+    "assert not pattern.match(relu)\n",
+    "\n",
+    "conv2d = relay.op.nn.dense(x, w)\n",
+    "relu = relay.op.tanh(conv2d)\n",
+    "assert not pattern.match(relu)\n",
+    "\n",
+    "conv2d = relay.op.nn.dense(x, w)\n",
+    "bias_add = relay.op.nn.bias_add(conv2d, b)\n",
+    "relu = relay.op.nn.relu(bias_add)\n",
+    "assert not pattern.match(relu)\n",
+    "\n",
+    "conv2d = relay.op.nn.conv2d(x, w)\n",
+    "bias_add = conv2d + w\n",
+    "relu = relay.op.nn.relu(bias_add)\n",
+    "assert not pattern.match(relu)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 支配节点"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Pattern\n",
+    "is_conv2d = is_op(\"nn.conv2d\")(wildcard(), wildcard())\n",
+    "is_unary_elemwise = (wildcard().has_attr({\"TOpPattern\": K_ELEMWISE}))(wildcard())\n",
+    "reduction = is_op(\"add\")(wildcard(), wildcard())\n",
+    "diamond = dominates(is_conv2d, is_unary_elemwise, reduction)\n",
+    "\n",
+    "# Classic Diamond\n",
+    "inp = relay.var(\"input\")\n",
+    "weight = relay.var(\"weight\")\n",
+    "conv2d = relay.op.nn.conv2d(inp, weight)\n",
+    "relu = relay.op.nn.relu(conv2d)\n",
+    "relu = relay.op.nn.relu(relu)\n",
+    "leaky_relu = relay.op.nn.leaky_relu(conv2d, alpha=0)\n",
+    "out = relu + leaky_relu\n",
+    "\n",
+    "# Check\n",
+    "assert diamond.match(out)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 重写"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 79,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from tvm.ir import IRModule\n",
+    "from tvm.relay import Function"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 替换运算"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "y = relay.var(\"y\")\n",
+    "add_pattern = is_op(\"add\")(wildcard(), wildcard())\n",
+    "sub_pattern = is_op(\"subtract\")(wildcard(), wildcard())\n",
+    "\n",
+    "class TestRewrite(DFPatternCallback):\n",
+    "    def __init__(self):\n",
+    "        super().__init__()\n",
+    "        self.pattern = add_pattern\n",
+    "\n",
+    "    def callback(self, pre, post, node_map):\n",
+    "        return post.args[0] - post.args[1]\n",
+    "\n",
+    "z = x + y\n",
+    "out = rewrite(TestRewrite(), z)\n",
+    "assert sub_pattern.match(out)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 75,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def rewrite_op(x, y, out):\n",
+    "    func = Function([x, y], out)\n",
+    "    mod = IRModule.from_expr(func)\n",
+    "    # executor = relay.create_executor(\"vm\", mod)\n",
+    "    executor = relay.create_executor(\"graph\", mod)\n",
+    "    return executor.evaluate()\n",
+    "\n",
+    "x = relay.var(\"x\", shape=[1], dtype=\"float32\")\n",
+    "y = relay.var(\"y\", shape=[1], dtype=\"float32\")\n",
+    "z = x + y\n",
+    "out = rewrite(TestRewrite(), z)\n",
+    "evaluate = rewrite_op(x, y, z)\n",
+    "rewrite_evaluate = rewrite_op(x, y, out)\n",
+    "a = np.array([2], dtype=\"float32\")\n",
+    "b = np.array([4], dtype=\"float32\")\n",
+    "evaluate(a, b).numpy(), rewrite_evaluate(a, b).numpy()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 重写函数"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 80,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "x = relay.var(\"x\")\n",
+    "w = relay.var(\"w\")\n",
+    "y = relay.var(\"y\")\n",
+    "add_pattern = is_op(\"add\")(wildcard(), wildcard())\n",
+    "sub_pattern = is_op(\"subtract\")(wildcard(), wildcard())\n",
+    "\n",
+    "class TestRewrite(DFPatternCallback):\n",
+    "    def __init__(self):\n",
+    "        super(TestRewrite, self).__init__()\n",
+    "        self.pattern = add_pattern\n",
+    "\n",
+    "    def callback(self, pre, post, node_map):\n",
+    "        return post.args[0] - post.args[1]\n",
+    "\n",
+    "inpf = relay.var(\"input\")\n",
+    "weightf = relay.var(\"weight\")\n",
+    "func = relay.Function(\n",
+    "    [inpf, weightf], relay.op.nn.relu(relay.op.nn.conv2d(inpf, weightf)), attrs=None\n",
+    ")\n",
+    "out = rewrite(TestRewrite(), func(x, w) + y)\n",
+    "assert sub_pattern.match(out)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 95,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(1, 16, 1, 1)"
+      ]
+     },
+     "execution_count": 95,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data = relay.var(\"data\", shape=(1, 4, 2, 2), dtype=\"float32\")\n",
+    "stride = 2 # stride = 1 对重组运算没有意义。\n",
+    "func = relay.op.vision.yolo.yolo_reorg(data, stride=stride)\n",
+    "mod = IRModule.from_expr(func)\n",
+    "executor = relay.create_executor(\"graph\", mod)\n",
+    "evaluate = executor.evaluate()\n",
+    "\n",
+    "x = np.arange(16).reshape(1, 4, 2, 2)\n",
+    "evaluate(x).shape"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## resize"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 96,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<function tvm.relay.op.image.image.resize2d(data, size, roi=None, layout='NCHW', method='linear', coordinate_transformation_mode='half_pixel', rounding_method='', cubic_alpha=-0.5, cubic_exclude=0, extrapolation_value=0.0, out_dtype=None)>"
+      ]
+     },
+     "execution_count": 96,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from tvm.relay.dataflow_pattern import is_op, wildcard\n",
+    "\n",
+    "conv2d_p = is_op(\"nn.conv2d\")(wildcard(), wildcard())\n",
+    "bias_add_p = is_op(\"nn.bias_add\")(conv2d_p, wildcard())\n",
+    "relu_p = is_op(\"nn.relu\")(bias_add_p)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 98,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(1, 128, 40, 40)"
+      ]
+     },
+     "execution_count": 98,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data = relay.var(\"data\", shape=(1, 128, 20, 20), dtype=\"float32\")\n",
+    "size = (40, 40)\n",
+    "func = relay.op.image.resize2d(data, size=size)\n",
+    "mod = IRModule.from_expr(func)\n",
+    "executor = relay.create_executor(\"graph\", mod)\n",
+    "evaluate = executor.evaluate()\n",
+    "\n",
+    "x = np.arange(1 * 128 * 20 * 20).reshape(1, 128, 20, 20)\n",
+    "y = evaluate(x)\n",
+    "y.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "#[version = \"0.0.5\"]\n",
+       "def @main(%data: Tensor[(1, 128, 20, 20), float32]) {\n",
+       "  image.resize2d(%data, size=[40, 40], roi=[0f, 0f, 0f, 0f], rounding_method=\"\")\n",
+       "}"
+      ]
+     },
+     "execution_count": 102,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mod"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.10.4 ('torch': conda)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "20e538bd0bbffa4ce75068aaf85df10d4944f3fdb705eeec6781a4702773116f"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
