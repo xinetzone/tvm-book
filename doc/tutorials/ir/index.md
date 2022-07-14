@@ -7,7 +7,11 @@ relay
 relay_viz
 build
 ir-module
-other
+fuse-ops
+dataflow-pattern
+pass
+profile
 vm
+other
 test
 ```
