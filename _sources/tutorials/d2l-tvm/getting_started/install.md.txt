@@ -110,16 +110,31 @@ def set_env(num, current_path='.'):
 
 安装 MXNet GPU 版本可能需要配置 NCCL，详细内容见：[安装 NCCL](https://docs.nvidia.com/deeplearning/nccl/install-guide/index.html)。
 
-便捷安装(这里是 Ubuntu22.04，可以替换为其他版本)：
+```{note}
+这里是 Ubuntu22.04，可以替换为其他版本。
+```
+
+1. 安装 CUDA：
 
 ```bash
-$ wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
-$ sudo dpkg -i cuda-keyring_1.0-1_all.deb
-$ sudo apt-get update
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
+sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /"
+sudo apt-get update
+sudo apt-get -y install cuda
+```
+
+2. 安装 NCCL：
+
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+sudo apt-get update
 ```
 
 同时还需要：
 
 ```bash
-$ sudo apt install libnccl2=2.13.4-1+cuda11.7 libnccl-dev=2.13.4-1+cuda11.7
+sudo apt install libnccl2=2.13.4-1+cuda11.7 libnccl-dev=2.13.4-1+cuda11.7
 ```

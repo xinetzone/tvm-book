@@ -834,14 +834,31 @@ invoke doc
 <section id="faqs">
 <h2>安装的 FAQs<a class="headerlink" href="#faqs" title="Permalink to this heading">#</a></h2>
 <p>安装 MXNet GPU 版本可能需要配置 NCCL，详细内容见：<a class="reference external" href="https://docs.nvidia.com/deeplearning/nccl/install-guide/index.html">安装 NCCL</a>。</p>
-<p>便捷安装(这里是 Ubuntu22.04，可以替换为其他版本)：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
-$ sudo dpkg -i cuda-keyring_1.0-1_all.deb
-$ sudo apt-get update
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>这里是 Ubuntu22.04，可以替换为其他版本。</p>
+</div>
+<ol class="arabic simple">
+<li><p>安装 CUDA：</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
+sudo add-apt-repository <span class="s2">&quot;deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /&quot;</span>
+sudo apt-get update
+sudo apt-get -y install cuda
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>安装 NCCL：</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+sudo apt-get update
 </pre></div>
 </div>
 <p>同时还需要：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo apt install <span class="nv">libnccl2</span><span class="o">=</span><span class="m">2</span>.13.4-1+cuda11.7 libnccl-dev<span class="o">=</span><span class="m">2</span>.13.4-1+cuda11.7
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt install <span class="nv">libnccl2</span><span class="o">=</span><span class="m">2</span>.13.4-1+cuda11.7 libnccl-dev<span class="o">=</span><span class="m">2</span>.13.4-1+cuda11.7
 </pre></div>
 </div>
 </section>
@@ -892,7 +909,7 @@ $ sudo apt-get update
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-14, 01:22:27.<br>
+最后更新于 2022-07-14, 01:32:11.<br>
 </p>
   </div>
   
