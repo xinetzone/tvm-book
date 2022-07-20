@@ -12,7 +12,6 @@ requires-python = ">=3.8"
 
 dependencies = [
   "d2py",
-  "xyzstyle",
   "attrs"
 ]
 
@@ -39,10 +38,10 @@ doc = [
   "sphinxext-rediraffe",
   "sphinx-copybutton",
   "sphinxcontrib-bibtex",
-  # "sphinx-thebe",
+  "xyzstyle",
+  "sphinx-thebe",
   "sphinx-design",
   "sphinx-automodapi",
-  # "sphinx_tabs",
 ]
 
 coverage = [
