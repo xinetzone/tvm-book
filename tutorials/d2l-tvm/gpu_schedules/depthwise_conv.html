@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Depthwise Convolution &#8212; tvm-book 0.0.3 文档</title>
+    <title>Depthwise Convolution &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/gpu_schedules/depthwise_conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/gpu_schedules/depthwise_conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -739,7 +738,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="depthwise-convolution">
-<h1>Depthwise Convolution<a class="headerlink" href="#depthwise-convolution" title="Permalink to this heading">#</a></h1>
+<h1>Depthwise Convolution<a class="headerlink" href="#depthwise-convolution" title="永久链接至标题">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_depthwise_conv_gpu</span></code></p>
 <p>In this section, we will talk about how to optimize depthwise convolution on GPUs.</p>
 <div class="cell docutils container">
@@ -756,7 +755,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
 <p>The baseline of depthwise convolution on GPUs is given by MXNet, which relies on cuDNN for high performance. Again, we benchmark the performance with various numbers of channels, when the input and kernel width/height are fixed to be 64 and 3, respectively.
 The benchmark method <code class="docutils literal notranslate"><span class="pre">depthwise_conv_timer_mxnet</span></code> has already been defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_depthwise_conv_cpu</span></code>.
 The only change that we need to make is to specify to the method that the target device is <code class="docutils literal notranslate"><span class="pre">GPU</span></code>.</p>
@@ -787,7 +786,7 @@ The only change that we need to make is to specify to the method that the target
 <p>It is expected to see that the performance of depthwise convoluyion on GPUs increases while the number of channels increases.</p>
 </section>
 <section id="default-schedule-of-depthwise-convolution">
-<h2>Default schedule of Depthwise Convolution<a class="headerlink" href="#default-schedule-of-depthwise-convolution" title="Permalink to this heading">#</a></h2>
+<h2>Default schedule of Depthwise Convolution<a class="headerlink" href="#default-schedule-of-depthwise-convolution" title="永久链接至标题">#</a></h2>
 <p>In order to show the effectiveness of scheduling, we first apply a default schedule, which does nothing but only binds the axes to GPU thread and block.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -818,7 +817,7 @@ The only change that we need to make is to specify to the method that the target
 <p>The default scheduling gives us the performance around 25 GFLOPS for every data shape we investigate, indicating that the compute power is not actually used.</p>
 </section>
 <section id="scheduling-of-depthwise-convolution">
-<h2>Scheduling of Depthwise Convolution<a class="headerlink" href="#scheduling-of-depthwise-convolution" title="Permalink to this heading">#</a></h2>
+<h2>Scheduling of Depthwise Convolution<a class="headerlink" href="#scheduling-of-depthwise-convolution" title="永久链接至标题">#</a></h2>
 <p>We work on the scheduling of depthwise convolution from the following aspects. Note that none of them is new, all covered in the previous sections.</p>
 <p>Remember that the depthwise convolution convolves each input channel with a dedicated kernel, we can simply assign each channel to a different CUDA block. By doing this, we make different SMs work on different portions of the data, avoiding data contention across channels.</p>
 <p>In terms of tiling, we followed the same trick done in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_gpu</span></code> to bring some data to the shared and local memory of the GPU. You can follow the analytics approach described in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_gpu</span></code> to calculate the cached data size and make sure the data fits in the cache. And we continue doing the cooperative fetching as before.</p>
@@ -895,13 +894,13 @@ The only change that we need to make is to specify to the method that the target
 <p>It is worthwhile noting that, in the real workloads, depthwise convolution consumes only a little computation, which can be finished in microseconds. Therefore, although TVM outperforms MXNet for quite a lot, the real executing time difference is marginal. This somewhat reflects the famous <a class="reference external" href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl’s law</a>, i.e. in the real use case, we should first focus on optimizing the hot spots which takes the majority of executing time.</p>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>Optimizing the depthwise convolution on GPUs has no major difference from optimizing other operators. The same techniques, e.g. parallelization, tiling, apply.</p></li>
 </ul>
 </section>
 <section id="exercise">
-<h2>Exercise<a class="headerlink" href="#exercise" title="Permalink to this heading">#</a></h2>
+<h2>Exercise<a class="headerlink" href="#exercise" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>Try to use virtual thread to mitigate the bank conflict in depthwise convolution.</p></li>
 <li><p>Vary the size of input data and observe the performance difference.</p></li>
@@ -954,13 +953,13 @@ The only change that we need to make is to specify to the method that the target
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

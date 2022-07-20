@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>索引和形状表达式 &#8212; tvm-book 0.0.3 文档</title>
+    <title>索引和形状表达式 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/expressions/index_shape_expressions and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/expressions/index_shape_expressions and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -736,7 +735,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>索引和形状表达式<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<h1>索引和形状表达式<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
 <p>你已经知道形状可以是符号元组，例如 <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m)</span></code>，元素可以通过索引访问，例如 <code class="docutils literal notranslate"><span class="pre">a[i,</span> <span class="pre">j]</span></code>。在实践中，形状和索引都可以通过复杂的表达式来计算。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -749,7 +748,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="id2">
-<h2>矩阵转置<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>矩阵转置<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>第一个例子是矩阵转置 <code class="docutils literal notranslate"><span class="pre">a.T</span></code>，按列访问 <code class="docutils literal notranslate"><span class="pre">a</span></code> 中的元素。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -805,7 +804,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>重构形状<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>重构形状<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>接下来使用表达式进行索引。下面的代码块将2-D 数组 <code class="docutils literal notranslate"><span class="pre">a</span></code>（上面定义的 <span class="math notranslate nohighlight">\(n \times m\)</span>）重构为 1-D（就像 NumPy 中的<code class="docutils literal notranslate"><span class="pre">a.reshape(-1)</span></code>）。注意如何将 1-D 索引 <code class="docutils literal notranslate"><span class="pre">i</span></code> 转换为 2-D 索引 <code class="docutils literal notranslate"><span class="pre">[i//m,</span> <span class="pre">i%m]</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -875,7 +874,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>切片<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<h2>切片<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <p>考虑特殊的切片算子 <code class="docutils literal notranslate"><span class="pre">a[bi::si,</span> <span class="pre">bj::sj]</span></code>，其中 <code class="docutils literal notranslate"><span class="pre">bi</span></code>，<code class="docutils literal notranslate"><span class="pre">bj</span></code>，<code class="docutils literal notranslate"><span class="pre">si</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sj</span></code> 可以稍后指定。现在需要根据参数计算输出形状。此外，需要在编译模块时将变量 <code class="docutils literal notranslate"><span class="pre">bi</span></code>，<code class="docutils literal notranslate"><span class="pre">bj</span></code>，<code class="docutils literal notranslate"><span class="pre">si</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sj</span></code> 作为参数传递。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -905,7 +904,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id5">
-<h2>小结<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>形状维度和索引都可以是带有变量的表达式。</p></li>
 <li><p>如果变量不仅出现在形状元组中，那么需要在编译时将其作为参数传递。</p></li>
@@ -958,13 +957,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>GPU 架构 &#8212; tvm-book 0.0.3 文档</title>
+    <title>GPU 架构 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/gpu_schedules/arch and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/gpu_schedules/arch and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -731,7 +730,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="gpu">
-<span id="ch-gpu-arch"></span><h1>GPU 架构<a class="headerlink" href="#gpu" title="Permalink to this heading">#</a></h1>
+<span id="ch-gpu-arch"></span><h1>GPU 架构<a class="headerlink" href="#gpu" title="永久链接至标题">#</a></h1>
 <p>高端 GPU 通常比高端 CPU 提供更好的性能。尽管 GPU 和 CPU 之间的术语和编程范式有所不同，但它们的架构是相似的，GPU 拥有更宽的 SIMD 宽度和更多的核。在本节中，将简要回顾 GPU 架构与 <a class="reference internal" href="../cpu_schedules/arch.html#ch-cpu-arch"><span class="std std-ref">CPU 架构</span></a> 中介绍的 CPU 架构的比较。</p>
 <p>(FIXME, changed from V100 to T4 in CI…, also changed cpu…)</p>
 <p>使用的系统有 <a class="reference external" href="https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf">Tesla T4</a> GPU，是基于图灵架构的。Tesla T4 是基于图灵架构的 GPU 卡，用于深度学习模型推理加速。</p>
@@ -749,7 +748,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="id1">
-<h2>流式多核处理器<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<h2>流式多核处理器<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <p>流式多核处理器（streaming multiprocessor，简称 SM）大致相当于 CPU 核心。T4 使用的 SM 如下所示:numref: ‘ fig_gpu_sm ‘。</p>
 <figure class="align-default" id="id4">
 <img alt="../../../_images/gpu_sm.svg" src="../../../_images/gpu_sm.svg" /><figcaption>
@@ -760,14 +759,14 @@ function checkPageExistsAndRedirect(event) {
 <p>另外，SM 只有与 CPU 相似的 L1 cache。但是，可以将此存储作为在 SM 上运行的所有线程的共享内存。我们知道缓存由硬件和操作系统控制，而我们可以显式地分配和回收共享内存上的空间，这为我们进行性能优化提供了更大的灵活性。</p>
 </section>
 <section id="id2">
-<h2>GPU 架构简介<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>GPU 架构简介<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>特斯拉 T4 卡包含 40 条 SMs，所有 SM 共享 6MB 的 L2 缓存。它还附带了连接到处理器的 16GB 高带宽内存（GDDR6）。</p>
 <figure class="align-default" id="id5">
 <img alt="../../../_images/gpu_t4.svg" src="../../../_images/gpu_t4.svg" /><figcaption>
 <p><span class="caption-text">The Tesla T4 Architecture</span><a class="headerlink" href="#id5" title="永久链接至图片">#</a></p>
 </figcaption>
 </figure>
-<table class="table" id="tab-cpu-gpu-compare">
+<table class="colwidths-auto table" id="tab-cpu-gpu-compare">
 <thead>
 <tr class="row-odd"><th class="head"><p>Hardware</p></th>
 <th class="head"><p>Intel E5-2686 v4</p></th>
@@ -853,7 +852,7 @@ function checkPageExistsAndRedirect(event) {
 </table>
 </section>
 <section id="id3">
-<h2>小结<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>GPU 在概念上与 CPU 的架构类似，但速度要快得多。</p></li>
 </ul>
@@ -905,13 +904,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

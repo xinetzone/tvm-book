@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>数据类型 &#8212; tvm-book 0.0.3 文档</title>
+    <title>数据类型 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/expressions/data_types and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/expressions/data_types and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -729,10 +728,10 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>数据类型<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<h1>数据类型<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
 <p>每个张量都有数据类型，在深度学习中通常是 <code class="docutils literal notranslate"><span class="pre">float32</span></code>，但也可以是 <code class="docutils literal notranslate"><span class="pre">int8</span></code>（例如，用于模型量化）和其他数据类型。在 <a class="reference internal" href="../getting_started/vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中创建的 <code class="docutils literal notranslate"><span class="pre">tvm_vector_add</span></code>  模块只接受 <code class="docutils literal notranslate"><span class="pre">float32</span></code> 张量。在本节将其扩展到其他数据类型。</p>
 <section id="id2">
-<h2>指定数据类型<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>指定数据类型<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>要使用与默认值 <code class="docutils literal notranslate"><span class="pre">float32</span></code> 不同的数据类型，可以在创建占位符时显式指定。在下面的代码块中将定义在 <a class="reference internal" href="../getting_started/vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中的泛型向量加法表达式，以接受参数 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 来指定数据类型。特别地，当创建 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 时，将 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 传递给 <code class="docutils literal notranslate"><span class="pre">te.placeholder</span></code> 占位符。结果 <code class="docutils literal notranslate"><span class="pre">C</span></code> 将获得与 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 相同的数据类型。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -814,7 +813,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>转换元素数据类型<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>转换元素数据类型<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>除了构造具有特定数据类型的张量外，还可以在计算过程中强制转换张量元素的数据类型。下面的方法与 <code class="docutils literal notranslate"><span class="pre">tvm_vector_add</span></code> 相同，只是它在 <code class="docutils literal notranslate"><span class="pre">te.compute</span></code> 中强制转换了 <code class="docutils literal notranslate"><span class="pre">A</span></code> 和 <code class="docutils literal notranslate"><span class="pre">B</span></code> 的数据类型，而 <code class="docutils literal notranslate"><span class="pre">te.</span> <span class="pre">placeholder</span></code> 中定义的数据类型保留为默认值（<code class="docutils literal notranslate"><span class="pre">float32</span></code>）。由于 <code class="docutils literal notranslate"><span class="pre">astype</span></code> 执行了类型转换，结果 <code class="docutils literal notranslate"><span class="pre">C</span></code> 将具有 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 指定的数据类型。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -856,7 +855,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>小结<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>在创建 TVM 占位符时，可以通过 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 指定数据类型。</p></li>
 <li><p>在 TVM compute 中，张量元素的数据类型可以通过 <code class="docutils literal notranslate"><span class="pre">astype</span></code> 进行转换。</p></li>
@@ -909,13 +908,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

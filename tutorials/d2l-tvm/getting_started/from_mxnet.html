@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>神经网络推理 &#8212; tvm-book 0.0.3 文档</title>
+    <title>神经网络推理 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/getting_started/from_mxnet and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/getting_started/from_mxnet and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -744,7 +743,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-from-mxnet">
-<span id="id1"></span><h1>神经网络推理<a class="headerlink" href="#ch-from-mxnet" title="Permalink to this heading">#</a></h1>
+<span id="id1"></span><h1>神经网络推理<a class="headerlink" href="#ch-from-mxnet" title="永久链接至标题">#</a></h1>
 <p>您已经了解了如何在 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 中实现和编译简单的向量加法算子。现在要做个大跳跃，编译完整的由一组算子组成的预训练神经网络，来进行推理。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -759,7 +758,7 @@ function checkPageExistsAndRedirect(event) {
 <p>与前一章相比，这里导入了三个额外的模块。将使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">PIL</span></code> 读取图像，<a class="reference external" href="https://mxnet.incubator.apache.org/versions/1.9.0/api/python/docs/api/mxnet/index.html#module-mxnet" title="(在 Apache MXNet)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mxnet</span></code></a> 获取预训练的神经网络，以及在 TVM 中的 <code class="xref py py-mod docutils literal notranslate"><span class="pre">relay</span></code> 模块 <span id="id2">[<a class="reference internal" href="../zreferences.html#id5" title="Jared Roesch, Steven Lyubomirsky, Marisa Kirisame, Josh Pollock, Logan Weber, Ziheng Jiang, Tianqi Chen, Thierry Moreau, and Zachary Tatlock. Relay: a high-level ir for deep learning. arXiv preprint arXiv:1904.08368, 2019.">Roesch <em>et al.</em>, 2019</a>]</span> 转换和优化神经网络。</p>
 <p><code class="docutils literal notranslate"><span class="pre">Relay</span></code> 是 TVM 中表示神经网络的高级中间表示（intermediate representation，简称 IR）。</p>
 <section id="id3">
-<h2>获得预训练模型<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>获得预训练模型<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>预训练模型是指在数据集上训练好参数的神经网络。在这里，通过从 MXNet 的模型动物园 <span id="id4">[<a class="reference internal" href="../zreferences.html#id5" title="Jared Roesch, Steven Lyubomirsky, Marisa Kirisame, Josh Pollock, Logan Weber, Ziheng Jiang, Tianqi Chen, Thierry Moreau, and Zachary Tatlock. Relay: a high-level ir for deep learning. arXiv preprint arXiv:1904.08368, 2019.">Roesch <em>et al.</em>, 2019</a>]</span> 指定 <code class="docutils literal notranslate"><span class="pre">pretrained=True</span></code> 来下载和加载 ResNet-18 模型。如果你想了解该模型，可以参考 <a class="reference external" href="http://d2l.ai/chapter_convolutional-modern/resnet.html">Chapter 7.6 in D2L</a>。</p>
 <div class="admonition seealso">
 <p class="admonition-title">参见</p>
@@ -796,7 +795,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id5">
-<h2>数据预处理<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<h2>数据预处理<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <p>读取样本图像并调整其大小，即 224 像素的宽度和高度，这是训练的神经网络的尺寸。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -832,7 +831,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id6">
-<h2>编译预训练模型<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<h2>编译预训练模型<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
 <p>为了编译模型，使用 <code class="docutils literal notranslate"><span class="pre">from_mxnet</span></code> 方法导入 MXNet 模型并变换为 Relay IR。在该方法为模型提供输入数据形状。一些神经网络可能需要稍后确定的数据形状的某些维数。然而，在 ResNet 模型中，数据形状是固定的，这使得编译器更容易实现高性能。推荐固定的数据形状。在后面的章节中，只涉及动态数据形状（即在运行时确定的某些维度）。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -983,7 +982,7 @@ WARNING:autotvm:One or more operators have not been tuned. Please tune your mode
 </div>
 </section>
 <section id="id7">
-<h2>推理<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<h2>推理<a class="headerlink" href="#id7" title="永久链接至标题">#</a></h2>
 <p>借由创建的运行时模块来运行模型推理，即神经网络的前向传播。使用 <code class="docutils literal notranslate"><span class="pre">set_input</span></code> 加载参数，并通过输入数据运行工作负载（workload）。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1033,7 +1032,7 @@ WARNING:autotvm:One or more operators have not been tuned. Please tune your mode
 </div>
 </section>
 <section id="id8">
-<h2>保存已编译的库<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<h2>保存已编译的库<a class="headerlink" href="#id8" title="永久链接至标题">#</a></h2>
 <p>可以保存 <code class="docutils literal notranslate"><span class="pre">relay.build</span></code> 的输出到磁盘以便以后重用它们。下面的代码块保存了 json 字符串、库和参数。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1105,7 +1104,7 @@ WARNING:autotvm:One or more operators have not been tuned. Please tune your mode
 </div>
 </section>
 <section id="id9">
-<h2>小结<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id9" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>可以利用 TVM 的 <code class="docutils literal notranslate"><span class="pre">relay</span></code> 将神经网络转换并编译成模块以进行模型推理。</p></li>
 <li><p>可以将编译后的模块保存到磁盘中，以方便将来的部署。</p></li>
@@ -1158,13 +1157,13 @@ WARNING:autotvm:One or more operators have not been tuned. Please tune your mode
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

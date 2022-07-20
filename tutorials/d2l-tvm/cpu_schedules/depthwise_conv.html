@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Depthwise Convolution &#8212; tvm-book 0.0.3 文档</title>
+    <title>Depthwise Convolution &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/depthwise_conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/depthwise_conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -744,7 +743,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="depthwise-convolution">
-<h1>Depthwise Convolution<a class="headerlink" href="#depthwise-convolution" title="Permalink to this heading">#</a></h1>
+<h1>Depthwise Convolution<a class="headerlink" href="#depthwise-convolution" title="永久链接至标题">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_depthwise_conv_cpu</span></code></p>
 <p>In this section, we will follow the packing idea presented in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code> to re-defined the computation of depthwise convolution and schedule it to run efficiently on CPUs. Similar to the 2-D convolution, tiling the data along the channel dimension and packing it into <code class="docutils literal notranslate"><span class="pre">NCHW[x]c</span></code> benefit the performance significantly.</p>
 <div class="cell docutils container">
@@ -763,7 +762,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="packing-data-and-weight">
-<h2>Packing Data and Weight<a class="headerlink" href="#packing-data-and-weight" title="Permalink to this heading">#</a></h2>
+<h2>Packing Data and Weight<a class="headerlink" href="#packing-data-and-weight" title="永久链接至标题">#</a></h2>
 <p>Recall the depthwise convolution described in :numref:<code class="docutils literal notranslate"><span class="pre">ch_depthwise_conv</span></code>, it differs from the 2-D convolution by having each channel of the input data convolved with a separated kernel. Therefore, the packing mechanism of input data is exactly the same as we did in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>. Kernel is a bit different, as the size is in <code class="docutils literal notranslate"><span class="pre">[oc,</span> <span class="pre">1,</span> <span class="pre">kh,</span> <span class="pre">kw]</span></code>, which means that there is no need to tile the input channel.</p>
 <p>In other words, in the packing method below, we only pass one argument <code class="docutils literal notranslate"><span class="pre">c</span></code> to depict the channel, and another argument <code class="docutils literal notranslate"><span class="pre">tc</span></code> to depict the tiling size of channels. Other than that, it works very similarly as the <code class="docutils literal notranslate"><span class="pre">conv_pack</span></code> method defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>.</p>
 <div class="cell docutils container">
@@ -803,7 +802,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="computation">
-<h2>Computation<a class="headerlink" href="#computation" title="Permalink to this heading">#</a></h2>
+<h2>Computation<a class="headerlink" href="#computation" title="永久链接至标题">#</a></h2>
 <p>Like in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>, we also need to re-implement the depthwise convolution computation accordingly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -868,7 +867,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="schedule">
-<h2>Schedule<a class="headerlink" href="#schedule" title="Permalink to this heading">#</a></h2>
+<h2>Schedule<a class="headerlink" href="#schedule" title="永久链接至标题">#</a></h2>
 <p>The optimization strategy here is almost identical to <code class="docutils literal notranslate"><span class="pre">cache_block</span></code> defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>. The main  difference is in the channels, i.e. we don’t need to reduce along the input channel dimension due to the compute nature of depthwise convolution.</p>
 <p>The tiling sizes for channel and width are set to make sure that the working set of the inner loop which calculates the cached output fits in the cache.</p>
 <div class="cell docutils container">
@@ -936,7 +935,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="benchmark">
-<h2>Benchmark<a class="headerlink" href="#benchmark" title="Permalink to this heading">#</a></h2>
+<h2>Benchmark<a class="headerlink" href="#benchmark" title="永久链接至标题">#</a></h2>
 <p>Finally, let’s benchmark the results against MXNet.</p>
 <p>The following benchmarking method is very similar to <code class="docutils literal notranslate"><span class="pre">bench_conv_tvm</span></code> defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code>, with two differences:</p>
 <ol class="arabic simple">
@@ -1016,13 +1015,13 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>We can get good performance out of depthwise convolution by following the same rules of optimizing 2-D convolution.</p></li>
 </ul>
 </section>
 <section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
+<h2>Exercises<a class="headerlink" href="#exercises" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>Try different tiling sizes.</p></li>
 </ul>
@@ -1074,13 +1073,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

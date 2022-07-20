@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Batch Normalization &#8212; tvm-book 0.0.3 文档</title>
+    <title>Batch Normalization &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/common_operators/batch_norm and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/common_operators/batch_norm and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -731,7 +730,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="batch-normalization">
-<span id="ch-batch-norm"></span><h1>Batch Normalization<a class="headerlink" href="#batch-normalization" title="Permalink to this heading">#</a></h1>
+<span id="ch-batch-norm"></span><h1>Batch Normalization<a class="headerlink" href="#batch-normalization" title="永久链接至标题">#</a></h1>
 <p>本节讨论如何使用 TVM 执行 batch normalization（<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>）。和 pooling 一样，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 也是 CNN 中常见的算子。D2L 在 <a class="reference external" href="https://d2l.ai/chapter_convolutional-modern/batch-norm.html">细节</a> 中引入了这个算子。</p>
 <p>从计算的角度来看，对于给定的值，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 减去其中的 <code class="docutils literal notranslate"><span class="pre">mean</span></code>，然后用 <code class="docutils literal notranslate"><span class="pre">variance</span></code> 的平方根除以它，与常规 normalization 没有区别。它被称为 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>，因为均值和方差是在执行训练时从批次中获得的。在此之后，  <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 也对该值应用仿射变换，即将其与 scale 值 <span class="math notranslate nohighlight">\(\gamma\)</span> 相乘，然后加上 shift 值 <span class="math notranslate nohighlight">\(\beta\)</span>。由训练梯度计算得到 <span class="math notranslate nohighlight">\(\gamma\)</span> 和 <span class="math notranslate nohighlight">\(\beta\)</span>。最后，加上一个小的正值 <span class="math notranslate nohighlight">\(\epsilon\)</span>，以防止除数为 0。</p>
 <p>在推理的情况下，均值和方差都是确定的，因此 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的过程只是几个简单的元素运算的组合。</p>
@@ -746,7 +745,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="id1">
-<h2>计算定义<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<h2>计算定义<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <p>在实践中，不打算执行一个值的 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code>。相反，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 将在卷积的输出上执行，即 (channel, height, weight) 中的 3-D 数据。</p>
 <div class="math notranslate nohighlight">
 \[out[i,:,:] = \frac{data[i,:,:] - mean[i]}{\sqrt{var[i]+\epsilon}} \
@@ -879,7 +878,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="mxnet-baseline">
-<h2>MXNet Baseline<a class="headerlink" href="#mxnet-baseline" title="Permalink to this heading">#</a></h2>
+<h2>MXNet Baseline<a class="headerlink" href="#mxnet-baseline" title="永久链接至标题">#</a></h2>
 <p>使用 MXNet 的 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 函数作为基准来检查编译函数的正确性。</p>
 <p>MXNet 中的这个函数被定义为通用函数，用于训练和推理。在这里讨论的推理案例中，需要正确地设置相应的输入参数。一个是 <code class="docutils literal notranslate"><span class="pre">use_global_stats</span></code>，需要设置为 <code class="docutils literal notranslate"><span class="pre">True</span></code> ，因为将使用 <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的输入平均值和方差来计算，而不是从输入数据计算它们（训练将这样做）。另一个是 <code class="docutils literal notranslate"><span class="pre">fix_gamma</span></code>，它需要设置为 <code class="docutils literal notranslate"><span class="pre">False</span></code>，这样输入的 <span class="math notranslate nohighlight">\(\gamma\)</span> 就会被使用，而不是将 <span class="math notranslate nohighlight">\(\gamma\)</span> 为全设置为 1。</p>
 <p>最后，就像在其他例子中讨论的那样，MXNet <code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的输入数据是 4D，其中 batch 是最外维。因此，将在数据中相应地扩展这个维度。</p>
@@ -919,7 +918,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id2">
-<h2>小结<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>从计算的角度来看，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 是一系列广播和元素算子的组合，可以很容易地从 TVM 的张量算子库（Tensor OPerator Inventory，简称 TOPI）中得到。</p></li>
 <li><p>在推理中，<code class="docutils literal notranslate"><span class="pre">batch_norm</span></code> 的 <span class="math notranslate nohighlight">\(mean\)</span> 和 <span class="math notranslate nohighlight">\(var\)</span> 是预定义的。</p></li>
@@ -972,13 +971,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

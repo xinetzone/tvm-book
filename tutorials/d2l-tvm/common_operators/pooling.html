@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>池化 &#8212; tvm-book 0.0.3 文档</title>
+    <title>池化 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/common_operators/pooling and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/common_operators/pooling and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -729,7 +728,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-pooling">
-<span id="id1"></span><h1>池化<a class="headerlink" href="#ch-pooling" title="Permalink to this heading">#</a></h1>
+<span id="id1"></span><h1>池化<a class="headerlink" href="#ch-pooling" title="永久链接至标题">#</a></h1>
 <p>本节讨论如何使用 TVM 进行池。Pooling 是 CNN 中常见的算子，如果你不熟悉它，请参考 D2L 的 <a class="reference external" href="https://d2l.ai/chapter_convolutional-neural-networks/pooling.html">6.5</a> 章节。在这里将跳过为什么，只关注如何。</p>
 <p>池有两种类型，<code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> 返回池的最大值，<code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> 返回池的平均值。为了简单起见，在本节中处理 2D 池化。与 conv2d 一样，池化算子在特征图中移动了池化核。有时需要填充以匹配所需的输出大小。Pooling 比 conv2d 的计算量要少得多，因为它只需要得到最大值或平均值。它是 memory-bound 算子。</p>
 <p><a class="reference internal" href="#fig-pooling"><span class="std std-ref">2D 最大值和平均池化。蓝色形状表示特定的池化步骤。注意，除了算法之外，填充值也不同。</span></a> 说明了 2D max pooling 和平均 pooling 是如何工作的，使用以下设置：kernel 尺寸 [3,3]， stride [1,1]， padding[1,1]。</p>
@@ -748,7 +747,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="id2">
-<h2>定义计算<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>定义计算<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">pooling</span></code> 的计算方式类似于 <code class="docutils literal notranslate"><span class="pre">conv</span></code>，所以你会发现下面的池化定义代码接受与 <a class="reference internal" href="conv.html#ch-conv"><span class="std std-ref">卷积</span></a> 中定义的 <code class="docutils literal notranslate"><span class="pre">conv</span></code> 相似的参数。池化的输出大小也可以通过重用 <code class="docutils literal notranslate"><span class="pre">conv_out_size</span></code> 方法来计算。</p>
 <p>使用不同的 <code class="docutils literal notranslate"><span class="pre">te.compute</span></code> 在同一方法中包含两种类型的 <code class="docutils literal notranslate"><span class="pre">pooling</span></code>。如果未指定 <code class="docutils literal notranslate"><span class="pre">pool_type</span></code>，则该方法将抛出错误。使用 <code class="docutils literal notranslate"><span class="pre">te.max</span></code> 来执行 <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> 和 <code class="docutils literal notranslate"><span class="pre">te.sum</span></code> 和元素除法来执行 <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code>。此外，还请注意 <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> 的填充值是 <code class="docutils literal notranslate"><span class="pre">te.min_value</span></code>，而 <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> 为 0。</p>
 <div class="cell docutils container">
@@ -897,7 +896,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="mxnet-baseline">
-<h2>MXNet Baseline<a class="headerlink" href="#mxnet-baseline" title="Permalink to this heading">#</a></h2>
+<h2>MXNet Baseline<a class="headerlink" href="#mxnet-baseline" title="永久链接至标题">#</a></h2>
 <p>使用 MXNet 的 pooling 函数作为基线来检查编译函数的正确性。MXNet 计算池的方式与我们所做的类似。唯一不同的是它的输入数据是 4D，其中最外维是 batch。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -937,7 +936,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>小结<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>2D 池化处理数据的方式与 2D 卷积类似，但计算本身更轻量。</p></li>
 <li><p>可以使用 TVM 表达式轻松定义 <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> 和 <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code>。</p></li>
@@ -990,13 +989,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

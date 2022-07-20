@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>函数调用的开销 &#8212; tvm-book 0.0.3 文档</title>
+    <title>函数调用的开销 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/call_overhead and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/call_overhead and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -736,10 +735,10 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-call-overhead">
-<span id="id1"></span><h1>函数调用的开销<a class="headerlink" href="#ch-call-overhead" title="Permalink to this heading">#</a></h1>
+<span id="id1"></span><h1>函数调用的开销<a class="headerlink" href="#ch-call-overhead" title="永久链接至标题">#</a></h1>
 <p>从本章开始对各种调度进行基准测试。在深入研究各种执行时间之前，需要知道在 Python 中发出函数调用的开销（overhead）。众所周知，Python 并不是地球上最快的语言。用 Python 创建原型很快，但也需要付出代价，因为 Python 在钩子下做了聪明的事情。在本节中，将研究在 Python 中调用函数的开销，并演示它对我们以后的基准测试结果的影响。</p>
 <section id="id2">
-<h2>度量执行时间<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>度量执行时间<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>在 Python 中，经常使用 <code class="docutils literal notranslate"><span class="pre">timeit</span></code> 模块对工作负载进行基准测试，特别是当它的执行时间远远小于 1 秒时。请注意，Jupyter 有个神奇的内置函数 <code class="docutils literal notranslate"><span class="pre">%timeit</span></code> 更简单，但使用它的函数不能被保存以供将来使用，所以我们将直接使用 <code class="docutils literal notranslate"><span class="pre">timeit</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -796,7 +795,7 @@ function checkPageExistsAndRedirect(event) {
 <p>可以看到 <code class="docutils literal notranslate"><span class="pre">np.zeros((4,</span> <span class="pre">4))</span></code> 的新测量的执行时间比第一次测量的零要小得多，因为第一次测量包括了热身（warmup）时间。</p>
 </section>
 <section id="id3">
-<h2>不小的开销<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>不小的开销<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>现在对 <code class="docutils literal notranslate"><span class="pre">copyto</span></code> 方法进行基准测试，它将 ndarray 的内容复制到另一个大小不同的 ndarray 中。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -855,7 +854,7 @@ function checkPageExistsAndRedirect(event) {
 <p>可以看到，当向量长度小于 <span class="math notranslate nohighlight">\(10^3\)</span> 时，当向量长度缩短时，执行时间几乎没有减少。这是因为当向量长度很短时，真正的 <code class="docutils literal notranslate"><span class="pre">copyto</span></code> 执行时间太小，而总执行时间主要由函数调用开销决定。开销包括 Python 函数中的任何参数预处理，调用外部函数接口，以及其他 <a class="reference external" href="https://jakevdp.github.io/blog/2014/05/09/why-python-is-slow/">Python 后端开销</a>。因此，基准测试过小的工作负载是没有意义的。</p>
 </section>
 <section id="numpytvm-mxnet">
-<h2>NumPy、TVM 和 MXNet 的开销<a class="headerlink" href="#numpytvm-mxnet" title="Permalink to this heading">#</a></h2>
+<h2>NumPy、TVM 和 MXNet 的开销<a class="headerlink" href="#numpytvm-mxnet" title="永久链接至标题">#</a></h2>
 <p>在本书中，将对 Numpy、TVM 和 MXNet 中的各种算子进行基准测试。检查一下它们的函数调用开销。可以通过执行一些较小的工作负载来粗略估计它，这些工作负载的实际执行时间与开销相比可以忽略不计。首先检查 NumPy。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -913,7 +912,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>小结<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>通过提前几次运行方法来预热方法是测量其执行时间的好做法。</p></li>
 <li><p>函数调用开销可能需要几微秒。在 Python 中对太小的函数进行基准测试是没有意义的。</p></li>
@@ -966,13 +965,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

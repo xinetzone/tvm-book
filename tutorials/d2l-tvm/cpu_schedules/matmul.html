@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>CPU 矩阵乘法 &#8212; tvm-book 0.0.3 文档</title>
+    <title>CPU 矩阵乘法 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/matmul and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/matmul and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -746,10 +745,10 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="cpu">
-<span id="ch-matmul-cpu"></span><h1>CPU 矩阵乘法<a class="headerlink" href="#cpu" title="Permalink to this heading">#</a></h1>
+<span id="ch-matmul-cpu"></span><h1>CPU 矩阵乘法<a class="headerlink" href="#cpu" title="永久链接至标题">#</a></h1>
 <p>NumPy 的 <code class="docutils literal notranslate"><span class="pre">dot</span></code> 算子在 <a class="reference internal" href="arch.html#ch-cpu-arch"><span class="std std-ref">CPU 架构</span></a> 中几乎达到了 CPU (Xeon E5-2686 v4) 的性能峰值。在本节中，将研究 TVM 中该算子的多种调度策略。</p>
 <section id="id1">
-<h2>配置<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<h2>配置<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
@@ -784,7 +783,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id2">
-<h2>默认调度<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>默认调度<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>默认调度由三个嵌套的 for 循环组成。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -856,7 +855,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>重新排序轴<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>重新排序轴<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p><a class="reference internal" href="../common_operators/matmul.html#fig-matmul-default"><span class="std std-ref">计算矩阵乘法的原始 C_{x,y}</span></a> 的第一个问题是矩阵 <span class="math notranslate nohighlight">\(B\)</span> 是按列访问的，而它的元素是按行存储的（即矩阵 <span class="math notranslate nohighlight">\(B\)</span> 属于 <a class="reference external" href="https://en.wikipedia.org/wiki/Row-_and_column-major_order">row-major</a> ）。换句话说，在上面的伪代码中，在轴 <code class="docutils literal notranslate"><span class="pre">k</span></code> 之前迭代轴 <code class="docutils literal notranslate"><span class="pre">y</span></code>。只要简单地切换这两个 for 循环，就可以按顺序读取和写入所有元素。<a class="reference internal" href="#fig-matmul-reorder"><span class="std std-ref">在矩阵乘法中重新排列坐标轴</span></a> 说明了数据访问模式的改变。</p>
 <figure class="align-default" id="id7">
 <span id="fig-matmul-reorder"></span><img alt="../../../_images/matmul_reorder.svg" src="../../../_images/matmul_reorder.svg" /><figcaption>
@@ -920,7 +919,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>并行化<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<h2>并行化<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <p>重新查看上面的伪代码。在最外层的 for 循环 <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">(x,</span> <span class="pre">0,</span> <span class="pre">64)</span></code> 中，每次计算 <span class="math notranslate nohighlight">\(C\)</span> 中一行的结果。每一行都可以并行计算，所以可以让调度并行化 <code class="docutils literal notranslate"><span class="pre">x</span></code> 轴。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -976,14 +975,14 @@ function checkPageExistsAndRedirect(event) {
 <p>并行化再次提高了性能。但可以看到，与 NumPy 相比，在大型矩阵上仍然存在差距，特别是当它们无法放入 L2 缓存时。将在下一节中解决它。</p>
 </section>
 <section id="id5">
-<h2>小结<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>对矩阵乘法中的 for 循环进行适当的排序可以提高性能。</p></li>
 <li><p>适当的线程级并行也可以提高性能。</p></li>
 </ul>
 </section>
 <section id="id6">
-<h2>练习<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<h2>练习<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
 <ol class="arabic simple">
 <li><p>更改线程数</p></li>
 <li><p>尝试用不同的 <code class="docutils literal notranslate"><span class="pre">parallel</span></code> 方法排列坐标轴</p></li>
@@ -1037,13 +1036,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>在远程计算机上运行 &#8212; tvm-book 0.0.3 文档</title>
+    <title>在远程计算机上运行 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/getting_started/remote and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/getting_started/remote and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -744,7 +743,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="ch-remote">
-<span id="id1"></span><h1>在远程计算机上运行<a class="headerlink" href="#ch-remote" title="Permalink to this heading">#</a></h1>
+<span id="id1"></span><h1>在远程计算机上运行<a class="headerlink" href="#ch-remote" title="永久链接至标题">#</a></h1>
 <p>将在各种硬件平台上运行和优化程序。一种方法是使用所需的硬件登录到计算机，安装所需的包，然后在那里运行工作负载。然而，这使得维护源代码和数据变得困难，特别是当目标硬件的功耗最小时。在本节中，我们将描述另一种解决方案：在远程机器上运行守护进程，然后将编译后的模块和输入数据发送给它以供执行。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -759,7 +758,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 <p>注意，从 TVM 导入 <code class="docutils literal notranslate"><span class="pre">rpc</span></code> 模块。<a class="reference external" href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPC</a>，即远程过程调用（remote procedure call），允许在远程位置上执行程序。</p>
 <section id="id2">
-<h2>设置远程计算机<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>设置远程计算机<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>需要在远程机器上安装 TVM <code class="docutils literal notranslate"><span class="pre">runtime</span></code> 模块。安装设置几乎与 TVM 相同（请参阅 <a class="reference internal" href="install.html#ch-install"><span class="std std-ref">安装</span></a>），但只需要构建运行时，即 <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">runtime</span></code>，而不是整个 TVM 库。运行时大小通常小于 1MB，这使得它适用于具有内存限制的设备。如有必要，还需要启用适当的后端，例如 <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> 或 <code class="docutils literal notranslate"><span class="pre">OpenCL</span></code>。</p>
 <p>一旦安装了运行时，就可以通过在远程机器上运行以下命令来启动 daemon。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m tvm.exec.rpc_server --host <span class="m">0</span>.0.0.0 --port<span class="o">=</span><span class="m">9090</span>
@@ -785,7 +784,7 @@ function checkPageExistsAndRedirect(event) {
 <p>例如，<code class="docutils literal notranslate"><span class="pre">x86_64-apple-darwin17.7.0</span></code> 即 MacbookPro，而 <code class="docutils literal notranslate"><span class="pre">armv6k-unknown-linux-gnueabihf</span></code> 指的是 Raspberry Pi 4B.</p>
 </section>
 <section id="id3">
-<h2>编译远程计算机的程序<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>编译远程计算机的程序<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>在远程机器上运行 <a class="reference internal" href="vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a>。注意，通过 LLVM 的 <code class="docutils literal notranslate"><span class="pre">-target</span></code> 参数指定了远程机器目标。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -857,7 +856,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>在远程计算机上评估<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<h2>在远程计算机上评估<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <p>使用之前检查的 IP 连接到远程机器。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -909,7 +908,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id5">
-<h2>运行神经网络推理<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<h2>运行神经网络推理<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <p>在远程机器上运行 <code class="xref py py-mod docutils literal notranslate"><span class="pre">ch_from_mxnet</span></code> 中使用的 ResNet-18。和前面一样，加载样本图像和 Imagenet 1K 标签。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -975,14 +974,14 @@ One or more operators have not been tuned. Please tune your model for better per
 </div>
 </section>
 <section id="id6">
-<h2>小结<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>可以在远程机器上安装 TVM 运行时来启动 RPC 服务器，以接受要运行的工作负载。</p></li>
 <li><p>通过指定远程机器的 architecture target（称为交叉编译（cross-compilation）），可以在本地编译程序，然后通过 RPC 在远程机器上运行。</p></li>
 </ul>
 </section>
 <section id="id7">
-<h2><a class="reference external" href="https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709">讨论</a><a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<h2><a class="reference external" href="https://discuss.tvm.ai/t/getting-started-running-on-a-remote-machine/4709">讨论</a><a class="headerlink" href="#id7" title="永久链接至标题">#</a></h2>
 </section>
 </section>
 
@@ -1031,13 +1030,13 @@ One or more operators have not been tuned. Please tune your model for better per
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

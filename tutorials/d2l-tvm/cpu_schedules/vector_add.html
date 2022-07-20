@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>CPU 向量加法 &#8212; tvm-book 0.0.3 文档</title>
+    <title>CPU 向量加法 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/vector_add and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/vector_add and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -741,10 +740,10 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="cpu">
-<span id="ch-vector-add-cpu"></span><h1>CPU 向量加法<a class="headerlink" href="#cpu" title="Permalink to this heading">#</a></h1>
+<span id="ch-vector-add-cpu"></span><h1>CPU 向量加法<a class="headerlink" href="#cpu" title="永久链接至标题">#</a></h1>
 <p>本节在 CPU 优化 <a class="reference internal" href="../getting_started/vector_add.html#ch-vector-add"><span class="std std-ref">向量加法</span></a> 定义的向量加法。</p>
 <section id="id1">
-<h2>设置<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<h2>设置<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvm_book.contrib</span> <span class="kn">import</span> <span class="n">d2ltvm</span>
@@ -828,7 +827,7 @@ function checkPageExistsAndRedirect(event) {
 <p>可以看到，性能首先随着向量长度的增加而增加，这是由于工作负载较小时系统开销占主导地位。当无法将所有数据放入缓存时，性能就会下降。</p>
 </section>
 <section id="schedule">
-<h2>默认 Schedule<a class="headerlink" href="#schedule" title="Permalink to this heading">#</a></h2>
+<h2>默认 Schedule<a class="headerlink" href="#schedule" title="永久链接至标题">#</a></h2>
 <p>在下面的代码块中，定义了可重用的方法来对 TVM 性能进行基准测试。它接受三个参数</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">func</span></code>：它返回 schedule 及其对应的符号张量参数</p></li>
@@ -922,7 +921,7 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 <p>当向量大小较小时，默认调度优于 NumPy，即该方法中 TVM 的函数调用开销小于 NumPy。当增加向量大小时，性能会下降，因为数据无法放入最后一级缓存中，这并不奇怪。</p>
 </section>
 <section id="id2">
-<h2>并行化<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>并行化<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>默认情况下未启用的一个重要优化是线程级并行。向量加法算子是 <a class="reference external" href="https://en.wikipedia.org/wiki/Embarrassingly_parallel">令人尴尬的并行工作负载</a>，可以将 for 循环改为并行的 for 循环。在 TVM 中，首先通过 <code class="docutils literal notranslate"><span class="pre">s[C]</span></code> 获得输出符号 <code class="docutils literal notranslate"><span class="pre">C</span></code> 的调度程序，然后将计算的并行化施加到它的第一个轴 <code class="docutils literal notranslate"><span class="pre">C.op.axis[0]</span></code>。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -974,7 +973,7 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 <p>与之前得到的结果相比，当工作负载较大时，例如向量长度超过 <span class="math notranslate nohighlight">\(10^4\)</span> 时，并行化显著提高了性能。但是，并行化开销会影响小工作负载的性能，在这种情况下，单线程甚至更快。随着多核的出现，性能下降的幅度越大，导致 L2 缓存的总量就越大。</p>
 </section>
 <section id="id3">
-<h2>张量化<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>张量化<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>单个核可以有 SIMD 单元来同时运行多个算术运算，就像在 <a class="reference internal" href="arch.html#ch-cpu-arch"><span class="std std-ref">CPU 架构</span></a> 中看到的那样。尽管上面循环中的一个迭代只有一个 add 运算，但可以在一个迭代中显式地分配更多运算，并要求编译器使用 SIMD 指令来处理它们。</p>
 <p>做到这一点的方法是首先使用 <code class="docutils literal notranslate"><span class="pre">factor</span></code> 将 one-level 的 for 循环分割成 two-level 嵌套的 for 循环。内部循环由 <code class="docutils literal notranslate"><span class="pre">factor</span></code> 原始迭代组成，这些迭代将被相应地分组在一起，以在一个 core 上的 SIMD 指令中执行。外部循环中的迭代仍然并行运行。</p>
 <div class="cell docutils container">
@@ -1028,7 +1027,7 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
 <p>向量化版本的性能几乎和普通的并行化版本一样。部分原因是，向量加法的瓶颈是内存带宽，而不是计算，而 SIMD 只有助于后者。稍后将看到它对计算密集型工作负载（如矩阵乘法）有更多帮助。</p>
 </section>
 <section id="id4">
-<h2>小结<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>默认调度生成朴素的单线程 CPU 程序。</p></li>
 <li><p>并行化可以提高大工作负载的性能。</p></li>
@@ -1082,13 +1081,13 @@ target triple = &quot;x86_64-pc-linux-gnu&quot;
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

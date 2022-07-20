@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>CPU 架构 &#8212; tvm-book 0.0.3 文档</title>
+    <title>CPU 架构 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/arch and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/arch and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -753,10 +752,10 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="cpu">
-<span id="ch-cpu-arch"></span><h1>CPU 架构<a class="headerlink" href="#cpu" title="Permalink to this heading">#</a></h1>
+<span id="ch-cpu-arch"></span><h1>CPU 架构<a class="headerlink" href="#cpu" title="永久链接至标题">#</a></h1>
 <p>在本节中，将简要介绍对 CPU 上的深度学习和科学计算性能至关重要的系统组件。为了进行更全面的调查，推荐 <a class="reference external" href="https://www.amazon.com/Computer-Architecture-Quantitative-John-Hennessy/dp/012383872X">这本经典教科书（textbook）</a>。假设读者了解基本的系统概念，如时钟速率（即 clock rate 或者 频率（frequency））、CPU cycle 和 cache。</p>
 <section id="id1">
-<h2>算术单元<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<h2>算术单元<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <p>Arithmetic Units</p>
 <p>典型的通用 CPU 有硬件单元来执行整数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Arithmetic_logic_unit">ALU</a>，中文：算术逻辑单元）和浮点数（称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Floating-point_unit">FPU</a>）上的运算。各种数据类型的性能取决于硬件。</p>
 <p>先检查一下使用的 CPU 型号。</p>
@@ -815,7 +814,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id2">
-<h2>并行执行<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>并行执行<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>直到 21 世纪初，CPU 频率迅速增加。2003 年，英特尔发布 <a class="reference external" href="https://en.wikipedia.org/wiki/Pentium_4">Pentium 4</a>（奔腾） CPU，时钟频率高达 3.8 GHz。如果检查 CPU 时钟速率，</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -834,7 +833,7 @@ CPU min MHz:                     1200.0000
 </div>
 <p>可以看到它的时钟速率比 2003 年的产品低，但它可能比奔腾 4 CPU 快 100 倍。秘密来源是，新的 CPU 模型在并行执行领域探索了更多。接下来简要地讨论两种典型的并行化。</p>
 <section id="simd">
-<h3>SIMD<a class="headerlink" href="#simd" title="Permalink to this heading">#</a></h3>
+<h3>SIMD<a class="headerlink" href="#simd" title="永久链接至标题">#</a></h3>
 <p>单指令多数据流（Single instruction, multiple data，简称 <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD</a>）是指使用相同指令同时处理多个元素。</p>
 <figure class="align-default" id="id7">
 <img alt="../../../_images/cpu_parallel_arch.svg" src="../../../_images/cpu_parallel_arch.svg" /><figcaption>
@@ -862,7 +861,7 @@ cat: write error: Broken pipe
 <p>可以看出，支持的最强大的 SIMD 指令集是 AVX-512，它对 AVX 进行了扩展，支持对 512 位宽数据执行 SIMD，例如每次可以执行 16 个 float32 运算或 8 个 float64 运算。</p>
 </section>
 <section id="id3">
-<h3>多核<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<h3>多核<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h3>
 <p>SIMD 提高了单核的性能，另一种方法是向单个 CPU 处理器添加多个核。</p>
 <p>看起来我们的 CPU 有 48 核。</p>
 <div class="cell docutils container">
@@ -882,7 +881,7 @@ cat: write error: Broken pipe
 <p>让两个线程共享同一个核的资源可能会增加总吞吐量，但会以增加总体延迟为代价。此外，超线程的效果在很大程度上取决于应用程序。因此，一般不建议在深度学习工作负载中利用超线程。在本书后面，您将看到，即使我们的 CPU 有 48 个核，我们也只启动了 24 个线程。</p>
 </section>
 <section id="id4">
-<h3>性能<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<h3>性能<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h3>
 <p>我们经常使用每秒浮点运算次数（floating point operations per second，即 <a class="reference external" href="https://en.wikipedia.org/wiki/FLOPS">FLOPS</a>）来衡量硬件平台或可执行程序的性能。</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -924,7 +923,7 @@ cat: write error: Broken pipe
 </section>
 </section>
 <section id="id5">
-<h2>内存子系统<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<h2>内存子系统<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <p>另一个对性能有显著影响的组件是内存子系统。内存大小是系统的关键规格之一。我们使用的机器内存为 125 GB。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -986,7 +985,7 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
 <p>由于系统每次都会将一个值块带到缓存中（参见 <a class="reference external" href="https://en.wikipedia.org/wiki/CPU_cache#CACHE-LINES">缓存线</a> 的概念），当引用这些相邻的数据时，这些数据可能仍然在缓存中。利用数据局部性带来的优势是最重要的性能优化原则之一。</p>
 </section>
 <section id="id6">
-<h2>小结<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>CPU 有专门的单元来处理各种数据类型的计算。CPU 的峰值性能是由时钟速率、内核数和指令集决定的。</p></li>
 <li><p>CPU 使用多级缓存来弥补 CPU 计算能力和主存带宽之间的差距。</p></li>
@@ -1040,13 +1039,13 @@ Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cach
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Packed Convolution &#8212; tvm-book 0.0.3 文档</title>
+    <title>Packed Convolution &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/packed_conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/packed_conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -739,7 +738,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="packed-convolution">
-<h1>Packed Convolution<a class="headerlink" href="#packed-convolution" title="Permalink to this heading">#</a></h1>
+<h1>Packed Convolution<a class="headerlink" href="#packed-convolution" title="永久链接至标题">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code></p>
 <p>We observed in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code> that the performance degrades when increasing the channel size for the convolution operator. In this section, we will consider tiling the channel axes and packing the data to improve the performance.</p>
 <div class="cell docutils container">
@@ -757,7 +756,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="packing-data-and-weight">
-<h2>Packing Data and Weight<a class="headerlink" href="#packing-data-and-weight" title="Permalink to this heading">#</a></h2>
+<h2>Packing Data and Weight<a class="headerlink" href="#packing-data-and-weight" title="永久链接至标题">#</a></h2>
 <p>In :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code>, we first tiled the width and height axes and then moved the inner axes as the innermost dimensions during computing. It’s the same idea to tile the channels. But we do one additional step to actually move the data in the inner channel loop to the last dimension, i.e. do data layout transformation. So we pay the data movement cost once, while improving the data accessing performance significantly.</p>
 <p>The following code block splits the channel dimension and move the data in NumPy.</p>
 <div class="cell docutils container">
@@ -846,7 +845,7 @@ packed shape (2, 2, 2, 2)
 <p>Of note, in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code> we defined the layout of the input data to be <code class="docutils literal notranslate"><span class="pre">NCHW</span></code>. For the packed data <code class="docutils literal notranslate"><span class="pre">PackedX</span></code> here, we follow the convention defined in :cite:<code class="docutils literal notranslate"><span class="pre">Liu.Wang.Yu.ea.2019</span></code> to define its layout as <code class="docutils literal notranslate"><span class="pre">NCHW[x]c</span></code>, where <code class="docutils literal notranslate"><span class="pre">x</span></code> describes the size of <code class="docutils literal notranslate"><span class="pre">c</span></code>, which is 2 (the value of <code class="docutils literal notranslate"><span class="pre">tc</span></code> above) in this case.</p>
 </section>
 <section id="computation">
-<h2>Computation<a class="headerlink" href="#computation" title="Permalink to this heading">#</a></h2>
+<h2>Computation<a class="headerlink" href="#computation" title="永久链接至标题">#</a></h2>
 <p>Since we changed the data layout, we need to re-implement the convolution computation accordingly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -911,7 +910,7 @@ packed shape (2, 2, 2, 2)
 </div>
 </section>
 <section id="schedule">
-<h2>Schedule<a class="headerlink" href="#schedule" title="Permalink to this heading">#</a></h2>
+<h2>Schedule<a class="headerlink" href="#schedule" title="永久链接至标题">#</a></h2>
 <p>The optimization strategy here is similar to :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code>. The major differences are</p>
 <ol class="arabic simple">
 <li><p>the innermost axis is the inner axis split from the output channel because the elements have already sit on the last dimension after packing.</p></li>
@@ -981,13 +980,13 @@ packed shape (2, 2, 2, 2)
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>We often tile input and output channels to for better cache efficiency and pack data accordingly.</p></li>
 </ul>
 </section>
 <section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
+<h2>Exercises<a class="headerlink" href="#exercises" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>What if the number of channels cannot be divided by the tiling size?</p></li>
 <li><p>Try different tiling sizes.</p></li>
@@ -1040,13 +1039,13 @@ packed shape (2, 2, 2, 2)
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

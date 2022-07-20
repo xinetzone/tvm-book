@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Convolution &#8212; tvm-book 0.0.3 文档</title>
+    <title>Convolution &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/gpu_schedules/conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/gpu_schedules/conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -763,7 +762,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="convolution">
-<h1>Convolution<a class="headerlink" href="#convolution" title="Permalink to this heading">#</a></h1>
+<h1>Convolution<a class="headerlink" href="#convolution" title="永久链接至标题">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_conv_gpu</span></code></p>
 <p>In this section, we will extend :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code> to optimize convolution on GPUs.</p>
 <div class="cell docutils container">
@@ -780,7 +779,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
 <p>As usual, we will use MXNet as our baseline, which calls cuDNN to execute the convolution. Like what we have done on CPUs, we benchmark the performance with various numbers of channels, when the input and kernel width/height are fixed to be 64 and 3, respectively.
 The benchmark method <code class="docutils literal notranslate"><span class="pre">bench_conv_mxnet</span></code> has already been defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>.
 The only change that we need to make is to specify to the method that the target device is <code class="docutils literal notranslate"><span class="pre">GPU</span></code>.</p>
@@ -818,7 +817,7 @@ The only change that we need to make is to specify to the method that the target
 </div>
 </section>
 <section id="default-schedule-of-conv">
-<h2>Default schedule of CONV<a class="headerlink" href="#default-schedule-of-conv" title="Permalink to this heading">#</a></h2>
+<h2>Default schedule of CONV<a class="headerlink" href="#default-schedule-of-conv" title="永久链接至标题">#</a></h2>
 <p>We then describe the computation of convolution in TVM using <code class="docutils literal notranslate"><span class="pre">conv</span></code> method, which is defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>. For a default schedule, we can simply bind two axes of the convolution loop nest into block and thread indexing axes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -862,7 +861,7 @@ The only change that we need to make is to specify to the method that the target
 <p>The default scheduling gives us the performance around 100 GFLOPS.</p>
 </section>
 <section id="tiling">
-<h2>Tiling<a class="headerlink" href="#tiling" title="Permalink to this heading">#</a></h2>
+<h2>Tiling<a class="headerlink" href="#tiling" title="永久链接至标题">#</a></h2>
 <p>As described in the last section, we can do tiling and bring the data to the shared and local memory of the GPU explicitly to improve the performance. Specifically, we tile three dimensions of the output (channel, height and width) as well as the three reduce dimensions (input channel, kernel height and kernel width). For the output dimensions, we split each of them into three parts for block binding, thread binding and CUDA kernel processing, respectively. The splitting factors are chosen to make sure the data can be fit into the shared and local memory of the GPU.</p>
 <p>In our case, we specify the output tile (<code class="docutils literal notranslate"><span class="pre">YL</span></code>) and its corresponding input tiles (<code class="docutils literal notranslate"><span class="pre">XL</span></code> and <code class="docutils literal notranslate"><span class="pre">KL</span></code>) to the local memory, and the tiled input data (<code class="docutils literal notranslate"><span class="pre">XX</span></code>) and kernel (<code class="docutils literal notranslate"><span class="pre">KK</span></code>) to the shared memory. :numref:<code class="docutils literal notranslate"><span class="pre">fig_conv_thread_block</span></code> shows how the tiling works for convolution.</p>
 <p><img alt="Blocked tiling for convolution to put small tiles into shared and local memory of GPU." src="../../../_images/conv_thread_block.svg" />
@@ -975,9 +974,9 @@ The only change that we need to make is to specify to the method that the target
 <p>The performance increases over one order of magnitude which is already on par with our baseline. We can still improve it by solving some bank conflict issue when accessing the data.</p>
 </section>
 <section id="optimizing-the-data-access-on-gpus">
-<h2>Optimizing the data access on GPUs<a class="headerlink" href="#optimizing-the-data-access-on-gpus" title="Permalink to this heading">#</a></h2>
+<h2>Optimizing the data access on GPUs<a class="headerlink" href="#optimizing-the-data-access-on-gpus" title="永久链接至标题">#</a></h2>
 <section id="bank-conflict">
-<h3>Bank Conflict<a class="headerlink" href="#bank-conflict" title="Permalink to this heading">#</a></h3>
+<h3>Bank Conflict<a class="headerlink" href="#bank-conflict" title="永久链接至标题">#</a></h3>
 <p>In the scheduling above, all threads will read <code class="docutils literal notranslate"><span class="pre">XX</span></code> and <code class="docutils literal notranslate"><span class="pre">KK</span></code> simultaneously, which may harm the performance. To understand it, we need to dive a little bit into the shared memory architecture and how threads are executed.</p>
 <p>Remember that we created 128 threads for a thread block. Due to resource limits, we cannot execute all of them at the same time. Instead, each time we select a group of threads and run time simultaneously, and then switch to another group quickly. Such a group is called a <em>warp</em>, which contains 32 threads, and each having a consecutive thread index.</p>
 <p>Each thread in a warp can access data in the shared memory simultaneously. So the shared memory is designed to support parallel load and store. The basic unit of the shared memory is <em>word</em>. Each word has 4 bytes, which can hold a single 32-bit floating number. Words are grouped into 32 banks. The <span class="math notranslate nohighlight">\(j\)</span>-th word is in the <span class="math notranslate nohighlight">\(i\)</span>-th bank if <code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">%</span> <span class="pre">32</span> <span class="pre">==</span> <span class="pre">i</span></code>.</p>
@@ -986,14 +985,14 @@ The only change that we need to make is to specify to the method that the target
 :label:<code class="docutils literal notranslate"><span class="pre">fig_bank_conflict</span></code></p>
 </section>
 <section id="data-access-pattern">
-<h3>Data Access Pattern<a class="headerlink" href="#data-access-pattern" title="Permalink to this heading">#</a></h3>
+<h3>Data Access Pattern<a class="headerlink" href="#data-access-pattern" title="永久链接至标题">#</a></h3>
 <p>Now let’s analyze the read pattern of <code class="docutils literal notranslate"><span class="pre">XX</span></code> and <code class="docutils literal notranslate"><span class="pre">KK</span></code>. Note from :numref:<code class="docutils literal notranslate"><span class="pre">fig_conv_thread_block</span></code> that a thread reads a row segment of <code class="docutils literal notranslate"><span class="pre">XX</span></code> with a length of 4 consecutive numbers, which spread in 4 adjacent banks which causes severe bank conflict. The same thing applies to the reading of <code class="docutils literal notranslate"><span class="pre">KK</span></code>.</p>
 <p>One way to mitigate this is to let the thread read in columns instead of rows, so each reading would have a stride, making the numbers to be read from one thread more spread among banks. :numref:<code class="docutils literal notranslate"><span class="pre">fig_conv_row_column</span></code> shows the difference of the reading patterns from shared memory to local memory.</p>
 <p><img alt="Different reading patterns from shared memory to local memory" src="../../../_images/conv_row_column.svg" />
 :label:<code class="docutils literal notranslate"><span class="pre">fig_conv_row_column</span></code></p>
 </section>
 <section id="virtual-threads">
-<h3>Virtual Threads<a class="headerlink" href="#virtual-threads" title="Permalink to this heading">#</a></h3>
+<h3>Virtual Threads<a class="headerlink" href="#virtual-threads" title="永久链接至标题">#</a></h3>
 <p>In addition, TVM provides another mechanism, called <em>virtual thread</em>, to further increase the data access stride to mitigate bank conflict. Let’s revisit the thread structure we defined above. Each block has 16 threads in the <code class="docutils literal notranslate"><span class="pre">x</span></code> dimension, each thread processes 4 elements. It conceptually gets data in the pattern depicted in the left of :numref:<code class="docutils literal notranslate"><span class="pre">fig_conv_virtual_thread</span></code>.</p>
 <p>In order to let threads to process data in a spread manner, we can use virtual threads to obtain strided data chunks. For example, we can first split the data into 2 parts to bind to 2 virtual threads. Then we further split the each part into 16 pieces to bind to 16 CUDA threads. In practice, the <span class="math notranslate nohighlight">\(i\)</span>-th CUDA thread in all virtual threads will be merged into a single one, so we will only get 16 CUDA threads instead of <span class="math notranslate nohighlight">\(16 \times 2\)</span> threads. In this case, each thread processes two spread data pieces as depicted in the right of :numref:<code class="docutils literal notranslate"><span class="pre">fig_conv_virtual_thread</span></code>.</p>
 <p><img alt="Virtual thread binding" src="../../../_images/conv_virtual_thread.svg" />
@@ -1107,14 +1106,14 @@ The only change that we need to make is to specify to the method that the target
 </section>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>We leverage the memory hierarchy of GPU to tile the data for better convolution performance.</p></li>
 <li><p>We carefully manipulate the data access pattern to mitigate bank conflict which harms the performance.</p></li>
 </ul>
 </section>
 <section id="exercise">
-<h2>Exercise<a class="headerlink" href="#exercise" title="Permalink to this heading">#</a></h2>
+<h2>Exercise<a class="headerlink" href="#exercise" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>Try our different factors to split the axes and observe the performance difference.</p></li>
 <li><p>Vary the size of input data and observe the performance difference.</p></li>
@@ -1167,13 +1166,13 @@ The only change that we need to make is to specify to the method that the target
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

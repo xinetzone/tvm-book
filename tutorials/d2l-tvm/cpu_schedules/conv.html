@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Convolution &#8212; tvm-book 0.0.3 文档</title>
+    <title>Convolution &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/conv and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -736,11 +735,11 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="convolution">
-<h1>Convolution<a class="headerlink" href="#convolution" title="Permalink to this heading">#</a></h1>
+<h1>Convolution<a class="headerlink" href="#convolution" title="永久链接至标题">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_conv_cpu</span></code></p>
 <p>In this section, we will optimize the convolution operator defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_conv</span></code> on CPUs. Specifically, this is a 2-D convolution operator.</p>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="永久链接至标题">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_env</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
@@ -850,7 +849,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="blocked-convolution">
-<h2>Blocked Convolution<a class="headerlink" href="#blocked-convolution" title="Permalink to this heading">#</a></h2>
+<h2>Blocked Convolution<a class="headerlink" href="#blocked-convolution" title="永久链接至标题">#</a></h2>
 <p>Just as we tiled matrices into blocks to improve the cache efficiency for matrix multiplication in :numref:<code class="docutils literal notranslate"><span class="pre">ch_block_matmul_cpu</span></code>, we can do the same thing for convolution. Let’s consider the case with a single output channel for simplicity.</p>
 <p>Consider a block of <span class="math notranslate nohighlight">\(Y\)</span>, denoted as <code class="docutils literal notranslate"><span class="pre">Y[i:i+tw,</span> <span class="pre">j:j+th]</span></code>, where <code class="docutils literal notranslate"><span class="pre">th</span></code> and <code class="docutils literal notranslate"><span class="pre">tw</span></code> are the tile sizes for height and width, respectively. We know the it can be computed by applying the convolution on a block of <span class="math notranslate nohighlight">\(X\)</span> with kernel <span class="math notranslate nohighlight">\(K\)</span>. In particular, assuming the width and height of <span class="math notranslate nohighlight">\(K\)</span> are <code class="docutils literal notranslate"><span class="pre">kw</span></code> and <code class="docutils literal notranslate"><span class="pre">kh</span></code>, then</p>
 <p><code class="docutils literal notranslate"><span class="pre">Y[i:i+tw,</span> <span class="pre">j:j+th]</span> <span class="pre">=</span> <span class="pre">conv(X[i:i+tw+kw-1,</span> <span class="pre">j:j+th+kh-1],</span> <span class="pre">K)</span></code></p>
@@ -962,13 +961,13 @@ produce Y {
 <p>As we can seen that our schedule does well for small channel sizes, while its performance decrease for large channel sizes. We will optimize the later in :numref:<code class="docutils literal notranslate"><span class="pre">ch_packed_conv_cpu</span></code>.</p>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>We tile the input and output data of convolution as we did for matrix multiplication for better cache efficiency.</p></li>
 </ul>
 </section>
 <section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
+<h2>Exercises<a class="headerlink" href="#exercises" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>Try different tiling sizes.</p></li>
 </ul>
@@ -1020,13 +1019,13 @@ produce Y {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

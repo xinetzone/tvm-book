@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>快速了解 Relay &#8212; tvm-book 0.0.3 文档</title>
+    <title>快速了解 Relay &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
@@ -146,7 +145,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -156,7 +155,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/ir/relay and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/ir/relay and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -207,10 +206,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -761,7 +760,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="relay">
-<h1>快速了解 Relay<a class="headerlink" href="#relay" title="Permalink to this heading">#</a></h1>
+<h1>快速了解 Relay<a class="headerlink" href="#relay" title="永久链接至标题">#</a></h1>
 <p>Relay IR 是纯粹的、面向表达式的语言。</p>
 <p>从计算图的角度来看，函数（<code class="xref py py-class docutils literal notranslate"><span class="pre">tvm.relay.function.Function</span></code> ）是计算图的子图，函数调用在子图中，将其参数替换为带有相应名称的子图中的自由变量。</p>
 <p>Relay 明显地区分了 AST 和文本格式之间的局部变量（<code class="xref py py-class docutils literal notranslate"><span class="pre">tvm.ir.expr.Var</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">%</span></code> 标识）和全局变量（<code class="xref py py-class docutils literal notranslate"><span class="pre">tvm.ir.expr.GlobalVar</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> 标识）。</p>
@@ -770,7 +769,7 @@ function checkPageExistsAndRedirect(event) {
 <li><p>局部标识符总是引用函数参数或被 <code class="docutils literal notranslate"><span class="pre">let</span></code> （<code class="xref py py-class docutils literal notranslate"><span class="pre">tvm.relay.expr.Let</span></code>） 表达式绑定的变量，并将作用于它出现的函数或被 <code class="docutils literal notranslate"><span class="pre">let</span></code> 表达式绑定之处。</p></li>
 </ul>
 <section id="id1">
-<h2>局部变量<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<h2>局部变量<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h2>
 <p>局部变量可用于声明函数的输入参数或中间变量。可由 <code class="docutils literal notranslate"><span class="pre">tvm.relay.Var(name_hint,</span> <span class="pre">type_annotation=None)</span></code> 创建。其中</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">name_hint</span></code> 指定了局部变量的名字。</p></li>
@@ -858,7 +857,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id2">
-<h2>函数<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>函数<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>Relay 中的函数的作用类似于其他编程语言中的过程或函数，并用于推广命名子图的概念。</p>
 <p>可以直接定义函数：</p>
 <div class="cell docutils container">
@@ -949,7 +948,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id3">
-<h2>模块<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>模块<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>Relay 保留称为 “module” 的全局数据结构（在其他函数式编程语言中通常称为 “environment”），以跟踪全局函数的定义。特别地，该模块保持全局变量到它们所表示的函数表达式的全局可访问映射。模块的实用之处在于，它允许全局函数递归地引用它们自己或任何其他全局函数（例如，在 mutual 递归中）。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1097,7 +1096,7 @@ def @MulFunc(%x2, %y2) {
 </div>
 </div>
 <section id="id4">
-<h3>回调全局变量<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<h3>回调全局变量<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h3>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">tvm.relay.expr.Call</span></code> 可以在模块中回调全局变量。</p>
 <p>比如，定义 <code class="docutils literal notranslate"><span class="pre">add</span></code> 算子：</p>
 <div class="cell docutils container">
@@ -1174,7 +1173,7 @@ def @main(%a, %b, %c) {
 </section>
 </section>
 <section id="id5">
-<h2>常量<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<h2>常量<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h2>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">tvm.relay.Constant</span></code> 节点表示常量张量值。常量被表示为 <a class="reference external" href="https://daobook.github.io/tvm/docs/reference/api/python/ndarray.html#tvm.nd.NDArray" title="(在 TVM)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray</span></code></a>，允许 Relay 使用 TVM 算子来计算常量。</p>
 <p>此节点还可以表示标量常数，因为标量是形状为 <code class="docutils literal notranslate"><span class="pre">()</span></code> 的张量。因此，在文本格式中，数值和布尔字面值是将张量类型编码为零阶形状的常量的语法糖。</p>
 <div class="cell docutils container">
@@ -1200,7 +1199,7 @@ def @main(%a, %b, %c) {
 </div>
 </section>
 <section id="id6">
-<h2>元组<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<h2>元组<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h2>
 <p>元组节点构建有限（即静态已知大小）的异构数据序列。这些元组与 Python 非常匹配，它们的固定长度允许有效地投影其成员。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1237,7 +1236,7 @@ free_var %c: Tensor[(100, 20), float32];
 </div>
 </section>
 <section id="if">
-<h2>If 条件表达<a class="headerlink" href="#if" title="Permalink to this heading">#</a></h2>
+<h2>If 条件表达<a class="headerlink" href="#if" title="永久链接至标题">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="n">relay</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="s2">&quot;ab&quot;</span><span class="p">]</span>
@@ -1263,7 +1262,7 @@ free_var %c: Tensor[(100, 20), float32];
 </div>
 </section>
 <section id="let">
-<h2><code class="docutils literal notranslate"><span class="pre">let</span></code> 绑定<a class="headerlink" href="#let" title="Permalink to this heading">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">let</span></code> 绑定<a class="headerlink" href="#let" title="永久链接至标题">#</a></h2>
 <p>其实上述介绍的模块绑定属于 Relay graph 绑定，对应于计算图。</p>
 <p>let 绑定是不可变的局部变量绑定，允许用户将表达式绑定到名称。</p>
 <ul class="simple">
@@ -1374,13 +1373,13 @@ free_var %c: Tensor[(100, 20), float32];
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

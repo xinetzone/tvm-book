@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Vector Add &#8212; tvm-book 0.0.3 文档</title>
+    <title>Vector Add &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/gpu_schedules/vector_add and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/gpu_schedules/vector_add and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -726,7 +725,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="vector-add">
-<h1>Vector Add<a class="headerlink" href="#vector-add" title="Permalink to this heading">#</a></h1>
+<h1>Vector Add<a class="headerlink" href="#vector-add" title="永久链接至标题">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_gpu</span></code></p>
 <p>In this section, we will optimize the vector add defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add</span></code> on GPUs. As we have seen in :numref:<code class="docutils literal notranslate"><span class="pre">ch_gpu_arch</span></code>, the overall architecture of GPUs is not significantly different from CPUs, but GPUs often have more cores and wider SIMD units. If you are new to GPU programming, we recommend you to first read how we optimized the vector add on CPUs in :numref:<code class="docutils literal notranslate"><span class="pre">ch_vector_add_cpu</span></code> for more contexts.</p>
 <div class="cell docutils container">
@@ -767,7 +766,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="cuda-programming">
-<h2>CUDA Programming<a class="headerlink" href="#cuda-programming" title="Permalink to this heading">#</a></h2>
+<h2>CUDA Programming<a class="headerlink" href="#cuda-programming" title="永久链接至标题">#</a></h2>
 <p>CUDA is a programming interface proposed by Nvidia for high-performance parallel programming on GPUs. TVM provides an abstraction level above CUDA so that we don’t bother to know the details about CUDA programming. We still, however, need to understand several concepts that are specific to CUDA.</p>
 <p>The first one is <em>CUDA kernel</em>, or simply <em>kernel</em>. A kernel is a small program or a function. In TVM, it’s often the Lambda expression to compute elements of the output tensor, e.g. <code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">i:</span> <span class="pre">A[i]</span> <span class="pre">+</span> <span class="pre">B[i]</span></code> in vector add.</p>
 <p>The second one is <em>CUDA thread</em>, or simply <em>thread</em>. A thread is an abstracted entity that represents the execution of a kernel. Note that it’s a programming abstract, not the aforementioned logic or hardware thread which actually runs. So if the vector length is 1 million, we will have 1 million threads, but apparently we cannot run all of them simultaneously.</p>
@@ -866,7 +865,7 @@ array([[0., 0., 0.],
 <p>Note that if you are running the above code on GPUs with faster memory, such as V100, you may find TVM performs worse compared to MXNet for large vectors. You can improve it by increasing the number of threads <code class="docutils literal notranslate"><span class="pre">nt</span></code>.</p>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>GPU introduces a thread-block abstraction for parallel programming. We can bind axes to threads or thread-blocks through <code class="docutils literal notranslate"><span class="pre">bind</span></code>.</p></li>
 <li><p>We need to allocate each streaming multiprocessor (SM) enough workloads for good performance.</p></li>
@@ -919,13 +918,13 @@ array([[0., 0., 0.],
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

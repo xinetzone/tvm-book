@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Pooling &#8212; tvm-book 0.0.3 文档</title>
+    <title>Pooling &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/cpu_schedules/pooling and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/cpu_schedules/pooling and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -755,7 +754,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="pooling">
-<h1>Pooling<a class="headerlink" href="#pooling" title="Permalink to this heading">#</a></h1>
+<h1>Pooling<a class="headerlink" href="#pooling" title="永久链接至标题">#</a></h1>
 <p>:label:<code class="docutils literal notranslate"><span class="pre">ch_pooling_cpu</span></code></p>
 <p>In this section, we will optimize the vector add defined in :numref:<code class="docutils literal notranslate"><span class="pre">ch_pooling</span></code> on CPU.</p>
 <div class="cell docutils container">
@@ -776,9 +775,9 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="max-pooling">
-<h2>Max Pooling<a class="headerlink" href="#max-pooling" title="Permalink to this heading">#</a></h2>
+<h2>Max Pooling<a class="headerlink" href="#max-pooling" title="永久链接至标题">#</a></h2>
 <section id="schedule">
-<h3>Schedule<a class="headerlink" href="#schedule" title="Permalink to this heading">#</a></h3>
+<h3>Schedule<a class="headerlink" href="#schedule" title="永久链接至标题">#</a></h3>
 <p>By now, you should be familiar with the basic optimization tricks that we can do on CPU. Let’s print out the IR of <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code> again to observe.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -864,7 +863,7 @@ produce PoolMax {
 <p>The optimized IR does both the parallelization and vectorization.</p>
 </section>
 <section id="benchmarking">
-<h3>Benchmarking<a class="headerlink" href="#benchmarking" title="Permalink to this heading">#</a></h3>
+<h3>Benchmarking<a class="headerlink" href="#benchmarking" title="永久链接至标题">#</a></h3>
 <p>We now benchmark the default and optimized scheduling of <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">pooling</span></code>. In order to do this, we first define the benchmarking method of pooling. It is analogous to the benchmarking methods we defined in for other operators before. The main difference is that as <code class="docutils literal notranslate"><span class="pre">pooling</span></code> performs little computation, we use execution time instead of FLOPs to benchmark the results.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -951,9 +950,9 @@ produce PoolMax {
 </section>
 </section>
 <section id="avg-pooling">
-<h2>Avg Pooling<a class="headerlink" href="#avg-pooling" title="Permalink to this heading">#</a></h2>
+<h2>Avg Pooling<a class="headerlink" href="#avg-pooling" title="永久链接至标题">#</a></h2>
 <section id="id1">
-<h3>Schedule<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<h3>Schedule<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h3>
 <p>Now let’s move to <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code>. Again, we print out the IR of <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code> to observe.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1055,7 +1054,7 @@ As a side note, there is another compiling optimization already done in the defa
 <p>From the optimized IR we can see that the stage of <code class="docutils literal notranslate"><span class="pre">PoolSum</span></code> is merged into the stage of <code class="docutils literal notranslate"><span class="pre">PoolAvg</span></code>, which produces better data locality.</p>
 </section>
 <section id="id2">
-<h3>Benchmarking<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<h3>Benchmarking<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h3>
 <p>We now benchmark the default and optimized scheduling of <code class="docutils literal notranslate"><span class="pre">avg</span> <span class="pre">pooling</span></code>, as well as the MXNet performance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1089,7 +1088,7 @@ As a side note, there is another compiling optimization already done in the defa
 </section>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>Pooling can be optimized on CPUs via parallelization and vectorization.</p></li>
 <li><p>The padding stage can be computed inline in the latter stage using <code class="docutils literal notranslate"><span class="pre">AutoInlineInjective</span></code>.</p></li>
@@ -1143,13 +1142,13 @@ As a side note, there is another compiling optimization already done in the defa
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   

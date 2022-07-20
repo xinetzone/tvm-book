@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>归约运算 &#8212; tvm-book 0.0.3 文档</title>
+    <title>归约运算 &#8212; tvm-book 0.0.4 文档</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -38,7 +38,6 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
@@ -148,7 +147,7 @@
       <div class="navbar-end-item">
         <div class="dropdown" id="version_switcher">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="version_switcher_button" data-toggle="dropdown">
-        v0.0.3  <!-- this text may get changed later by javascript -->
+        v0.0.4  <!-- this text may get changed later by javascript -->
         <span class="caret"></span>
     </button>
     <div id="version_switcher_menu" class="dropdown-menu list-group-flush py-0" aria-labelledby="version_switcher_button">
@@ -158,7 +157,7 @@
 
 <!-- NOTE: this JS must live here (not in our global JS file) because it relies
      on being processed by Jinja before it is run (specifically for replacing
-     variables tutorials/d2l-tvm/expressions/reductions and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.3', 'url_template': 'https://pandas.pydata.org/{version}/'}.
+     variables tutorials/d2l-tvm/expressions/reductions and {'json_url': 'https://xinetzone.github.io/tvm-book/_static/switcher.json', 'version_match': 'v0.0.4', 'url_template': 'https://pandas.pydata.org/{version}/'}.
 -->
 
 <script type="text/javascript">
@@ -209,10 +208,10 @@ function checkPageExistsAndRedirect(event) {
 
             $("#version_switcher_menu").append(node);
             // replace dropdown button text with the preferred display name of
-            // this version, rather than using sphinx's 0.0.3 variable.
+            // this version, rather than using sphinx's 0.0.4 variable.
             // also highlight the dropdown entry for the currently-viewed
             // version's entry
-            if (entry.version == "v0.0.3") {
+            if (entry.version == "v0.0.4") {
                 node.classList.add("active");
                 let btn = document.getElementById("version_switcher_button");
                 btn.innerText = btn.dataset["activeVersionName"] = entry.name;
@@ -731,7 +730,7 @@ function checkPageExistsAndRedirect(event) {
               <article class="bd-article" role="main">
                 
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>归约运算<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<h1>归约运算<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
 <p>归约（Reduction）是将输入张量的某个维度归约为标量的运算，例如 NumPy 的 <code class="docutils literal notranslate"><span class="pre">np.sum</span></code>。使用 for 循环通常可以直接实现归约。但是在 TVM 中有点复杂，因为不能直接使用 Python for 循环。在本节中，将描述如何在 TVM 中实现归约。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -744,7 +743,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </div>
 <section id="id2">
-<h2>求和<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<h2>求和<a class="headerlink" href="#id2" title="永久链接至标题">#</a></h2>
 <p>从对二维矩阵的行求和开始把它变成一维向量。在 NumPy 中，可以用 <code class="docutils literal notranslate"><span class="pre">sum</span></code> 方法来完成。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -859,7 +858,7 @@ function checkPageExistsAndRedirect(event) {
 <p>除 <code class="docutils literal notranslate"><span class="pre">tvm.sum</span></code> 之外，在 TVM 中还有其他的归约算子，如 <code class="docutils literal notranslate"><span class="pre">tvm.min</span></code>、<code class="docutils literal notranslate"><span class="pre">tvm.max</span></code>。也可以用它们来实现相应的归约运算。</p>
 </section>
 <section id="id3">
-<h2>可交换的归约<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<h2>可交换的归约<a class="headerlink" href="#id3" title="永久链接至标题">#</a></h2>
 <p>在数学中，如果 <span class="math notranslate nohighlight">\(a\circ b = b\circ a\)</span>，则算子 <span class="math notranslate nohighlight">\(\circ\)</span> 是可交换的（commutative）。TVM 允许通过 <code class="docutils literal notranslate"><span class="pre">tvm.comm_reducer</span></code> 定义定制的可交换归约算子。它接受两个函数参数，一个定义如何计算，另一个指定初始值。</p>
 <p>让我们以行为单位使用乘法，例如 <code class="docutils literal notranslate"><span class="pre">a.prod(axis=1)</span></code>。同样，首先展示如何从头开始实现它。</p>
 <div class="cell docutils container">
@@ -927,7 +926,7 @@ function checkPageExistsAndRedirect(event) {
 </div>
 </section>
 <section id="id4">
-<h2>小结<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<h2>小结<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h2>
 <ul class="simple">
 <li><p>可以应用归约算子，例如 <code class="docutils literal notranslate"><span class="pre">te.sum</span></code> 对归约轴 <code class="docutils literal notranslate"><span class="pre">te.reduce_axis</span></code> 求和。</p></li>
 <li><p>可以通过 <code class="docutils literal notranslate"><span class="pre">te.comm_reducer</span></code> 实现定制的可交换归约算子。</p></li>
@@ -980,13 +979,13 @@ function checkPageExistsAndRedirect(event) {
   
   <div class="footer-item">
     <p class="last-updated">
-最后更新于 2022-07-20, 01:42:30.<br>
+最后更新于 2022-07-20, 01:49:40.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
   </div>
   
