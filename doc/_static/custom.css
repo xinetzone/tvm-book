@@ -1,0 +1,23 @@
+/* Background of stsable should be green */
+#version_switcher a[data-version-name*="stable"] {
+  background-color: #c9fac9;
+}
+
+/* Color of explicit versions should be orange */
+#version_switcher a:not([data-version-name*="stable"]):not([data-version-name="dev"]) {
+  background-color: #6ae2be;
+  color: rgb(201, 197, 197);
+}
+
+/* If we're on a dev version, make the switcher button orange */
+#version_switcher_button[data-active-version-name*="dev"] {
+  background-color: rgb(255 138 62);
+}
+
+blockquote.epigraph {
+  background-color: rgb(149, 146, 143);
+}
+
+.dfn {
+  background-color: rgb(205, 214, 71);
+}

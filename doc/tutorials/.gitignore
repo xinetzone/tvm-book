@@ -1,0 +1,6 @@
+libs/
+outputs/
+draft/
+data/
+*.pkl
+*.json
