@@ -4,7 +4,7 @@
 
 ```{toctree}
 :caption: 导航
-:maxdepth: 5
+:maxdepth: 3
 
 basic/index
 frontend/index

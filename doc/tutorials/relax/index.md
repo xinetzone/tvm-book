@@ -4,5 +4,4 @@
 nn-module
 mlp
 relay2relax
-relax-temp/index
 ```
