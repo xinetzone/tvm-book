@@ -11,7 +11,7 @@ frontend/index
 transform/index
 ../quantize/index
 relay/index
-vta/index
+../vta/index
 relax/index
 tedd/index
 datasets/index

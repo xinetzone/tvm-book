@@ -3,7 +3,7 @@
 using namespace tvm::runtime;
 
 
-// 参考：https://daobook.github.io/tvm/docs/arch/runtime.html
+// 参考：https://xinetzone.github.io/tvm/docs/arch/runtime.html
 void MyAdd(TVMArgs args, TVMRetValue* rv) {
   // 自动将参数转换为所需的类型。
   int a = args[0];

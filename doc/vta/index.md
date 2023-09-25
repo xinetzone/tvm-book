@@ -15,6 +15,6 @@ VTA（发音为 vita，全称 versatile tensor accelerator，Open, Modular, Deep
 
 ```{toctree}
 config
+insn/index
 ops/index
-test
 ```
