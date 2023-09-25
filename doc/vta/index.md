@@ -17,4 +17,6 @@ VTA（发音为 vita，全称 versatile tensor accelerator，Open, Modular, Deep
 config
 insn/index
 ops/index
+resnet18
+test
 ```
