@@ -25,7 +25,7 @@ def run_llvm_graph(run_mod, params, input_dict):
     device = tvm.cpu()
     # input_dict = {"data": data_np}
     te_compiler.get().clear()
-    with tvm.transform.PassContext(opt_level=3):
+    with tvm.transform.PassContext(opt_level=3, disabled_pass={"AlterOpLayout"}):
         lib = relay.build(run_mod, target=target, params=params)
     lib = update_lib(lib)
     exe = tvm.contrib.graph_executor.GraphModule(lib["default"](tvm.cpu()))
