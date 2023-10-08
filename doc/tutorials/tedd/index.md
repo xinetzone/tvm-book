@@ -2,4 +2,6 @@
 
 ```{toctree}
 intro
+tensor
+viz
 ```

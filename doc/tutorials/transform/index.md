@@ -4,6 +4,8 @@
 :maxdepth: 2
 
 intro
+pass
+infra
 SimplifyInference
 custom-pass
 ```
