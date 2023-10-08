@@ -4,7 +4,7 @@ IDIR = include
 TVM_ROOT=$(shell cd /media/pc/data/lxw/ai/tvm; pwd)
 DMLC_CORE=${TVM_ROOT}/3rdparty/dmlc-core
 
-PKG_CFLAGS = -std=c++17 -O2 -fPIC\
+PKG_CXXFLAGS = -std=c++17 -O2 -fPIC\
 	-I${TVM_ROOT}/include\
 	-I${DMLC_CORE}/include\
 	-I${TVM_ROOT}/3rdparty/dlpack/include\
@@ -20,7 +20,7 @@ all: outputs/test_alloc_array
 # 使用预构建的 libtvm_runtime.so 进行部署
 outputs/test_alloc_array: src/test_alloc_array.cc
 	@mkdir -p $(@D)
-	$(CXX) $(PKG_CFLAGS) -o $@  $^ -ltvm_runtime $(PKG_LDFLAGS)
+	$(CXX) $(PKG_CXXFLAGS) -o $@  $^ -ltvm_runtime $(PKG_LDFLAGS)
 
 clean:
 	rm -rf outputs

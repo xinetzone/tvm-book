@@ -46,10 +46,10 @@
 #include "../../../src/runtime/graph_executor/graph_executor_factory.cc"
 
 // Graph Debug
-// #include "../../../src/runtime/graph_executor/debug/graph_executor_debug.cc"
+#include "../../../src/runtime/graph_executor/debug/graph_executor_debug.cc"
 
 // PAPI profiling
-// #include "../../../src/runtime/profiling.cc"
+#include "../../../src/runtime/profiling.cc"
 
 // 取消注释以下行以启用 RPC
 // #include "../../../src/runtime/rpc/rpc_session.cc"
