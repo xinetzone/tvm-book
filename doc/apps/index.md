@@ -2,4 +2,5 @@
 
 ```{toctree}
 chaos/index
+topi-recipe
 ```
