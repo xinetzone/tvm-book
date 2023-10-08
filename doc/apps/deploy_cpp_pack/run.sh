@@ -6,7 +6,7 @@ mkdir -p ${ODIR}
 make
 
 # 配置 C++ 运行环境
-export TVM_ROOT=../..
+export TVM_ROOT=/media/pc/data/lxw/ai/tvm
 export LD_LIBRARY_PATH=${TVM_ROOT}/build:${LD_LIBRARY_PATH}
 export DYLD_LIBRARY_PATH=${TVM_ROOT}/build:${DYLD_LIBRARY_PATH}
 

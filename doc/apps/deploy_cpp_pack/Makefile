@@ -1,7 +1,7 @@
 # 部署 TVM 模块 的 Makefile 样例
 
 IDIR = include
-TVM_ROOT=$(shell cd ../..; pwd)
+TVM_ROOT=$(shell cd /media/pc/data/lxw/ai/tvm; pwd)
 DMLC_CORE=${TVM_ROOT}/3rdparty/dmlc-core
 
 PKG_CFLAGS = -std=c++17 -O2 -fPIC\
@@ -18,14 +18,14 @@ PKG_LDFLAGS = -ldl -pthread
 all: outputs/test_alloc_array
 
 # 定制 tvm 运行时
-outputs/libtvm_runtime_pack.so: src/libtvm_runtime_pack.cc
+outputs/libs/libtvm_runtime_pack.so: src/libtvm_runtime_pack.cc
 	@mkdir -p $(@D)
 	$(CXX) -c $(PKG_CFLAGS) -o $@  $^
 
 # 使用定制的 tvm 运行时进行部署
-outputs/test_alloc_array: src/test_alloc_array.cc outputs/libtvm_runtime_pack.so
+outputs/test_alloc_array: src/test_alloc_array.cc outputs/libs/libtvm_runtime_pack.so
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CFLAGS) -o $@  $^ $(PKG_LDFLAGS)
 
 clean:
-	rm -rf outputs
+	rm -rf outputs/*

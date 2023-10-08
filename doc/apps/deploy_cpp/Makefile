@@ -1,7 +1,7 @@
 # 部署 TVM 模块 的 Makefile 样例
 
 IDIR = include
-TVM_ROOT=$(shell cd ../..; pwd)
+TVM_ROOT=$(shell cd /media/pc/data/lxw/ai/tvm; pwd)
 DMLC_CORE=${TVM_ROOT}/3rdparty/dmlc-core
 
 PKG_CFLAGS = -std=c++17 -O2 -fPIC\
