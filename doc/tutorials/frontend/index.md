@@ -2,6 +2,7 @@
 
 ```{toctree}
 mxnet
+tensorflow/index
 pytorch/index
 onnx/index
 relax-fx

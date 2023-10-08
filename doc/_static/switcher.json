@@ -1,5 +1,10 @@
 [
   {
+    "name": "home",
+    "version": "xinetzone",
+    "url": "https://xinetzone.github.io"
+  },
+  {
     "name": "main",
     "version": "main",
     "url": "https://xinetzone.github.io/tvm-book/"

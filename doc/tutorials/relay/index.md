@@ -6,7 +6,6 @@
 start/index
 merge-composite
 build-module
-frontend/index
 transform/index
 partition-graph
 annotated-regions
