@@ -10,6 +10,7 @@ basic/index
 frontend/index
 transform/index
 ../quantize/index
+deploy/index
 relay/index
 ../vta/index
 relax/index

@@ -1,4 +1,4 @@
-# 部署教程
+# 部署入门
 
 ```{toctree}
 :maxdepth: 2

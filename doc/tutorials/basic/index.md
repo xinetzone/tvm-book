@@ -9,7 +9,6 @@
 prepare
 start/index
 packed-func
-../../deploy/index
 integration
 expressions/index
 ```
