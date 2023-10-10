@@ -3,6 +3,7 @@
 ```{toctree}
 config
 ffi/index
+op/index
 attrs/index
 expr/index
 reflection
