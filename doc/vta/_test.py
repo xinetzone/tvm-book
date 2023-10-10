@@ -228,3 +228,61 @@ expr = run_opt_pass(expr, relay.transform.InferType())
 transform = ExprBitPack2()
 expr = transform.visit(expr)
 tvm.IRModule.from_expr(expr).show()
+
+@tvm.relay.transform.function_pass(opt_level=1)
+class VTAGraphPackTransform:
+    """实现 VTA graph pack"""
+    def __init__(self, bfactor, cfactor, weight_bits):
+        self.bfactor, self.cfactor = bfactor, cfactor
+        self.weight_bits = weight_bits
+        self.reset()
+        
+    def reset(self):
+        self._func_index = 0
+
+    def transform_function(self, func, mod, ctx):
+        obj = self
+
+        class Replace(ExprMutator):
+            def visit_call(self, call):
+                new_fn = self.visit(call.op)
+                new_args = [self.visit(arg) for arg in call.args]
+                attrs = call.attrs
+                if isinstance(new_fn, Function):
+                    transform = ConvAttrsTransform()
+                    transform.visit(new_fn)
+                    if transform.attrs: # 为融合函数 vta_conv2d 添加 ConvAttrs 属性
+                        new_fn = new_fn.with_attr("ConvAttrs", transform.attrs[0])
+                    func_name = f"{new_fn.attrs['Composite']}__{obj._func_index}"
+                    mod[func_name] = new_fn
+                    new_fn = mod.get_global_var(func_name)
+                    obj._func_index += 1
+                call = Call(new_fn, new_args, attrs, call.type_args, call.span)
+                return call
+
+            def visit_function(self, new_fn):
+                new_params = [self.visit(x) for x in new_fn.params]
+                new_body = self.visit(new_fn.body)
+                if new_fn.attrs:
+                    if new_fn.attrs["Composite"] == "vta_preprocessing":
+                        oshape = _to_shape(new_fn.checked_type.ret_type.shape)
+                        new_body = _pack_batch_channel(new_fn.body, oshape, obj.bfactor, obj.cfactor)
+                if new_params == list(new_fn.params) and new_body == new_fn.body:
+                    return new_fn
+                return Function(
+                        list(new_fn.params), new_body,
+                        ret_type=new_body.checked_type,
+                        type_params=new_fn.type_params,
+                        attrs=new_fn.attrs,
+                        span=new_fn.span
+                    )
+        
+        return Replace().visit(func)
+
+# # from tvm.relay import op
+# # from tvm.relay.op import op as _op
+# # from tvm.relay import ExprMutator
+# # from tvm.relay.expr import Call
+# # from tvm.ir.op import Op
+# from tvm.relay.function import Function
+# from tvm.relay.testing import run_opt_pass

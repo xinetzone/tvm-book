@@ -14,7 +14,6 @@ from vta.top.graphpack import (
     # _unpack_batch_channel,
     _channel_const_match,
     _const_shape_match,
-    _weight_shape_match,
     _weight_shape_match_transpose, # 新增
     _pack_weight,
     _pack_weight_conv2d_transpose,
@@ -23,7 +22,7 @@ from vta.top.graphpack import (
     _get_tensor_type,
 )
 from .vta_conv2d import ConvAttrsTransform
-from .utils import _pack_batch_channel, _pad_channel
+from .utils import _pack_batch_channel, _channel_shape_match, _weight_shape_match
 
 class ExprGraphPack(ExprMutator):
     def __init__(self, bfactor, cfactor, weight_bits):
@@ -52,8 +51,7 @@ class ExprGraphPack(ExprMutator):
 
                 data_shape = list(_to_shape(new_args[0].checked_type.shape))
                 if data_shape[1] % self.cfactor != 0:
-                    pad_ci, data_shape[1] = _channel_const_match(data_shape[1], self.cfactor)
-                    new_args[0] = _pad_channel(new_args[0], data_shape, self.cfactor)
+                    new_args[0], data_shape = _channel_shape_match(new_args[0], data_shape, self.cfactor)
                 new_args[0] = _pack_batch_channel(new_args[0], data_shape, self.bfactor, self.cfactor)
                 # if kernel_shape[0] % self.cfactor != 0 or kernel_shape[1] % self.cfactor:
                 #     # pad channels 对齐 self.cfactor
@@ -64,18 +62,21 @@ class ExprGraphPack(ExprMutator):
                 data_layout = "NCHW%dn%dc" % (self.bfactor, self.cfactor)
                 kernel_layout = "OIHW%do%di" % (self.cfactor, self.cfactor)
 
-                channels = call.attrs.channels
+                # 
                 kernel_shape = _to_shape(new_args[1].checked_type.shape)
                 if call.op == self.conv2d:
-                    new_args[1], kernel_shape, channels = _weight_shape_match(
-                        new_args[1], kernel_shape, channels, self.cfactor
+                    new_args[1], kernel_shape = _weight_shape_match(
+                        new_args[1], kernel_shape, self.cfactor
                     )
+                    channels = kernel_shape[0] # 输出通道数
+                    # print(kernel_shape, channels)
                     new_args[1] = _pack_weight(new_args[1], kernel_shape, self.cfactor)
                     # insert bit packing when necessary
                     if w_lanes != 1:
                         assert 8 % w_lanes == 0
                         new_args[1] = op.bitpack(new_args[1], lanes=w_lanes)
                 elif call.op == self.conv2d_transpose:
+                    channels = call.attrs.channels
                     new_args[1], kernel_shape, channels = _weight_shape_match_transpose(
                         new_args[1], kernel_shape, channels, self.cfactor
                     )
@@ -117,6 +118,7 @@ class ExprGraphPack(ExprMutator):
                 call.op == self.bias_add
             ):
                 new_args[1], input_shape = _const_shape_match(new_args[1], new_args[1].checked_type.shape, self.cfactor)
+                new_args[1] = run_opt_pass(new_args[1], relay.transform.InferType())
                 new_args[1] = _pack_const(
                     new_args[1], _to_shape(input_shape), new_args[1].checked_type.dtype, self.bfactor, self.cfactor
                 )
@@ -154,83 +156,48 @@ class ExprGraphPack(ExprMutator):
         call = Call(new_fn, new_args, call.attrs, call.type_args, call.span)
         return run_opt_pass(call, relay.transform.InferType())
 
-# @tvm.relay.transform.function_pass(opt_level=1)
-# class WithVTAFunctionTransform:
-#     """为融合函数 vta_conv2d 添加 ConvAttrs 属性"""
-#     def __init__(self):
-#         self.reset()
+@tvm.relay.transform.function_pass(opt_level=1)
+class WithVTAFunctionTransform:
+    """为融合函数 vta_conv2d 添加 ConvAttrs 属性"""
+    def __init__(self):
+        self.reset()
 
-#     def reset(self):
-#         self._func_index = 0
+    def reset(self):
+        self._func_index = 0
 
-#     def transform_function(self, func, mod, ctx):
-#         obj = self
+    def transform_function(self, func, mod, ctx):
+        obj = self
 
-#         class Replace(ExprMutator):
-#             def visit_call(self, call):
-#                 new_fn = self.visit(call.op)
-#                 new_args = [self.visit(arg) for arg in call.args]
-#                 attrs = call.attrs
-#                 if isinstance(new_fn, Function):
-#                     transform = ConvAttrsTransform()
-#                     transform.visit(new_fn)
-#                     if transform.attrs: # 添加卷积属性
-#                         new_fn = new_fn.with_attr("ConvAttrs", transform.attrs[0])
-#                     func_name = f"{new_fn.attrs['Composite']}__{obj._func_index}"
-#                     mod[func_name] = new_fn
-#                     new_fn = mod.get_global_var(func_name)
-#                     obj._func_index += 1
-#                 call = Call(new_fn, new_args, attrs, call.type_args, call.span)
-#                 return call
+        class Replace(ExprMutator):
+            def visit_call(self, call):
+                new_fn = self.visit(call.op)
+                new_args = [self.visit(arg) for arg in call.args]
+                attrs = call.attrs
+                if isinstance(new_fn, Function):
+                    transform = ConvAttrsTransform()
+                    transform.visit(new_fn)
+                    if transform.attrs: # 添加卷积属性
+                        new_fn = new_fn.with_attr("ConvAttrs", transform.attrs[0])
+                    func_name = f"{new_fn.attrs['Composite']}__{obj._func_index}"
+                    mod[func_name] = new_fn
+                    new_fn = mod.get_global_var(func_name)
+                    obj._func_index += 1
+                call = Call(new_fn, new_args, attrs, call.type_args, call.span)
+                return call
 
-#         return Replace().visit(func)
+        return Replace().visit(func)
 
-# @tvm.relay.transform.function_pass(opt_level=1)
-# class VTAGraphPackTransform:
-#     """实现 VTA graph pack"""
-#     def __init__(self, bfactor, cfactor, weight_bits):
-#         self.bfactor, self.cfactor = bfactor, cfactor
-#         self.weight_bits = weight_bits
-#         self.reset()
-        
-#     def reset(self):
-#         self._func_index = 0
-
-#     def transform_function(self, func, mod, ctx):
-#         obj = self
-
-#         class Replace(ExprMutator):
-#             def visit_call(self, call):
-#                 new_fn = self.visit(call.op)
-#                 new_args = [self.visit(arg) for arg in call.args]
-#                 attrs = call.attrs
-#                 if isinstance(new_fn, Function):
-#                     transform = ConvAttrsTransform()
-#                     transform.visit(new_fn)
-#                     if transform.attrs: # 为融合函数 vta_conv2d 添加 ConvAttrs 属性
-#                         new_fn = new_fn.with_attr("ConvAttrs", transform.attrs[0])
-#                     func_name = f"{new_fn.attrs['Composite']}__{obj._func_index}"
-#                     mod[func_name] = new_fn
-#                     new_fn = mod.get_global_var(func_name)
-#                     obj._func_index += 1
-#                 call = Call(new_fn, new_args, attrs, call.type_args, call.span)
-#                 return call
-
-#             def visit_function(self, new_fn):
-#                 new_params = [self.visit(x) for x in new_fn.params]
-#                 new_body = self.visit(new_fn.body)
-#                 if new_fn.attrs:
-#                     if new_fn.attrs["Composite"] == "vta_preprocessing":
-#                         oshape = _to_shape(new_fn.checked_type.ret_type.shape)
-#                         new_body = _pack_batch_channel(new_fn.body, oshape, obj.bfactor, obj.cfactor)
-#                 if new_params == list(new_fn.params) and new_body == new_fn.body:
-#                     return new_fn
-#                 return Function(
-#                         list(new_fn.params), new_body,
-#                         ret_type=new_body.checked_type,
-#                         type_params=new_fn.type_params,
-#                         attrs=new_fn.attrs,
-#                         span=new_fn.span
-#                     )
-        
-#         return Replace().visit(func)
+def graph_pack(new_fn: Function, bfactor: int, cfactor: int, weight_bits: int):
+    """pack new_fn 以支持 VTA"""
+    transform = ExprGraphPack(bfactor, cfactor, weight_bits)
+    # new_fn = run_mod["main"]
+    new_fn = transform.visit(new_fn)
+    new_body = new_fn.body
+    new_fn = Function(
+        list(new_fn.params), new_body,
+        ret_type=new_body.checked_type,
+        type_params=new_fn.type_params,
+        attrs=new_fn.attrs,
+        span=new_fn.span
+    )
+    return run_opt_pass(new_fn, relay.transform.InferType())

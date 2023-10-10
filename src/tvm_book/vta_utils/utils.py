@@ -27,7 +27,7 @@ from vta.top.graphpack import (
 
 #     return False
 
-def _pad_channel(data, dshape, cfactor):
+def _channel_shape_match(data, dshape, cfactor):
     """pad 0 以对齐维度 """
     dshape =  list(dshape)
     pad_width_diff, dshape[1] = _channel_const_match(dshape[1], cfactor)
@@ -36,7 +36,28 @@ def _pad_channel(data, dshape, cfactor):
         pad_width[1] = [0, pad_width_diff]
         data = op.nn.pad(data, pad_width)
         data = run_opt_pass(data, relay.transform.InferType())
-    return data
+    return data, dshape
+
+def _weight_shape_match(data, dshape, cfactor_out):
+    """Pad the weight if the shape[0] not divisible by cfactor_out."""
+    dshape =  list(dshape)
+    # assert len(dshape) == 4
+
+    pad_ci_diff, dshape[1] = _channel_const_match(dshape[1], cfactor_out)
+    pad_co_diff, dshape[0] = _channel_const_match(dshape[0], cfactor_out)
+
+    if pad_co_diff != 0 or pad_ci_diff != 0:
+        pad_width = len(dshape) * [[0, 0]]
+
+        if pad_co_diff != 0:
+            pad_width[0] = [0, pad_co_diff]
+        if pad_ci_diff != 0:
+            pad_width[1] = [0, pad_ci_diff]
+            
+        data = op.nn.pad(data, pad_width)
+        data = run_opt_pass(data, relay.transform.InferType())
+
+    return data, dshape
 
 # def _pad_const(data, dshape, ci_factor, co_factor):
 #     """pad 0 以对齐维度 """
