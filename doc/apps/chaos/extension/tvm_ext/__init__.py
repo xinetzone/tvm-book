@@ -1,8 +1,6 @@
-"""Example extension package of TVM."""
-from __future__ import absolute_import
-import os
+"""TVM 扩展包"""
+from pathlib import Path
 import ctypes
-
 # Import TVM first to get library symbols
 import tvm
 from tvm import te
@@ -10,9 +8,9 @@ from tvm import te
 
 def load_lib():
     """Load library, the functions will be registered into TVM"""
-    curr_path = os.path.dirname(os.path.abspath(os.path.expanduser(__file__)))
-    # load in as global so the global extern symbol is visible to other dll.
-    lib = ctypes.CDLL(os.path.join(curr_path, "../../outputs/libs/libtvm_ext.so"), ctypes.RTLD_GLOBAL)
+    curr_dir = Path(__file__).resolve().parent
+    # 作为全局加载，使全局外部符号对其他 dll 可见。
+    lib = ctypes.CDLL((curr_dir/"../../outputs/libs/libtvm_ext.so").resolve(), ctypes.RTLD_GLOBAL)
     return lib
 
 
