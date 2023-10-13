@@ -3,7 +3,6 @@ draft/
 _build/
 data/
 .tmp/
-api/
 outputs/
 _models/
 *.bak

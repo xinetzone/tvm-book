@@ -2,6 +2,7 @@
 
 ```{toctree}
 config
+te/index
 ffi/index
 op/index
 attrs/index
@@ -11,7 +12,6 @@ transforms/index
 runtime/index
 source-map/index
 name-supply
-../targets/index
 memory-passes
 uma/index
 testing/index

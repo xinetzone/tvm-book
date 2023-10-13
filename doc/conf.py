@@ -57,7 +57,13 @@ extensions = [
     "sphinx_comments",
     "sphinxcontrib.mermaid",
     "sphinx_plotly_directive",
+    "sphinx.ext.autodoc",
+    "autodocsumm",
 ]
+
+autodoc_default_options = {
+    'autosummary': True,
+}
 
 # application/vnd.plotly.v1+json and application/vnd.bokehjs_load.v0+json
 suppress_warnings = ["mystnb.unknown_mime_type"]

@@ -3,11 +3,10 @@
 
 ```{toctree}
 :maxdepth: 2
-
 tutorials/index
 dev/index
 topics/index
-paper/index
+chaos/index
 about/index
 news
 ```

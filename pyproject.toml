@@ -29,7 +29,7 @@ Documentation = "https://xinetzone.github.io/tvm-book"
 
 [project.optional-dependencies]
 doc = [
-  "sphinx>4",
+  "sphinx>5",
   "mdit-py-plugins",
   "myst-nb",
   "xyzstyle",
@@ -44,7 +44,8 @@ doc = [
   "sphinx-comments",
   "sphinxcontrib-mermaid",
   "plotly",
-  "sphinxcontrib-websupport"
+  "sphinxcontrib-websupport",
+  "autodocsumm"
 ]
 
 [tool.pdm.build]
