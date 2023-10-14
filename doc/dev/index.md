@@ -3,6 +3,7 @@
 ```{toctree}
 config
 te/index
+tir/index
 ffi/index
 op/index
 attrs/index
