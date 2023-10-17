@@ -4,7 +4,7 @@
 ```{toctree}
 :maxdepth: 2
 tutorials/index
-dev/index
+dev
 topics/index
 chaos/index
 about/index
