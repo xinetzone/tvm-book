@@ -112,4 +112,24 @@ relay_mod.show()
 
 
 
+@tvm.te.tag_scope(tag=tag.ELEMWISE)
+def store_multipliers_shifts(x):
+    """存储 multipliers_shifts"""
+    # hp_dtype = "int64"
+    # lp_dtype = "int32"
+    # assert y.dtype == lp_dtype
+    # assert left_shift.dtype == lp_dtype
+    # assert right_shift.dtype == lp_dtype
+    # one = T.const(1, hp_dtype)
+    def _compute(*indices):
+        # elements = []
+        # for element in get_const_tuple(axes):
+        #     elements += [indices[element]]
+        # param_indices = tuple(elements)
 
+        # 0) 获取值
+        value = x(*indices)
+        
+        return value.astype(x.dtype)
+
+    return te.compute(x.shape, _compute)
