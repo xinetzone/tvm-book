@@ -2,4 +2,5 @@
 
 ```{toctree}
 defuse-ops
+div-to-mul
 ```
