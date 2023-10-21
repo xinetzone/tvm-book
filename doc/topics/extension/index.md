@@ -3,5 +3,6 @@
 ```{toctree}
 transform-intro
 py-call
+NDSubClass
 ext
 ```
