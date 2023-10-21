@@ -2,4 +2,5 @@
 
 ```{toctree}
 api/index
+tvm_ext/index
 ```

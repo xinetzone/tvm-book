@@ -2,8 +2,6 @@
 import os
 import sys
 
-
-
 def split_env_var(env_var: str, split: str)-> list[str]:
     """将环境变量字符串拆分。
 
