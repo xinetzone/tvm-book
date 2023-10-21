@@ -5,5 +5,6 @@ Object
 ObjectPtr
 ObjectRef
 memory
+packed-func
 ```
 
