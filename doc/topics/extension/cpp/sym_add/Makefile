@@ -17,11 +17,11 @@ endif
 
 .PHONY: clean all
 
-all: outputs/libs/libtvm_sym_add.so
+all: outputs/libs/libtvm_tvm_ext.so
 
 # 定制 tvm 拓展运行时
 # =================================================================================
-outputs/libs/libtvm_sym_add.so: src/sym_add.cc
+outputs/libs/libtvm_tvm_ext.so: src/tvm_ext.cc
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CXXFLAGS) -shared -o $@ $^ $(PKG_LDFLAGS) -L${TVM_ROOT}/build
 

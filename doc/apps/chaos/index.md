@@ -1,7 +1,6 @@
 # TVM 部署试验
 
 ```{toctree}
-plugin-module
 target-codegen-extern
 target-codegen-vm-basic
 target-codegen-static-init

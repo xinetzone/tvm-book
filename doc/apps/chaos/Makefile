@@ -17,8 +17,8 @@ endif
 
 .PHONY: clean all
 
-test: outputs/test_alloc_array outputs/main
-packed: outputs/libs/libtvm_runtime_pack.so outputs/libs/libtvm_ext.so outputs/libs/libtvm_plugin.so
+test: outputs/test_alloc_array
+packed: outputs/libs/libtvm_runtime_pack.so outputs/libs/libtvm_plugin.so
 all: packed test
 
 # 定制 tvm 运行时
@@ -38,18 +38,6 @@ outputs/test_alloc_array: src/test_alloc_array.cc outputs/libs/libtvm_runtime_pa
 outputs/libs/libtvm_plugin_module.so: src/plugin_module.cc
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CXXFLAGS) -shared -o $@ $^ $(PKG_LDFLAGS) -L${TVM_ROOT}/build
-
-# 定制 tvm 拓展运行时
-# =================================================================================
-outputs/libs/libtvm_ext.so: extension/src/tvm_ext.cc
-	@mkdir -p $(@D)
-	$(CXX) $(PKG_CXXFLAGS) -shared -o $@ $^ $(PKG_LDFLAGS) -L${TVM_ROOT}/build
-
-# 定制 tvm 拓展运行时测试
-# =================================================================================
-outputs/main: tests/main.cc outputs/libs/libtvm_ext.so
-	@mkdir -p $(@D)
-	$(CXX) $(PKG_CXXFLAGS) -o $@  $^ $(PKG_LDFLAGS)
 
 clean:
 	rm -rf outputs/*

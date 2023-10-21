@@ -3,6 +3,6 @@
 ```{toctree}
 transform-intro
 py-call
+plugin-module
 NDSubClass
-ext
 ```
