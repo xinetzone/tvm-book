@@ -13,7 +13,7 @@ from tvm.topi.utils import get_const_tuple
 
 @tvm.te.tag_scope(tag=tag.ELEMWISE)
 def q_multiply_shift(x, y, q, left_shift, right_shift, is_left_shift_required):
-    # Only int32 types are supported (any number of lanes is allowed)
+    # 当前只支持 int32 类型的数据，并且允许任意数量的通道（lanes）。
     hp_dtype = "int64"
     lp_dtype = "int32"
     assert y.dtype == lp_dtype
@@ -32,24 +32,23 @@ def q_multiply_shift(x, y, q, left_shift, right_shift, is_left_shift_required):
         ls = left_shift(*param_indices)
         rs = right_shift(*param_indices)
 
-        # 1) Cast and Multiply the integer multiplier
+        # 1）将整数乘数进行类型转换并相乘
         value = value.astype(hp_dtype)
         multiplier = multiplier.astype(hp_dtype)
         value = T.Select(T.const(is_left_shift_required, "bool"), 
                          value << ls, value)
-        # print
-        # 2) Perform the multiplication in higher precision.
+
+        # 2）以更高的精度执行乘法运算
         value = value * multiplier
 
-        # 3) Find the rounding scalar
-        # 计算舍入标量，用于处理溢出的情况。即实现四舍五入
+        # 3)计算舍入标量，用于处理溢出的情况。即实现四舍五入
         total_right_shift = rs + q # 表示在右移运算需要额外增加的位数，以便进行四舍五入。
         pos_rounding_value = (one << (total_right_shift-1)) # 得到只有最高位为 1 的数。
         value = value + pos_rounding_value # 如果 x 的最高位是 1，那么它会被进位；如果 x 的最高位是0，那么它不会被进位。这样就实现了四舍五入的功能。
 
-        # 4) Simply right shift the result to get the final output.
+        # 4）只需将结果向右移位以获得最终输出
         value = value >> total_right_shift
-        # 5) The fixed point multiplication keeps the value in int32 range. Casting back to int32.
+        # 5）定点乘法保持值在 int32 范围内。将其转换回 int32。
         return value.astype(x.dtype)
 
     return te.compute(x.shape, _compute)

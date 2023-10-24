@@ -2,4 +2,8 @@
 
 ```{toctree}
 intro
+examples
+multiplication-Q
+frexp-cpp
+frexp
 ```
