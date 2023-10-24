@@ -7,7 +7,6 @@
 ```{toctree}
 intro
 prerequisite-optimize
-qconfig
 QPartitionExpr
 partition
 annotate

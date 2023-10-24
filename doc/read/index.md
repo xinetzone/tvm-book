@@ -3,6 +3,7 @@
 ```{toctree}
 config
 te/index
+topi/index
 tir/index
 ffi/index
 op/index
@@ -15,5 +16,6 @@ source-map/index
 name-supply
 memory-passes
 uma/index
+relay/index
 testing/index
 ```

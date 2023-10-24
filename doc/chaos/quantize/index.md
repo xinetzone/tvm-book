@@ -1,4 +1,4 @@
-# 量化
+# 量化(chaos)
 
 ```{toctree}
 auto-quantize/index
