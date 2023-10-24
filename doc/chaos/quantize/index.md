@@ -1,7 +1,6 @@
 # 量化(chaos)
 
 ```{toctree}
-auto-quantize/index
 fixed-point-multiply
 analysis
 resnet18
