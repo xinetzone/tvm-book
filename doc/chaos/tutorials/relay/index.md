@@ -7,7 +7,6 @@ start/index
 merge-composite
 build-module
 transform/index
-partition-graph
 annotated-regions
 compiler-regions
 annotate-target
