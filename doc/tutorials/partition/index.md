@@ -2,5 +2,7 @@
 
 ```{toctree}
 multi-node-compiler
+extern-ccompiler
+lifting
 partition-graph
 ```

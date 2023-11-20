@@ -3,4 +3,5 @@
 ```{toctree}
 deploy/index
 auto-quantize/index
+partition/index
 ```
