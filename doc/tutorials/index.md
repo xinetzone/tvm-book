@@ -5,4 +5,5 @@ frontend/index
 deploy/index
 auto-quantize/index
 partition/index
+conv-throughput
 ```
