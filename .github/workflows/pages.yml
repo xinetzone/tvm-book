@@ -27,37 +27,33 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     python-version: [3.9, 3.10]
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@v2
         with:
           egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
       - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.10"
           cache: "pip"
           cache-dependency-path: "pyproject.toml"
-      - name: init project
-        run: |
-          sudo apt-get install graphviz
-          conda install -c conda-forge pandoc
-          pip install .[doc]
       - name: 🔧 Build HTML
         run: |
+          sudo apt-get install graphviz
+          pip install .[doc]
+          conda install -c conda-forge pandoc
           invoke doc
       - name: Setup Pages
-        uses: actions/configure-pages@v1
+        uses: actions/configure-pages@main
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
           path: 'doc/_build/html/'
-      - name: Deploy to GitHub Pages
+      - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@main
+        # uses: peaceiris/actions-gh-pages@v3.6.1
