@@ -58,6 +58,7 @@ extensions = [
     "sphinxcontrib.mermaid",
     "sphinx_plotly_directive",
     "sphinx.ext.autodoc",
+    "sphinx.ext.todo",
     "autodocsumm",
 ]
 
@@ -304,3 +305,5 @@ comments_config = {
         "optional": "config",
     }
 }
+
+todo_include_todos = True

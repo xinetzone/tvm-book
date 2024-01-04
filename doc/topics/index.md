@@ -2,5 +2,4 @@
 
 ```{toctree}
 extension/index
-topi-op
 ```
