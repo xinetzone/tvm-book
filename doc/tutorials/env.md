@@ -1,0 +1,21 @@
+# TVM 环境配置
+
+配置工具：
+```bash
+conda create -n py310 python=3.11
+conda activate py311
+cd tvm/xinetzone
+pip install .[doc,dev] -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install pickleshare -i https://pypi.tuna.tsinghua.edu.cn/simple # 用于 jupyter notebook 魔法指令
+```
+配置环境：
+```bash
+python -m invoke init
+python -m invoke config --cuda
+python -m invoke make
+```
+配置前端框架：
+```bash
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+pip install tensorflow -i https://pypi.tuna.tsinghua.edu.cn/simple
+```

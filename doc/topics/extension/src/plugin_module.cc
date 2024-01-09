@@ -38,13 +38,12 @@ void CreateMyModule_(TVMArgs args, TVMRetValue* rv) {
 
 int SubOne_(int x) { return x - 1; }
 
-// USE TVM_DLL_EXPORT_TYPED_PACKED_FUNC to export a
-// typed function as packed function.
+// 使用 TVM_DLL_EXPORT_TYPED_PACKED_FUNC 将类型化函数导出为 packed 函数
 TVM_DLL_EXPORT_TYPED_FUNC(SubOne, SubOne_);
 
-// TVM_DLL_EXPORT_TYPED_PACKED_FUNC also works for lambda.
+// 使用 TVM_DLL_EXPORT_TYPED_PACKED_FUNC 将 lambda 函数导出为 packed 函数
 TVM_DLL_EXPORT_TYPED_FUNC(AddOne, [](int x) -> int { return x + 1; });
 
-// Use TVM_EXPORT_PACKED_FUNC to export a function with
+// 使用 TVM_EXPORT_PACKED_FUNC 导出函数
 TVM_DLL_EXPORT_PACKED_FUNC(CreateMyModule, tvm_dso_plugin::CreateMyModule_);
 }  // namespace tvm_dso_plugin

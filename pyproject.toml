@@ -10,6 +10,7 @@ authors = [
 dependencies = [
     "d2py",
     # "tvmx @ file:///${PROJECT_ROOT}/..",
+    "tqdm",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

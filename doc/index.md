@@ -8,6 +8,7 @@ dev
 topics/index
 chaos/index
 about/index
+faqs/index
 tvm-docker<https://github.com/xinetzone/tvm-docker>
 news
 ```

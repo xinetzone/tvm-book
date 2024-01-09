@@ -2,7 +2,6 @@
 
 ```{toctree}
 :maxdepth: 2
-:hidden:
 
 zreferences
 ../reference/index

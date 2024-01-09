@@ -4,7 +4,7 @@ from tvm.relay.op.annotation import compiler_begin, compiler_end
 from tvm.relay.backend import te_compiler
 from tqdm import tqdm
 
-def update_lib(lib, source_dir="/media/pc/data/lxw/work/tvm"):
+def update_lib(lib, source_dir="/media/pc/data/lxw/ai/tvm"):
     kwargs = {
         "options" : [
             "-O2", "-std=c++17", 
@@ -20,14 +20,14 @@ def update_lib(lib, source_dir="/media/pc/data/lxw/work/tvm"):
     lib = tvm.runtime.load_module(lib_path)
     return lib
 
-def run_llvm_graph(run_mod, params, input_dict):
+def run_llvm_graph(run_mod, params, input_dict, source_dir="/media/pc/data/lxw/ai/tvm"):
     target = "llvm" #"c -runtime=c --system-lib"
     device = tvm.cpu()
     # input_dict = {"data": data_np}
     te_compiler.get().clear()
     with tvm.transform.PassContext(opt_level=3, disabled_pass={"AlterOpLayout"}):
         lib = relay.build(run_mod, target=target, params=params)
-    lib = update_lib(lib)
+    lib = update_lib(lib, source_dir=source_dir)
     exe = tvm.contrib.graph_executor.GraphModule(lib["default"](tvm.cpu()))
     exe.run(**input_dict)
     tvm_res = [

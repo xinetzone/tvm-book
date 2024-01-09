@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+print(ROOT)
 sys.path.extend([str(ROOT/'src')])
 import tvm_book
 # 国际化
