@@ -18,4 +18,8 @@ python -m invoke make
 ```bash
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 pip install tensorflow -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install onnx onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple
+# caffe 依赖
+pip install scikit-image -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install protobuf==3.20.3 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```

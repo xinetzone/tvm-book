@@ -2,16 +2,16 @@
 
 ```{toctree}
 config
+cpp-runtime/index
+ffi/index
 te/index
 topi/index
 tir/index
-ffi/index
 op/index
 attrs/index
 expr/index
 reflection
 transforms/index
-runtime/index
 source-map/index
 name-supply
 memory-passes

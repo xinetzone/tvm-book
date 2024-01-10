@@ -140,3 +140,7 @@ draft/
 # PDM
 pdm.lock
 .pdm-python
+
+# temp
+.temp/
+temp/

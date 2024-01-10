@@ -1,0 +1,6 @@
+from tvm_book.tvm_utils.split_graph import graph_split
+
+split_conf = [{"op_name": "add", "op_index": 0}]
+mod = graph_split(origin_mod["main"], split_conf)[0]
+
+其中 `split_conf = [{"op_name": "add", "op_index": 0}]` 取出第一个残差结构所在子图。
