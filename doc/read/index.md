@@ -16,6 +16,6 @@ source-map/index
 name-supply
 memory-passes
 uma/index
-quant/index
+relay/index
 testing/index
 ```
