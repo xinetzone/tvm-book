@@ -1,4 +1,4 @@
-# 解读 tvm.relay
+# 解读 tvm.relay.quantize
 
 ```{toctree}
 quant-qconfig
