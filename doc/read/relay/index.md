@@ -1,5 +1,5 @@
 # Relay
 
 ```{toctree}
-quantize/index
+quant/index
 ```

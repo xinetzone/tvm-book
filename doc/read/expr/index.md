@@ -2,7 +2,8 @@
 
 ```{toctree}
 ir-op
+type-infer
 expr
-rela-add-op
+relay-add-op
 expr-functor
 ```
