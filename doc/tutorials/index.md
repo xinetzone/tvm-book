@@ -3,6 +3,8 @@
 ```{toctree}
 env
 frontend/index
+papi/index
+roofline/index
 deploy/index
 auto-quantize/index
 rewrite/index

@@ -1,0 +1,5 @@
+# PAPI
+
+```{toctree}
+intro
+```

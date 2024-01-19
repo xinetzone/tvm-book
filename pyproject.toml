@@ -9,8 +9,9 @@ authors = [
 ]
 dependencies = [
     "d2py",
-    # "tvmx @ file:///${PROJECT_ROOT}/..",
     "tqdm",
+    # "tvmx @ file:///${PROJECT_ROOT}/..",
+    # "tvmx @ file:///media/pc/data/lxw/ai/tvm/xinetzone",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
