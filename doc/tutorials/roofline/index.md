@@ -2,4 +2,5 @@
 
 ```{toctree}
 test
+papi/index
 ```

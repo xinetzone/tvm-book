@@ -18,4 +18,6 @@ memory-passes
 uma/index
 relay/index
 testing/index
+codegen/index
+contrib/index
 ```
