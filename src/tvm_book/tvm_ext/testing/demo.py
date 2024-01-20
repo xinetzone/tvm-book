@@ -21,17 +21,22 @@ def sym_add(a: tvm.tir.expr.Var, b: tvm.tir.expr.Var):
     """
     return _ffi_api.sym_add(a, b)
 
-def bind_add(a, b):
+def bind_add(f, b):
     """加法偏函数
 
-    Example:
-        ```python
-        def add(a, b):
-            return a + b
+    Args:
+        f: 加法函数
+        b: 偏移量
 
-        f = testing.bind_add(add, 7)
-        assert f(2) == 9
-        ```
+    Returns:
+        加法偏函数
+
+    Example:
+        >>> def add(a, b):
+        ...     return a + b
+
+        >>> f = testing.bind_add(add, 7)
+        >>> assert f(2) == 9
     """
     print(type(a), type(b))
     return _ffi_api.bind_add(a, b)
