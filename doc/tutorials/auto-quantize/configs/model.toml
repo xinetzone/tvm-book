@@ -1,0 +1,119 @@
+[resnet50_v2]
+name = "data"
+shape = [ 1, 3, 299, 299,]
+model_type = "onnx"
+test_image_path = "models/resnet50_v2/data/ILSVRC2012_val_00000837.JPEG"
+
+[mobilenet_v2_tf]
+name = "data"
+shape = [ 1, 3, 224, 224,]
+model_type = "onnx"
+test_image_path = "models/mobilenet_v2_tf/data/ILSVRC2012_val_00000837.JPEG"
+
+[resnet18]
+name = "data"
+shape = [ 1, 3, 224, 224,]
+model_type = "torch"
+test_image_path = "models/resnet18/data/demo.jpg"
+
+[person]
+name = "data"
+shape = [ 1, 3, 240, 640,]
+model_type = "caffe"
+test_image_path = "models/person/data/0_cnn.jpg"
+
+[fp_octavia]
+name = "data"
+shape = [ 1, 3, 112, 112,]
+model_type = "caffe"
+test_image_path = "models/fp_octavia/data/demo.jpg"
+
+[new_person]
+name = "data"
+shape = [ 1, 3, 240, 640,]
+model_type = "caffe"
+test_image_path = "models/new_person/data/0_cnn.bmp"
+
+[person_car_detect]
+name = "input.1"
+shape = [ 1, 3, 288, 512,]
+model_type = "onnx"
+test_image_path = "models/person_car_detect/data/demo.jpg"
+
+[person_chair]
+name = "input.1"
+shape = [ 1, 3, 224, 640,]
+model_type = "onnx"
+test_image_path = "models/person_chair/data/demo.jpg"
+
+[face_classification]
+name = "data"
+shape = [ 1, 3, 112, 112,]
+model_type = "caffe"
+test_image_path = "models/face_classification/data/cai_lu_yao.jpg"
+
+[face_landmark]
+name = "data"
+shape = [ 1, 1, 112, 112,]
+model_type = "caffe"
+test_image_path = "models/face_landmark/data/0042_006.jpg"
+
+[face_rec]
+name = "data"
+shape = [ 1, 3, 112, 112,]
+model_type = "caffe"
+test_image_path = "models/face_rec/test/benxi.jpg"
+
+[fr_karen]
+name = "data"
+shape = [ 1, 3, 80, 80,]
+model_type = "caffe"
+test_image_path = "models/fr_karen/data/2022714_03821_fa_left.jpg"
+
+[fr_madeline]
+name = "input.1"
+shape = [ 1, 3, 112, 112,]
+model_type = "caffe"
+test_image_path = "models/fr_madeline/data/benxi.jpg"
+
+[resnet50_v1]
+name = "data"
+shape = [ 1, 3, 224, 224,]
+model_type = "torch"
+test_image_path = "models/resnet18/data/demo.jpg"
+
+[mobilenet_v2]
+name = "data"
+shape = [ 1, 3, 224, 224,]
+model_type = "torch"
+test_image_path = "models/resnet18/data/demo.jpg"
+
+[driver]
+name = "images"
+shape = [ 1, 3, 224, 384,]
+model_type = "caffe"
+test_image_path = "models/driver/data/demo.jpg"
+
+[face_detection_580]
+name = "data"
+shape = [ 1, 3, 224, 224,]
+model_type = "caffe"
+test_image_path = "models/face_detection_580/data/baibaihe.jpg"
+
+[face_detection]
+name = "data"
+shape = [ 1, 3, 256, 256,]
+model_type = "caffe"
+test_image_path = "models/face_detection/data/_xinyu_1.jpg"
+
+[fd_quintina]
+name = "data"
+shape = [ 1, 1, 144, 256,]
+model_type = "caffe"
+test_image_path = "models/fd_quintina/data/demo.jpg"
+
+[yolov5]
+name = "images"
+shape = [ 1, 3, 640, 640,]
+model_type = "onnx"
+test_image_path = "models/yolov5/data/demo.jpg"
