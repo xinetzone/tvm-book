@@ -13,7 +13,7 @@ class Config:
     test_image_path: str # 测试数据路径
 
 configs = [
-    ("resnet50_v2", "data", (1, 3, 299, 299), "onnx", "models/resnet50_v2/data/ILSVRC2012_val_00000837.JPEG"),
+    ("resnet50_v2", "data", (1, 3, 224, 224), "onnx", "models/resnet50_v2/data/ILSVRC2012_val_00000837.JPEG"),
     ("mobilenet_v2_tf", "data", (1, 3, 224, 224), "onnx", "models/mobilenet_v2_tf/data/ILSVRC2012_val_00000837.JPEG"),
 
     ("resnet18", "data", (1, 3, 224, 224), "torch", "models/resnet18/data/demo.jpg"),
