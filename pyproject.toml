@@ -50,7 +50,7 @@ doc = [
   "autodocsumm"
 ]
 
-[dev] = [
+dev = [
   "xgboost"
 ]
 
