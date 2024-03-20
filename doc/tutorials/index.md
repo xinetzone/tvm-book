@@ -2,6 +2,7 @@
 
 ```{toctree}
 env
+msc/index
 frontend/index
 roofline/index
 deploy/index

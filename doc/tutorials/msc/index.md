@@ -1,0 +1,5 @@
+# MSC
+
+```{toctree}
+intro
+```
