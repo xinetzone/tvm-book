@@ -2,8 +2,8 @@
 
 配置工具：
 ```bash
-conda create -n py310 python=3.11
-conda activate py311
+conda create -n py312 python=3.12
+conda activate py312
 cd tvm/xinetzone
 pip install .[doc,dev] -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install pickleshare -i https://pypi.tuna.tsinghua.edu.cn/simple # 用于 jupyter notebook 魔法指令
