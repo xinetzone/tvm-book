@@ -50,6 +50,10 @@ doc = [
   "autodocsumm"
 ]
 
+[dev] = [
+  "xgboost"
+]
+
 [tool.pdm.build]
 # package-dir = "src"
 # includes = []
