@@ -9,7 +9,6 @@ authors = [
 ]
 dependencies = [
     "d2py",
-    "tqdm",
     # "tvmx @ file:///${PROJECT_ROOT}/..",
     # "tvmx @ file:///media/pc/data/lxw/ai/tvm/xinetzone",
 ]
@@ -31,7 +30,9 @@ Documentation = "https://xinetzone.github.io/tvm-book"
 
 [project.optional-dependencies]
 doc = [
-  "sphinx>5",
+  "invoke",
+  "tqdm",
+  "sphinx>6",
   "mdit-py-plugins",
   "myst-nb",
   "xyzstyle",
