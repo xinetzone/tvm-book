@@ -195,7 +195,7 @@ html_theme_options = {
     "navigation_with_keys": True,
     "collapse_navigation": False,
     "navbar_align": "content",  # "right", "left", "content"
-    "navbar_start": "navbar-logo.html",
+    # "navbar_start": "navbar-logo.html",
     "navbar_center": "navbar-nav.html",
     "navbar_end": ["theme-switcher", "version-switcher", "navbar-icon-links"],
     # "secondary_sidebar_items": ["page-toc.html", "edit-this-page.html"],
