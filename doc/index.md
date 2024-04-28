@@ -2,7 +2,7 @@
 ```
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 7
 
 TVM <https://xinetzone.github.io/tvm/>
 tutorials/index

@@ -4,7 +4,6 @@
 ```
 
 ```{toctree}
-env
 mxnet
 tensorflow-tvm/index
 pytorch-tvm/index
