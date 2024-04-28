@@ -20,3 +20,4 @@ _models/
 *.h5
 temp/
 *.json
+.temp/

@@ -9,6 +9,9 @@ authors = [
 ]
 dependencies = [
     "d2py",
+    "onnx",
+    "onnxscript",
+    "onnxruntime",
     # "tvmx @ file:///${PROJECT_ROOT}/..",
     # "tvmx @ file:///media/pc/data/lxw/ai/tvm/xinetzone",
 ]
