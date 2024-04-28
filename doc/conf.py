@@ -58,9 +58,13 @@ extensions = [
     "sphinx_comments",
     "sphinxcontrib.mermaid",
     "sphinx_plotly_directive",
-    "sphinx.ext.autodoc",
     "sphinx.ext.todo",
     "autodocsumm",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx_automodapi.automodapi",
+    "sphinx_automodapi.smart_resolver",
+    'autoapi.extension',
 ]
 
 autodoc_default_options = {
@@ -308,3 +312,15 @@ comments_config = {
 }
 
 todo_include_todos = True
+
+# -- Options for autosummary/autodoc output ------------------------------------
+autosummary_generate = True
+autodoc_typehints = "description"
+autodoc_member_order = "groupwise"
+
+# -- Options for autoapi -------------------------------------------------------
+autoapi_type = "python"
+autoapi_dirs = ["../src/tvm_book"]
+autoapi_keep_files = False # 要开始自己编写 API 文档，你可以让 AutoAPI 保留其生成的文件作为基础
+autoapi_root = "api"
+autoapi_member_order = "groupwise"

@@ -1,17 +1,15 @@
 [tool.pdm]
-version = { source = "file", path = "src/tvm_book/__about__.py" }
 allow_prereleases = true
+version = { source = "file", path = "src/tvm_book/__init__.py" }
+
 [project]
 name = "tvm-book"
-dynamic = ["version"]
+dynamic = ["version", "description"]
 authors = [
     {name = "xinetzone", email = "xinzone@outlook.com"},
 ]
 dependencies = [
     "d2py",
-    "onnx",
-    "onnxscript",
-    "onnxruntime",
     # "tvmx @ file:///${PROJECT_ROOT}/..",
     # "tvmx @ file:///media/pc/data/lxw/ai/tvm/xinetzone",
 ]
@@ -51,11 +49,19 @@ doc = [
   "sphinxcontrib-mermaid",
   "plotly",
   "sphinxcontrib-websupport",
-  "autodocsumm"
+  "autodocsumm",
+  "sphinx-autoapi",
+]
+
+onnx = [
+  "onnx",
+  "onnxscript",
+  "onnxruntime",
 ]
 
 dev = [
-  "xgboost"
+  "xgboost",
+  "tvm_book[onnx]",
 ]
 
 [tool.pdm.build]

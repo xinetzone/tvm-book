@@ -28,10 +28,10 @@ def set_tvm(tvm_root: str|Path):
 #     os.environ['MXNET_CUDNN_LIB_CHECKING'] = '0'
 
 
-def set_cudnn(cuda_path:str|Path="/usr/local/cuda/bin",
-              LD_LIBRARY_PATH:str|Path="/usr/local/cuda/lib64"):
-    os.environ["PATH"] += f":{cuda_path}"
-    os.environ["LD_LIBRARY_PATH"] = LD_LIBRARY_PATH
+# def set_cudnn(cuda_path:str|Path="/usr/local/cuda/bin",
+#               LD_LIBRARY_PATH:str|Path="/usr/local/cuda/lib64"):
+#     os.environ["PATH"] += f":{cuda_path}"
+#     os.environ["LD_LIBRARY_PATH"] = LD_LIBRARY_PATH
 
 
 # def import_tvm(tvm_root):

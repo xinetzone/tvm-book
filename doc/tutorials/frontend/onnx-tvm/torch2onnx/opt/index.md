@@ -13,4 +13,5 @@ flatten
 conv-reshape
 L2
 bn-conv
+resize
 ```
