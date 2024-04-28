@@ -4,7 +4,7 @@
 ```{toctree}
 :maxdepth: 2
 
-tvm<https://xinetzone.github.io/tvm/>
+TVM <https://xinetzone.github.io/tvm/>
 tutorials/index
 dev
 topics/index
