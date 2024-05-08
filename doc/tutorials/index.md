@@ -11,5 +11,5 @@ deploy/index
 auto-quantize/index
 rewrite/index
 partition/index
-conv-throughput
+vta/index
 ```

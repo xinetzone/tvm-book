@@ -1,4 +1,4 @@
-# VTA 教程
+# VTA 教程(chaos)
 
 官方教程见：[VTA](https://xinetzone.github.io/tvm/docs/topic/vta/index.html)。
 

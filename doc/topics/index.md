@@ -2,5 +2,4 @@
 
 ```{toctree}
 extension/index
-onnxscript/index
 ```

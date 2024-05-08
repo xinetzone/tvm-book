@@ -4,6 +4,4 @@
 onnx-format
 onnxruntime-start
 torch2onnx/index
-torch2onnx-test
-test
 ```

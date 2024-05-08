@@ -8,6 +8,7 @@ te/index
 topi/index
 tir/index
 op/index
+layout/index
 attrs/index
 expr/index
 reflection
