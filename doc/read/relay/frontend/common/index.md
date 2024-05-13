@@ -2,4 +2,5 @@
 
 ```{toctree}
 AttrConverter
+tag-span
 ```

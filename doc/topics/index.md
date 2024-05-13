@@ -2,4 +2,5 @@
 
 ```{toctree}
 extension/index
+explorer/index
 ```

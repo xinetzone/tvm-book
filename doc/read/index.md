@@ -2,6 +2,9 @@
 
 ```{toctree}
 config
+arith/index
+ir/index
+script/index
 cpp-runtime/index
 ffi/index
 te/index
