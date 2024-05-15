@@ -4,7 +4,6 @@
 :maxdepth: 7
 
 env
-msc/index
 frontend/index
 pass/index
 roofline/index
@@ -13,5 +12,6 @@ auto-quantize/index
 rewrite/index
 partition/index
 vta/index
+msc/index
 tests/index
 ```
