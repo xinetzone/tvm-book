@@ -8,7 +8,6 @@
 
 prepare
 start/index
-packed-func
 integration
 expressions/index
 ```

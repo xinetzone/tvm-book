@@ -4,6 +4,8 @@
 :maxdepth: 7
 
 env
+packed-func
+trace
 frontend/index
 pass/index
 roofline/index

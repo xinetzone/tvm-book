@@ -2,4 +2,5 @@
 
 ```{toctree}
 tag
+tensor-compute
 ```
