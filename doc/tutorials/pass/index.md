@@ -2,4 +2,5 @@
 
 ```{toctree}
 dynamic2static
+DivToMul
 ```
