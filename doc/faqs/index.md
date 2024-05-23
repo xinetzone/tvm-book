@@ -4,4 +4,5 @@
 tvm-docker<https://github.com/xinetzone/tvm-docker>
 gcc
 caffe
+cuda
 ```

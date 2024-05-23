@@ -11,9 +11,9 @@ OSError: /media/pc/data/tmp/cache/conda/envs/py311/bin/../lib/libstdc++.so.6: ve
     pip uninstall scipy
     pip install scipy -i https://pypi.tuna.tsinghua.edu.cn/simple 
     ```
-- 解决办法二：
+- 解决办法二[libstdcxx-ng](https://libraries.io/conda/libstdcxx-ng)：
     ```bash
-    conda install -c anaconda libstdcxx-ng
+    conda install -c conda-forge libstdcxx-ng
     ```
 - 解决办法三：
     - 检查是否存在:

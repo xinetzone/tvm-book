@@ -2,5 +2,6 @@
 
 ```{toctree}
 primitive
+forward
 quant
 ```

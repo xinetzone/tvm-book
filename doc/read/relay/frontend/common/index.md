@@ -3,4 +3,5 @@
 ```{toctree}
 AttrConverter
 tag-span
+faqs
 ```

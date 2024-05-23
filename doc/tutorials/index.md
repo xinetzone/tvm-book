@@ -9,7 +9,7 @@ pass/index
 roofline/index
 deploy/index
 auto-quantize/index
-rewrite/index
+pattern/index
 partition/index
 vta/index
 msc/index
