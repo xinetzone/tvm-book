@@ -3,8 +3,8 @@
 ```{toctree}
 node
 match
-rewrite
-fuse
+partition/index
+rewrite/index
+fuse/index
 simplify
-partition
 ```

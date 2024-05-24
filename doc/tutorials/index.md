@@ -6,6 +6,7 @@
 env
 packed-func
 trace
+tedd/index
 frontend/index
 pass/index
 roofline/index
