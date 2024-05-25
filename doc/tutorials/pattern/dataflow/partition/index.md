@@ -2,6 +2,7 @@
 
 ```{toctree}
 double
+constant-embedding
 dominator
 nested-diamond
 batchnorm

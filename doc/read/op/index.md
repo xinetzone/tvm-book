@@ -1,5 +1,7 @@
 # TVM op
 
 ```{toctree}
-nn.pad
+ir-op
+add-type-rel
+nn-pad
 ```

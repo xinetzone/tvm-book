@@ -1,0 +1,3 @@
+"Relay operators for the Special NPU"
+from .softmax_reshape import special_softmax_reshape
+

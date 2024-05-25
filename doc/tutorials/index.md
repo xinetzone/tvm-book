@@ -3,9 +3,7 @@
 ```{toctree}
 :maxdepth: 7
 
-env
-packed-func
-trace
+intro/index
 tedd/index
 frontend/index
 pass/index
