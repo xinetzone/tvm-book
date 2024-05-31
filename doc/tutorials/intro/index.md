@@ -5,5 +5,8 @@ env
 packed-func
 trace
 custom-op
+custom-quant-op
 custom-vta-op
+Conv2dTransposeReshapeConcat
+hard-swish-v1
 ```

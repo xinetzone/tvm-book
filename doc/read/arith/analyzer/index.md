@@ -3,4 +3,8 @@
 ```{toctree}
 StructuralEqual
 ExprDeepEqual
+canonical-simplify
+ConstIntBound
+simplify
+rewrite-simplify
 ```

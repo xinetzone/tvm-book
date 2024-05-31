@@ -6,12 +6,13 @@
 
 TVM <https://xinetzone.github.io/tvm/>
 tutorials/index
-dev
+read/index
+apps/index
 topics/index
 chaos/index
 about/index
 faqs/index
-news
+dev/index
 ```
 
 ```{todolist}

@@ -71,8 +71,12 @@ autodoc_default_options = {
     'autosummary': True,
 }
 
-# application/vnd.plotly.v1+json and application/vnd.bokehjs_load.v0+json
-suppress_warnings = ["mystnb.unknown_mime_type"]
+suppress_warnings = [
+    "mystnb.unknown_mime_type",  # 禁用 application/vnd.plotly.v1+json and application/vnd.bokehjs_load.v0+json 警告
+    "myst.xref_missing", # 禁用 myst 警告
+    "autoapi.python_import_resolution", "autoapi.not_readable" # 禁用 autoapi 警告
+]
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -192,7 +196,7 @@ html_theme_options = {
         "json_url": json_url,
         "version_match": switcher_version,
     },
-    "header_links_before_dropdown": 4,
+    "header_links_before_dropdown": 7,
     "use_edit_page_button": True,
     "show_nav_level": 0,
     "show_toc_level": 0,
@@ -213,12 +217,12 @@ html_theme_options = {
         #     "icon": "fa-brands fa-square-github",
         #     "type": "fontawesome",
         # },
-        {
-            "name": "启智AI",
-            "url": "https://openi.pcl.ac.cn/xinetzone",
-            "icon": "fa-sharp fa-solid fa-clipboard",
-            "type": "fontawesome",
-        },
+        # {
+        #     "name": "启智AI",
+        #     "url": "https://openi.pcl.ac.cn/xinetzone",
+        #     "icon": "fa-sharp fa-solid fa-clipboard",
+        #     "type": "fontawesome",
+        # },
         {
             "name": "知乎",
             "url": "https://www.zhihu.com/people/xinetzone",

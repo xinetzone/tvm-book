@@ -5,7 +5,7 @@ from tvm.relay.dataflow_pattern import (
     DFPatternCallback,
     # rewrite
 )
-from .op import special_softmax_reshape
+from ..op import special_softmax_reshape
 
 
 class Reshape4dSoftmaxReshape2dRewrite(DFPatternCallback):
@@ -33,7 +33,7 @@ class Reshape4dSoftmaxReshape2dRewrite(DFPatternCallback):
     def __init__(self):
         super().__init__()
         self.x = wildcard()
-        self.reshape4d = is_op("reshape")(self.x) # 将 NCHW 转换为 NHWC，其他 H=W=1
+        self.reshape4d = is_op("reshape")(self.x) # 将 NCHW 转换为 NHWC，其中 H=W=1
         self.softmax = is_op("nn.softmax")(self.reshape4d)
         self.softmax_axis = self.softmax.has_attr({"axis": 3})
         self.reshape2d = is_op("reshape")(self.softmax_axis)

@@ -2,4 +2,5 @@
 
 ```{toctree}
 dataflow/index
+layout/index
 ```

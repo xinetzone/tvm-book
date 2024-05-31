@@ -1,7 +1,7 @@
 # 开发
 
 ```{toctree}
-read/index
-apps/index
+
+news
 cpp-book <https://xinetzone.github.io/cpp-book>
 ```

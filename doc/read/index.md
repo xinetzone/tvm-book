@@ -1,7 +1,10 @@
 # TVM 解读
 
 ```{toctree}
+:maxdepth: 7
+
 config
+relay-frontend/index
 arith/index
 ir/index
 script/index

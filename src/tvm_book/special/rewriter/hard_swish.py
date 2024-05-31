@@ -7,6 +7,7 @@ from tvm.relay.dataflow_pattern import (
     # is_tuple_get_item
 )
 from tvm import relay
+from ..op import special_hard_swish
 
 # ==========================================================================================================================================
 # 融合 mod 中 add+clip+divide+multiply 为 hard_swish
@@ -38,6 +39,6 @@ class HardSwishRewrite(DFPatternCallback):
         assert value_3.data.numpy() == 3.0
         value_6 = node_map[self.value_6][0]
         assert value_6.data.numpy() == 6.0
-        x = relay.op.hard_swish(x)
+        x = special_hard_swish(x)
         _ = relay.transform.InferTypeLocal(x)
         return x
