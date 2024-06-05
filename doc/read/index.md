@@ -24,6 +24,7 @@ name-supply
 memory-passes
 uma/index
 relay/index
+qnn/index
 testing/index
 codegen/index
 contrib/index

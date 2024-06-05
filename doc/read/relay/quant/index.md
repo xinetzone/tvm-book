@@ -8,5 +8,8 @@ prerequisite-optimize
 QPartitionExpr
 partition
 annotate
+SimulatedQuantize
+calibrate
+realize/index
 partition-conversions
 ```

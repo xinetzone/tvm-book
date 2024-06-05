@@ -1,8 +1,9 @@
-# Relay 变换
+# 解读 TVM 变换
 
 ```{toctree}
-:maxdepth: 2
-
+InferTypeLocal
+defuse-ops
+div-to-mul
 module
 function
 sequential

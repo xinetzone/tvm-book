@@ -11,6 +11,10 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 import sys
 from pathlib import Path
+from docutils.nodes import literal_block
+from pygments.lexers import ClassNotFound, find_lexer_class_by_name
+from sphinx.locale import __
+from sphinx.transforms.post_transforms import SphinxPostTransform
 
 ROOT = Path(__file__).resolve().parents[1]
 print(ROOT)
@@ -75,8 +79,10 @@ suppress_warnings = [
     "mystnb.unknown_mime_type",  # 禁用 application/vnd.plotly.v1+json and application/vnd.bokehjs_load.v0+json 警告
     "myst.xref_missing", # 禁用 myst 警告
     "autoapi.python_import_resolution", "autoapi.not_readable" # 禁用 autoapi 警告
+    "sphinx_automodapi.automodapi",
+    "autosectionlabel.*", "autosummary", "intersphinx.external",
+    "autodoc", "autodoc.import_object"
 ]
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -328,3 +334,40 @@ autoapi_dirs = ["../src/tvm_book"]
 autoapi_keep_files = False # 要开始自己编写 API 文档，你可以让 AutoAPI 保留其生成的文件作为基础
 autoapi_root = "api"
 autoapi_member_order = "groupwise"
+
+class LexerValidation(SphinxPostTransform):
+    """参考：https://github.com/sphinx-doc/sphinx/issues/11442"""
+    default_priority = 500
+    builders = ('dummy',)
+
+    def __init__(self, *args, **kwargs):
+        from sphinx.highlighting import lexers, lexer_classes, logger
+
+        super().__init__(*args, **kwargs)
+        self.lexer_names = lexers.keys() | lexer_classes.keys()
+        self.logger = logger
+
+    def run(self, **kwargs):
+        for node in self.document.findall(literal_block):
+            lang = node.get('language', 'default')
+            self.logger.info(f"lang, node: {lang, node}")
+            self.validate_lexer(lang, node)
+
+    def validate_lexer(self, lang, location):
+        if lang in {'py', 'py3', 'python3', 'default', 'pycon3'}:
+            lang = 'python'
+
+        if lang in {'C++14', 'C++17', 'C++', 'C++20', 'C++11'}:
+            lang = 'cpp'
+
+        if lang in self.lexer_names:
+            return
+
+        try:
+            lexer = find_lexer_class_by_name(lang)
+        except ClassNotFound:
+            self.logger.warning(__('Pygments lexer name %r is not known'), lang,
+                                location=location)
+
+def setup(app):
+    app.add_post_transform(LexerValidation)

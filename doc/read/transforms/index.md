@@ -1,7 +1,12 @@
-# 解读 TVM 变换
+# TVM 变换
 
 ```{toctree}
-InferTypeLocal
-defuse-ops
-div-to-mul
+:maxdepth: 2
+
+intro
+pass
+infra
+SimplifyInference
+custom-pass
+chaos/index
 ```

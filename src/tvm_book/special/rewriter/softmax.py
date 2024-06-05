@@ -10,25 +10,6 @@ from ..op import special_softmax_reshape
 
 class Reshape4dSoftmaxReshape2dRewrite(DFPatternCallback):
     """简化 `reshape4d_softmax_reshape2d` 为 `softmax_reshape`
-
-    原始mod:
-    ```
-    def @main(%data: Tensor[(1, 3, 8, 8), float32] /* ty=Tensor[(1, 3, 8, 8), float32] span=/conv/Conv.data:0:0 */) -> Tensor[(1, 8), float32] {
-        %0 = nn.conv2d(%data, meta[relay.Constant][0] /* ty=Tensor[(8, 3, 1, 1), float32] span=/conv/Conv.conv.weight:0:0 */, padding=[0, 0, 0, 0], channels=8, kernel_size=[1, 1]) /* ty=Tensor[(1, 8, 8, 8), float32] span=/conv/Conv:0:0 */;
-        %1 = nn.global_avg_pool2d(%0) /* ty=Tensor[(1, 8, 1, 1), float32] span=/pool/GlobalAveragePool:0:0 */;
-        %2 = reshape(%1, newshape=[1, 1, 1, 8]) /* ty=Tensor[(1, 1, 1, 8), float32] span=/Reshape:0:0 */;
-        %3 = nn.softmax(%2, axis=3) /* ty=Tensor[(1, 1, 1, 8), float32] span=/Softmax:0:0 */;
-        reshape(%3, newshape=[-1, 8]) /* ty=Tensor[(1, 8), float32] span=/Reshape_1:0:0 */
-        }
-    ```
-    简化后为：
-    ```
-    def @main(%data: Tensor[(1, 3, 8, 8), float32] /* ty=Tensor[(1, 3, 8, 8), float32] span=/conv/Conv.data:0:0 */) -> Tensor[(1, 8), float32] {
-        %0 = nn.conv2d(%data, meta[relay.Constant][0] /* ty=Tensor[(8, 3, 1, 1), float32] span=/conv/Conv.conv.weight:0:0 */, padding=[0, 0, 0, 0], channels=8, kernel_size=[1, 1]) /* ty=Tensor[(1, 8, 8, 8), float32] span=/conv/Conv:0:0 */;
-        %1 = nn.global_avg_pool2d(%0) /* ty=Tensor[(1, 8, 1, 1), float32] span=/pool/GlobalAveragePool:0:0 */;
-        softmax_reshape(%1, __dict__={"axis"=1, "newshape"=[1, 8]}) /* ty=Tensor[(1, 8), float32] */
-        }
-    ```
     """
     def __init__(self):
         super().__init__()

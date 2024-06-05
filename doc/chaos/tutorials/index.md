@@ -7,7 +7,6 @@
 :maxdepth: 3
 
 basic/index
-transform/index
 ../quantize/index
 relay/index
 ../vta/index

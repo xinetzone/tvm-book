@@ -6,7 +6,6 @@
 start/index
 merge-composite
 build-module
-transform/index
 annotated-regions
 compiler-regions
 annotate-target

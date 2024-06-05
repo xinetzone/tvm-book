@@ -1,7 +1,7 @@
-# 量化
+# 基于搜索的自动量化
 
 ```{toctree}
-fixed-point-multiply-cpp
+intro
 fixed-point-multiply
 parse
 custom
