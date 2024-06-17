@@ -16,9 +16,9 @@ from pygments.lexers import ClassNotFound, find_lexer_class_by_name
 from sphinx.locale import __
 from sphinx.transforms.post_transforms import SphinxPostTransform
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.extend([str(ROOT/'src'), str(ROOT/"doc/_ext")])
-
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.extend([str(ROOT/'src'), str(ROOT/"tests/book/doc/_ext")])
+print(ROOT)
 import tvm_book
 # 国际化
 # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/i18n.html
@@ -44,6 +44,7 @@ release = tvm_book.__version__
 # ones.
 extensions = [
     "xyzstyle",
+    "docxbuilder",
     'myst_nb',
     'sphinx.ext.intersphinx',
     'sphinx_copybutton',
@@ -68,7 +69,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
-    'autoapi.extension',
 ]
 
 autodoc_default_options = {
@@ -110,7 +110,7 @@ html_theme = 'xyzstyle'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = [f'{ROOT}/doc/_static']
 html_css_files = [
     'custom.css',
 ]
@@ -160,11 +160,11 @@ napoleon_preprocess_types = True
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
-html_logo = '_static/images/logo.jpg'
+html_logo = f'{ROOT}/doc/_static/images/logo.jpg'
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = '_static/images/favicon.jpg'
+html_favicon = f'{ROOT}/doc/_static/images/favicon.jpg'
 html_last_updated_fmt = '%Y-%m-%d, %H:%M:%S'
 
 extlinks = {
@@ -307,7 +307,7 @@ myst_enable_extensions = [
     "tasklist",
 ]
 
-bibtex_bibfiles = ["d2ltvm.bib"]
+bibtex_bibfiles = [f"{ROOT}/doc/d2ltvm.bib"]
 # To test that style looks good with common bibtex config
 bibtex_reference_style = "author_year"
 graphviz_output_format = 'svg'
@@ -328,12 +328,12 @@ autosummary_generate = True
 autodoc_typehints = "description"
 autodoc_member_order = "groupwise"
 
-# -- Options for autoapi -------------------------------------------------------
-autoapi_type = "python"
-autoapi_dirs = ["../src/tvm_book"]
-autoapi_keep_files = False # 要开始自己编写 API 文档，你可以让 AutoAPI 保留其生成的文件作为基础
-autoapi_root = "api"
-autoapi_member_order = "groupwise"
+# # -- Options for autoapi -------------------------------------------------------
+# autoapi_type = "python"
+# autoapi_dirs = ["../src/tvm_book"]
+# autoapi_keep_files = False # 要开始自己编写 API 文档，你可以让 AutoAPI 保留其生成的文件作为基础
+# autoapi_root = "api"
+# autoapi_member_order = "groupwise"
 
 class LexerValidation(SphinxPostTransform):
     """参考：https://github.com/sphinx-doc/sphinx/issues/11442"""

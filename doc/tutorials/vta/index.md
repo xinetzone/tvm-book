@@ -2,5 +2,5 @@
 
 ```{toctree}
 demo
-test
+test-demo
 ```

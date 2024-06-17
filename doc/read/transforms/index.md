@@ -8,5 +8,6 @@ pass
 infra
 SimplifyInference
 custom-pass
+fold-explicit-padding
 chaos/index
 ```

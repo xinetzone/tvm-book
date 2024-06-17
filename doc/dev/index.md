@@ -2,7 +2,7 @@
 
 ```{toctree}
 
-TODOs
+test
 news
 cpp-book <https://xinetzone.github.io/cpp-book>
 ```

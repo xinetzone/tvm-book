@@ -6,7 +6,6 @@ packed-func
 trace
 custom-op
 rewrite-quant-op
+yolo-output
 custom-vta-op
-Conv2dTransposeReshapeConcat
-hard-swish-v1
 ```

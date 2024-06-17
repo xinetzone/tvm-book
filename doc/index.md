@@ -15,9 +15,6 @@ faqs/index
 dev/index
 ```
 
-```{todolist}
-```
-
 # 索引与表格
 
 * {ref}`genindex`

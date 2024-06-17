@@ -51,6 +51,7 @@ doc = [
   "sphinxcontrib-websupport",
   "autodocsumm",
   "sphinx-autoapi",
+  "lxml"
 ]
 
 onnx = [
