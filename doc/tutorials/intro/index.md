@@ -6,6 +6,5 @@ packed-func
 trace
 custom-op
 rewrite-quant-op
-yolo-output
 custom-vta-op
 ```

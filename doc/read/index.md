@@ -6,6 +6,7 @@
 config
 relay-frontend/index
 arith/index
+target/index
 ir/index
 script/index
 cpp-runtime/index

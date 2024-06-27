@@ -3,5 +3,5 @@
 ```{toctree}
 :maxdepth: 7
 
-dfl
+tests/index
 ```
