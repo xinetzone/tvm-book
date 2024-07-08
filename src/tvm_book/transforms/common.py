@@ -10,32 +10,6 @@ from tvm.relay.function import Function
 @tvm.relay.transform.function_pass(opt_level=1)
 class FuseTransform:
     """替换融合函数为全局函数
-    
-    .. code-block:: python
-        def dist2bbox(distance, anchor_points, xywh=True, dim=-1):
-            """Transform distance(ltrb) to box(xywh or xyxy)."""
-            lt, rb = distance.chunk(2, dim)
-            x1y1 = anchor_points - lt
-            x2y2 = anchor_points + rb
-            if xywh:
-                c_xy = (x1y1 + x2y2) / 2
-                wh = x2y2 - x1y1
-                return torch.cat((c_xy, wh), dim)  # xywh bbox
-            return torch.cat((x1y1, x2y2), dim)  # xyxy bbox
-
-    ``dist2bbox(distance, anchor_points, xywh=True, dim=-1)`` 等价于：
-
-   .. code-block:: python
-        def dist2bbox2(distance, anchor_points, xywh=True, dim=-1):
-            """Transform distance(ltrb) to box(xywh or xyxy)."""
-            lt, rb = distance.chunk(2, dim)
-            if xywh:
-                wh = rb - lt
-                c_xy = wh * 0.5 + anchor_points
-                return torch.cat((c_xy, wh), dim)  # xywh bbox
-            x1y1 = anchor_points - lt
-            x2y2 = anchor_points + rb
-            return torch.cat((x1y1, x2y2), dim)  # xyxy bbox
     """
     def __init__(self):
         self.reset()
