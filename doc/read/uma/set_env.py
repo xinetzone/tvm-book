@@ -1,3 +1,6 @@
-from tvm_book.config.env import set_tvm
-TVM_ROOT = "/media/pc/data/lxw/ai/tvm"
-set_tvm(TVM_ROOT)
+import sys
+from pathlib import Path
+ROOT = Path(".").resolve().parents[2]
+sys.path.extend([f"{ROOT}/tests", f"{ROOT}/src"])
+# # from tools.tag_span import _create_span, _set_span, _verify_structural_equal_with_span
+from tools.torch_utils import verify_model

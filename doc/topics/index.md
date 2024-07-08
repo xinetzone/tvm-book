@@ -1,6 +1,7 @@
 # 专题
 
 ```{toctree}
+ultralytics/index
 codegen/index
 extension/index
 register/index

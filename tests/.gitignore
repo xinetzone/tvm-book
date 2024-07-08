@@ -1,1 +1,4 @@
 testdata/
+*.onnx
+*.pt
+.torchscript

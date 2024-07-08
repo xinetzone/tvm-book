@@ -24,3 +24,5 @@ temp/
 api/
 .temp/
 *.pt
+*.torchscript
+*.onnx
