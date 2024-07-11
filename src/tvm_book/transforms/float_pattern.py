@@ -473,13 +473,14 @@ def make_yolo_dist2bbox_pattern(x, subtract_anchor_points, add_anchor_points):
 
 def make_yolo_dist2xywh_pattern(x, anchor_points):
     # x = wildcard()
-    index_max = (1<<31) - 1
+    # index_max = (1<<31) - 1
     lt = is_op("strided_slice")(x) #.has_attr({"begin": [0, 0], "end": [index_max, 2]})
     rb = is_op("strided_slice")(x) #.has_attr({"begin": [0, 2], "end": [index_max, 4]})
     
-    wh = is_op("subtract")(rb, lt)
-    wh_scale = is_op("multiply")(wh, is_constant())
-    c_xy = is_op("add")(wh_scale, anchor_points)
+    box = is_op("subtract")(rb, lt)
+    box_scale = is_op("multiply")(box, is_constant())
+    c_xy = is_op("add")(box_scale, anchor_points)
+    wh = is_op("add")(rb, lt)
     tuple_op = is_tuple((c_xy, wh))
     return is_op("concatenate")(tuple_op)
 

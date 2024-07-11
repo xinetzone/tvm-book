@@ -7,4 +7,6 @@ rewrite-once
 with-pattern-recursion
 function-with-fuzzy-body
 dfl
+FastGlobalAvgPool
+SqueezeExcitation
 ```

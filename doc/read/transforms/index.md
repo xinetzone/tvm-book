@@ -7,6 +7,7 @@ intro
 pass
 infra
 SimplifyInference
+FoldScaleAxis
 custom-pass
 fold-explicit-padding
 chaos/index
