@@ -144,3 +144,7 @@ pdm.lock
 # temp
 .temp/
 temp/
+*.torchscript
+*.pt
+*.onnx
+*.pth
