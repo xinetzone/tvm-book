@@ -5,6 +5,7 @@
 ```bash
 conda create -n py312 python=3.12
 conda activate py312
+git clone https://github.com/xinetzone/tvm
 cd tvm/xinetzone
 pip install .[doc,dev] -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install pickleshare -i https://pypi.tuna.tsinghua.edu.cn/simple # 用于 jupyter notebook 魔法指令
