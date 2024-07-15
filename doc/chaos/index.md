@@ -5,4 +5,5 @@ tutorials/index
 topics/index
 paper/index
 targets/index
+tests/index
 ```
