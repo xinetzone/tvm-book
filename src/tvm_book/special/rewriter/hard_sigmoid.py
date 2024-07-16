@@ -7,6 +7,7 @@ from tvm.relay.dataflow_pattern import (
 )
 from tvm import relay
 from tvm.relay.dataflow_pattern import rewrite
+from ..op import special_hard_sigmoid
 
 # ==========================================================================================================================================
 def make_hard_sigmoid_v1_pattern():
@@ -35,7 +36,7 @@ class HardSigmoidV1Rewrite(DFPatternCallback):
         value_6 = node_map[self.value_6][0]
         if (value_3.data.numpy() == 3.0 
             and value_6.data.numpy() == 6.0):
-            x = relay.op.hard_sigmoid(x)
+            x = special_hard_sigmoid(x)
             _ = relay.transform.InferTypeLocal(x)
             return x
         else:
@@ -49,7 +50,7 @@ class HardSigmoidV2Rewrite(DFPatternCallback):
         self.value = is_constant() # 1/6
         self.multiply = is_op("multiply")(self.x, self.value)
         self.value2 = is_constant() # 0.5
-        self.add = is_op("add")(self.x, self.value2)
+        self.add = is_op("add")(self.multiply, self.value2)
         self.clip = is_op("clip")(self.add).has_attr({"a_min": 0., "a_max": 1.0})
         self.pattern = self.clip
 
@@ -59,13 +60,14 @@ class HardSigmoidV2Rewrite(DFPatternCallback):
         value2 = node_map[self.value2][0]
         if ((value.data.numpy()*6 - 1) <= 1e-2
             and value2.data.numpy() == 0.5): 
-            x = relay.op.hard_sigmoid(x)
+            relay.transform.InferTypeLocal(x)
+            x = special_hard_sigmoid(x)
             _ = relay.transform.InferTypeLocal(x)
             return x
         else:
             return post
 
-def simplify_hard_sigmoid(expr):
-    expr = rewrite(HardSigmoidV1Rewrite(), expr)
-    expr = rewrite(HardSigmoidV2Rewrite(), expr)
-    return expr
+def simplify_hard_sigmoid(mod):
+    mod["main"] = rewrite(HardSigmoidV1Rewrite(), mod["main"])
+    mod["main"] = rewrite(HardSigmoidV2Rewrite(), mod["main"])
+    return mod

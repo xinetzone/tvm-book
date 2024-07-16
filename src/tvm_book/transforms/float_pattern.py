@@ -1,6 +1,7 @@
 from tvm.relay.dataflow_pattern import (
     wildcard, is_constant, is_op, is_var, is_tuple, is_tuple_get_item
 )
+from ..special.op import *
 # import logging
 
 def is_QPartitionExpr(op):
@@ -80,10 +81,12 @@ def make_conv2d_pattern(x = wildcard()):
     r3 = r.optional(lambda x: is_op("nn.prelu")(x, alpha)) # prelu
     r4 = r.optional(lambda x: is_op("sigmoid")(x)) # sigmoid
     r5 = r.optional(lambda x: is_op("multiply")(x, is_op("sigmoid")(x))) # silu
+    r6 = r.optional(lambda x: is_op("special.hard_sigmoid")(x)) # special.hard_sigmoid
+    r7 = r.optional(lambda x: is_op("special.hard_swish")(x)) # special.hard_swish
     # r6 = r.optional(lambda x: is_op("silu")(x)) # silu
     # r7 = r.optional(lambda x: is_op("hard_sigmoid")(x)) # hard_sigmoid
     # r8 = r.optional(lambda x: is_op("hard_swish")(x)) # hard_swish
-    r = r1 | r2 | r3 | r4 | r5
+    r = r1 | r2 | r3 | r4 | r5 | r6 | r7
 
     r = is_op("relay.op.annotation.simulated_quantize")(r, is_constant(), is_constant(), is_constant()) | r
     return r
