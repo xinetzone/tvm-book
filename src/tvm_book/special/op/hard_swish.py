@@ -41,14 +41,10 @@ def hard_swish_compute(
     """
     assert len(inputs) == 1, "输入参数数量不为 1"
     x = inputs[0]
-    x = run_infer_type(x)
     x_ = topi.max(topi.min(x+3, 6), 0)
-    x = run_infer_type(x)
     # x_ = topi.clip(x+3, 0, 6)
     x = topi.multiply(x, x_)
-    x = run_infer_type(x)
     x = topi.multiply(x, 1/6)
-    x = run_infer_type(x)
     return [x]
 
 def special_hard_swish(x):
