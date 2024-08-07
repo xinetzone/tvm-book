@@ -2,4 +2,5 @@
 
 ```{toctree}
 interpreter
+aot-executor-codegen
 ```

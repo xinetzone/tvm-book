@@ -12,4 +12,5 @@ tvm_dll
 env_func
 repr_printer
 node_functor
+data-type
 ```

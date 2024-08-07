@@ -16,5 +16,5 @@ cpp-build-module
 graph-partitioning
 analysis-get-calibration_data
 memory-passes
-AnnotateUsedMemory
+AnnotateUsedMemory/index
 ```
