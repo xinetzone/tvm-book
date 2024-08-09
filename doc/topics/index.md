@@ -1,6 +1,7 @@
 # 专题
 
 ```{toctree}
+ai/index
 ultralytics/index
 codegen/index
 extension/index
@@ -9,4 +10,3 @@ explorer/index
 podman/index
 wsl/index
 ```
-_static_init

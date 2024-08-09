@@ -69,6 +69,7 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "sphinx_automodapi.smart_resolver",
     'autoapi.extension',
+    "sphinxcontrib.icon",
 ]
 
 autodoc_default_options = {

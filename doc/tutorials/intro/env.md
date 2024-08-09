@@ -28,5 +28,5 @@ pip install tensorflow -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install onnx onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple
 # caffe 依赖
 pip install scikit-image -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install protobuf==3.20.3 -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install protobuf==3.20.3 numpy==1.26.3 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```

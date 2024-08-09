@@ -1,0 +1,18 @@
+[[infer_inputs]] # 推理阶段输入数据信息
+name = "input.1"
+shape = [ 1, 192, 160, 3,]
+dtype = "uint8"
+layout = "nhwc"
+mean = [ 0,]
+std = [ 256,]
+
+[[train_inputs]] # 训练或者量化校准阶段输入数据信息
+name = "input.1"
+shape = [ 1, 3, 192, 160,]
+dtype = "float32"
+layout = "nchw"
+
+[model] # 前端模型配置信息
+model_type = "caffe" # 前端模型框架或者类型
+init_net_path = "test.caffemodel" # caffe_pb2.NetParameter，caffemodel，即 caffe 模型参数
+predict_net_path = "test.prototxt" # caffe_pb2.NetParameter，caffe prototxt，即 caffe 模型结构
