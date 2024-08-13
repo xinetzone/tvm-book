@@ -39,9 +39,9 @@ assert_same(mod[entry_name], module["main"])
 ```
 
 ```{topic} MSCGraph 和 Relex 之间的差异
-#. MSCGraph 具有 DAG（有向无环图）格式，而 Relax 具有表达式格式。
-#. MSCGraph 将张量分类为输入和权重，而 Relex 将张量定义为变量和常量。
-#. MSCGraph 使用节点名称（如 `conv1`，`layer1.conv1` ...）作为搜索节点的主要 ID，而 Relax 使用带有前缀的索引（如 `lvXX`，`gv`）。
+- MSCGraph 具有 DAG（有向无环图）格式，而 Relax 具有表达式格式。
+- MSCGraph 将张量分类为输入和权重，而 Relex 将张量定义为变量和常量。
+- MSCGraph 使用节点名称（如 `conv1`，`layer1.conv1` ...）作为搜索节点的主要 ID，而 Relax 使用带有前缀的索引（如 `lvXX`，`gv`）。
 ```
 
 ### RuntimeManager

@@ -1,17 +1,17 @@
 [[infer_inputs]] # 推理阶段输入数据信息
-name = "data"
-shape = [ 1, 192, 160, 3,]
+name = "x"
+shape = [ 1, 224, 224, 3,]
 dtype = "uint8"
 layout = "nhwc"
 mean = [ 0,]
 std = [ 256,]
 
 [[train_inputs]] # 训练或者量化校准阶段输入数据信息
-name = "data"
-shape = [ 1, 3, 192, 160,]
+name = "x"
+shape = [ 1, 3, 224, 224,]
 dtype = "float32"
 layout = "nchw"
 
 [model] # 前端模型配置信息
 model_type = "pytorch" # 前端模型框架或者类型
-path = "test.pt" # PyTorch TorchScript 模型
+path = "resnet18.pth" # PyTorch TorchScript 模型
