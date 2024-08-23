@@ -49,6 +49,7 @@ class Frontend:
                 text_format.Merge(f.read(), predict_net)
             dtype_dict = kwargs["dtype_dict"]
             mod, params = relay.frontend.from_caffe(init_net, predict_net, shape_dict, dtype_dict)
+            mod = relay.transform.InferType()(mod)
             return TVMCModel(mod, params)
         elif self.name in ["keras", "onnx", "pb", "tflite", "pytorch", "paddle", "relay"]:
             return load_model(path, self.name, shape_dict=shape_dict, **kwargs)
