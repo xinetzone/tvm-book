@@ -16,4 +16,5 @@ model-props
 model-local-funs
 pattern/index
 opt/index
+ir/index
 ```
