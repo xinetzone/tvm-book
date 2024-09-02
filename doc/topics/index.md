@@ -2,6 +2,7 @@
 
 ```{toctree}
 ai/index
+mlc/index
 ultralytics/index
 codegen/index
 extension/index

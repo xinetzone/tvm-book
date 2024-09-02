@@ -4,6 +4,7 @@
 :maxdepth: 7
 
 config
+relax/index
 relay-frontend/index
 arith/index
 targets/index

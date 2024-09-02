@@ -4,6 +4,7 @@
 :maxdepth: 7
 
 intro/index
+e2e/index
 tedd/index
 frontend/index
 pass/index
