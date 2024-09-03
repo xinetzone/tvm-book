@@ -2,4 +2,5 @@
 
 ```{toctree}
 rewriting
+generic_pattern
 ```
