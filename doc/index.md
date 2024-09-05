@@ -6,6 +6,7 @@
 
 TVM <https://xinetzone.github.io/tvm/>
 tutorials/index
+temp-tutorials/index
 read/index
 apps/index
 topics/index
