@@ -13,6 +13,5 @@ aq/index
 pattern/index
 partition/index
 vta/index
-msc/index
 tests/index
 ```
