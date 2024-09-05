@@ -2,9 +2,9 @@
 
 ```{toctree}
 intro
-graph-build
-pipeline
-tools
+graph
+pipeline/index
+tools/index
 plugin
 runner
 translate-relay
