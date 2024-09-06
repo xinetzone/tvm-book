@@ -52,7 +52,7 @@ doc = [
   "autodocsumm",
   "sphinx-autoapi",
   "lxml",
-  "sphinx-icon"
+  "sphinx-icon",
 ]
 
 onnx = [

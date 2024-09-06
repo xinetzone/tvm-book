@@ -10,6 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 import sys
+import os
 from pathlib import Path
 from docutils.nodes import literal_block
 from pygments.lexers import ClassNotFound, find_lexer_class_by_name
@@ -18,6 +19,15 @@ from sphinx.transforms.post_transforms import SphinxPostTransform
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.extend([str(ROOT/'src'), str(ROOT/"doc/_ext")])
+
+# Define the canonical URL if you are using a custom domain on Read the Docs
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "https://xinetzone.github.io/tvm-book")
+
+# Tell Jinja2 templates the build is running on Read the Docs
+if os.environ.get("READTHEDOCS", "") == "True":
+    if "html_context" not in globals():
+        html_context = {}
+    html_context["READTHEDOCS"] = True
 
 import tvm_book
 # 国际化
@@ -70,6 +80,7 @@ extensions = [
     "sphinx_automodapi.smart_resolver",
     'autoapi.extension',
     "sphinxcontrib.icon",
+    "sphinx_build_compatibility.extension",
 ]
 
 autodoc_default_options = {
@@ -189,7 +200,6 @@ intersphinx_mapping = {
 # Define the json_url for our version switcher.
 json_url = 'https://xinetzone.github.io/tvm-book/_static/switcher.json'
 version = release
-html_baseurl = "https://xinetzone.github.io/tvm-book"
 
 switcher_version = f'v{version}'
 if "dev" in version:
