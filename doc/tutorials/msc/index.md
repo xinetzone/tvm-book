@@ -6,7 +6,6 @@ graph
 pipeline/index
 tools/index
 plugin
-runner
 translate-relay
 translate-relax
 translate-torch
