@@ -53,6 +53,7 @@ doc = [
   "sphinx-autoapi",
   "lxml",
   "sphinx-icon",
+  "readthedocs-sphinx-ext",
 ]
 
 onnx = [
