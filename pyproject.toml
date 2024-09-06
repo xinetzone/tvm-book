@@ -33,7 +33,7 @@ Documentation = "https://xinetzone.github.io/tvm-book"
 doc = [
   "invoke",
   "tqdm",
-  "sphinx>6",
+  "sphinx",
   "mdit-py-plugins",
   "myst-nb",
   "xyzstyle",
