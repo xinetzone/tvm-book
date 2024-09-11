@@ -218,13 +218,13 @@ html_theme_options = {
     "show_toc_level": 0,
     "navigation_with_keys": True,
     "collapse_navigation": False,
-    "navbar_align": "content",  # "right", "left", "content"
-    # "navbar_start": "navbar-logo.html",
-    "navbar_center": "navbar-nav.html",
-    "navbar_end": ["theme-switcher", "version-switcher", "navbar-icon-links"],
+    # "navbar_align": "content",  # "right", "left", "content"
+    # # "navbar_start": "navbar-logo.html",
+    # "navbar_center": "navbar-nav.html",
+    # "navbar_end": ["theme-switcher", "version-switcher", "navbar-icon-links"],
     # "secondary_sidebar_items": ["page-toc.html", "edit-this-page.html"],
     "footer_start": ["copyright", "sphinx-version"],
-    "footer_end": ["last-updated", ],
+    "footer_end": ["last-updated", "version-switcher", "theme-switcher",],
     # 图标可以参考 https://fontawesome.com/icons
     "icon_links": [
         # {
