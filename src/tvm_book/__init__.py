@@ -1,3 +1,1 @@
-'''TVM Book
-'''
-__version__ = '0.0.21'
+"""TVM: Open Deep Learning Compiler Stack."""

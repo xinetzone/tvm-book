@@ -19,7 +19,6 @@ python -m invoke config --cuda
 python -m invoke make
 ```
 
-
 配置前端框架(包含 CUDA+CUDNN)：
 
 ```bash

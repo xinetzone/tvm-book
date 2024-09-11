@@ -3,6 +3,7 @@
 ```{toctree}
 :maxdepth: 7
 
+env
 demo
 IRModule
 e2e-opt
