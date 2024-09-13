@@ -2,9 +2,8 @@
 ```
 
 ```{toctree}
-:maxdepth: 7
+:maxdepth: 8
 
-TVM <https://xinetzone.github.io/tvm/>
 tutorials/index
 temp-tutorials/index
 read/index
@@ -14,6 +13,7 @@ chaos/index
 about/index
 faqs/index
 dev/index
+TVM <https://xinetzone.github.io/tvm/>
 ```
 
 # 索引与表格

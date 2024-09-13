@@ -3,5 +3,6 @@
 ```{toctree}
 tf/index
 onnx/index
+onnxscript/index
 torch2onnx/index
 ```

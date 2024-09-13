@@ -2,5 +2,5 @@
 
 ```{toctree}
 intro
-onnxscript/index
+save-model
 ```
