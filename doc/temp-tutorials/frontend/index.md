@@ -1,11 +1,9 @@
-# 前端模型
+# 前端模型(temp)
 
 ```{toctree}
 mxnet
-tensorflow-tvm/index
+tf-tvm/index
 pytorch-tvm/index
-onnx-tvm/index
-onnxscript/index
 caffe-tvm/index
 relax-fx
 ```

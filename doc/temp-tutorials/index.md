@@ -13,5 +13,6 @@ aq/index
 pattern/index
 partition/index
 vta/index
+ai/index
 tests/index
 ```

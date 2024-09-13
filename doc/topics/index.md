@@ -1,13 +1,9 @@
 # 专题
 
 ```{toctree}
-ai/index
-mlc/index
-ultralytics/index
+frontend/index
 codegen/index
 extension/index
 register/index
-explorer/index
-podman/index
-wsl/index
+other/index
 ```

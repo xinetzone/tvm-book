@@ -1,7 +1,7 @@
 # TensorFlow 前端
 
 ```{toctree}
-from-tensorflow
+tf1
 pb2onnx
-from-tf_slim/index
+tf-slim/index
 ```
