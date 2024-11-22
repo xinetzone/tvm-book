@@ -2,7 +2,7 @@
 ```
 
 ```{toctree}
-:maxdepth: 8
+:hidden:
 
 frontend/index
 tutorials/index

@@ -1,4 +1,5 @@
 class Bunch(dict):
+    """可循环合并的字典"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__dict__ = self # 这意味着 Bunch 类的实例将具有与字典相同的行为，可以使用点符号访问和修改其键值对
