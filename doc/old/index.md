@@ -9,7 +9,6 @@ frontend/index
 pass/index
 roofline/index
 deploy/index
-aq/index
 pattern/index
 partition/index
 vta/index
