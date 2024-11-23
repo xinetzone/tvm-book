@@ -197,7 +197,7 @@ intersphinx_mapping = {
 
 # ``pydata-sphinx-theme`` 配置
 # Define the json_url for our version switcher.
-json_url = 'https://xinetzone.github.io/tvm-book/_static/switcher.json'
+json_url = '_static/switcher.json'
 version = release
 
 switcher_version = f'v{version}'
