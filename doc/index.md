@@ -4,9 +4,9 @@
 ```{toctree}
 :hidden:
 
-frontend/index
 tutorials/index
 old/index
+frontend/index
 read/index
 apps/index
 topics/index
