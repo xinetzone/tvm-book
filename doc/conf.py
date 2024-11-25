@@ -65,7 +65,7 @@ extensions = [
     "sphinx_automodapi.smart_resolver",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    # "sphinx_thebe",
+    "sphinx_thebe",
     "sphinx_sitemap",
     "sphinx_design",
     "sphinx_comments",

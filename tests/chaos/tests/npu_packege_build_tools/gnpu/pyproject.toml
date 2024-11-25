@@ -1,0 +1,79 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+include = [
+  "std/*.rly",
+  "src/bin",
+]
+artifacts = [
+  "*.so",
+  "*.dll",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tvm"]
+
+[tool.hatch.build.force-include]
+"src/bin" = "/tvm"
+"src/vta.cpython-310-x86_64-linux-gnu.so" = "/vta.cpython-310-x86_64-linux-gnu.so"
+"src/vta_hw" = "/vta_hw"
+
+# "src/bin/libtvm.so" = "/tvm/libtvm.so"
+# "src/bin/libtvm_runtime.so" = "/tvm/libtvm_runtime.so"
+# "bin/libvta_fsim.so" = "src/tvm/libvta_fsim.so"
+# "bin/vta.cpython-38-x86_64-linux-gnu.so" = "src/tvm/vta.cpython-38-x86_64-linux-gnu.so"
+
+[project]
+name = "gnpu"
+description = 'TVM 工具链'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = ["gnpu", "tvm", "vta"]
+authors = [
+  { name = "liuxinwei", email = "liuxinwei@xmsilicon.cn" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = []
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://github.com/unknown/xm-tool#readme"
+Issues = "https://github.com/unknown/xm-tool/issues"
+Source = "https://github.com/unknown/xm-tool"
+
+[tool.hatch.version]
+path = "src/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest",
+  "pytest-cov",
+]
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src --cov=tests"
+no-cov = "cov --no-cov"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["38", "310"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "src/__about__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
