@@ -132,6 +132,7 @@ html_css_files = [
 nb_merge_streams = True
 nb_execution_allow_errors = True
 nb_execution_mode = 'off'
+nb_execution_excludepatterns = []
 nb_mime_priority_overrides = [
     ("html", "text/html", 0),
     ("latex", "text/latex", 20),
@@ -197,7 +198,7 @@ intersphinx_mapping = {
 
 # ``pydata-sphinx-theme`` 配置
 # Define the json_url for our version switcher.
-json_url = '_static/switcher.json'
+json_url = 'https://github.com/xinetzone/tvm-book/_static/switcher.json'
 version = release
 
 switcher_version = f'v{version}'
