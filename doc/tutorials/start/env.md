@@ -15,23 +15,25 @@
     git clone https://github.com/xinetzone/tvm
     cd tvm/xinetzone
     pip install .[doc,dev] -i https://pypi.tuna.tsinghua.edu.cn/simple
-    pip install pickleshare -i https://pypi.tuna.tsinghua.edu.cn/simple # 用于 jupyter notebook 魔法指令
+    pip install ipykernel -i https://pypi.tuna.tsinghua.edu.cn/simple # 用于 jupyter notebook 
     python -m invoke init
     ```
 
 3. 编译 TVM 运行时，以备后续使用：
 
     ```bash
-    python -m invoke config --cuda
+    python -m invoke config
     python -m invoke make
     ```
 
 4. （可选）配置前端框架(包含 CUDA+CUDNN)：
 
     ```bash
+    python -m invoke config --cuda
+    python -m invoke make
     conda install cuda-nvcc cudnn cudatoolkit pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia
     pip install tensorflow -i https://pypi.tuna.tsinghua.edu.cn/simple
-    pip install onnx onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple
+    pip install onnx onnxscript onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
 ````{note}

@@ -227,7 +227,7 @@ html_theme_options = {
     "use_sidenotes": True,
     "show_toc_level": 5,
     "announcement": (
-        "👋欢迎进入编程视界！👋"
+        "👋欢迎进入 AI 世界！👋"
     ),
     "navigation_with_keys": True,
     "switcher": {

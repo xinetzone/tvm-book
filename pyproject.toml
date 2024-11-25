@@ -56,15 +56,9 @@ doc = [
   "readthedocs-sphinx-ext",
 ]
 
-onnx = [
-  "onnx",
-  "onnxscript",
-  "onnxruntime",
-]
-
 dev = [
   "xgboost",
-  "tvm_book[onnx]",
+  "pickleshare",
 ]
 
 [tool.pdm.build]
