@@ -3,6 +3,7 @@
 ```{toctree}
 transform-intro
 py-call
+cpp-call
 plugin-module
 NDSubClass
 ```

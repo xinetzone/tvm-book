@@ -15,7 +15,6 @@
     git clone https://github.com/xinetzone/tvm
     cd tvm/xinetzone
     pip install .[doc,dev] -i https://pypi.tuna.tsinghua.edu.cn/simple
-    pip install ipykernel -i https://pypi.tuna.tsinghua.edu.cn/simple # 用于 jupyter notebook 
     python -m invoke init
     ```
 
@@ -29,11 +28,11 @@
 4. （可选）配置前端框架(包含 CUDA+CUDNN)：
 
     ```bash
+    conda install conda-forge::backtrace
+    conda install cuda cudnn pytorch torchvision torchaudio pytorch-cuda -c pytorch -c nvidia
+    pip install tensorflow onnx onnxscript onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple
     python -m invoke config --cuda
     python -m invoke make
-    conda install cuda-nvcc cudnn cudatoolkit pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia
-    pip install tensorflow -i https://pypi.tuna.tsinghua.edu.cn/simple
-    pip install onnx onnxscript onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
 ````{note}
@@ -46,3 +45,23 @@ pip install protobuf==3.20.3 numpy==1.26.3 -i https://pypi.tuna.tsinghua.edu.cn/
 
 鉴于精力有限，`caffe` 环境的维护将不再继续。
 ````
+
+````{note}
+可以直接在 CPU 上测试 TVM 功能
+
+```bash
+%%shell
+# Installs the latest dev build of TVM from PyPI. If you wish to build
+# from source, see https://tvm.apache.org/docs/install/from_source.html
+pip install apache-tvm --pre
+```
+````
+
+## Vulkan 支持
+
+文档：
+- [Nvidia Vulkan](https://developer.nvidia.cn/vulkan)
+
+```bash
+conda install conda-forge::vulkan-tools
+```

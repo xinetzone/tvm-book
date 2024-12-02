@@ -1,4 +1,4 @@
-from . import set_tensorflow, set_pytorch
+from . import set_pytorch
 from tvm_book.config.env import set_tvm
 # TVM_ROOT = Path(__file__).absolute().parents[5]
 TVM_ROOT = "/media/pc/data/lxw/ai/tvm"

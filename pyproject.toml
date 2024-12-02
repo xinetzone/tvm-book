@@ -59,6 +59,7 @@ doc = [
 dev = [
   "xgboost",
   "pickleshare",
+  "cloudpickle",
 ]
 
 [tool.pdm.build]
