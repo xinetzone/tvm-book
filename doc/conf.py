@@ -235,6 +235,10 @@ html_theme_options = {
         "version_match": version_match,
     },
     "icon_links": icon_links,
+    "switcher": {
+        "json_url": json_url,
+        "version_match": version_match,
+    },
     "collapse_navigation": True,
     # "navbar_start": ["test.html"],
     # "navbar_center": ["test.html"],
