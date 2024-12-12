@@ -230,10 +230,6 @@ html_theme_options = {
         "👋欢迎进入 AI 世界！👋"
     ),
     "navigation_with_keys": True,
-    "switcher": {
-        "json_url": json_url,
-        "version_match": version_match,
-    },
     "icon_links": icon_links,
     "switcher": {
         "json_url": json_url,
