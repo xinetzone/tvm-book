@@ -20,7 +20,6 @@ _models/
 *.params
 *.h5
 temp/
-*.json
 .temp/
 api/
 .temp/
