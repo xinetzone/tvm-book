@@ -3,7 +3,7 @@ import sys, os
 import ctypes
 from tvm._ffi.libinfo import find_lib_path
 
-def _load_lib(name: str|list[str]|None=None, search_path: str|list[str]|None=None):
+def load_lib(name: str|list[str]|None=None, search_path: str|list[str]|None=None):
     """通过搜索可能的路径加载库
     
     Arg:
@@ -13,7 +13,8 @@ def _load_lib(name: str|list[str]|None=None, search_path: str|list[str]|None=Non
     lib_path = find_lib_path(name=name, search_path=search_path)
     # 在 Python 3.8 之后，需要在 Windows 中显式添加 dll 搜索路径
     if sys.platform.startswith("win32") and sys.version_info >= (3, 8):
-        for path in libinfo.get_dll_directories():
+        from tvm._ffi.libinfo import get_dll_directories
+        for path in get_dll_directories():
             os.add_dll_directory(path)
     lib = ctypes.CDLL(lib_path[0], ctypes.RTLD_GLOBAL)
     if hasattr(lib, "TVMGetLastError"):
