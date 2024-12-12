@@ -10,6 +10,7 @@ authors = [
 ]
 dependencies = [
     "d2py",
+    "tables", # 处理数据
     # "tvmx @ file:///${PROJECT_ROOT}/..",
     # "tvmx @ file:///media/pc/data/lxw/ai/tvm/xinetzone",
 ]
