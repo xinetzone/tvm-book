@@ -3,7 +3,7 @@ if not hasattr(inspect, 'getargspec'):  # 修复
     inspect.getargspec = inspect.getfullargspec
 import sys
 from invoke import task
-from d2py.tools.write import site
+from tao.tools.write import site
 
 namespace = site('doc', target='doc/_build/html')
 
