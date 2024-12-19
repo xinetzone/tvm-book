@@ -209,6 +209,7 @@ version_match = os.environ.get("READTHEDOCS_VERSION")
 
 html_theme_options = {
     "path_to_docs": "doc",
+    "github_url": "https://github.com/xinetzone/tvm-book",
     "repository_url": "https://github.com/xinetzone/tvm-book",
     "repository_branch": "main",
     "launch_buttons": {
