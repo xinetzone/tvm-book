@@ -1,10 +1,4 @@
 icon_links = [
-    # {
-    #     "name": "GitHub",
-    #     "url": "https://github.com/xinetzone/tvm-book",
-    #     "icon": "fa-brands fa-square-github",
-    #     "type": "fontawesome",
-    # },
     {
         "name": "知乎",
         "url": "https://www.zhihu.com/people/xinetzone",
@@ -35,21 +29,4 @@ icon_links = [
         "icon": "fa-brands fa-linkedin",
         "type": "fontawesome",
     },
-    # {
-    #     "name": "GitLab",
-    #     "url": "https://gitlab.com/<your-org>/<your-repo>",
-    #     "icon": "fa-brands fa-square-gitlab",
-    #     "type": "fontawesome",
-    # },
-    # {
-    #     "name": "Twitter",
-    #     "url": "https://twitter.com/<your-handle>",
-    #     "icon": "fa-brands fa-square-twitter",
-    #     # The default for `type` is `fontawesome` so it is not actually required in any of the above examples as it is shown here
-    # },
-    # {
-    #     "name": "Mastodon",
-    #     "url": "https://<your-host>@<your-handle>",
-    #     "icon": "fa-brands fa-mastodon",
-    # },
 ]

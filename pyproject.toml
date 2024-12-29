@@ -43,6 +43,7 @@ doc = [
     "graphviz",
     "sphinx-intl", # 文档国际化
     "sphinx-tippy",
+    "sphinx-icon",
 ]
 
 dev = [

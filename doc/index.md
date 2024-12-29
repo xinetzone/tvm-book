@@ -4,18 +4,8 @@
 ```{toctree}
 :hidden:
 
-tutorials/index
-old/index
-frontend/index
-read/index
-apps/index
-topics/index
-chaos/index
+test/index
 about/index
-faqs/index
-dev/index
-TVM <https://xinetzone.github.io/tvm/>
-news/index
 ```
 
 # 索引与表格
