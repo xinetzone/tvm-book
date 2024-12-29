@@ -27,8 +27,6 @@ if os.environ.get("READTHEDOCS", "") == "True":
     if "html_context" not in globals():
         html_context = {}
     html_context["READTHEDOCS"] = True
-
-import tvm_book
 # 国际化
 # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/i18n.html
 # from sphinx.locale import get_translation
@@ -42,9 +40,6 @@ project = 'tvm-book'
 copyright = '2022, xinetzone'
 author = 'xinetzone'
 
-# The full version, including alpha/beta/rc tags
-release = tvm_book.__version__
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -52,7 +47,6 @@ release = tvm_book.__version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "xyzstyle",
     'myst_nb',
     'sphinx.ext.intersphinx',
     'sphinx_copybutton',

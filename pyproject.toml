@@ -1,60 +1,48 @@
-[tool.pdm]
-allow_prereleases = true
-version = { source = "file", path = "src/tvm_book/__init__.py" }
-
 [project]
 name = "tvm-book"
-dynamic = ["version", "description"]
+version = "0.2.1"
+description = "道可道，非恒道"
 authors = [
-    {name = "xinetzone", email = "xinzone@outlook.com"},
-]
-dependencies = [
-    "taolib",
-    "tables", # 处理数据
-    # "tvmx @ file:///${PROJECT_ROOT}/..",
-    # "tvmx @ file:///media/pc/data/lxw/ai/tvm/xinetzone",
+    {name = "xinetzone", email = "735613050@qq.com"},
 ]
 requires-python = ">=3.10"
 readme = "README.md"
 license = {file = "LICENSE"}
-
-[build-system]
-requires = ["pdm-pep517"]
-build-backend = "pdm.pep517.api"
+maintainers = [
+  {name = "xinetzone", email = "735613050@qq.com"},
+]
+dependencies = []
 
 [project.urls]
-Homepage = "https://xinetzone.github.io/tvm-book"
 Repository = "https://github.com/xinetzone/tvm-book"
-Documentation = "https://xinetzone.github.io/tvm-book"
-
-# [project.entry-points]
-# "sphinx.html_themes" = {tvm_book = "tvm_book"}
+Documentation = "https://tvm-book.readthedocs.io/"
 
 [project.optional-dependencies]
 doc = [
-  "invoke",
-  "tqdm",
-  "sphinx",
-  "mdit-py-plugins",
-  "myst-nb",
-  "xyzstyle",
-  "matplotlib",
-  "sphinx-copybutton",
-  "sphinxcontrib-bibtex",
-  "sphinx-thebe",
-  "sphinx-design",
-  "sphinx-automodapi",
-  "sphinx-sitemap",
-  "sphinx_plotly_directive",
-  "sphinx-comments",
-  "sphinxcontrib-mermaid",
-  "plotly",
-  "sphinxcontrib-websupport",
-  "autodocsumm",
-  "sphinx-autoapi",
-  "lxml",
-  "sphinx-icon",
-  "readthedocs-sphinx-ext",
+    "xyzstyle",
+    "sphinx",
+    # "ablog",
+    "ipywidgets",
+    "folium",
+    "numpy",
+    "matplotlib",
+    "sphinx-comments",
+    "myst-nb",
+    "nbclient",
+    "pandas",
+    "plotly",
+    "sphinx-design",
+    "sphinx-examples",
+    "sphinx-copybutton",
+    "sphinx-contributors",
+    "sphinx-thebe",
+    "sphinxcontrib-bibtex",
+    "sphinxext-opengraph",
+    "sphinx-sitemap",
+    "sphinx-autoapi",
+    "graphviz",
+    "sphinx-intl", # 文档国际化
+    "sphinx-tippy",
 ]
 
 dev = [
@@ -63,8 +51,9 @@ dev = [
   "cloudpickle",
 ]
 
-[tool.pdm.build]
-# package-dir = "src"
-# includes = []
-excludes = ["doc", ".github"]
-source-includes = ["tests/"]
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
