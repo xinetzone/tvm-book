@@ -2,4 +2,6 @@
 
 ```{toctree}
 start/index
+TensorIR/index
+Relax/index
 ```

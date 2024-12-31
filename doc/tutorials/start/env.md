@@ -28,6 +28,17 @@
 4. （可选）配置前端框架(包含 CUDA+CUDNN)：
 
     ```bash
+    # Environment variables
+    export PATH=/usr/local/nvidia/bin:${PATH}
+    export PATH=/usr/local/cuda/bin:${PATH}
+    export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:${CPLUS_INCLUDE_PATH}
+    export C_INCLUDE_PATH=/usr/local/cuda/include:${C_INCLUDE_PATH}
+    export LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/compat:${LIBRARY_PATH}
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/compat:${LD_LIBRARY_PATH}
+
+    # Ensure the local libcuda have higher priority than the /usr/local/cuda/compact
+    # since the compact libcuda does not work on non-Tesla gpus
+    export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:${LD_LIBRARY_PATH}
     conda install conda-forge::backtrace
     conda install cuda cudnn pytorch torchvision torchaudio pytorch-cuda -c pytorch -c nvidia
     pip install tensorflow onnx onnxscript onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple

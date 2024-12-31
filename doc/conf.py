@@ -48,7 +48,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.12", None),
     "sphinx": ("https://daobook.github.io/sphinx/", None),
-    "pst": ("https://daobook.github.io/pydata-sphinx-theme/", None),
+    "tvm": ("https://xinetzone.github.io/tvm/", None),
 }
 # 缩短外部链接
 # -------------------------------------------------------------------------------------
