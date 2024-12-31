@@ -4,6 +4,7 @@
 ```{toctree}
 :hidden:
 
+tutorials/index
 test/index
 about/index
 ```

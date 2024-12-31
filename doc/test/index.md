@@ -4,7 +4,6 @@
 tutorials/index
 frontend/index
 topics/index
-
 faqs/index
 dev/index
 TVM <https://xinetzone.github.io/tvm/>

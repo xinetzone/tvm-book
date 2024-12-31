@@ -35,6 +35,6 @@
 [download-badge]: https://pepy.tech/badge/tvm-book
 [download-link]: https://pepy.tech/project/tvm-book
 [rtd-badge]: https://readthedocs.org/projects/tvm-book/badge/?version=latest
-[rtd-link]: https://tvm-book.readthedocs.io/zh/latest/?badge=latest
+[rtd-link]: https://tvm-book.readthedocs.io/zh-cn/latest/?badge=latest
 
 打造优质的 TVM 中文社区。

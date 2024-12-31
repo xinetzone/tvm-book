@@ -233,13 +233,6 @@ html_sidebars = {
 }
 
 # 排除笔记本不执行
-nb_execution_excludepatterns = [
-    "read/**/**/*.ipynb",
-    "tutorials/**/**/*.ipynb",
-    "frontend/**/**/*.ipynb",
-    "app/**/**/*.ipynb",
-    "topics/**/**/*.ipynb",
-]
-nb_execution_mode = "off" #"cache"
-
+nb_execution_excludepatterns = ["test/"]
+nb_execution_mode = "off" # "off", "cache"
 extensions.append("sphinxcontrib.icon")

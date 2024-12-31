@@ -21,9 +21,10 @@ _models/
 *.h5
 temp/
 .temp/
-api/
+autoapi/
 .temp/
 *.pt
 *.torchscript
 *.onnx
 *.pb
+runs/
