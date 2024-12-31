@@ -49,6 +49,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3.12", None),
     "sphinx": ("https://daobook.github.io/sphinx/", None),
     "tvm": ("https://xinetzone.github.io/tvm/", None),
+    "torch": ("https://pytorch.org/docs/stable/", None),
 }
 # 缩短外部链接
 # -------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ copybutton_selector = ":not(.prompt) > div.highlight pre"
 # -------------------------------------------------------------------------------------
 html_theme = 'xyzstyle' # 使用的主题名称
 html_logo = "_static/images/logo.jpg"
-html_title = "Sphinx xyzstyle Theme"
+html_title = "TVM 开发指南"
 html_copy_source = True
 html_favicon = "_static/images/favicon.jpg"
 html_last_updated_fmt = '%Y-%m-%d, %H:%M:%S' # 文档的最后更新时间格式

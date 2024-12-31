@@ -4,4 +4,5 @@
 start/index
 TensorIR/index
 Relax/index
+msc/index
 ```
