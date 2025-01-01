@@ -260,7 +260,7 @@ def _test_torch_plugin(manager):
     assert outputs.min() >= 0 and outputs.max() <= 0.5
 
 
-def _test_with_manager(plugins, compile_type, expected_info):
+def _test_with_manager(plugins, compile_type, expected_info, temp_dir):
     """Test the plugin with manager"""
 
     path = "test_plugin_" + compile_type
@@ -268,7 +268,7 @@ def _test_with_manager(plugins, compile_type, expected_info):
     if torch.cuda.is_available():
         model = model.to(torch.device("cuda:0"))
     config = {
-        "workspace": msc_utils.msc_dir(path),
+        "workspace": msc_utils.msc_dir(f"{temp_dir}/{path}"),
         "model_type": MSCFramework.TORCH,
         "verbose": "critical",
         "inputs": [["input_0", [1, 3, 224, 224], "float32"]],
