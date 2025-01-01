@@ -2,6 +2,8 @@
 
 ```{toctree}
 intro
-MSCProcessor
+pruner
+quantizer
+tracker
 test
 ```

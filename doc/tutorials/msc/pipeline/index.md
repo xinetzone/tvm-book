@@ -6,5 +6,6 @@
 :hidden:
 
 intro
-manager
+MSCManager
+TorchDynamic
 ```

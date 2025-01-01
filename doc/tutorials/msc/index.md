@@ -8,5 +8,6 @@ graph/index
 runner/index
 pipeline/index
 tools/index
-plugin
+plugin/index
+tests/index
 ```
