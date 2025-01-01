@@ -3,7 +3,6 @@
 ```{toctree}
 tutorials/index
 frontend/index
-topics/index
 faqs/index
 dev/index
 old/index

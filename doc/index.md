@@ -5,6 +5,7 @@
 :hidden:
 
 tutorials/index
+topics/index
 test/index
 TVM <https://xinetzone.github.io/tvm/>
 about/index
