@@ -207,6 +207,7 @@ suppress_warnings = [
     "autoapi.python_import_resolution", "autoapi.not_readable" # 禁用 autoapi 警告
 ]
 numfig = True
+
 myst_enable_extensions = [
     "dollarmath",
     "amsmath",
@@ -215,11 +216,15 @@ myst_enable_extensions = [
     # "html_image",
     "colon_fence",
     # "smartquotes",
-    # "replacements",
+    "replacements",
     # "linkify",
-    # "substitution",
+    "substitution",
 ]
 
+# 添加版本切换器下拉菜单
+extensions.append("_ext.rtd_version")
+html_theme_options['primary_sidebar_end'] = ["version-switcher",]
+# 定制侧边栏
 html_sidebars = {
     "reference/blog/*": [
         "navbar-logo.html",
