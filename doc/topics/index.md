@@ -3,5 +3,6 @@
 ```{toctree}
 gallery/index
 mlc/index
+faqs/index
 ```
 

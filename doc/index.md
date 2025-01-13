@@ -6,6 +6,7 @@
 
 tutorials/index
 topics/index
+frontend/index
 about/index
 ```
 

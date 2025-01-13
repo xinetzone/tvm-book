@@ -52,17 +52,6 @@
     ```
 
 ````{note}
-`caffe` 安装的依赖很复杂，暂时没有更好的办法，推荐使用 [`docker` 环境](https://hub.docker.com/r/xinetzone/tvmx/tags)，且此环境依赖
-```bash
-pip install scikit-image -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install protobuf==3.20.3 numpy==1.26.3 -i https://pypi.tuna.tsinghua.edu.cn/simple
-```
-细节见：[TVM docker 镜像制作](https://zhuanlan.zhihu.com/p/560671997)。
-
-鉴于精力有限，`caffe` 环境的维护将不再继续。
-````
-
-````{note}
 可以直接在 CPU 上测试 TVM 功能
 
 ```bash

@@ -5,10 +5,10 @@ env
 TVM 官方教程 <https://xinetzone.github.io/tvm/>
 demo
 IRModule
+TensorIR/index
+Relax/index
 e2e-opt
 customize-opt
 opt-llm
 rpc
-TensorIR/index
-Relax/index
 ```
