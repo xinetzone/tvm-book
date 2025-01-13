@@ -158,3 +158,4 @@ temp/
 *.npz
 *.npy
 doc/autoapi/
+*.sarif
