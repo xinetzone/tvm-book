@@ -15,8 +15,4 @@ export-lib
 eager-mode-eval
 model-props
 model-local-funs
-pattern/index
-opt/index
-ir/index
-tools/index
 ```

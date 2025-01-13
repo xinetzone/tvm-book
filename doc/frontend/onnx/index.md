@@ -6,5 +6,8 @@ ONNX 模型库：[onnx models](http://onnx.ai/models/)
 intro
 converters
 onnxscript/index
-relay2onnx
+pattern/index
+opt/index
+ir/index
+tools/index
 ```

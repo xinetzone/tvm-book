@@ -7,6 +7,8 @@
 tutorials/index
 topics/index
 frontend/index
+read/index
+extension/index
 about/index
 ```
 
