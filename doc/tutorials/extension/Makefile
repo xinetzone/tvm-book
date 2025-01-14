@@ -27,11 +27,11 @@ outputs/libs/libtvm_ext.so: src/tvm_ext.cc
 
 # 定制 tvm 插件模块
 # =================================================================================
-outputs/libs/libtvm_plugin_module.so: src/plugin_module.cc
+outputs/libs/libtvm_plugin_module.so: src/testing/plugin_module.cc
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CXXFLAGS) -shared -o $@ $^ $(PKG_LDFLAGS) -L${TVM_ROOT}/build
 
-outputs/libs/libtvm_NDSubClass.so: src/NDSubClass.cc
+outputs/libs/libtvm_NDSubClass.so: src/testing/NDSubClass.cc
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CXXFLAGS) -shared -o $@ $^ $(PKG_LDFLAGS) -L${TVM_ROOT}/build
 clean:

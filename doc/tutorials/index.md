@@ -4,4 +4,5 @@
 :hidden:
 
 start/index
+extension/index
 ```
