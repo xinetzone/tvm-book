@@ -1,8 +1,9 @@
 # 插件
 
+下面逐步揭开 TVM 中 C++/C 与 Python 交互的机制。
+
 ```{toctree}
-transform-intro
-py-call
+py-call/index
 cpp-call
 plugin-module
 NDSubClass

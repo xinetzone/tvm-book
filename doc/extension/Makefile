@@ -31,5 +31,8 @@ outputs/libs/libtvm_plugin_module.so: src/plugin_module.cc
 	@mkdir -p $(@D)
 	$(CXX) $(PKG_CXXFLAGS) -shared -o $@ $^ $(PKG_LDFLAGS) -L${TVM_ROOT}/build
 
+outputs/libs/libtvm_NDSubClass.so: src/NDSubClass.cc
+	@mkdir -p $(@D)
+	$(CXX) $(PKG_CXXFLAGS) -shared -o $@ $^ $(PKG_LDFLAGS) -L${TVM_ROOT}/build
 clean:
 	rm -rf outputs/*
