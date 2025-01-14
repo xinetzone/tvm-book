@@ -1,6 +1,5 @@
-# 运行时
+# TVM 运行时
 
 ```{toctree}
-measure
 module-export
 ```
