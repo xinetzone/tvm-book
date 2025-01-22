@@ -12,7 +12,6 @@ call-graph
 simplify-fc-transpose
 test_pass_fold_scale_axis
 DFPatternCallback
-quant/index
 type-infer
 mixed-precision
 type-solver

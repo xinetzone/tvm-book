@@ -1,8 +1,6 @@
-# 解读 tvm.relay.quantize
+# 解读 {func}`tvm.relay.quantize`
 
 ```{toctree}
-:maxdepth: 7
-
 quant-qconfig
 prerequisite-optimize
 QPartitionExpr

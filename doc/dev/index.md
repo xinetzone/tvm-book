@@ -8,7 +8,8 @@
 ffi/index
 dpl/index
 msc/index
-read/index
+relay-quant/index
 compiler/index
+read/index
 other/index
 ```
