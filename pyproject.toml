@@ -39,7 +39,7 @@ doc = [
     "sphinxcontrib-bibtex",
     "sphinxext-opengraph",
     "sphinx-sitemap",
-    "sphinx-autoapi",
+    "sphinx-autoapi>=3.4",
     "graphviz",
     "sphinx-intl", # 文档国际化
     "sphinx-tippy",

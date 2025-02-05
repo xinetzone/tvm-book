@@ -132,6 +132,8 @@ bibtex_bibfiles = ['_static/references/book.bib', "_static/references/articles.b
 # -------------------------------------------------------------------------------------
 extensions.append("autoapi.extension")
 autoapi_dirs = [f"../src/{project.replace('-', "_")}"]
+autoapi_root = "autoapi"
+autoapi_generate_api_docs = False
 # 在文档中嵌入 Graphviz 图
 # -------------------------------------------------------------------------------------
 extensions.append("sphinx.ext.graphviz")
