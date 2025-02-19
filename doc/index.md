@@ -8,7 +8,7 @@ tutorials/index
 topics/index
 frontend/index
 extension/index
-dev/index
+tests/index
 about/index
 ```
 
