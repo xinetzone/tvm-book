@@ -2,4 +2,5 @@
 
 ```{toctree}
 postprocess/index
+old/index
 ```
