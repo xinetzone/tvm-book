@@ -2,4 +2,5 @@
 
 ```{toctree}
 module-export
+cpp/index
 ```

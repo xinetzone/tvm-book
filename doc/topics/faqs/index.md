@@ -2,4 +2,5 @@
 
 ```{toctree}
 docker
+vscode/index
 ```
