@@ -42,10 +42,10 @@ jobs:
           cache-dependency-path: "pyproject.toml"
       - name: 🔧 Build HTML
         run: |
-          sudo apt-get install graphviz
           pip install .[doc,dev]
           pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cpu mlc-ai-nightly-cpu
-          conda install -c conda-forge pandoc
+          conda install -c conda-forge pandoc compilers cppyy pandoc llvm doxygen 
+          conda install -c conda-forge -y graphviz
           invoke doc
       - name: Setup Pages
         uses: actions/configure-pages@main
