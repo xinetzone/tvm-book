@@ -1,8 +1,6 @@
 # MSC 计算图
 
 ```{toctree}
-:hidden:
-
 intro
 codegen
 ```

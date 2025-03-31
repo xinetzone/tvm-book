@@ -1,5 +1,0 @@
-# WSL
-
-```{toctree}
-news
-```

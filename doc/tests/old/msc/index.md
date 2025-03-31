@@ -8,4 +8,5 @@ pipeline/index
 tools/index
 plugin/index
 tests/index
+workflow
 ```

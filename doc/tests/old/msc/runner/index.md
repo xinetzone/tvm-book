@@ -1,7 +1,6 @@
 # MSC 运行器
 
 ```{toctree}
-:hidden:
 
 TorchRunner
 TVMRunner

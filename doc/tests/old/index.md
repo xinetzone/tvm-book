@@ -6,6 +6,8 @@
 :hidden:
 
 ffi/index
+torch2onnx/index
+frontend/index
 msc/index
 relay-quant/index
 compiler/index
