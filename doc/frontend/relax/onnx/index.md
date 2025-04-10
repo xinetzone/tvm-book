@@ -2,4 +2,5 @@
 
 ```{toctree}
 start/index
+test
 ```

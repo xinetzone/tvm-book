@@ -7,4 +7,5 @@ fuse-ops/index
 fuse-transpose-matmul
 merge-composite-functions
 AttachExternModules
+RunCodegen
 ```
