@@ -1,4 +1,4 @@
-# `tvm.relax.frontend.nn`
+# {mod}`tvm.relax.frontend.nn`
 
 ```{toctree}
 Tensor
