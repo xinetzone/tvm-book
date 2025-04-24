@@ -10,6 +10,7 @@ dpl/index
 transform/index
 instrument/index
 msc/index
+training/index
 dl/index
 cv/index
 ```
