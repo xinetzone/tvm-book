@@ -3,4 +3,5 @@
 ```{toctree}
 docker
 vscode/index
+github
 ```
