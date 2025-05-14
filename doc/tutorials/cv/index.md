@@ -1,6 +1,5 @@
 # 计算机视觉
 
 ```{toctree}
-preprocessing
-PyTorch
+linear-regression
 ```

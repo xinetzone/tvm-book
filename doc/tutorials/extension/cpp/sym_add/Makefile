@@ -5,7 +5,8 @@ TVM_ROOT=$(shell cd /media/pc/data/lxw/ai/tvm; pwd)
 PKG_CXXFLAGS = -std=c++17 -O2 -fPIC\
 	-I${TVM_ROOT}/include\
 	-I${TVM_ROOT}/3rdparty/dmlc-core/include\
-	-I${TVM_ROOT}/3rdparty/dlpack/include\
+	-I${TVM_ROOT}/ffi/3rdparty/dlpack/include\
+	-I${TVM_ROOT}/ffi/include\
 	-I${IDIR}\
 	-DDMLC_USE_LOGGING_LIBRARY=\<tvm/runtime/logging.h\>
 

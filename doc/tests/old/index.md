@@ -6,6 +6,7 @@
 :hidden:
 
 ffi/index
+codegen/index
 torch2onnx/index
 frontend/index
 msc/index
