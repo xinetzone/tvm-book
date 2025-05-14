@@ -11,7 +11,6 @@ targets/index
 ir/index
 script/index
 cpp-runtime/index
-te/index
 topi/index
 tir/index
 op/index
