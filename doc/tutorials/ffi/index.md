@@ -11,6 +11,5 @@ error
 function
 ndarray
 string
-any
 dlpack
 ```
