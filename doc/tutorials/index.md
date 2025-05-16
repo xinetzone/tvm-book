@@ -10,7 +10,6 @@ contrib/index
 codegen/index
 targets/index
 quant/index
-extension/index
 runtime/index
 dpl/index
 transform/index
