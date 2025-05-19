@@ -4,7 +4,7 @@
 
 using namespace tvm::runtime;
 
-namespace xmnn {
+namespace tvm_ext {
 namespace testing {
 TVM_REGISTER_GLOBAL("tvm_ext.testing.sym_add").set_body([](TVMArgs args, TVMRetValue* rv) {
   tvm::tir::Var a = args[0];
@@ -18,4 +18,4 @@ TVM_REGISTER_GLOBAL("tvm_ext.testing.bind_add").set_body([](TVMArgs args_, TVMRe
   *rv_ = PackedFunc([pf, b](TVMArgs args, TVMRetValue* rv) { *rv = pf(b, args[0]); });
 });
 }
-} // namespace xmnn
+} // namespace tvm_ext
