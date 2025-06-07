@@ -45,8 +45,10 @@
     # since the compact libcuda does not work on non-Tesla gpus
     export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:${LD_LIBRARY_PATH}
     conda install conda-forge::backtrace
-    conda install cuda cudnn pytorch torchvision torchaudio pytorch-cuda -c pytorch -c nvidia
+    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 -i https://pypi.tuna.tsinghua.edu.cn/simple
+    conda install cudnn
     pip install tensorflow onnx onnxscript onnxruntime-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple
+    conda install -c conda-forge gcc=12.4.0 # CUDA 需要 gcc<13
     python -m invoke config --cuda
     python -m invoke make
     ```

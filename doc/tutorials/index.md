@@ -4,8 +4,18 @@
 :hidden:
 
 start/index
-extension/index
+te/index
+ffi/index
+contrib/index
+codegen/index
+targets/index
+quant/index
 runtime/index
 dpl/index
+transform/index
+instrument/index
+msc/index
+training/index
+dl/index
 cv/index
 ```

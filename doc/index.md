@@ -5,10 +5,12 @@
 :hidden:
 
 tutorials/index
+AISystem/index
 topics/index
 frontend/index
 extension/index
 tests/index
+old/index
 about/index
 ```
 
