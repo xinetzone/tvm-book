@@ -11,8 +11,9 @@
     conda create -n ai -c conda-forge \
         "llvmdev>=15" \
         "cmake>=3.24" \
+        "gcc<=12.4.0" \
         git \
-        python=3.12
+        python=3.13
     # 进入构建环境
     conda activate ai
     ```
