@@ -5,6 +5,7 @@
 :hidden:
 
 tutorials/index
+compression/index
 AISystem/index
 topics/index
 frontend/index

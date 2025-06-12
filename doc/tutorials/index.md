@@ -9,7 +9,6 @@ ffi/index
 contrib/index
 codegen/index
 targets/index
-quant/index
 runtime/index
 dpl/index
 transform/index
