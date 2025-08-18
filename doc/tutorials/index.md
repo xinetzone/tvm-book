@@ -13,6 +13,8 @@ runtime/index
 dpl/index
 transform/index
 instrument/index
+quantize/index
+auto-quantize/index
 msc/index
 training/index
 dl/index

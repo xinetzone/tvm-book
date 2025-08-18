@@ -10,4 +10,10 @@ SimulatedQuantize
 calibrate
 realize/index
 partition-conversions
+topi-qnn
+qnn-quantize
+qnn-dequantize
+qnn-requantize
+qnn-simulated-quantize
+qnn-simulated-dequantize
 ```

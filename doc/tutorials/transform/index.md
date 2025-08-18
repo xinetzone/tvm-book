@@ -2,6 +2,8 @@
 
 ```{toctree}
 intro
+AnnotateTIROpPattern
+FuseOps
 FoldConstant
 FoldBatchnormToConv2D
 fuse-ops/index
