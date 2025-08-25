@@ -7,6 +7,7 @@ QPartitionExpr
 partition
 annotate
 SimulatedQuantize
+calibrate-cpp
 calibrate
 realize/index
 partition-conversions
