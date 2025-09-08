@@ -1,0 +1,5 @@
+# VSCode
+
+```{toctree}
+remote
+```
