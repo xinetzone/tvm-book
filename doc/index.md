@@ -2,6 +2,8 @@
 ```
 
 ```{toctree}
+:hidden:
+
 old/index
 about/index
 ```
