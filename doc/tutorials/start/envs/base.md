@@ -13,7 +13,7 @@ conda env remove -n ai
 conda create -n ai -c conda-forge \
     "llvmdev>=15" \
     "cmake>=3.24" \
-    "gcc<=12.4.0" \
+    gcc \
     git \
     python=3.13
 # 进入构建环境
@@ -30,9 +30,8 @@ cd tvm/xinetzone
 python -m pip install --upgrade pip
 pip install taolib[flows]
 invoke init
-invoke config
-invoke make
-pip install -e .[dev] -i https://pypi.tuna.tsinghua.edu.cn/simple
+invoke config --cuda
+invoke Ninja
 ```
 
 ## 3. Conda 安装方式

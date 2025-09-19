@@ -3,7 +3,6 @@
 ```{toctree}
 :hidden:
 
-start/index
 te/index
 ffi/index
 vm/index

@@ -4,6 +4,8 @@
 ```{toctree}
 :hidden:
 
+tutorials/index
+quantize/index
 old/index
 about/index
 ```
