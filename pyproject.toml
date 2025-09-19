@@ -1,0 +1,68 @@
+[project]
+name = "tvm-book"
+version = "0.3.1"
+description = "道可道，非恒道"
+authors = [
+    {name = "xinetzone", email = "735613050@qq.com"},
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {file = "LICENSE"}
+maintainers = [
+  {name = "xinetzone", email = "735613050@qq.com"},
+]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/xinetzone/tvm-book"
+Documentation = "https://tvm-book.readthedocs.io/"
+
+[project.optional-dependencies]
+doc = [
+    "mystx",
+    "sphinx",
+    # "ablog",
+    "ipywidgets",
+    "folium",
+    "numpy",
+    "matplotlib",
+    "sphinx-comments",
+    "myst-nb",
+    "nbclient",
+    "pandas",
+    "plotly",
+    "sphinx-design",
+    "sphinx-examples",
+    "sphinx-copybutton",
+    "sphinx-contributors",
+    "sphinx-thebe",
+    "sphinxcontrib-bibtex",
+    "sphinxext-opengraph",
+    "sphinx-sitemap",
+    "sphinx-autoapi>=3.4",
+    "graphviz",
+    "sphinx-intl", # 文档国际化
+    "sphinx-tippy",
+    "sphinx-icon",
+    "sphinxcontrib-katex",
+]
+
+dev = [
+  "xgboost",
+  "pickleshare",
+  "cloudpickle",
+  "xgrammar",
+  "transformers",
+  "taolib[flows]",
+  "mlc-python",
+  "cmake",
+  "conan",
+  "protobuf",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
