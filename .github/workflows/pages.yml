@@ -42,6 +42,7 @@ jobs:
           cache-dependency-path: "pyproject.toml"
       - name: 🔧 Build HTML
         run: |
+          pip install apache-tvm
           pip install .[doc,dev]
           pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cpu mlc-ai-nightly-cpu
           conda install -c conda-forge pandoc compilers pandoc llvm doxygen 
