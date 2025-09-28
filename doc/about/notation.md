@@ -68,3 +68,10 @@
 ## 复杂度
 
 * $\mathcal{O}$：大 O 标记
+
+## 向量空间
+
+* $\mathbb{V}$: 向量空间
+* $\mathbb{V}_n$: $n$ 维向量空间
+* $\mathbb{V}_n^\perp$: $\mathbb{V}_n$ 的正交补空间
+* $\oplus$: 直和

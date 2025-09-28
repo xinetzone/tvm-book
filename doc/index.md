@@ -6,6 +6,7 @@
 
 tutorials/index
 quantize/index
+chaos/index
 old/index
 about/index
 ```
