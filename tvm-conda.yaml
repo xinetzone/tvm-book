@@ -1,0 +1,29 @@
+# Build environment that can be used to build tvm.
+name: tvm-env
+
+# The conda channels to lookup the dependencies
+channels:
+  - anaconda
+  - conda-forge
+
+# The packages to install to the environment
+dependencies:
+  - python>=3.10
+  - conda
+  - conda-build
+  - git
+  - gcc
+  - gxx
+  - libstdcxx-ng
+  - clangdev
+  - llvmdev
+  - numpy
+  - pytest
+  - cython
+  - cmake
+  - bzip2
+  - make
+  - scipy
+  - pillow
+  - pandas 
+  - ipykernel
