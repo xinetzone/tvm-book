@@ -68,14 +68,16 @@ intersphinx_mapping = {
     "sphinx": ("https://daobook.github.io/sphinx/", None),  # Sphinx documentation
     "tvm": ("https://xinetzone.github.io/tvm/", None),  # TVM documentation
     "torch": ("https://pytorch.org/docs/stable/", None),  # PyTorch documentation
+    "numpy": ("https://numpy.org/doc/stable/", None),  # NumPy documentation
+    'tvm-ffi': ('https://tvm.apache.org/ffi/', None), # TVM FFI documentation
 }
 
 # External link shortcuts
 # ------------------------------------------------------------------------------------- 
-extlinks = {
-    'daobook': ('https://daobook.github.io/%s', 'Daobook %s'),
-    'xinetzone': ('https://xinetzone.github.io/%s', 'xinetzone %s'),
-}
+# extlinks = {
+#     'daobook': ('https://daobook.github.io/%s', 'Daobook %s'),
+#     'xinetzone': ('https://xinetzone.github.io/%s', 'xinetzone %s'),
+# }
 
 # Copy button configuration
 # -------------------------------------------------------------------------------------

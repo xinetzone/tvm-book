@@ -3,5 +3,7 @@
 ```{toctree}
 :hidden:
 
-start
+intro
+python-guide
+packaging
 ```
