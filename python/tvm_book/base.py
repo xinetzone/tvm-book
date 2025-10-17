@@ -1,7 +1,4 @@
 """Utilities to locate and load the tvm_book shared library."""
-
-from __future__ import annotations
-
 import sys
 import sysconfig
 from pathlib import Path
@@ -76,11 +73,4 @@ def _load_lib() -> tvm_ffi.Module:
     raise FileNotFoundError(f"Could not find {lib_name} in any of: {locations}")
 
 
-try:
-    _LIB = _load_lib()
-    _LOAD_ERROR: Optional[Exception] = None
-except FileNotFoundError as err:  # pragma: no cover - exercised on systems without a toolchain
-    _LIB = None
-    _LOAD_ERROR = err
-
-__all__ = ["_LIB", "_LOAD_ERROR"]
+_LIB = _load_lib()

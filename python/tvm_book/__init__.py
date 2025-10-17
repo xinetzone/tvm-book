@@ -1,49 +1,25 @@
-"""Public Python API for the tvm_book package."""
-
-from __future__ import annotations
-
+"""tvm_book 包的公共 Python API"""
 from typing import Any
-
 from . import _ffi_api
-from .base import _LIB, _LOAD_ERROR
-
-
-def _require_native() -> Any:
-    """Return the loaded native module or raise a helpful error."""
-    if _LIB is None:
-        hint = (
-            "The native tvm_book extension is not available. "
-            "Install the required C/C++ toolchain (e.g. Visual Studio Build Tools on Windows) "
-            "and reinstall tvm-book to build the extension."
-        )
-        raise RuntimeError(hint) from _LOAD_ERROR
-    return _LIB
-
+from .base import _LIB
 
 def add_one(x: Any, y: Any) -> None:
-    """Add one to the input tensor.
+    """将输入张量加一
 
-    Parameters
-    ----------
-    x : Tensor
-      The input tensor.
-    y : Tensor
-      The output tensor.
+    Args:
+        x : 输入张量
+        y : 输出张量
     """
-    return _require_native().add_one(x, y)
+    return  _LIB.add_one(x, y)
 
 
 def raise_error(msg: str) -> None:
-    """Raise an error with the given message.
+    """使用给定消息抛出错误
 
-    Parameters
-    ----------
-    msg : str
-        The message to raise the error with.
+    Args:
+        msg : 要抛出错误的消息
 
-    Raises
-    ------
-    RuntimeError
-        The error raised by the function.
+    Raises:
+        RuntimeError: 函数抛出的错误
     """
     return _ffi_api.raise_error(msg)

@@ -1,16 +1,36 @@
+"""CUDA 环境配置和检测工具
+
+该模块提供了 CUDA 环境的自动检测、配置和修复功能，帮助用户解决 CUDA 相关的环境问题。
+"""
+
 import os
 import sys
 import shutil
 import subprocess
 from pathlib import Path
+from typing import List, Dict, Tuple, Optional, Union
 
-def run(cmd):
+
+def run(cmd: List[str]) -> str:
+    """执行命令并返回输出结果
+    
+    Args:
+        cmd: 要执行的命令列表
+        
+    Returns:
+        命令执行的输出结果或错误信息
+    """
     try:
         return subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
     except Exception as e:
         return f"ERROR: {e}"
 
-def find_cuda_candidates():
+def find_cuda_candidates() -> List[str]:
+    """查找系统中可能的 CUDA 安装路径
+    
+    Returns:
+        存在的 CUDA 安装路径列表
+    """
     # 常见 CUDA 安装位置
     candidates = [
         "/usr/local/cuda",
@@ -28,7 +48,12 @@ def find_cuda_candidates():
         ]
     return [p for p in candidates if Path(p).exists()]
 
-def parse_pytorch_cuda():
+def parse_pytorch_cuda() -> Dict[str, Union[str, bool, None]]:
+    """解析 PyTorch 的 CUDA 相关信息
+    
+    Returns:
+        包含 PyTorch CUDA 信息的字典
+    """
     try:
         import torch
         is_avail = torch.cuda.is_available()
@@ -46,14 +71,27 @@ def parse_pytorch_cuda():
     except Exception as e:
         return {"error": str(e)}
 
-def get_nvcc_info():
+def get_nvcc_info() -> Dict[str, Union[bool, str]]:
+    """获取 nvcc 编译器信息
+    
+    Returns:
+        包含 nvcc 信息的字典
+    """
     nvcc = shutil.which("nvcc")
     if not nvcc:
         return {"nvcc_found": False}
     out = run([nvcc, "--version"])
     return {"nvcc_found": True, "nvcc_path": nvcc, "nvcc_version": out}
 
-def try_set_cuda_env(cuda_home):
+def try_set_cuda_env(cuda_home: Union[str, Path]) -> bool:
+    """尝试设置 CUDA 环境变量
+    
+    Args:
+        cuda_home: CUDA 安装路径
+        
+    Returns:
+        设置是否成功
+    """
     if not cuda_home:
         return False
     cuda_home = str(cuda_home)
@@ -63,7 +101,15 @@ def try_set_cuda_env(cuda_home):
     os.environ["LD_LIBRARY_PATH"] = (lib64 + ":" + os.environ.get("LD_LIBRARY_PATH", "")) if Path(lib64).exists() else os.environ.get("LD_LIBRARY_PATH", "")
     return True
 
-def header_exists(cuda_home=None):
+def header_exists(cuda_home: Optional[Union[str, Path]] = None) -> Tuple[bool, Optional[str]]:
+    """检查 CUDA 头文件是否存在
+    
+    Args:
+        cuda_home: CUDA 安装路径
+        
+    Returns:
+        (是否存在, 头文件路径)
+    """
     # 检查 cuda_runtime_api.h
     candidates = []
     if cuda_home:
@@ -77,7 +123,15 @@ def header_exists(cuda_home=None):
             return True, str(p)
     return False, None
 
-def suggest_install_commands(torch_cuda_version):
+def suggest_install_commands(torch_cuda_version: Optional[str]) -> List[Dict[str, str]]:
+    """为用户提供建议的 CUDA 安装命令
+    
+    Args:
+        torch_cuda_version: PyTorch 构建的 CUDA 版本
+        
+    Returns:
+        包含安装建议的命令列表
+    """
     cmds = []
     # 优先建议 conda 安装（版本匹配更容易）
     if torch_cuda_version:
@@ -102,7 +156,15 @@ def suggest_install_commands(torch_cuda_version):
     })
     return cmds
 
-def clear_torch_extensions_cache():
+def clear_torch_extensions_cache() -> Tuple[Optional[bool], str]:
+    """清理 PyTorch 扩展缓存
+    
+    Returns:
+        (清理结果, 缓存目录路径)
+        - (True, path): 清理成功
+        - (False, error_msg): 清理失败
+        - (None, path): 缓存目录不存在
+    """
     cache_dir = Path.home() / ".cache" / "torch_extensions"
     if cache_dir.exists():
         try:
@@ -112,7 +174,13 @@ def clear_torch_extensions_cache():
             return False, f"删除失败: {e}"
     return None, str(cache_dir)
 
-def set_cuda(auto_fix=True, clear_cache=False):
+def set_cuda(auto_fix: bool = True, clear_cache: bool = False) -> None:
+    """自动检查和修复 CUDA 环境配置
+    
+    Args:
+        auto_fix: 是否自动修复环境配置
+        clear_cache: 是否清理 PyTorch 扩展缓存
+    """
     print("=== CUDA 自动检查与修复 ===")
 
     # 1. PyTorch 与 CUDA 线索
@@ -178,8 +246,7 @@ def set_cuda(auto_fix=True, clear_cache=False):
     if need_toolkit:
         print("- 检测到 CUDA 开发环境不完整（缺少 nvcc 或头文件）。建议安装 CUDA Toolkit：")
         for item in suggest_install_commands(info.get("torch_cuda_version")):
-            print(f"  * {item['label']}:")
-            print(f"    {item['cmd']}")
+            print(f"  * {item['label']}:\n    {item['cmd']}")
     else:
         print("- 已检测到 CUDA Toolkit 与头文件。若仍编译失败，检查 CUDA 与 PyTorch 版本是否匹配。")
 

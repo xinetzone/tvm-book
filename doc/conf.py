@@ -143,6 +143,23 @@ extensions.append("autoapi.extension")  # Auto-generate API documentation
 autoapi_dirs = [f"../python/{project.replace('-', "_")}"]  # Directories to generate API docs from
 autoapi_root = "autoapi"  # Root directory for generated API docs
 autoapi_generate_api_docs = True  # Enable automatic API doc generation
+# 配置autoapi来处理重复对象描述
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "private-members",
+    "show-inheritance",
+    "show-module-summary",
+    "special-members",
+    "imported-members",
+]
+autoapi_ignore = ["*test*", "*setup*", "*config*", "*__main__*"]
+# 为重复的对象添加noindex标记
+autoapi_add_toctree_entry = True
+autoapi_python_class_content = "both"
+autoapi_python_use_implicit_namespaces = True
+
+
 
 # Graphviz diagrams
 # ------------------------------------------------------------------------------------- 
@@ -263,3 +280,5 @@ nb_execution_mode = "off"  # Notebook execution mode ("off", "cache")
 # Additional extensions
 # ------------------------------------------------------------------------------------- 
 extensions.append("sphinxcontrib.icon")  # Add support for icons
+
+

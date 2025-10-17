@@ -1,10 +1,15 @@
-"""环境配置"""
+"""环境配置工具
+
+该模块提供了各种环境配置功能，帮助设置 TVM 和其他相关库的运行环境。
+"""
+
 import sys
 import os
 from pathlib import Path
+from typing import Union
 
 
-def set_tvm(tvm_root: str|Path):
+def set_tvm(tvm_root: Union[str, Path]) -> None:
     """配置 TVM 环境
 
     Args:
@@ -20,7 +25,8 @@ def set_tvm(tvm_root: str|Path):
     # os.environ['TVM_HOME'] = str(tvm_root)
     os.environ['PYTHONPATH'] = f"{TVM_PATH}:{VTA_PATH}" + ":${PYTHONPATH}"
 
-def set_caffeproto(caffeproto_root: str|Path="../../../tests/caffeproto"):
+
+def set_caffeproto(caffeproto_root: Union[str, Path] = "../../../tests/caffeproto") -> None:
     """配置 CaffeProto 环境
 
     Args:
