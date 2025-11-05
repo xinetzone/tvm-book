@@ -1,0 +1,90 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+[project]
+name = "tvm-book"
+version = "0.5.0"
+
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["machine learning", "inference"]
+requires-python = ">=3.12"
+
+dependencies = ["apache-tvm-ffi"]
+
+[project.urls]
+Repository = "https://github.com/xinetzone/tvm-book"
+Documentation = "https://tvm-book.readthedocs.io/"
+
+[project.optional-dependencies]
+doc = [
+  "mystx",
+  "myst-nb",
+  "sphinx-book-theme",
+  "sphinx",
+  "ablog",
+  "ipywidgets",
+  "folium",
+  "sphinx-comments",
+  "myst-nb",
+  "nbclient",
+  "sphinx-design",
+  "sphinx-examples",
+  "sphinx-copybutton",
+  "sphinx-contributors",
+  "sphinx-thebe",
+  "sphinxcontrib-bibtex",
+  "sphinxext-opengraph",
+  "sphinx-sitemap",
+  "sphinx-autoapi>=3.4",
+  "graphviz",
+  "sphinx-tippy",
+  "sphinx-icon",
+  "sphinxcontrib-katex",
+]
+
+dev = [
+  "pandas",
+  "numpy",
+  "matplotlib",
+  # "plotly",
+]
+
+[build-system]
+requires = ["scikit-build-core>=0.10.0", "apache-tvm-ffi"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+# the wheel is abi agnostic
+wheel.py-api = "py3"
+minimum-version = "build-system.requires"
+
+# Build configuration
+build-dir = "build"
+build.verbose = true
+
+# CMake configuration
+cmake.version = "CMakeLists.txt"
+# cmake.build-type = "RelWithDebugInfo"
+# cmake.build-type = "Release" # Windows 下默认是 Release 模式
+
+# Logging
+logging.level = "INFO"
+
+# Wheel configuration
+wheel.packages = ["python/tvm_book"]
+wheel.install-dir = "tvm_book"

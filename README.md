@@ -63,6 +63,8 @@ pip install tvm-book
 ```bash
 git clone https://github.com/xinetzone/tvm-book.git
 cd tvm-book
+git submodule update --init --recursive
+pip install -ve ./extensions/tvm-ffi
 pip install -ve .
 ```
 
@@ -71,4 +73,6 @@ pip install -ve .
 ```bash
 pip wheel -v -w dist . # 构建 whl 包
 pip install dist/*.whl # 安装 whl 包
+# PowerShell 安装 whl 包
+# Get-ChildItem -Path dist/*.whl | ForEach-Object { pip install $_ }
 ```
