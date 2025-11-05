@@ -1,0 +1,3 @@
+[submodule "extensions/tvm-ffi"]
+	path = extensions/tvm-ffi
+	url = https://github.com/apache/tvm-ffi.git
