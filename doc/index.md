@@ -2,6 +2,7 @@
 
 ```{toctree}
 readme
+blog/index
 ```
 
 # 索引与表格

@@ -241,6 +241,7 @@ version_switcher_json_url = "https://taolib.readthedocs.io/zh-cn/latest/_static/
 
 # Custom sidebars
 # ------------------------------------------------------------------------------------- 
+extensions.append("ablog")
 html_sidebars = {
     "reference/blog/*": [
         "navbar-logo.html",

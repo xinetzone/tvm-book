@@ -24,7 +24,7 @@ license = {file = "LICENSE"}
 keywords = ["machine learning", "inference"]
 requires-python = ">=3.12"
 
-dependencies = ["apache-tvm-ffi"]
+dependencies = ["apache-tvm-ffi", "taolib"]
 
 [project.urls]
 Repository = "https://github.com/xinetzone/tvm-book"
