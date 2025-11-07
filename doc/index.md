@@ -1,7 +1,9 @@
-# `tvm_book` 文档
+```{include} ../README.md
+```
 
 ```{toctree}
-readme
+:hidden:
+
 blog/index
 ```
 
