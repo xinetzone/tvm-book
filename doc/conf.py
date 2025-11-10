@@ -66,7 +66,6 @@ exclude_patterns = [  # Patterns to exclude when looking for source files
 # ------------------------------------------------------------------------------------- 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.12", None),  # Python documentation
-    "sphinx": ("https://daobook.github.io/sphinx/", None),  # Sphinx documentation
     "tvm": ("https://xinetzone.github.io/tvm/", None),  # TVM documentation
     "torch": ("https://pytorch.org/docs/stable/", None),  # PyTorch documentation
 }

@@ -4,8 +4,8 @@
 ```{toctree}
 :hidden:
 
-TVM 官方教程 <https://xinetzone.github.io/tvm/>
 blog/index
+about/index
 ```
 
 # 索引与表格
