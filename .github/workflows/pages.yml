@@ -34,6 +34,8 @@ jobs:
           egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
       - name: Checkout
         uses: actions/checkout@main
+        with:
+          submodules: recursive
       - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
@@ -53,8 +55,6 @@ jobs:
           invoke doc
       - name: Setup Pages
         uses: actions/configure-pages@main
-        with:
-          submodules: recursive
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
