@@ -42,7 +42,7 @@ find_package(
   COMPONENTS Interpreter
   REQUIRED
 )
-if (TVM_FFI_BUILD_FROM_SOURCE)
+if (TVM_FFI_EXT_FROM_SOURCE)
   execute_process(
     COMMAND "${Python_EXECUTABLE}" -m tvm_ffi.config --sourcedir
     OUTPUT_STRIP_TRAILING_WHITESPACE

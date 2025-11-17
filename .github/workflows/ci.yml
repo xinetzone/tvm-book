@@ -1,0 +1,59 @@
+name: CI (build & test)
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build-test-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+      - name: Install build deps
+        run: |
+          python -m pip install -U pip
+          python -m pip install pytest cmake ninja
+      - name: Install tvm-book
+        run: |
+          python -m pip install .
+      - name: Run tests
+        run: |
+          pytest -q
+
+  build-test-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
+      - name: Install build deps
+        run: |
+          python -m pip install -U pip
+          python -m pip install pytest cmake ninja
+      - name: Install tvm-book
+        run: |
+          python -m pip install .
+      - name: Run tests
+        run: |
+          pytest -q

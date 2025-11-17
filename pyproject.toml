@@ -40,7 +40,6 @@ doc = [
   "ipywidgets",
   "folium",
   "sphinx-comments",
-  "myst-nb",
   "nbclient",
   "sphinx-design",
   "sphinx-examples",
