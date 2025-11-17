@@ -34,9 +34,6 @@ jobs:
           egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
       - name: Checkout
         uses: actions/checkout@main
-      - name: Init submodules
-        run: |
-          git submodule update --init --recursive
       - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
@@ -51,6 +48,7 @@ jobs:
       #     conda install -c conda-forge clang lld clangdev llvmdev gcc gxx ninja
       - name: 🔧 Build HTML
         run: |
+          pip install extensions/tvm-ffi
           pip install .[doc,dev]
           invoke doc
       - name: Setup Pages
