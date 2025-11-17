@@ -48,8 +48,8 @@ jobs:
       #     conda install -c conda-forge clang lld clangdev llvmdev gcc gxx ninja
       - name: 🔧 Build HTML
         run: |
-          pip install extensions/tvm-ffi
-          pip install .[doc,dev]
+          pip install -ve ./extensions/tvm-ffi
+          pip install -ve .[doc,dev]
           invoke doc
       - name: Setup Pages
         uses: actions/configure-pages@main
