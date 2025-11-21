@@ -24,7 +24,7 @@ license = {file = "LICENSE"}
 keywords = ["machine learning", "inference"]
 requires-python = ">=3.12"
 
-dependencies = ["apache-tvm-ffi", "taolib"]
+dependencies = ["apache-tvm-ffi"]
 
 [project.urls]
 Repository = "https://github.com/xinetzone/tvm-book"
@@ -54,6 +54,7 @@ doc = [
   "sphinx-tippy",
   "sphinx-icon",
   "sphinxcontrib-katex",
+  "taolib",
 ]
 
 dev = [

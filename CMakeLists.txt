@@ -18,7 +18,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(tvm_book)
 
-option(TVM_FFI_EXT_FROM_SOURCE "Build tvm_ffi from source, useful for cross compilation." ON)
+option(TVM_FFI_EXT_FROM_SOURCE "Build tvm_ffi from source, useful for cross compilation." OFF)
 option(TVM_FFI_EXT_SHIP_DEBUG_SYMBOLS "Ship debug symbols" ON)
 
 # There are two ways to include tvm_ffi
@@ -42,7 +42,7 @@ find_package(
   COMPONENTS Interpreter
   REQUIRED
 )
-if (TVM_FFI_BUILD_FROM_SOURCE)
+if (TVM_FFI_EXT_FROM_SOURCE)
   execute_process(
     COMMAND "${Python_EXECUTABLE}" -m tvm_ffi.config --sourcedir
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -56,7 +56,7 @@ else ()
 endif ()
 
 # use the projects as usual
-add_library(tvm_book SHARED src/extension.cc)
+add_library(tvm_book SHARED src/extension.cc src/vta_rt.cc)
 target_link_libraries(tvm_book tvm_ffi_header)
 target_link_libraries(tvm_book tvm_ffi_shared)
 

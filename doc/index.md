@@ -6,6 +6,7 @@
 
 blog/index
 about/index
+about/quickstart
 ```
 
 # 索引与表格

@@ -1,4 +1,5 @@
 """Utilities to locate and load the tvm_book shared library."""
+import os
 import sys
 import sysconfig
 from pathlib import Path
@@ -8,7 +9,6 @@ import tvm_ffi
 
 
 def _library_name() -> str:
-    """Return the platform specific name of the compiled extension."""
     if sys.platform.startswith("win"):
         return "tvm_book.dll"
     if sys.platform.startswith("darwin"):
@@ -17,16 +17,10 @@ def _library_name() -> str:
 
 
 def _normalized_platform_tag() -> str:
-    """Normalise the current platform tag so it matches our build-dir layout."""
-    return (
-        sysconfig.get_platform()
-        .replace("-", "_")
-        .replace(".", "_")
-    )
+    return sysconfig.get_platform().replace("-", "_").replace(".", "_")
 
 
 def _candidate_directories(file_dir: Path) -> Iterable[Path]:
-    """Yield directories that may contain the compiled library."""
     build_root = file_dir.parent.parent / "build"
     yield file_dir
     yield build_root
@@ -34,7 +28,6 @@ def _candidate_directories(file_dir: Path) -> Iterable[Path]:
 
 
 def _candidate_paths(lib_name: str, roots: Iterable[Path]) -> Iterable[Path]:
-    """Yield possible locations for the compiled library."""
     config_subdirs = ("RelWithDebInfo", "Release", "Debug")
     seen: set[Path] = set()
     for base in roots:
@@ -46,33 +39,50 @@ def _candidate_paths(lib_name: str, roots: Iterable[Path]) -> Iterable[Path]:
             seen.add(candidate)
             yield candidate
 
-    # As a last resort, search the build tree for the first matching library.
-    build_root = (Path(__file__).resolve().parent.parent / "build")
-    if build_root.exists():
-        for match in build_root.rglob(lib_name):
-            if match in seen:
-                continue
-            yield match
-            break
+
+_CACHED_PATH: Optional[Path] = None
+_LIB: Optional[tvm_ffi.Module] = None
 
 
-def _load_lib() -> tvm_ffi.Module:
-    """Load the compiled tvm_book extension module."""
+def _env_lib_path(lib_name: str) -> Optional[Path]:
+    p = os.environ.get("TVM_BOOK_LIB_PATH")
+    if p:
+        path = Path(p)
+        if path.is_file():
+            return path
+    d = os.environ.get("TVM_BOOK_LIB_DIR")
+    if d:
+        dir_path = Path(d)
+        cand = dir_path / lib_name
+        if cand.exists():
+            return cand
+    return None
+
+
+def _resolve_lib_path() -> Path:
     file_dir = Path(__file__).resolve().parent
     lib_name = _library_name()
-    checked_dirs: List[Path] = []
-
+    override = _env_lib_path(lib_name)
+    if override is not None:
+        return override
     for candidate in _candidate_paths(lib_name, _candidate_directories(file_dir)):
-        parent = candidate.parent
-        if parent not in checked_dirs:
-            checked_dirs.append(parent)
         if candidate.exists():
-            return tvm_ffi.load_module(str(candidate))
+            return candidate
+    locations = []
+    for p in _candidate_paths(lib_name, _candidate_directories(file_dir)):
+        locations.append(str(p.parent))
+    hint = "; set TVM_BOOK_LIB_PATH or TVM_BOOK_LIB_DIR to override"
+    raise FileNotFoundError(f"Could not find {lib_name} in: {', '.join(dict.fromkeys(locations))}{hint}")
 
-    locations = ", ".join(str(path) for path in checked_dirs) or str(file_dir)
-    raise FileNotFoundError(f"Could not find {lib_name} in any of: {locations}")
+
+def get_lib() -> tvm_ffi.Module:
+    global _LIB, _CACHED_PATH
+    if _LIB is not None:
+        return _LIB
+    if _CACHED_PATH is None:
+        _CACHED_PATH = _resolve_lib_path()
+    _LIB = tvm_ffi.load_module(str(_CACHED_PATH))
+    return _LIB
 
 
-_LIB = _load_lib()
-
-__all__ = ["_LIB"]
+__all__ = ["get_lib", "_LIB"]

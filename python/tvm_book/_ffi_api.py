@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING
 
 import tvm_ffi
 
-# 确保库（lib）先被加载
-from .base import _LIB  # noqa: F401
+from .base import get_lib
 
-# 这是用于注册所有全局函数的捷径
+get_lib()
+
 tvm_ffi.init_ffi_api("tvm_book", __name__)
 
 

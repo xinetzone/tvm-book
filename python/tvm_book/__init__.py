@@ -2,16 +2,13 @@
 from typing import Any
 import tvm_ffi
 from . import _ffi_api
-from .base import _LIB
+from .base import get_lib
 
 @tvm_ffi.register_object("tvm_book.IntPair")
 class IntPair(tvm_ffi.Object):
     """IntPair object."""
 
     def __init__(self, a: int, b: int) -> None:
-        """Construct the object."""
-        # __ffi_init__ call into the refl::init<> registered
-        # in the static initialization block of the extension library
         self.__ffi_init__(a, b)
 
 def add_one(x: Any, y: Any) -> None:
@@ -23,7 +20,11 @@ def add_one(x: Any, y: Any) -> None:
         y: Tensor
             The output tensor.
     """
-    return _LIB.add_one(x, y)
+    if hasattr(x, "ndim") and getattr(x, "ndim") != 1:
+        raise ValueError("x must be 1D tensor")
+    if hasattr(y, "ndim") and getattr(y, "ndim") != 1:
+        raise ValueError("y must be 1D tensor")
+    return get_lib().add_one(x, y)
 
 
 def raise_error(msg: str) -> None:
