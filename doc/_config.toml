@@ -1,0 +1,45 @@
+# 主题选项配置
+[html_theme_options]
+# 公告栏设置
+announcement = "👋欢迎进入编程视界！👋"
+
+# 仓库相关设置
+repository_url = "https://github.com/xinetzone/tvm-book"  # 仓库地址
+use_repository_button = true  # 在页眉显示指向存储库的小 GitHub 徽标
+repository_branch = "main"  # 仓库分支
+use_source_button = true  # 显示 "查看源代码" 按钮
+use_edit_page_button = true  # 显示 "编辑此页" 按钮
+use_issues_button = true  # 显示 "报告问题" 按钮
+path_to_docs = "doc"  # 文档目录路径
+
+# 界面布局设置
+secondary_sidebar_items = "page-toc.html"  # 次要侧边栏项目
+toc_title = "目录"  # 目录标题
+use_sidenotes = true  # 脚注转换为侧边注释/页边注释
+show_navbar_depth = 1  # 导航栏显示深度
+max_navbar_depth = 7  # 导航栏最大深度
+collapse_navbar = false  # 折叠导航栏
+
+# 按钮设置
+use_download_button = true  # 使用下载按钮
+use_fullscreen_button = true  # 使用全屏按钮
+
+# 页脚设置
+footer_content_items = "author.html, copyright.html, last-updated.html, extra-footer.html" # 页脚内容
+# extra_footer = "额外的页脚信息"  # 额外的页脚内容
+# 图标链接配置
+icon_links = [
+  { name = "知乎", url = "https://www.zhihu.com/people/xinetzone", icon = "fa-brands fa-zhihu", type = "fontawesome" },
+  { name = "简书", url = "https://www.jianshu.com/u/4302480a3e8e", icon = "fa-solid fa-book", type = "fontawesome" },
+  { name = "B站", url = "https://space.bilibili.com/252192181", icon = "fa-brands fa-bilibili", type = "fontawesome" },
+  { name = "博客园", url = "https://www.cnblogs.com/q735613050/", icon = "https://xinetzone.github.io/xinetzone/media/xinetzone.jpg", type = "url" },
+  { name = "领英", url = "https://www.linkedin.com/in/xinet", icon = "fa-brands fa-linkedin", type = "fontawesome" }
+]
+
+# 交互启动按钮配置(通过注释来移除按钮)
+[html_theme_options.launch_buttons]
+binderhub_url = "https://mybinder.org"
+colab_url = "https://colab.research.google.com/"
+deepnote_url = "https://deepnote.com/"
+notebook_interface = "jupyterlab"
+jupyterhub_url = "https://datahub.berkeley.edu" # For testing
