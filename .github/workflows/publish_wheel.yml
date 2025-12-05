@@ -45,9 +45,9 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
         
-      - name: Install tvm-ffi
-        run: |
-          pip install -ve ./extensions/tvm-ffi
+      # - name: Install tvm-ffi
+      #   run: |
+      #     pip install -ve ./extensions/tvm-ffi
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.1.4
@@ -81,7 +81,6 @@ jobs:
 
       - name: Build sdist
         run: |
-          pip install -ve ./extensions/tvm-ffi
           pipx run build --sdist --outdir dist .
 
       - name: Check metadata
