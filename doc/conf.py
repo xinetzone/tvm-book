@@ -236,7 +236,7 @@ myst_enable_extensions = [
 ]
 
 # ================================= 版本切换器配置 =================================
-version_switcher_json_url = "https://tvm_book.readthedocs.io/zh-cn/latest/_static/switcher.json"
+version_switcher_json_url = "https://tvm-book.readthedocs.io/zh-cn/latest/_static/switcher.json"
 
 # Custom sidebars
 # ------------------------------------------------------------------------------------- 

@@ -6,7 +6,7 @@
 
 ## 安装依赖
 
-1. 在 [conda 环境中安装 protobuf](https://xinetzone.github.io/tao/fields/protobuf/installation.html)。
+1. 在 [conda 环境中安装 protobuf](https://daobook.github.io/pygallery/study/fields/protobuf/installation.html)。
 
 ```bash
 conda create -n proto-env python=3.12
