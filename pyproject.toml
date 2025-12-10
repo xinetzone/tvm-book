@@ -65,7 +65,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["scikit-build-core>=0.10.0", "apache-tvm-ffi","cython>=3.0", "setuptools-scm"]
+requires = ["scikit-build-core>=0.10.0", "apache-tvm-ffi", "cython>=3.0", "setuptools-scm"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
