@@ -57,11 +57,7 @@ endif ()
 
 # use the projects as usual
 add_library(flexloopy SHARED src/extension.cc src/vta_rt.cc)
-target_link_libraries(flexloopy tvm_ffi_header)
-target_link_libraries(flexloopy tvm_ffi_shared)
-
-# show as flexloopy.so
-set_target_properties(flexloopy PROPERTIES PREFIX "")
+tvm_ffi_configure_target(flexloopy STUB_DIR "./python" STUB_INIT ON)
 
 if (TVM_FFI_EXT_SHIP_DEBUG_SYMBOLS)
   # ship debugging symbols for backtrace on macos
@@ -76,3 +72,4 @@ if (TVM_FFI_EXT_SHIP_DEBUG_SYMBOLS)
 endif ()
 
 install(TARGETS flexloopy DESTINATION .)
+tvm_ffi_install(flexloopy DESTINATION .)
