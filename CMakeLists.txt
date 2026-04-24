@@ -21,22 +21,6 @@ project(flexloopy)
 option(TVM_FFI_EXT_FROM_SOURCE "Build tvm_ffi from source, useful for cross compilation." OFF)
 option(TVM_FFI_EXT_SHIP_DEBUG_SYMBOLS "Ship debug symbols" ON)
 
-# There are two ways to include tvm_ffi
-#
-# 1. Build tvm_ffi from source, which is reasonably cheap since tvm ffi is small
-# 2. Use the pre-built tvm_ffi shipped from the pip
-#
-# This example shows both options, you only need to pick a specific one.
-#
-# * For common build cases, using pre-built and link tvm_ffi_shared is sufficient.
-# * For cases where you may want to cross-compile or bundle part of tvm_ffi_objects directly into
-#   your project, opt for building tvm_ffi from source path. Note that it is always safe to build
-#   from source and extra cost of building tvm_ffi is small. So when in doubt, you can always choose
-#   to the building tvm_ffi from source route.
-#
-# In python or other cases when we dynamically load libtvm_ffi_shared. Even when you build from
-# source, you do not need to ship libtvm_ffi.so built here as they are only used to supply the
-# linking information. first find python related components
 find_package(
   Python
   COMPONENTS Interpreter
@@ -56,8 +40,11 @@ else ()
 endif ()
 
 # use the projects as usual
-add_library(flexloopy SHARED src/extension.cc src/vta_rt.cc)
-tvm_ffi_configure_target(flexloopy STUB_DIR "./python" STUB_INIT ON)
+add_library(flexloopy SHARED src/extension.cc)
+# Disable stub generation during build to avoid circular dependency
+# Stub generation requires importing tvm_ffi which triggers ffi.Enum registration
+# which fails because the C++ library isn't fully loaded yet during build
+tvm_ffi_configure_target(flexloopy STUB_DIR "./python" STUB_INIT OFF)
 
 if (TVM_FFI_EXT_SHIP_DEBUG_SYMBOLS)
   # ship debugging symbols for backtrace on macos

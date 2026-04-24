@@ -18,19 +18,50 @@
 [project]
 name = "flexloopy"
 dynamic = ["version"]
+description = "Flexible loop programming for VTA accelerator with TVM FFI"
 
+authors = [{ name = "tvm-book team" }]
 readme = "README.md"
-license = {file = "LICENSE"}
-keywords = ["machine learning", "inference"]
-requires-python = ">=3.12"
+license = { file = "LICENSE" }
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+]
+keywords = ["agent", "inference", "vta", "tvm", "flexloopy"]
+requires-python = ">=3.8"
 
-dependencies = ["apache-tvm-ffi"]
+dependencies = ["typing-extensions>=4.5", "apache-tvm-ffi"]
 
 [project.urls]
 Repository = "https://github.com/xinetzone/tvm-book"
 Documentation = "https://tvm-book.readthedocs.io/"
 
 [project.optional-dependencies]
+cpp = ["ninja"]
+
+[dependency-groups]
+test = ["pytest"]
+dev = [
+  { include-group = "test" },
+  "pre-commit",
+  "ruff",
+  "ty==0.0.15",
+  "clang-format",
+  "clang-tidy",
+  "ipdb",
+  "ipython",
+  "pandas",
+  "numpy",
+  "matplotlib",
+  "cython>=3.0",
+  "cmake",
+  "scikit-build-core",
+  "tomli",
+  "setuptools-scm",
+]
 doc = [
   "mystx",
   "myst-nb",
@@ -57,20 +88,15 @@ doc = [
   "taolib",
 ]
 
-dev = [
-  "pandas",
-  "numpy",
-  "matplotlib",
-  # "plotly",
-]
+[project.scripts]
 
 [build-system]
-requires = ["scikit-build-core>=0.10.0", "apache-tvm-ffi", "cython>=3.0", "setuptools-scm"]
+requires = ["scikit-build-core>=0.10.0", "cython>=3.0", "setuptools-scm", "apache-tvm-ffi"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
 metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
-# wheel.py-api = "cp312"
+wheel.py-api = "py3"
 minimum-version = "build-system.requires"
 ninja.version = ">=1.11"
 ninja.make-fallback = false
@@ -86,11 +112,9 @@ editable.verbose = true
 # CMake configuration
 cmake.version = "CMakeLists.txt"
 cmake.build-type = "Release"
-# cmake.args = [
-#   "-DTVM_FFI_ATTACH_DEBUG_SYMBOLS=ON",
-#   "-DTVM_FFI_BUILD_TESTS=OFF",
-#   "-DTVM_FFI_BUILD_PYTHON_MODULE=ON",
-# ]
+cmake.args = [
+  "-DTVM_FFI_EXT_SHIP_DEBUG_SYMBOLS=ON",
+]
 
 # Logging
 logging.level = "INFO"
@@ -98,3 +122,144 @@ logging.level = "INFO"
 # Wheel configuration
 wheel.packages = ["python/flexloopy"]
 wheel.install-dir = "flexloopy"
+
+# Source distribution configuration
+sdist.include = [
+  # Build files
+  "/CMakeLists.txt",
+  "/pyproject.toml",
+  "/cmake/**/*",
+  # Source code
+  "/src/**/*.cc",
+  "/include/**/*",
+
+  # python
+  "/python/flexloopy/**/*.py",
+  "/python/flexloopy/py.typed",
+
+  # Documentation and metadata
+  "/doc/**/*",
+  "/LICENSE",
+  "/README.md",
+  "/NOTICE",
+
+  # Tests
+  "/tests/**/*",
+]
+
+sdist.exclude = [
+  "**/.git",
+  "**/.github",
+  "**/__pycache__",
+  "**/*.pyc",
+  "build",
+  "dist",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+include = ["python/**/*.py", "tests/**/*.py"]
+line-length = 100
+indent-width = 4
+target-version = "py38"
+
+[tool.ruff.lint]
+select = [
+  "UP",  # pyupgrade, https://docs.astral.sh/ruff/rules/#pyupgrade-up
+  "PL",  # pylint, https://docs.astral.sh/ruff/rules/#pylint-pl
+  "I",   # isort, https://docs.astral.sh/ruff/rules/#isort-i
+  "RUF", # ruff, https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+  "NPY", # numpy, https://docs.astral.sh/ruff/rules/#numpy-specific-rules-npy
+  "F",   # pyflakes, https://docs.astral.sh/ruff/rules/#pyflakes-f
+  "FA",  # flake8-future-annotations, https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
+  "ANN", # flake8-annotations, https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+  "PTH", # flake8-use-pathlib, https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+  "D",   # pydocstyle, https://docs.astral.sh/ruff/rules/#pydocstyle-d
+]
+ignore = [
+  "PLR2004", # pylint: magic-value-comparison
+  "ANN401",  # flake8-annotations: any-type
+  "D105",    # pydocstyle: undocumented-magic-method
+  "D107",    # pydocstyle: undocumented-public-init
+  "D203",    # pydocstyle: incorrect-blank-line-before-class
+  "D213",    # pydocstyle: multi-line-summary-second-line
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"] # pyflakes: unused-import
+"tests/*" = [
+  "E741", # pycodestyle: ambiguous-variable-name
+  "D100", # pydocstyle: undocumented-public-module
+  "D101", # pydocstyle: undocumented-public-class
+  "D103", # pydocstyle: undocumented-public-function
+  "D107", # pydocstyle: undocumented-public-init
+  "D205", # pydocstyle: missing-blank-line-after-summary
+]
+
+[tool.ruff.lint.pylint]
+max-args = 10
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = 80
+
+[tool.cibuildwheel]
+build-verbosity = 1
+
+# only build up to cp312
+# will be abi3 and can be used in future versions
+build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*", "cp314t-*"]
+skip = ["*musllinux*"]
+# we only need to test on cp312
+test-skip = ["cp38-*", "cp39-*", "cp310-*", "cp311-*"]
+# focus on testing abi3 wheel
+build-frontend = "build[uv]"
+test-command = "pytest {package}/tests/python -vvs"
+test-groups = ["test"]
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64"]
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+environment = { MACOSX_DEPLOYMENT_TARGET = "10.14" }
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]
+
+[tool.ty.environment]
+python-version = "3.9"
+extra-paths = ["python", "examples", "tests/python"]
+
+[tool.ty.src]
+include = ["python/flexloopy/**", "examples/**", "tests/python/**"]
+exclude = [".venv/**", "build/**", "dist/**"]
+
+[tool.ty.rules]
+unused-ignore-comment = "ignore"
+
+[tool.ty.analysis]
+allowed-unresolved-imports = [
+  "tvm_ffi",
+  "tvm_ffi.*",
+  "apache-tvm-ffi",
+  "_pytest.*",
+]
+
+[tool.uv]
+exclude-newer = "14 days"
+
+[tool.uv.dependency-groups]
+docs = { requires-python = ">=3.13" }
+
+[tool.setuptools_scm]
+version_file = "python/flexloopy/_version.py"
+write_to = "python/flexloopy/_version.py"

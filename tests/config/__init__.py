@@ -14,11 +14,19 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-"""Invoke tasks for documentation building."""
+"""FlexLoopy 配置包
 
-import inspect
-if not hasattr(inspect, 'getargspec'):  # 修复
-    inspect.getargspec = inspect.getfullargspec
-from taolib.doc import sites
+本包用于集中管理与项目相关的环境配置，当前包含：
 
-namespace = sites('doc', target='doc/_build/html')
+- `env`：提供 ``set_tvm`` 与 ``set_caffeproto`` 两个函数，用于设置 TVM/VTA 以及 CaffeProto 的 Python 路径与相关环境变量。
+
+使用示例：
+
+    >>> from flexloopy.config.env import set_tvm, set_caffeproto
+    >>> set_tvm("/path/to/tvm")
+    >>> set_caffeproto("/path/to/CaffeProto")
+
+说明：
+
+    - 包级文档仅做目录与入口说明，不改变任何运行逻辑。
+"""

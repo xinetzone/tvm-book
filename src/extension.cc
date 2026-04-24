@@ -24,7 +24,7 @@
 
 #include <cstdint>
 
-namespace my_ffi_extension {
+namespace flexloopy {
 
 namespace ffi = tvm::ffi;
 
@@ -91,4 +91,4 @@ TVM_FFI_STATIC_INIT_BLOCK() {
       .def("sum", &IntPairObj::Sum, "IntPairObj::Sum() method");
 }
 // [object.end]
-}  // namespace my_ffi_extension
+}  // namespace flexloopy
