@@ -31,7 +31,7 @@ classifiers = [
   "Intended Audience :: Science/Research",
 ]
 keywords = ["agent", "inference", "vta", "tvm", "flexloopy"]
-requires-python = ">=3.8"
+requires-python = ">=3.14"
 
 dependencies = ["typing-extensions>=4.5", "apache-tvm-ffi"]
 
@@ -163,7 +163,7 @@ testpaths = ["tests"]
 include = ["python/**/*.py", "tests/**/*.py"]
 line-length = 100
 indent-width = 4
-target-version = "py38"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = [
@@ -214,12 +214,9 @@ docstring-code-line-length = 80
 [tool.cibuildwheel]
 build-verbosity = 1
 
-# only build up to cp312
-# will be abi3 and can be used in future versions
-build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*", "cp314t-*"]
+build = ["cp314-*", "cp314t-*"]
 skip = ["*musllinux*"]
-# we only need to test on cp312
-test-skip = ["cp38-*", "cp39-*", "cp310-*", "cp311-*"]
+test-skip = []
 # focus on testing abi3 wheel
 build-frontend = "build[uv]"
 test-command = "pytest {package}/tests/python -vvs"
@@ -236,7 +233,7 @@ environment = { MACOSX_DEPLOYMENT_TARGET = "10.14" }
 archs = ["AMD64"]
 
 [tool.ty.environment]
-python-version = "3.9"
+python-version = "3.14"
 extra-paths = ["python", "examples", "tests/python"]
 
 [tool.ty.src]
