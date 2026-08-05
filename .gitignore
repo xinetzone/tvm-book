@@ -159,3 +159,6 @@ temp/
 *.npy
 doc/autoapi/
 *.sarif
+
+# setuptools_scm generated version file (do not track - keeps scm version deterministic)
+python/flexloopy/_version.py
