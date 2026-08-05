@@ -24,6 +24,8 @@
 
 #include <cstdint>
 
+#include <tvm/ffi/container/tensor.h>
+
 namespace flexloopy {
 
 namespace ffi = tvm::ffi;
@@ -35,12 +37,19 @@ TVM_FFI_DLL_EXPORT_TYPED_FUNC(add_two, AddTwo)
 // [tvm_ffi_abi.end]
 
 // [global_function.begin]
-static int AddOne(int x) { return x + 1; }
+static void AddOne(ffi::TensorView x, ffi::TensorView y) {
+  TVM_FFI_ICHECK(x.ndim() == 1) << "x must be a 1D tensor";
+  TVM_FFI_ICHECK(y.ndim() == 1) << "y must be a 1D tensor";
+  TVM_FFI_ICHECK(x.size(0) == y.size(0)) << "x and y must have the same shape";
+  for (int i = 0; i < x.size(0); ++i) {
+    static_cast<float*>(y.data_ptr())[i] = static_cast<float*>(x.data_ptr())[i] + 1;
+  }
+}
 
 TVM_FFI_STATIC_INIT_BLOCK() {
   namespace refl = tvm::ffi::reflection;
   refl::GlobalDef()  //
-      .def("my_ffi_extension.add_one", AddOne);
+      .def("flexloopy.add_one", AddOne);
 }
 // [global_function.end]
 
@@ -50,9 +59,9 @@ TVM_FFI_STATIC_INIT_BLOCK() {
  * \param msg The error message to raise.
  *
  * \code{.py}
- * import my_ffi_extension
+ * import flexloopy
  * try:
- *   my_ffi_extension.raise_error("boom")
+ *   flexloopy.raise_error("boom")
  * except RuntimeError:
  *   pass
  * \endcode
@@ -62,7 +71,7 @@ static void RaiseError(const ffi::String& msg) { TVM_FFI_THROW(RuntimeError) << 
 TVM_FFI_STATIC_INIT_BLOCK() {
   namespace refl = tvm::ffi::reflection;
   refl::GlobalDef()  //
-      .def("my_ffi_extension.raise_error", RaiseError);
+      .def("flexloopy.raise_error", RaiseError);
 }
 
 // [object.begin]
@@ -77,7 +86,7 @@ class IntPairObj : public ffi::Object {
 
   static constexpr bool _type_mutable = true;
   TVM_FFI_DECLARE_OBJECT_INFO_FINAL(
-      /*type_key=*/"my_ffi_extension.IntPair",
+      /*type_key=*/"flexloopy.IntPair",
       /*class=*/IntPairObj,
       /*parent_class=*/ffi::Object);
 };
