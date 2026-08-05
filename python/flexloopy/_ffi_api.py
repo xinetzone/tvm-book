@@ -47,10 +47,22 @@ LIB = _FFI_LOAD_LIB("flexloopy", "flexloopy")
 # tvm-ffi-stubgen自动生成的全局函数绑定开始
 # fmt: off
 # 初始化flexloopy模块的FFI API，将C函数绑定到Python模块
-_FFI_INIT_FUNC("flexloopy", __name__)
+# 注意：C++扩展在extension.cc中以"my_ffi_extension."前缀注册全局函数，
+# 因此init_ffi_api的命名空间必须为"my_ffi_extension"而非"flexloopy"，
+# 否则_ffi_api.add_one/_ffi_api.raise_error将无法绑定。
+_FFI_INIT_FUNC("my_ffi_extension", __name__)
 
 # 仅在类型检查阶段提供函数签名
 if TYPE_CHECKING:
+    def add_one(_0: int, /) -> int:
+        """对输入加1。
+
+        Args:
+            _0: 输入整数
+
+        Returns:
+            加1后的结果
+        """
     def raise_error(_0: str, /) -> None:
         """抛出错误信息。
 
@@ -67,7 +79,7 @@ if TYPE_CHECKING:
 # tvm-ffi-stubgen(import-object): tvm_ffi.register_object;False;_FFI_REG_OBJ
 # tvm-ffi-stubgen(import-object): ffi.Object;False;_ffi_Object
 
-@_FFI_REG_OBJ("flexloopy.IntPair")
+@_FFI_REG_OBJ("my_ffi_extension.IntPair")
 class IntPair(_ffi_Object):
     """IntPair对象的FFI绑定。
 
@@ -126,5 +138,8 @@ class IntPair(_ffi_Object):
 __all__ = [
     # tvm-ffi-stubgen(begin): __all__
     "LIB",
+    "IntPair",
+    "add_one",
+    "raise_error",
     # tvm-ffi-stubgen(end)
 ]
