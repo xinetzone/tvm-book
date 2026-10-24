@@ -58,7 +58,7 @@ dev = [
   "matplotlib",
   "cython>=3.0",
   "cmake",
-  "scikit-build-core",
+  "scikit-build-core>=0.11",
   "tomli",
   "setuptools-scm",
 ]
@@ -91,7 +91,7 @@ doc = [
 [project.scripts]
 
 [build-system]
-requires = ["scikit-build-core>=0.10.0", "cython>=3.0", "setuptools-scm", "apache-tvm-ffi"]
+requires = ["scikit-build-core>=0.11.0", "cython>=3.0", "setuptools-scm", "apache-tvm-ffi"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
