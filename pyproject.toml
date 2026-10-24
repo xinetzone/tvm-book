@@ -22,9 +22,9 @@ description = "Flexible loop programming for VTA accelerator with TVM FFI"
 
 authors = [{ name = "tvm-book team" }]
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 classifiers = [
-  "License :: OSI Approved :: Apache Software License",
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Intended Audience :: Education",
